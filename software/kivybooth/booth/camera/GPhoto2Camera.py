@@ -14,9 +14,10 @@ class CameraGPhoto2(CameraBase):
         stop = threading.Event()
 
         def __init__(self, capture_device, queue):
-            super(CameraGPhoto2.CameraThread, self).__init__()
             self._capture_device = capture_device
             self._queue = queue
+            super(CameraGPhoto2.CameraThread, self).__init__()
+
 
         def run(self):
             while not self.stop.is_set():
@@ -32,9 +33,10 @@ class CameraGPhoto2(CameraBase):
     _update_ev = None
 
     def __init__(self, **kwargs):
-        super(CameraGPhoto2, self).__init__(**kwargs)
         self.capture = Queue()
         self._thread = None
+        super(CameraGPhoto2, self).__init__(**kwargs)
+
 
     def __del__(self):
         if self.capture_device is not None:
@@ -75,7 +77,7 @@ class CameraGPhoto2(CameraBase):
     def start(self):
         super(CameraGPhoto2, self).start()
         if self._thread is None:
-            self._thread = CameraGPhoto2.CameraThread(self.capture, self.capture_device)
+            self._thread = CameraGPhoto2.CameraThread(self.capture_device, self.capture)
             self._thread.start()
 
 

@@ -46,12 +46,8 @@ kvdemo = '''
             pos: self.pos[0], self.pos[1] - 3
             size: self.size[0], 1
             
-<MyCameraView>:
-    Label:
-        text: root.text
 
-
-<MyTab>:
+<GalleryTab>:
     Button:
         text: root.text
 '''
@@ -64,15 +60,10 @@ if __name__ == '__main__':
     except:
         CameraContainer = CameraOpenCV()
 
-    class MyCameraView(Camera):
-        pass
-
-    class MyTab(FloatLayout, AndroidTabsBase):
-
+    class MyCameraView(Camera, AndroidTabsBase):
         pass
 
     class GalleryTab(FloatLayout, AndroidTabsBase):
-
         pass
 
     class Example(App):
@@ -82,7 +73,7 @@ if __name__ == '__main__':
             Builder.load_string(kvdemo)
             android_tabs = AndroidTabs()
 
-            tab = MyTab(text="Kamera")
+            tab = MyCameraView(text="Kamera")
             android_tabs.add_widget(tab)
             tab = GalleryTab(text="Gallerie")
             android_tabs.add_widget(tab)

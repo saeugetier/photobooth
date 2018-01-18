@@ -12,6 +12,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
 from kivy.app import App
 from kivy.core.camera import Camera as CameraContainer
+from kivy.core.camera.camera_opencv import CameraOpenCV
 from kivy.uix.camera import Camera
 from kivy.uix.label import Label
 
@@ -56,11 +57,12 @@ kvdemo = '''
 '''
 
 
-print(CameraContainer)
-
 if __name__ == '__main__':
 
-    CameraContainer = CameraGPhoto2()
+    try:
+        CameraContainer = CameraGPhoto2()
+    except:
+        CameraContainer = CameraOpenCV()
 
     class MyCameraView(Camera):
         pass

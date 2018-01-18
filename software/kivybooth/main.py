@@ -55,10 +55,10 @@ kvdemo = '''
 
 if __name__ == '__main__':
 
-    try:
-        CameraContainer = CameraGPhoto2()
-    except:
-        CameraContainer = CameraOpenCV()
+    #try:
+    CameraContainer = CameraGPhoto2()
+    #except:
+    #CameraContainer = CameraOpenCV()
 
     class MyCameraView(Camera, AndroidTabsBase):
         pass
@@ -77,6 +77,7 @@ if __name__ == '__main__':
             android_tabs.add_widget(tab)
             tab = GalleryTab(text="Gallerie")
             android_tabs.add_widget(tab)
+
 
             return android_tabs
 

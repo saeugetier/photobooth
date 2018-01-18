@@ -3,7 +3,8 @@ import gphoto2 as gp
 import threading
 import time
 from queue import Queue
-from PIL import Image
+from kivy.core.image import Image
+from kivy.base import Clock
 import io
 
 class CameraGPhoto2(CameraBase):
@@ -24,8 +25,7 @@ class CameraGPhoto2(CameraBase):
                 if self._queue.empty():
                     camera_file = gp.check_result(gp.gp_camera_capture_preview(self._capture_device))
                     file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
-                    image = Image.open(io.BytesIO(file_data))
-                    self._queue.put(image)
+                    self._queue.put(io.BytesIO(file_data))
                 else:
                     time.sleep(0.05)
 
@@ -35,6 +35,8 @@ class CameraGPhoto2(CameraBase):
     def __init__(self, **kwargs):
         self.capture = Queue()
         self._thread = None
+        self.image = None
+        self._update_ev = None
         super(CameraGPhoto2, self).__init__(**kwargs)
 
 
@@ -74,25 +76,42 @@ class CameraGPhoto2(CameraBase):
             gp.check_result(gp.gp_camera_set_config(self.capture_device, self._config))
 
 
+    def _update(self, dt):
+        print("test")
+        if self.stopped:
+            return
+
+
+        if self.capture.empty() is False:
+            if self.image is None:
+                capture = self.capture.get()
+                self.image = Image(capture, ext="jpg")
+                self._texture = self.image.texture
+                self.dispatch('on_load')
+            else:
+                self.image.load_memory(self.capture.get(), "jpg")
+            self.dispatch('on_texture')
+
+        #### update....
+
     def start(self):
         super(CameraGPhoto2, self).start()
         if self._thread is None:
             self._thread = CameraGPhoto2.CameraThread(self.capture_device, self.capture)
             self._thread.start()
 
+        if self._update_ev is not None:
+            self._update_ev.cancel()
+        self._update_ev = Clock.schedule_interval(self._update, 1/10)
+
 
     def stop(self):
-        super(CameraGPhoto2, self).stop()
+        if self._update_ev is not None:
+            self._update_ev.cancel()
+            self._update_ev = None
         if self._thread is not None:
             self._thread.stop.set()
+        super(CameraGPhoto2, self).stop()
 
-    def _update(self, dt):
-        if self.stopped:
-            return
-        if self._texture is None:
-            # Create the texture
-            self._texture = Texture.create(self._resolution)
-            self._texture.flip_vertical()
-            self.dispatch('on_load')
 
-        #### update....
+

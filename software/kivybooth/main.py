@@ -1,23 +1,13 @@
 #!python
 
-
-import platform
-print(platform.python_version())
-
 import os
-os.environ['KIVY_CAMERA'] = ""
+os.environ['KIVY_CAMERA'] = "gphoto2"
 from kivy.garden.androidtabs import AndroidTabsBase, AndroidTabs
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 from kivy.app import App
-from kivy.core.camera import Camera as CameraContainer
-from kivy.core.camera.camera_opencv import CameraOpenCV
 from kivy.uix.camera import Camera
-from kivy.uix.label import Label
-
-from booth.camera.GPhoto2Camera import CameraGPhoto2
-
 
 
 kvdemo = '''
@@ -50,17 +40,24 @@ kvdemo = '''
 <GalleryTab>:
     Button:
         text: root.text
+        
+<MyCameraView>:
+    orientation: 'vertical'
+    Camera:
+        id: camera
+        resolution: (640,480)
+        play: True
+    ToggleButton:
+        text: 'Play'
+        on_press: camera.play = not camera.play
+        size_hint_y: None
+        height: '48dp'
 '''
 
 
 if __name__ == '__main__':
 
-    #try:
-    CameraContainer = CameraGPhoto2()
-    #except:
-    #CameraContainer = CameraOpenCV()
-
-    class MyCameraView(Camera, AndroidTabsBase):
+    class MyCameraView(BoxLayout, AndroidTabsBase):
         pass
 
     class GalleryTab(FloatLayout, AndroidTabsBase):

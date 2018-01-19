@@ -2,12 +2,20 @@
 
 import os
 os.environ['KIVY_CAMERA'] = "gphoto2"
+from os.path import join, dirname
 from kivy.garden.androidtabs import AndroidTabsBase, AndroidTabs
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
 from kivy.app import App
 from kivy.uix.camera import Camera
+from kivy.logger import Logger
+from kivy.uix.scatter import Scatter
+from kivy.properties import StringProperty
+
+import time
+from glob import glob
+from random import randint
 
 
 kvdemo = '''
@@ -38,8 +46,38 @@ kvdemo = '''
             
 
 <GalleryTab>:
-    Button:
-        text: root.text
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Rectangle:
+            source: 'data/images/background.jpg'
+            size: self.size
+            
+<Picture>:
+    # each time a picture is created, the image can delay the loading
+    # as soon as the image is loaded, ensure that the center is changed
+    # to the center of the screen.
+    on_size: self.center = win.Window.center
+    size: image.size
+    size_hint: None, None
+
+    Image:
+        id: image
+        source: root.source
+
+        # create initial image to be 400 pixels width
+        size: 400, 400 / self.image_ratio
+
+        # add shadow background
+        canvas.before:
+            Color:
+                rgba: 1,1,1,1
+            BorderImage:
+                source: 'assets/shadow.png'
+                border: (36,36,36,36)
+                size:(self.width+72, self.height+72)
+                pos: (-36,-36)
+
         
 <MyCameraView>:
     orientation: 'vertical'
@@ -52,19 +90,40 @@ kvdemo = '''
         on_press: camera.play = not camera.play
         size_hint_y: None
         height: '48dp'
+    Button:
+        text: 'Capture'
+        size_hint_y: None
+        height: '48dp'
+        on_press: root.capture()
 '''
+
+
 
 
 if __name__ == '__main__':
 
+    class Picture(Scatter):
+        '''Picture is the class that will show the image with a white border and a
+        shadow. They are nothing here because almost everything is inside the
+        picture.kv. Check the rule named <Picture> inside the file, and you'll see
+        how the Picture() is really constructed and used.
+
+        The source property will be the filename to show.
+        '''
+
+        source = StringProperty(None)
+
+
     class MyCameraView(BoxLayout, AndroidTabsBase):
-        pass
+        def capture(self):
+            camera = self.ids['camera']
+            timestr = time.strftime("%Y%m%d_%H%M%S")
+            camera.export_to_png("pictures/IMG_{}.png".format(timestr))
 
     class GalleryTab(FloatLayout, AndroidTabsBase):
         pass
 
     class Example(App):
-
         def build(self):
 
             Builder.load_string(kvdemo)
@@ -75,8 +134,23 @@ if __name__ == '__main__':
             tab = GalleryTab(text="Gallerie")
             android_tabs.add_widget(tab)
 
+            # the root is created in pictures.kv
+            root = tab
+
+            # get any files into images directory
+            curdir = dirname(__file__)
+            pattern = join(curdir + "/pictures/", '*')
+
+            for filename in glob(pattern):
+                try:
+                    # load the image
+                    picture = Picture(source=filename, rotation=randint(-30, 30))
+                    # add to the main field
+                    root.add_widget(picture)
+                except Exception as e:
+                    Logger.exception('Pictures: Unable to load <%s>' % filename)
+
 
             return android_tabs
 
     Example().run()
-

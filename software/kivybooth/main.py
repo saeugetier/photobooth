@@ -17,10 +17,6 @@ from kivy.animation import Animation
 
 from kivy.config import Config
 
-from RPi import GPIO
-import platform
-if "x86" in platform.machine():
-    GPIO.VERBOSE = True #show GPIO in command line
 
 import time
 from glob import glob
@@ -136,6 +132,7 @@ if __name__ == '__main__':
             camera = self.ids['camera']
             timestr = time.strftime("%Y%m%d_%H%M%S")
             camera.export_to_png("pictures/IMG_{}.png".format(timestr))
+            print(camera._camera)
 
     class GalleryTab(FloatLayout, AndroidTabsBase):
         pass

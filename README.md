@@ -56,3 +56,9 @@ LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Back
 Wii Nunchuck: https://www.aliexpress.com/item/Nunchuck-Nunchuk-Video-Game-Controller-Remote-For-Nintendo-For-Wii-Console-5-Colors-R179T-Drop-shipping/32809515241.html
 
 Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://festi.info/boxes.py/
+
+
+
+Ideas:
+
+https://gist.github.com/saeugetier/641647d13465b1b412e531fb1147c462

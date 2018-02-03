@@ -18,6 +18,9 @@ from kivy.animation import Animation
 from kivy.config import Config
 
 from RPi import GPIO
+import platform
+if "x86" in platform.machine():
+    GPIO.VERBOSE = True #show GPIO in command line
 
 import time
 from glob import glob

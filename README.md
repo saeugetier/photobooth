@@ -59,6 +59,6 @@ Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://f
 
 
 
-Ideas:
+## Ideas:
 
 https://gist.github.com/saeugetier/641647d13465b1b412e531fb1147c462

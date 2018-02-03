@@ -1,7 +1,7 @@
 #!python
 
 import os
-os.environ['KIVY_CAMERA'] = "gphoto2"
+os.environ['KIVY_CAMERA'] = "opencv"
 from os.path import join, dirname
 from kivy.garden.androidtabs import AndroidTabsBase, AndroidTabs
 from kivy.uix.floatlayout import FloatLayout
@@ -12,6 +12,12 @@ from kivy.uix.camera import Camera
 from kivy.logger import Logger
 from kivy.uix.scatter import Scatter
 from kivy.properties import StringProperty
+from kivy.uix.behaviors import CoverBehavior
+from kivy.animation import Animation
+
+from kivy.config import Config
+
+from RPi import GPIO
 
 import time
 from glob import glob
@@ -80,10 +86,18 @@ kvdemo = '''
 
         
 <MyCameraView>:
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Rectangle:
+            source: 'data/images/background.jpg'
+            size: self.size
+
     orientation: 'vertical'
     Camera:
         id: camera
         resolution: (640,480)
+        allow_stretch: True
         play: True
     ToggleButton:
         text: 'Play'
@@ -125,17 +139,16 @@ if __name__ == '__main__':
 
     class Example(App):
         def build(self):
+            Config.set('graphics', 'fullscreen', 'auto')
 
             Builder.load_string(kvdemo)
             android_tabs = AndroidTabs()
 
-            tab = MyCameraView(text="Kamera")
-            android_tabs.add_widget(tab)
-            tab = GalleryTab(text="Gallerie")
-            android_tabs.add_widget(tab)
+            self.cameraTab = MyCameraView(text="Kamera")
+            android_tabs.add_widget(self.cameraTab)
+            self.galleryTab = GalleryTab(text="Gallerie")
+            android_tabs.add_widget(self.galleryTab)
 
-            # the root is created in pictures.kv
-            root = tab
 
             # get any files into images directory
             curdir = dirname(__file__)
@@ -146,11 +159,14 @@ if __name__ == '__main__':
                     # load the image
                     picture = Picture(source=filename, rotation=randint(-30, 30))
                     # add to the main field
-                    root.add_widget(picture)
+                    self.galleryTab.add_widget(picture)
                 except Exception as e:
                     Logger.exception('Pictures: Unable to load <%s>' % filename)
 
-
             return android_tabs
 
-    Example().run()
+        def on_stop(self):
+            self.cameraTab.ids["camera"].on_play(None,False)
+
+    example = Example()
+    example.run()

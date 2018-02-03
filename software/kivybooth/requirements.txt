@@ -1,3 +1,5 @@
 ## GPhoto2 native libraries and header packages must be installed
 gphoto2
 kivy
+##fakeRPiGPIO -- for local machine
+##RPi.GPIO -- for raspberry

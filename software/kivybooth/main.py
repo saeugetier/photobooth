@@ -1,7 +1,6 @@
 #!python
 
-import os
-os.environ['KIVY_CAMERA'] = "opencv"
+from booth import config
 from os.path import join, dirname
 from kivy.garden.androidtabs import AndroidTabsBase, AndroidTabs
 from kivy.uix.floatlayout import FloatLayout
@@ -14,6 +13,7 @@ from kivy.uix.scatter import Scatter
 from kivy.properties import StringProperty
 from kivy.uix.behaviors import CoverBehavior
 from kivy.animation import Animation
+from kivy.core.camera import camera_gphoto2
 
 from kivy.config import Config
 
@@ -131,7 +131,10 @@ if __name__ == '__main__':
         def capture(self):
             camera = self.ids['camera']
             timestr = time.strftime("%Y%m%d_%H%M%S")
-            camera.export_to_png("pictures/IMG_{}.png".format(timestr))
+            if isinstance(camera, camera_gphoto2.CameraGPhoto2):
+                camera.takePhoto(config.config.get("Camera","picture_folder"))
+            else:
+                camera.export_to_png(config.config.get("Camera","picture_folder") + "/IMG_{}.png".format(timestr))
             print(camera._camera)
 
     class GalleryTab(FloatLayout, AndroidTabsBase):

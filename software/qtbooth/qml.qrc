@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>Slideshow.qml</file>
+        <file>fontello/font/fontello.ttf</file>
+        <file>PageCamera.qml</file>
+        <file>PageCameraForm.ui.qml</file>
+        <file>PopupPreviewImage.qml</file>
+        <file>PopupPreviewImageForm.ui.qml</file>
+        <file>PopupPrint.qml</file>
+        <file>PopupPrintForm.ui.qml</file>
+        <file>PageGallery.qml</file>
+        <file>PageGalleryForm.ui.qml</file>
+        <file>PopupCameraSettings.qml</file>
+        <file>PopupCameraSettingsForm.ui.qml</file>
+        <file>Countdown.qml</file>
+        <file>DelegateGalleryItem.qml</file>
+        <file>images/box-shadow.png</file>
+    </qresource>
+</RCC>

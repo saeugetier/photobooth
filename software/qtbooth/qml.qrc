@@ -17,5 +17,7 @@
         <file>Countdown.qml</file>
         <file>DelegateGalleryItem.qml</file>
         <file>images/box-shadow.png</file>
+        <file>scripts/script.js</file>
+        <file>styles/RoundProgressBarStyle.qml</file>
     </qresource>
 </RCC>

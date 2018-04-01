@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import "scripts/script.js" as Script
+import "styles" as Style
 
 Package {
 
@@ -32,7 +33,7 @@ Package {
                     rightMargin: -8
                     bottomMargin: -8
                 }
-                source: '../images/box-shadow.png'
+                source: 'images/box-shadow.png'
                 border {
                     top: 10
                     left: 10
@@ -43,8 +44,8 @@ Package {
             Rectangle {
                 id: placeHolder
 
-                property int w: width0
-                property int h: height0
+                property int w: 280
+                property int h: 180
                 property double s: Script.calculateScale(w, h, photoWrapper.width)
 
                 color: 'white'
@@ -74,7 +75,7 @@ Package {
 
                 anchors.fill: photoWrapper
                 antialiasing: true
-                source: url
+                source: applicationSettings.foldername + "/" + fileName
                 cache: false
                 fillMode: Image.PreserveAspectFit
             }
@@ -143,7 +144,7 @@ Package {
                     PropertyChanges {
                         target: hqImage
                         source: gridDelegate.GridView.isCurrentItem
-                                ? url
+                                ? applicationSettings.foldername + "/" + fileName
                                 : ""
                         visible: true
                     }
@@ -152,7 +153,7 @@ Package {
 
             onStateChanged: {
                 if(state == 'fullscreen' && gridDelegate.GridView.isCurrentItem)
-                    console.log("State changed to 'fullscreen' for '"+filename+"' record")
+                    console.log("State changed to 'fullscreen' for '"+fileName+"' record")
             }
 
             transitions: [

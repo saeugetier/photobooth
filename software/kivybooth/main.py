@@ -17,11 +17,9 @@ from kivy.core.camera import camera_gphoto2
 
 from kivy.config import Config
 
-
 import time
 from glob import glob
 from random import randint
-
 
 kvdemo = '''
 #:import get_color_from_hex kivy.utils.get_color_from_hex
@@ -110,9 +108,6 @@ kvdemo = '''
         on_press: root.capture()
 '''
 
-
-
-
 if __name__ == '__main__':
 
     class Picture(Scatter):
@@ -126,13 +121,13 @@ if __name__ == '__main__':
 
         source = StringProperty(None)
 
-
     class MyCameraView(BoxLayout, AndroidTabsBase):
         def capture(self):
             camera = self.ids['camera']
             timestr = time.strftime("%Y%m%d_%H%M%S")
-            if isinstance(camera, camera_gphoto2.CameraGPhoto2):
-                camera.takePhoto(config.config.get("Camera","picture_folder"))
+            if isinstance(camera._camera, camera_gphoto2.CameraGPhoto2):
+                print("gphoto2")
+                camera._camera.takePhoto(config.config.get("Camera","picture_folder"))
             else:
                 camera.export_to_png(config.config.get("Camera","picture_folder") + "/IMG_{}.png".format(timestr))
             print(camera._camera)

@@ -73,10 +73,14 @@ Package {
             Image {
                 id: originalImage
 
+                sourceSize.width: 256  //save memory
+                sourceSize.height: 256
+
+                asynchronous: true
                 anchors.fill: photoWrapper
                 antialiasing: true
                 source: applicationSettings.foldername + "/" + fileName
-                cache: false
+
                 fillMode: Image.PreserveAspectFit
             }
             ProgressBar {
@@ -88,6 +92,10 @@ Package {
             Image {
                 id: hqImage
 
+                sourceSize.width: 1024
+                sourceSize.height: 1024
+
+                asynchronous: true
                 anchors.fill: photoWrapper
                 antialiasing: true
                 source: ""

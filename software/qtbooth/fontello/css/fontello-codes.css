@@ -30,6 +30,9 @@
 .icon-down-big:before { content: '\e81c'; } /* '' */
 .icon-ok-circled2:before { content: '\e81d'; } /* '' */
 .icon-ok:before { content: '\e81e'; } /* '' */
+.icon-cancel-circled:before { content: '\e81f'; } /* '' */
+.icon-star:before { content: '\e820'; } /* '' */
+.icon-star-empty:before { content: '\e821'; } /* '' */
 .icon-resize-full-alt:before { content: '\f0b2'; } /* '' */
 .icon-sliders:before { content: '\f1de'; } /* '' */
 .icon-toggle-off:before { content: '\f204'; } /* '' */

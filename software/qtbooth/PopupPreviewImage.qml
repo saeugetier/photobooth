@@ -9,6 +9,7 @@ PopupPreviewImageForm {
     imageDeleteButton.onClicked: {
         imageForm.close()
         imageForm.imageRejected(currentFileName)
+        currentFileName = ""
     }
 
     imageSaveButton.onClicked: {

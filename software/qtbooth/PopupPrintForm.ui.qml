@@ -2,31 +2,58 @@ import QtQuick 2.4
 import QtQuick.Controls 2.1
 
 Popup {
-    property alias previewImage: popupImage
+    property alias fullScaleImage: fullScaleImage
+    property alias collageImage : collageImage
     property alias printBusyIndicator: busyIndicator
+    property alias states: printTypeProxy.states
+    property alias state: printTypeProxy.state
+    property alias busyIndicator: busyIndicator
 
-    Image {
+    property alias printButton: printButton
+    property alias cancelButton: cancelButton
+
+    Item
+    {
         anchors.fill: parent
-        id: popupImage
+
+        id: printTypeProxy
+        Image {
+            anchors.fill: parent
+            id: fullScaleImage
+            source: fileNameFullScale
+            asynchronous: true
+            sourceSize.height: 1024
+            sourceSize.width: 1024
+        }
+
+        CollageCanvas
+        {
+            id: collageImage
+            anchors.fill: parent
+            onPainted:
+            {
+                    busyIndicator.running = false
+            }
+        }
     }
 
     ToolButton {
-        id: deleteButton
+        id: printButton
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: 50
         anchors.bottom: parent.bottom
         text: "\uE802" // icon-print
         font.family: "fontello"
         font.pointSize: 72
-        enabled: false
+        enabled: true
     }
 
     ToolButton {
-        id: cameraButton
+        id: cancelButton
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -50
         anchors.bottom: parent.bottom
-        text: "\uE801" // icon-camera
+        text: "\uE81F" // icon-camera
         font.family: "fontello"
         font.pointSize: 72
         enabled: true

@@ -48,6 +48,7 @@ Dialog {
             Switch
             {
                 id: printFullscale
+                checked: false
             }
 
             Label

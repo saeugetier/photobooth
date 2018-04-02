@@ -5,6 +5,8 @@ import Qt.labs.platform 1.0
 import QtMultimedia 5.9
 
 PageCameraForm {
+    property var locale: Qt.locale()
+
     cameraSettingsButton.onClicked:
     {
         settingsPopup.open()
@@ -17,7 +19,7 @@ PageCameraForm {
 
     cameraCountdown.onTimeout:
     {
-        camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict "+ new Date().toLocaleString(Locale.NarrowFormat) + ".jpg")
+        camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg")
     }
 
     camera.imageCapture.onImageCaptured:
@@ -69,7 +71,7 @@ PageCameraForm {
         onImageAccepted:
         {
             if(settingsPopup.settingPrintEnable == true)
-                printPopup.open()
+                printPopup.newPhoto("file://" + previewPopup.currentFileName)
             console.log("Accepted")
         }
 
@@ -89,6 +91,15 @@ PageCameraForm {
         focus: true
         closePolicy: Popup.CloseOnEscape
 
+        state: settingsPopup.settingPrintFullscale ? "fullscale" : "collage"
+    }
+
+    Button
+    {
+        text: "test"
+        onClicked: {
+            printPopup.newPhoto("test")
+        }
     }
 
     PopupCameraSettings
@@ -102,9 +113,10 @@ PageCameraForm {
         focus: true
         closePolicy: Popup.CloseOnEscape
 
-        onChangedPrintFullscreen:
+        onClosed:
         {
-
+            if(printPopup.state != settingPrintFullscale ? "fullscale" : "collage")
+                printPopup.setCollageType(settingPrintFullscale ? "fullscale" : "collage")
         }
     }
 }

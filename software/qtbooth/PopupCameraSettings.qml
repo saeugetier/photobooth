@@ -3,10 +3,9 @@ import QtQuick.Controls 2.2
 import Qt.labs.settings 1.0
 
 PopupCameraSettingsForm {
+    property alias cameraPrintSettings: settings
     id: dialog
     standardButtons: Dialog.Ok | Dialog.Cancel
-
-    signal changedPrintFullscreen()
 
     // sync settings and UI
     settingPrintEnable: settings.printEnable
@@ -42,10 +41,5 @@ PopupCameraSettingsForm {
         property bool flashEnable: true
         property real brightness: 0.1
         property int countdown: 3
-
-        onPrintEnableChanged:
-        {
-           dialog.changedPrintFullscreen()
-        }
     }
 }

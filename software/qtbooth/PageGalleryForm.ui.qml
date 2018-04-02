@@ -22,6 +22,7 @@ Item
                     folder: applicationSettings.foldername
                     nameFilters: ["*.jpg"]
                     showDirs: false
+                    sortReversed: true //show newest photo first
             }
 
             DelegateModel {

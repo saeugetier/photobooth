@@ -18,7 +18,7 @@ Canvas
 
             for(var i=0; i < images.count; i++)
             {
-                ctx.drawImage(images.get(i).fileName, 50*i + 50, 50*i + 50, 100, 100)
+                ctx.drawImage(images.get(i).fileName,  canvasSize.width * (0.1 + (0.5 * (i%2))), canvasSize.height * (0.1 + (0.5 * (i/2))), canvasSize.width * 0.4, canvasSize.height *0.4)
                 console.log("drawed images: " + images.get(i).fileName)
             }
         }

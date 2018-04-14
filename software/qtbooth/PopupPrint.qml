@@ -54,6 +54,11 @@ PopupPrintForm {
             helper.printImage(filename)
             printForm.close()
         }
+        else
+        {
+            helper.printImage(fileNameFullScale)
+            printForm.close()
+        }
     }
 
     cancelButton.onClicked:

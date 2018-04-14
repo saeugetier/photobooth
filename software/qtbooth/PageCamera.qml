@@ -94,14 +94,6 @@ PageCameraForm {
         state: settingsPopup.settingPrintFullscale ? "fullscale" : "collage"
     }
 
-    Button
-    {
-        text: "test"
-        onClicked: {
-            printPopup.newPhoto("test")
-        }
-    }
-
     PopupCameraSettings
     {
         id: settingsPopup

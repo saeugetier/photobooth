@@ -1,4 +1,4 @@
-QT += qml quick multimedia
+QT += qml quick multimedia printsupport
 
 CONFIG += c++11
 
@@ -21,3 +21,5 @@ DISTFILES +=
 
 HEADERS += \
     myhelper.h
+
+INCLUDEPATH += /usr/include/ImageMagick-6 /usr/include/x86_64-linux-gnu/ImageMagick-6

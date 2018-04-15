@@ -12,6 +12,7 @@ public:
 public:
     Q_INVOKABLE void removeFile(const QString &filename);
     Q_INVOKABLE void printImage(const QString &filename);
+    Q_INVOKABLE QString getImagePath();
 };
 
 #endif // MYHELPER_H

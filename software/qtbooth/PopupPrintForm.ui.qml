@@ -1,5 +1,5 @@
 import QtQuick 2.5
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.0
 
 Popup {
     property alias fullScaleImage: fullScaleImage

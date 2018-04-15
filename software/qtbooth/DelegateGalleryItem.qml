@@ -1,5 +1,5 @@
 import QtQuick 2.5
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.1
 import "scripts/script.js" as Script
 import "styles" as Style
 
@@ -87,7 +87,7 @@ Package {
                 anchors.centerIn: parent
                 visible: hqImage.status == Image.Loading
                 value: hqImage.progress
-                style: Style.RoundProgressBarStyle {}
+                //style: Style.RoundProgressBarStyle {}
             }
             Image {
                 id: hqImage

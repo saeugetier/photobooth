@@ -1,6 +1,6 @@
-import QtQuick 2.4
+import QtQuick 2.5
 import QtMultimedia 5.5
-import QtQuick.Controls 2.1
+import QtQuick.Controls 2.0
 
 Item {
     property alias cameraShutterButton: shutterButton

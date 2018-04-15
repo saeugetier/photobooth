@@ -101,14 +101,14 @@ PageCameraForm {
         y: 0
         width: parent.width
         height: parent.height
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape
+        //modal: true
+        //focus: true
+        //closePolicy: Popup.CloseOnEscape
 
-        onClosed:
+        /*onClosed:
         {
             if(printPopup.state != settingPrintFullscale ? "fullscale" : "collage")
                 printPopup.setCollageType(settingPrintFullscale ? "fullscale" : "collage")
-        }
+        }*/
     }
 }

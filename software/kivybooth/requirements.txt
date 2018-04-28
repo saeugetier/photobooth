@@ -1,5 +1,0 @@
-## GPhoto2 native libraries and header packages must be installed
-gphoto2
-##fakeRPiGPIO -- for local machine
-##RPi.GPIO -- for raspberry
-opencv-python

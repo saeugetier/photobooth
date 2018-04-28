@@ -1,7 +1,6 @@
 #include "myhelper.h"
 #include <QFile>
 #include <QtPrintSupport/QPrinter>
-#include <Magick++.h>
 #include <QImage>
 #include <QPainter>
 #include <QStandardPaths>
@@ -34,4 +33,3 @@ QString MyHelper::getImagePath()
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
-

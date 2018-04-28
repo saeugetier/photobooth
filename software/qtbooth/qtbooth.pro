@@ -1,9 +1,10 @@
-QT += qml quick multimedia printsupport
+QT += qml quick multimedia printsupport concurrent
 
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    myhelper.cpp
+    myhelper.cpp \
+    photomontage.cpp
 
 RESOURCES += qml.qrc
 
@@ -15,11 +16,12 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-LIBS += -lcups
+LIBS += -lMagick++-6.Q16 -lMagickWand-6.Q16 -lMagickCore-6.Q16
 
 DISTFILES +=
 
 HEADERS += \
-    myhelper.h
+    myhelper.h \
+    photomontage.h
 
-INCLUDEPATH += /usr/include/ImageMagick-6 /usr/include/x86_64-linux-gnu/ImageMagick-6
+INCLUDEPATH += /usr/include/ImageMagick-6

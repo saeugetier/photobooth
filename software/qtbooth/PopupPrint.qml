@@ -33,7 +33,7 @@ PopupPrintForm {
         {
             collageImage.addPhoto(filename)
 
-            if(collageImage.photoCount >= 4)
+            if(collageImage.files.length >= 4)
             {
                 printForm.open()
             }
@@ -49,8 +49,6 @@ PopupPrintForm {
     {
         if(state == "collage")
         {
-            var filename = applicationSettings.foldername + "/collage/Collage_" + new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg"
-            collageImage.save(filename)
             helper.printImage(filename)
             printForm.close()
         }

@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.1
-import QtQuick.Dialogs 1.2
+import Qt.labs.platform 1.0
 import QtMultimedia 5.9
 
 PageCameraForm {
@@ -72,7 +72,7 @@ PageCameraForm {
         {
             if(settingsPopup.settingPrintEnable == true)
                 printPopup.newPhoto("file://" + previewPopup.currentFileName)
-            console.log("Accepted")
+            console.log("Accepted: " + previewPopup.currentFileName)
         }
 
         onImageRejected:
@@ -92,6 +92,19 @@ PageCameraForm {
         closePolicy: Popup.CloseOnEscape
 
         state: settingsPopup.settingPrintFullscale ? "fullscale" : "collage"
+    }
+
+    Button
+    {
+        id: printTest
+        text: "Test"
+        onClicked:
+        {
+            printPopup.newPhoto(gallery.foldermodel.get(0,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(1,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(2,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(3,"fileURL"))
+        }
     }
 
     PopupCameraSettings

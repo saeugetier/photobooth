@@ -7,6 +7,7 @@ import QtQml.Models 2.2
 
 Item
 {
+    property alias foldermodel: folderModel
 
     Rectangle {
             id: root

@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QQmlContext>
 #include "myhelper.h"
+#include "photomontage.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,9 @@ int main(int argc, char *argv[])
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/fontello/font/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
+
+    qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
+    qRegisterMetaType<QString>("QString");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

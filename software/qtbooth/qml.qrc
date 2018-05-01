@@ -19,6 +19,6 @@
         <file>images/box-shadow.png</file>
         <file>scripts/script.js</file>
         <file>styles/RoundProgressBarStyle.qml</file>
-        <file>CollageCanvas.qml</file>
+        <file>CollageImage.qml</file>
     </qresource>
 </RCC>

@@ -26,11 +26,12 @@ Popup {
             sourceSize.width: 1024
         }
 
-        CollageCanvas
+        CollageImage
         {
             id: collageImage
             anchors.fill: parent
-            onPainted:
+
+            onSourceChanged:
             {
                     busyIndicator.running = false
             }

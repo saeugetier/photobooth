@@ -21,7 +21,7 @@ Item
             FolderListModel {
                     id: folderModel
                     folder: applicationSettings.foldername
-                    nameFilters: ["*.jpg"]
+                    nameFilters: ["*.jpg","*.JPG"]
                     showDirs: false
                     sortReversed: true //show newest photo first
             }

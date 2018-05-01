@@ -8,6 +8,7 @@ import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     visibility: "FullScreen"
     width: 640

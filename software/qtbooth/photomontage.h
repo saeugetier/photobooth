@@ -8,25 +8,24 @@
 class PhotoMontage : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<QString> filenames READ filenames)
+    Q_PROPERTY(QStringList filenames READ filenames NOTIFY filenamesChanged)
 public:
     explicit PhotoMontage(QObject *parent = nullptr);
 
-    QQmlListProperty<QString> filenames();
+    QStringList filenames();
 
     Q_INVOKABLE bool generate(QString outputFilename);
+    Q_INVOKABLE int addFile(QString file);
+    Q_INVOKABLE void clearFiles();
 signals:
     void montageReady(QString filename);
+    void filenamesChanged(const QStringList &list);
 public slots:
 
 protected slots:
     void processed();
 
 protected:
-    static void append_filename(QQmlListProperty<QString> *list, QString* filename);
-    static void clear_filenames(QQmlListProperty<QString> *list);
-    static int count_filenames(QQmlListProperty<QString> *list);
-
     QStringList m_filenames;
     QFutureWatcher<QString> m_future;
 };

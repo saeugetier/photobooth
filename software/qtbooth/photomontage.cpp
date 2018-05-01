@@ -3,6 +3,7 @@
 #include <functional>
 #include <Magick++.h>
 #include <QtConcurrent/QtConcurrent>
+#include <QDebug>
 
 PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this)
 {
@@ -10,46 +11,76 @@ PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this)
 }
 
 
-QQmlListProperty<QString> PhotoMontage::filenames()
+QStringList PhotoMontage::filenames()
 {
-    return QQmlListProperty<QString>(this, 0, &PhotoMontage::append_filename, &PhotoMontage::count_filenames, 0, &PhotoMontage::clear_filenames);
+    return m_filenames;
+}
+
+int PhotoMontage::addFile(QString file)
+{
+   m_filenames.append(file);
+   return m_filenames.count();
+}
+
+void PhotoMontage::clearFiles()
+{
+    m_filenames.clear();
 }
 
 bool PhotoMontage::generate(QString outputFilename)
 {
+    qDebug() << "Generating collage with filename: " << outputFilename;
     if(m_filenames.count() != 4)
         return false;
 
     const QStringList filenames = m_filenames;
-
-
-
 
     std::function<QString(const QString&)> process = [filenames](const QString &imageFileName) {
 
         std::list<Magick::Image> sourceImageList;
         Magick::Image image;
 
-        Magick::Montage montageSettings;
+        Magick::MontageFramed montageSettings;
 
         montageSettings.backgroundColor(Magick::Color("#FFFFFF"));
         montageSettings.tile("2x2");
-        montageSettings.geometry(Magick::Geometry("792x1224>"));
+        //montageSettings.geometry(Magick::Geometry("792x1224>"));
+        montageSettings.geometry(Magick::Geometry("1224x792>"));
         montageSettings.shadow(true);
+        montageSettings.borderWidth(20);
 
         for(auto iter = filenames.begin(); iter != filenames.end(); iter++)
         {
-            image.read((*iter).toStdString());
+            if(iter->contains("file://"))
+            {
+                qDebug() << "Loading file: " << iter->right(iter->length() - QString("file://").length());
+                image.read(iter->right(iter->length() - QString("file://").length()).toStdString());
+            }
+            else
+            {
+                qDebug() << "Loading file: " << *iter;
+                image.read(iter->toStdString());
+            }
             sourceImageList.push_back(image);
         }
 
         std::list<Magick::Image> montagelist;
         Magick::montageImages( &montagelist, sourceImageList.begin(), sourceImageList.end(), montageSettings);
 
-        Magick::writeImages(montagelist.begin(), montagelist.end(), imageFileName.toStdString());
+        if(imageFileName.contains("file://"))
+        {
+            Magick::writeImages(montagelist.begin(), montagelist.end(), (imageFileName.right(imageFileName.length() - QString("file://").length())).toStdString());
+        }
+        else
+        {
+            Magick::writeImages(montagelist.begin(), montagelist.end(), imageFileName.toStdString());
+        }
 
-            return imageFileName;
-        };
+
+
+
+        return imageFileName;
+    };
 
     QStringList files;
     files.append(outputFilename);
@@ -58,36 +89,10 @@ bool PhotoMontage::generate(QString outputFilename)
     return true;
 }
 
-void PhotoMontage::append_filename(QQmlListProperty<QString> *list, QString* filename)
-{
-    PhotoMontage *montage = qobject_cast<PhotoMontage *>(list->object);
-    if (montage) {
-        montage->m_filenames.append(*filename);
-        if(montage->m_filenames.count() > 4)  //do not use more than 4 images...
-            montage->m_filenames.pop_front();
-    }
-}
-
-
-void PhotoMontage::clear_filenames(QQmlListProperty<QString> *list)
-{
-    PhotoMontage *montage = qobject_cast<PhotoMontage *>(list->object);
-    if (montage) {
-        montage->m_filenames.clear();
-    }
-}
-
-int PhotoMontage::count_filenames(QQmlListProperty<QString> *list)
-{
-    PhotoMontage *montage = qobject_cast<PhotoMontage *>(list->object);
-    if (montage) {
-        return montage->m_filenames.count();
-    }
-
-    return 0;
-}
 
 void PhotoMontage::processed()
 {
     emit montageReady(m_future.result());
 }
+
+

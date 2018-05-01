@@ -100,12 +100,23 @@ PageCameraForm {
         text: "Test"
         onClicked:
         {
-            printPopup.newPhoto(gallery.foldermodel.get(0,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(1,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(2,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(3,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -1,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -2,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -3,"fileURL"))
+            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -4,"fileURL"))
         }
     }
+
+    /*Button
+    {
+        id: closeTest
+        text: "close"
+        anchors.centerIn: parent
+        onClicked:
+        {
+            mainWindow.close()
+        }
+    }*/
 
     PopupCameraSettings
     {

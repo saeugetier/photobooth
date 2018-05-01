@@ -29,13 +29,17 @@ PopupPrintForm {
 
     function newPhoto(filename)
     {
+
         if(state == "collage")
         {
             collageImage.addPhoto(filename)
 
-            if(collageImage.files.length >= 4)
+            var count = collageImage.files.length
+
+            if(count >= 4)
             {
                 printForm.open()
+                collageImage.showMontage()
             }
         }
         else
@@ -49,7 +53,7 @@ PopupPrintForm {
     {
         if(state == "collage")
         {
-            helper.printImage(filename)
+            helper.printImage(collageImage.collageFileName)
             printForm.close()
         }
         else

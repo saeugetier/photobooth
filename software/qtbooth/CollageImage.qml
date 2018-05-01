@@ -3,7 +3,14 @@ import Montage 1.0
 
 Image
 {
+    id: collage
+    anchors.fill: parent
+
+    sourceSize.width: 1024
+    sourceSize.height: 1024
+
     property alias files: montage.filenames
+    property string collageFileName: ""
 
     PhotoMontage
     {
@@ -11,11 +18,9 @@ Image
         onMontageReady:
         {
             collage.source = filename
+            collageFileName = filename
         }
     }
-
-    id: collage
-    anchors.fill: parent
 
     function showMontage()
     {
@@ -23,16 +28,16 @@ Image
         montage.generate(filename)
     }
 
-
-
     function addPhoto(fileName)
     {
-        console.log("Canvas load image " + fileName );
-        montage.filenames.append(fileName)
+        console.log("Added image " + fileName + " to montage" );
+        montage.addFile(fileName)
     }
 
     function clearPhotos()
     {
-        montage.filenames.clear()
+        montage.clearFiles()
+        collage.source = ""
+        collageFileName = ""
     }
 }

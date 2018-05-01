@@ -24,7 +24,6 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
-    qRegisterMetaType<QString>("QString");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

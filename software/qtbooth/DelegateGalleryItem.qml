@@ -77,6 +77,7 @@ Package {
                 sourceSize.height: 256
 
                 asynchronous: true
+                cache: false
                 anchors.fill: photoWrapper
                 antialiasing: true
                 source: applicationSettings.foldername + "/" + fileName
@@ -96,11 +97,11 @@ Package {
                 sourceSize.height: 1024
 
                 asynchronous: true
+                cache: false
                 anchors.fill: photoWrapper
                 antialiasing: true
                 source: ""
                 visible: false
-                cache: false
                 fillMode: Image.PreserveAspectFit
 
                 onSourceChanged: {

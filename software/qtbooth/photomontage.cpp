@@ -75,10 +75,6 @@ bool PhotoMontage::generate(QString outputFilename)
         {
             Magick::writeImages(montagelist.begin(), montagelist.end(), imageFileName.toStdString());
         }
-
-
-
-
         return imageFileName;
     };
 
@@ -89,10 +85,7 @@ bool PhotoMontage::generate(QString outputFilename)
     return true;
 }
 
-
 void PhotoMontage::processed()
 {
     emit montageReady(m_future.result());
 }
-
-

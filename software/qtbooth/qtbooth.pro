@@ -4,7 +4,8 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     myhelper.cpp \
-    photomontage.cpp
+    photomontage.cpp \
+    ledflash.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,6 +23,7 @@ DISTFILES +=
 
 HEADERS += \
     myhelper.h \
-    photomontage.h
+    photomontage.h \
+    ledflash.h
 
 INCLUDEPATH += /usr/include/ImageMagick-6

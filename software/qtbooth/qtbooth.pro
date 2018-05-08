@@ -17,7 +17,8 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-LIBS += -lMagick++-6.Q16 -lMagickWand-6.Q16 -lMagickCore-6.Q16
+CONFIG += link_pkgconfig
+PKGCONFIG += Magick++ MagickCore
 
 DISTFILES +=
 

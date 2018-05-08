@@ -18,7 +18,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 CONFIG += link_pkgconfig
-PKGCONFIG += Magick++ MagickCore
+PKGCONFIG += Magick++ MagickCore MagickWand
 
 DISTFILES +=
 
@@ -27,4 +27,4 @@ HEADERS += \
     photomontage.h \
     ledflash.h
 
-INCLUDEPATH += /usr/include/ImageMagick-6
+INCLUDEPATH += /usr/include/ImageMagick

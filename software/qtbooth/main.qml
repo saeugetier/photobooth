@@ -18,6 +18,16 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Blue
 
+    Shortcut {
+        sequence: StandardKey.Quit
+        context: Qt.ApplicationShortcut
+        onActivated:
+        {
+            console.log("Catched application quit...")
+            Qt.quit()
+        }
+    }
+
     SwipeView {
         id: swipeView
         anchors.fill: parent

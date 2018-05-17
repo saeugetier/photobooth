@@ -1,7 +1,7 @@
 import QtQuick 2.5
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Dialogs 1.2
+
 
 Dialog {
     property alias settingPrintEnable: printEnable.checked
@@ -9,6 +9,7 @@ Dialog {
     property alias settingFlashEnable: flashEnable.checked
     property alias settingBrightness: brightnessSlider.value
     property alias settingCountdown: countdownSpinBox.value
+    property alias quitButton: quitButton
 
     GridLayout {
         id: grid
@@ -100,6 +101,12 @@ Dialog {
             from: 3
             to: 10
             value: 3
+        }
+
+        Button
+        {
+           id: quitButton
+           text: "Close program"
         }
     }
 

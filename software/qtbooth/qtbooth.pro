@@ -2,6 +2,12 @@ QT += qml quick multimedia printsupport concurrent
 
 CONFIG += c++11
 
+linux {
+    contains(QMAKE_HOST.arch, arm.*):{
+        DEFINES += WIRINGPI
+    }
+}
+
 SOURCES += main.cpp \
     myhelper.cpp \
     photomontage.cpp \

@@ -33,6 +33,11 @@ PopupCameraSettingsForm {
         console.log("Settings rejected")
     }
 
+    quitButton.onClicked:
+    {
+        mainWindow.close()
+    }
+
     Settings //settings with default values
     {
         id: settings

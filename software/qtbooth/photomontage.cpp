@@ -61,6 +61,7 @@ bool PhotoMontage::generate(QString outputFilename)
                 qDebug() << "Loading file: " << *iter;
                 image.read(iter->toStdString());
             }
+            image.resize("25x25%");
             sourceImageList.push_back(image);
         }
 

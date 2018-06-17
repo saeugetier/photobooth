@@ -13,20 +13,20 @@
                     |      Raspi       |<------|        via v4l2       |          -.-.-,~ .   
                     |    Application   |       |                       |          )     (     
                     |                  |       '-----------------------'          |_    |     
-                    |                  |                                          /(_)---`\   
-                    |                  |                                         (_      -'   
+                    |     based on     |                                          /(_)---`\   
+                    |     QT/Quick     |                                         (_      -'   
                     |                  |           .-------------.                ]      |    
                     |                  |           | Touchscreen |                |    _,')   
                     |                  |  USB/VGA  |             |                [_,-'_-'(   
                     |                  |---------->|             |               (_).-'    \  
                     |                  |           |             |               / /        \ 
                     '------------------'           |             |
-                             |       |             '-------------'
-                         USB |       |
-                             |       |
-                             v       |                         .------------------------.
-                          Storage    '------------------------>| Wii Nunchuck (optional)|
-                         _.-----._                             '------------------------'
+                             |                     '-------------'
+                         USB |
+                             |
+                             v 
+                          Storage
+                         _.-----._   
                        .-         -.
                        |-_       _-|
                        |  ~-----~  |
@@ -36,13 +36,10 @@
                           
 # Technology
 ## Software
-Framework: Python --> Kivy - https://kivy.org
+Framework: Qt 5.9 or higher - https://qt.io
 
 Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
-
-Wii Nunchuck control: https://computers.tutsplus.com/tutorials/using-a-wii-nunchuck-to-control-python-turtle--cms-20984
-
-Software PWM for LED driver: https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
+Qt GPhoto2 plugin: https://github.com/dept2/qtmultimedia-gphoto
 
 ## Hardware
 Camera: Canon EOS 450D
@@ -57,8 +54,3 @@ Wii Nunchuck: https://www.aliexpress.com/item/Nunchuck-Nunchuk-Video-Game-Contro
 
 Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://festi.info/boxes.py/
 
-
-
-## Ideas:
-
-https://gist.github.com/saeugetier/641647d13465b1b412e531fb1147c462

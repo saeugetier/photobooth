@@ -1,6 +1,6 @@
 QT += qml quick multimedia printsupport concurrent
 
-CONFIG += c++11
+CONFIG += c++14
 
 linux {
     contains(QMAKE_HOST.arch, arm.*):{

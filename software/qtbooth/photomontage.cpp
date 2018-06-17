@@ -3,9 +3,17 @@
 #include <functional>
 #include <Magick++.h>
 #include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentMap>
+#include <QtConcurrent/QtConcurrentFilter>
 #include <QDebug>
+#include <QPainter>
+#include <QImage>
+#include <QPair>
 
-PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this)
+//https://stackoverflow.com/questions/6477958/qt-is-there-any-class-for-combine-few-images-into-one
+//https://stackoverflow.com/questions/22664217/making-my-own-photo-mosaic-app-with-qt-using-c
+
+PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this), mMontageImage(NULL)
 {
     connect(&m_future, &QFutureWatcher<QString>::finished, this, &PhotoMontage::processed);
 }
@@ -28,6 +36,44 @@ void PhotoMontage::clearFiles()
 }
 
 bool PhotoMontage::generate(QString outputFilename)
+{
+    qDebug() << "Generating collage with filename: " << outputFilename;
+    qDebug() << "Input files used: " << m_filenames;
+
+    QList<QPair<int, QString>> file_list;
+
+    for(int i= 0; i < m_filenames.count(); i++ )
+    {
+        file_list.append(QPair<int, QString>(i, m_filenames[i]));
+    }
+
+    if(mMontageImage)
+        delete mMontageImage;
+
+    mMontageImage = new QImage(QSize(1000,1000), QImage::Format_RGB888);
+
+    auto load = [] (const QPair<int, QString> &file) -> QPair<int, QImage> { return QPair<int, QImage>(); };
+
+    auto mergeCollage = [] (QImage& collage, QPair<int, QImage> image) -> void
+    {
+        QPainter painter(&collage);
+
+        painter.setPen(QPen(Qt::green));
+        painter.setFont(QFont("Times", 10, QFont::Bold));
+        painter.drawLine(collage.rect().bottomLeft().x(), collage.rect().bottomLeft().y()-10,
+                   collage.rect().bottomRight().x(), collage.rect().bottomRight().y()-10);  //works!
+
+        painter.drawText(collage.rect(), Qt::AlignCenter, "Help");
+
+        qDebug() << "Processing: " << image.first;
+    };
+
+    QFuture<QImage> future = QtConcurrent::mappedReduced(file_list, load, mergeCollage);
+
+    m_future.setFuture(future);
+}
+
+/*bool PhotoMontage::generate(QString outputFilename)
 {
     qDebug() << "Generating collage with filename: " << outputFilename;
     if(m_filenames.count() != 4)
@@ -84,9 +130,9 @@ bool PhotoMontage::generate(QString outputFilename)
     m_future.setFuture(QtConcurrent::mapped(files, process));
 
     return true;
-}
+}*/
 
 void PhotoMontage::processed()
 {
-    emit montageReady(m_future.result());
+    emit montageReady("");
 }

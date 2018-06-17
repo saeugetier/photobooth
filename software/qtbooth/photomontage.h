@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQmlListProperty>
 #include <QFutureWatcher>
+#include <QImage>
 
 class PhotoMontage : public QObject
 {
@@ -27,7 +28,8 @@ protected slots:
 
 protected:
     QStringList m_filenames;
-    QFutureWatcher<QString> m_future;
+    QFutureWatcher<void> m_future;
+    QImage* mMontageImage;
 };
 
 #endif // PHOTOMONTAGE_H

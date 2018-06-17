@@ -20,7 +20,7 @@ void MyHelper::removeFile(const QString &filename) {
 void MyHelper::printImage(const QString &filename)
 {
     qDebug() << "File printed: " << filename;
-    QPrinter printer;
+    QPrinter printer(QPrinter::HighResolution);
     printer.setColorMode(QPrinter::Color);
     printer.setFullPage(true);
     printer.setOrientation(QPrinter::Landscape);

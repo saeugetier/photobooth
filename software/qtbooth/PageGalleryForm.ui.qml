@@ -39,6 +39,8 @@ Item
                 width: root.width; height: root.height - progressBar.height
                 model: visualModel.parts.grid
                 interactive: true
+                displayMarginBeginning:  10000
+                displayMarginEnd: 10000
                 /*Rectangle {
                     anchors.centerIn: parent
                     width: parent.width-10; height: parent.height-10

@@ -77,7 +77,7 @@ Package {
                 sourceSize.height: 256
 
                 asynchronous: true
-                cache: false
+                cache: true
                 anchors.fill: photoWrapper
                 antialiasing: true
                 source: applicationSettings.foldername + "/" + fileName

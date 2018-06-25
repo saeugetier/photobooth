@@ -17,6 +17,8 @@ Image
         id: montage
         onMontageReady:
         {
+            var filename = applicationSettings.foldername + "/collage/Collage_" + new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg"
+            montage.saveResult(filename)
             collage.source = filename
             collageFileName = filename
         }
@@ -24,8 +26,7 @@ Image
 
     function showMontage()
     {
-        var filename = applicationSettings.foldername + "/collage/Collage_" + new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg"
-        montage.generate(filename)
+        montage.generate()
     }
 
     function addPhoto(fileName)

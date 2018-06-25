@@ -29,8 +29,7 @@ int main(int argc, char *argv[])
     engine.addImportPath("qrc:///");
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
-    MyHelper helper;
-    engine.rootContext()->setContextProperty("helper", &helper);
+    engine.rootContext()->setContextProperty("helper", MyHelper::instance());
 
     int result = app.exec();
 

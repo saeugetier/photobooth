@@ -23,14 +23,16 @@ QML_IMPORT_PATH =
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
 
-CONFIG += link_pkgconfig
-PKGCONFIG += Magick++ MagickCore MagickWand
+#CONFIG += link_pkgconfig
+#PKGCONFIG += Magick++ MagickCore MagickWand
 
 DISTFILES +=
 
 HEADERS += \
     myhelper.h \
     photomontage.h \
-    ledflash.h
+    ledflash.h \
+    call_once.h \
+    singleton.h
 
-INCLUDEPATH += /usr/include/ImageMagick
+#INCLUDEPATH += /usr/include/ImageMagick

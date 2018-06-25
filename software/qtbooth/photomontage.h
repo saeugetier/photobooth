@@ -6,6 +6,13 @@
 #include <QFutureWatcher>
 #include <QImage>
 
+class CollageImage : public QImage
+{
+public:
+    CollageImage();
+    void paintImage(const QImage &image, QRectF position);
+};
+
 class PhotoMontage : public QObject
 {
     Q_OBJECT
@@ -15,21 +22,21 @@ public:
 
     QStringList filenames();
 
-    Q_INVOKABLE bool generate(QString outputFilename);
+    Q_INVOKABLE bool generate();
     Q_INVOKABLE int addFile(QString file);
     Q_INVOKABLE void clearFiles();
+    Q_INVOKABLE void saveResult(QString filename);
+
+    static const int COUNT_PHOTOS = 4;
 signals:
-    void montageReady(QString filename);
+    void montageReady();
     void filenamesChanged(const QStringList &list);
 public slots:
 
-protected slots:
-    void processed();
 
 protected:
     QStringList m_filenames;
-    QFutureWatcher<void> m_future;
-    QImage* mMontageImage;
+    QFutureWatcher<CollageImage> m_future;
 };
 
 #endif // PHOTOMONTAGE_H

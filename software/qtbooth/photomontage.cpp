@@ -10,12 +10,83 @@
 #include <QImage>
 #include <QPair>
 
-//https://stackoverflow.com/questions/6477958/qt-is-there-any-class-for-combine-few-images-into-one
-//https://stackoverflow.com/questions/22664217/making-my-own-photo-mosaic-app-with-qt-using-c
+#include "myhelper.h"
 
-PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this), mMontageImage(NULL)
+typedef QPair<int,QString> indexedString;
+typedef QPair<int, QImage> indexedImage;
+
+CollageImage::CollageImage() : QImage(MyHelper::instance()->getPrintSize(), QImage::Format_RGB888)
 {
-    connect(&m_future, &QFutureWatcher<QString>::finished, this, &PhotoMontage::processed);
+    this->fill(Qt::GlobalColor::white);
+}
+
+void CollageImage::paintImage(const QImage &image, QRectF position)
+{
+    qDebug() << "Placing image at position " << position << " Data size " << image.byteCount();
+
+    QPainter painter(this);
+
+    QRect pos;
+
+    pos.setTop(position.top() * this->size().height());
+    pos.setLeft(position.left() * this->size().width());
+    pos.setBottom(position.bottom() * this->size().height());
+    pos.setRight(position.right() * this->size().width());
+
+    painter.drawImage(pos, image);
+}
+
+class ImageLoader
+{
+public:
+    typedef indexedImage result_type;
+
+    indexedImage operator()(const indexedString &filename)
+    {
+        indexedImage result;
+        result.first = filename.first;
+        result.second.load(filename.second.right(filename.second.length() - QString("file://").length()));
+
+        while(result.second.width() > 1800 || result.second.height() > 1800)  //reduce memory
+            result.second = result.second.scaled(QSize(result.second.width() / 2, result.second.height() / 2));
+
+        return result;
+    }
+};
+
+class CollageReduce
+{
+public:
+    CollageReduce(int elements) : m_cElements(elements), m_cColumns(ceil(sqrt(elements)))
+    {
+
+    }
+
+    void operator()(CollageImage &collage, const indexedImage &source)
+    {
+        //calculate row and column
+        int index = source.first;
+        int column = index % m_cColumns;
+        int row = index / m_cColumns;
+
+        //calculate margins
+        float column_size = (1.0f / m_cColumns) - (2 * m_cBorderMargin * (m_cColumns -  1));
+        float column_pos = (1.0f / m_cColumns) * column + m_cBorderMargin;
+        float row_pos = (1.0f / m_cColumns) * row + m_cBorderMargin;
+
+        QRectF pos(column_pos, row_pos, /*column_pos +*/ column_size, /*row_pos +*/ column_size);
+        collage.paintImage(source.second, pos);
+    }
+protected:
+    const int m_cElements;
+    const float m_cBorderMargin = 0.02f;
+    const int m_cColumns;
+};
+
+
+PhotoMontage::PhotoMontage(QObject *parent) : QObject(parent), m_future(this)//, mMontageImage(NULL)
+{
+    connect(&m_future, &QFutureWatcher<QString>::finished, this, &PhotoMontage::montageReady);
 }
 
 
@@ -35,9 +106,9 @@ void PhotoMontage::clearFiles()
     m_filenames.clear();
 }
 
-bool PhotoMontage::generate(QString outputFilename)
+bool PhotoMontage::generate()
 {
-    qDebug() << "Generating collage with filename: " << outputFilename;
+    qDebug() << "Generating collage";
     qDebug() << "Input files used: " << m_filenames;
 
     QList<QPair<int, QString>> file_list;
@@ -47,92 +118,19 @@ bool PhotoMontage::generate(QString outputFilename)
         file_list.append(QPair<int, QString>(i, m_filenames[i]));
     }
 
-    if(mMontageImage)
-        delete mMontageImage;
-
-    mMontageImage = new QImage(QSize(1000,1000), QImage::Format_RGB888);
-
-    auto load = [] (const QPair<int, QString> &file) -> QPair<int, QImage> { return QPair<int, QImage>(); };
-
-    auto mergeCollage = [] (QImage& collage, QPair<int, QImage> image) -> void
-    {
-        QPainter painter(&collage);
-
-        painter.setPen(QPen(Qt::green));
-        painter.setFont(QFont("Times", 10, QFont::Bold));
-        painter.drawLine(collage.rect().bottomLeft().x(), collage.rect().bottomLeft().y()-10,
-                   collage.rect().bottomRight().x(), collage.rect().bottomRight().y()-10);  //works!
-
-        painter.drawText(collage.rect(), Qt::AlignCenter, "Help");
-
-        qDebug() << "Processing: " << image.first;
-    };
-
-    QFuture<QImage> future = QtConcurrent::mappedReduced(file_list, load, mergeCollage);
+    QFuture<CollageImage> future
+            = QtConcurrent::mappedReduced<CollageImage>(file_list,
+                                                        ImageLoader(),
+                                                        CollageReduce(file_list.size()),
+                                                        QtConcurrent::ReduceOptions(QtConcurrent::OrderedReduce | QtConcurrent::SequentialReduce));
 
     m_future.setFuture(future);
-}
-
-/*bool PhotoMontage::generate(QString outputFilename)
-{
-    qDebug() << "Generating collage with filename: " << outputFilename;
-    if(m_filenames.count() != 4)
-        return false;
-
-    const QStringList filenames = m_filenames;
-
-    std::function<QString(const QString&)> process = [filenames](const QString &imageFileName) {
-
-        std::list<Magick::Image> sourceImageList;
-        Magick::Image image;
-
-        Magick::MontageFramed montageSettings;
-
-        montageSettings.backgroundColor(Magick::Color("#FFFFFF"));
-        montageSettings.tile("2x2");
-        //montageSettings.geometry(Magick::Geometry("792x1224>"));
-        montageSettings.geometry(Magick::Geometry("1224x792>"));
-        montageSettings.shadow(true);
-        montageSettings.borderWidth(20);
-
-        for(auto iter = filenames.begin(); iter != filenames.end(); iter++)
-        {
-            if(iter->contains("file://"))
-            {
-                qDebug() << "Loading file: " << iter->right(iter->length() - QString("file://").length());
-                image.read(iter->right(iter->length() - QString("file://").length()).toStdString());
-            }
-            else
-            {
-                qDebug() << "Loading file: " << *iter;
-                image.read(iter->toStdString());
-            }
-            image.resize("25x25%");
-            sourceImageList.push_back(image);
-        }
-
-        std::list<Magick::Image> montagelist;
-        Magick::montageImages( &montagelist, sourceImageList.begin(), sourceImageList.end(), montageSettings);
-
-        if(imageFileName.contains("file://"))
-        {
-            Magick::writeImages(montagelist.begin(), montagelist.end(), (imageFileName.right(imageFileName.length() - QString("file://").length())).toStdString());
-        }
-        else
-        {
-            Magick::writeImages(montagelist.begin(), montagelist.end(), imageFileName.toStdString());
-        }
-        return imageFileName;
-    };
-
-    QStringList files;
-    files.append(outputFilename);
-    m_future.setFuture(QtConcurrent::mapped(files, process));
 
     return true;
-}*/
+}
 
-void PhotoMontage::processed()
+void PhotoMontage::saveResult(QString filename)
 {
-    emit montageReady("");
+    if(m_future.result().height() != 0)
+        m_future.result().save(filename.right(filename.length() - QString("file://").length()));
 }

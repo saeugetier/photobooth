@@ -1,7 +1,6 @@
 #include "photomontage.h"
 #include <list>
 #include <functional>
-#include <Magick++.h>
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtConcurrent/QtConcurrentFilter>

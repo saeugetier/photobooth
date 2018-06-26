@@ -3,7 +3,7 @@ QT += qml quick multimedia printsupport concurrent
 CONFIG += c++14
 
 linux {
-    contains(QMAKE_HOST.arch, arm.*):{
+    contains(QT_ARCH, arm):{
         DEFINES += WIRINGPI
     }
 }

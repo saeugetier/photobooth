@@ -1,7 +1,7 @@
 #include "ledflash.h"
 #include <QProcess>
 #ifdef WIRINGPI
-    #include "wiringpi.h"
+    #include <wiringPi.h>
     #pragma message ("Using wiringpi")
 #else
     #pragma message ("Not using wiringpi on x86")

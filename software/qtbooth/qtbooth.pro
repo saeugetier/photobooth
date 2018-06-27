@@ -5,6 +5,7 @@ CONFIG += c++14
 linux {
     contains(QT_ARCH, arm):{
         DEFINES += WIRINGPI
+        LIBS += -Lwiringpi
     }
 }
 

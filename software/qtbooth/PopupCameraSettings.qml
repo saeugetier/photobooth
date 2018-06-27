@@ -21,6 +21,8 @@ PopupCameraSettingsForm {
         settings.flashEnable = dialog.settingFlashEnable
         settings.brightness = dialog.settingBrightness
         settings.countdown = dialog.settingCountdown
+
+        flash.setBrightness(settings.brightness)
         console.log("Settings accepted")
     }
 
@@ -47,5 +49,10 @@ PopupCameraSettingsForm {
         property bool flashEnable: true
         property real brightness: 0.1
         property int countdown: 3
+
+        Component.onCompleted:
+        {
+            flash.setBrightness(brightness)
+        }
     }
 }

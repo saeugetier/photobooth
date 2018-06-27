@@ -28,10 +28,11 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
+    engine.rootContext()->setContextProperty("flash", LedFlash::instance());
+    engine.rootContext()->setContextProperty("helper", MyHelper::instance());
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
-    engine.rootContext()->setContextProperty("helper", MyHelper::instance());
-    engine.rootContext()->setContextProperty("flash", LedFlash::instance());
+
 
     int result = app.exec();
 

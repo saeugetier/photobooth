@@ -50,13 +50,21 @@ void LedFlash::setBrightness(float brightness)
 
     if(brightness == 0.0f)
     {
+#ifdef WIRINGPI
         digitalWrite(ENABLE_PIN, 0);
+#else
+        qDebug() << "LED off";
+#endif
     }
     else
     {
+#ifdef WIRINGPI
         int value = brightness * 1023;
         pwmWrite(PWM_PIN, value);
         digitalWrite(ENABLE_PIN, 1);
+#else
+        qDebug() << "LED brightness set to " << brightness;
+#endif
     }
 
     m_brightness = brightness;
@@ -66,8 +74,12 @@ void LedFlash::setFlash(bool flash)
 {
     if(flash)
     {
+#ifdef WIRINGPI
         pwmWrite(PWM_PIN, 1023);
         digitalWrite(ENABLE_PIN, 1);
+#else
+        qDebug() << "Flash on";
+#endif
     }
     else
     {

@@ -12,6 +12,8 @@ import QtMultimedia 5.5
 PageCameraForm {
     property var locale: Qt.locale()
 
+    cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
+
     cameraSettingsButton.onClicked:
     {
         settingsPopup.open()
@@ -25,10 +27,15 @@ PageCameraForm {
     cameraCountdown.onTimeout:
     {
         camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg")
+        if(settingsPopup.settingFlashEnable)
+        {
+            flash.setFlash(true)
+        }
     }
 
     camera.imageCapture.onImageCaptured:
     {
+        flash.setFlash(false)
         previewPopup.showImage(preview)
     }
 
@@ -40,6 +47,7 @@ PageCameraForm {
 
     camera.imageCapture.onCaptureFailed:
     {
+        flash.setFlash(false)
         failureText.visible = true;
         failureTimeout.start()
     }
@@ -136,8 +144,9 @@ PageCameraForm {
 
         /*onClosed:
         {
-            if(printPopup.state != settingPrintFullscale ? "fullscale" : "collage")
+              if(printPopup.state != settingPrintFullscale ? "fullscale" : "collage")
                 printPopup.setCollageType(settingPrintFullscale ? "fullscale" : "collage")
         }*/
+
     }
 }

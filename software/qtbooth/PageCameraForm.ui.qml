@@ -11,6 +11,8 @@ Item {
     Camera {
         id: camera
 
+        position: Camera.FrontFace
+
         imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
 
         exposure {

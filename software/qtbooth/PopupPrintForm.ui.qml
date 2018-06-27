@@ -25,6 +25,11 @@ Popup {
             sourceSize.height: 1024
             sourceSize.width: 1024
             fillMode: Image.PreserveAspectFit
+
+            onSourceChanged:
+            {
+                busyIndicator.running = false
+            }
         }
 
         CollageImage

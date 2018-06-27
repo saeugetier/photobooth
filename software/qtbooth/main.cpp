@@ -7,6 +7,7 @@
 #include <QQmlContext>
 #include "myhelper.h"
 #include "photomontage.h"
+#include "ledflash.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
+    engine.rootContext()->setContextProperty("flash", LedFlash::instance());
 
     int result = app.exec();
 

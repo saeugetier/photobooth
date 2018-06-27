@@ -47,13 +47,13 @@ void LedFlash::setBrightness(float brightness)
 
     if(brightness == 0.0f)
     {
-        QProcess::execute(GPIO_COMMAND, {GPIO_ENABLE_PIN_OUTPUT + "0"});
+        digitalWrite(ENABLE_PIN, 0);
     }
     else
     {
         int value = brightness * 1023;
-        QProcess::execute(GPIO_COMMAND, {GPIO_PWM_PIN_OUTPUT + QString(value)});
-        QProcess::execute(GPIO_COMMAND, {GPIO_ENABLE_PIN_OUTPUT + "1"});
+        pwmWrite(PWM_PIN, value);
+        digitalWrite(ENABLE_PIN, 1);
     }
 
     m_brightness = brightness;
@@ -63,8 +63,8 @@ void LedFlash::setFlash(bool flash)
 {
     if(flash)
     {
-        QProcess::execute(GPIO_COMMAND, {GPIO_PWM_PIN_OUTPUT + "1023"});
-        QProcess::execute(GPIO_COMMAND, {GPIO_ENABLE_PIN_OUTPUT + "1"});
+        pwmWrite(PWM_PIN, 1023);
+        digitalWrite(ENABLE_PIN, 1);
     }
     else
     {

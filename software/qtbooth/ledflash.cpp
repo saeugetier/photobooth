@@ -2,8 +2,11 @@
 #include <QProcess>
 #include <QDebug>
 #ifdef WIRINGPI
+extern "C"
+{
     #include <wiringPi.h>
     #pragma message ("Using wiringpi")
+}
 #else
     #pragma message ("Not using wiringpi on x86")
 #endif

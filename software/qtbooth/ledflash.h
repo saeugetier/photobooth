@@ -12,6 +12,7 @@ private:
     static LedFlash* createInstance();
 public:
     static LedFlash* instance();
+    ~LedFlash();
 public slots:
     Q_INVOKABLE void setBrightness(float brightness);
     Q_INVOKABLE void setFlash(bool flash);

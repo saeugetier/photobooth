@@ -11,8 +11,8 @@ extern "C"
     #pragma message ("Not using wiringpi on x86")
 #endif
 
-#define PWM_PIN 4
-#define ENABLE_PIN 1
+#define PWM_PIN 1
+#define ENABLE_PIN 4
 
 LedFlash::LedFlash(QObject *parent) : QObject(parent), m_brightness(0)
 {

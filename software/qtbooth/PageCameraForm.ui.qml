@@ -39,17 +39,16 @@ Item {
         id: shutterButton
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        text: "\uE801" // icon-folder-open-empty
+        text: "\uE801"
         font.family: "fontello"
-        font.pointSize: 72
-        //onClicked: camera.imageCapture.capture()
+        font.pointSize: 104
     }
 
     ToolButton {
         id: settingsButton
         anchors.right: parent.right
         anchors.top: parent.top
-        text: "\uE80F" // icon-folder-open-empty
+        text: "\uE80F"
         font.family: "fontello"
         font.pointSize: 36
     }

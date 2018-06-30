@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import Qt.labs.folderlistmodel 2.1
 import QtQuick.Layouts 1.2
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.1
 import QtQuick.Window 2.0
 import QtQml.Models 2.2
 
@@ -41,6 +41,8 @@ Item
                 interactive: true
                 displayMarginBeginning:  10000
                 displayMarginEnd: 10000
+                //rightMargin: 100
+
                 /*Rectangle {
                     anchors.centerIn: parent
                     width: parent.width-10; height: parent.height-10
@@ -48,6 +50,42 @@ Item
                     border.color: "red"
                     border.width: 5
                 }*/
+
+                ScrollBar.vertical: ScrollBar {
+                    id: galleryScrollbar
+                    contentItem.implicitWidth: 50
+                    bottomPadding: 50
+                    topPadding: 50
+                    Button
+                    {
+                        text: "\uE819" // icon-folder-open-empty
+                        font.family: "fontello"
+                        width: 50
+                        height: 50
+                        anchors.top: parent.top
+                        font.pointSize: 30
+
+                        onPressed:
+                        {
+                            galleryScrollbar.decrease()
+                        }
+                    }
+                    Button
+                    {
+                        text: "\uE81C" // icon-folder-open-empty
+                        font.family: "fontello"
+                        anchors.bottom: parent.bottom
+                        width: 50
+                        height: 50
+                        font.pointSize: 30
+
+                        onPressed:
+                        {
+                            galleryScrollbar.increase()
+                        }
+                    }
+                }
+
                 onCurrentIndexChanged: {
                     photosListView.positionViewAtIndex(currentIndex, ListView.Contain)
                 }

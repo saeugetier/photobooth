@@ -4,10 +4,6 @@ import QtQuick.Controls 2.0
 import Qt.labs.platform 1.0
 import QtMultimedia 5.5
 
-//import QtQuick.Controls 2.1
-//import Qt.labs.platform 1.0
-//import QtMultimedia 5.9
-
 
 PageCameraForm {
     property var locale: Qt.locale()
@@ -107,29 +103,6 @@ PageCameraForm {
         state: settingsPopup.settingPrintFullscale ? "fullscale" : "collage"
     }
 
-    Button
-    {
-        id: printTest
-        text: "Test"
-        onClicked:
-        {
-            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -1,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -2,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -3,"fileURL"))
-            printPopup.newPhoto(gallery.foldermodel.get(gallery.foldermodel.count -4,"fileURL"))
-        }
-    }
-
-    /*Button
-    {
-        id: closeTest
-        text: "close"
-        anchors.centerIn: parent
-        onClicked:
-        {
-            mainWindow.close()
-        }
-    }*/
 
     PopupCameraSettings
     {
@@ -138,15 +111,5 @@ PageCameraForm {
         y: 0
         width: parent.width
         height: parent.height
-        //modal: true
-        //focus: true
-        //closePolicy: Popup.CloseOnEscape
-
-        /*onClosed:
-        {
-              if(printPopup.state != settingPrintFullscale ? "fullscale" : "collage")
-                printPopup.setCollageType(settingPrintFullscale ? "fullscale" : "collage")
-        }*/
-
     }
 }

@@ -1,6 +1,8 @@
-QT += qml quick multimedia printsupport concurrent
+QT += qml quick multimedia concurrent
 
 CONFIG += c++14
+
+LIBS += -L$$PWD -lselphy
 
 linux {
     contains(QT_ARCH, arm):{
@@ -12,7 +14,8 @@ linux {
 SOURCES += main.cpp \
     myhelper.cpp \
     photomontage.cpp \
-    ledflash.cpp
+    ledflash.cpp \
+    printer.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +35,5 @@ HEADERS += \
     photomontage.h \
     ledflash.h \
     call_once.h \
-    singleton.h
+    singleton.h \
+    printer.h

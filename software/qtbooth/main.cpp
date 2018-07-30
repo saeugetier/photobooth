@@ -8,6 +8,7 @@
 #include "myhelper.h"
 #include "photomontage.h"
 #include "ledflash.h"
+#include "printer.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,9 +31,8 @@ int main(int argc, char *argv[])
     engine.addImportPath("qrc:///");
     engine.rootContext()->setContextProperty("flash", LedFlash::instance());
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
-
-
+    engine.rootContext()->setContextProperty("printer", Printer::instance());
+    engine.load(QUrl(QLatin1String("qrc:/main.qml")));    
 
     int result = app.exec();
 

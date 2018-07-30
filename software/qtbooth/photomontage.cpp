@@ -9,12 +9,12 @@
 #include <QImage>
 #include <QPair>
 
-#include "myhelper.h"
+#include "printer.h"
 
 typedef QPair<int,QString> indexedString;
 typedef QPair<int, QImage> indexedImage;
 
-CollageImage::CollageImage() : QImage(MyHelper::instance()->getPrintSize(), QImage::Format_RGB888)
+CollageImage::CollageImage() : QImage(Printer::instance()->getPrintSize(), QImage::Format_RGB888)
 {
     this->fill(Qt::GlobalColor::white);
 }

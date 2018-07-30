@@ -1,4 +1,5 @@
 import QtQuick 2.5
+import QtQuick.Controls 2.1
 
 PopupPrintForm {
     id: printForm
@@ -53,14 +54,33 @@ PopupPrintForm {
     {
         if(state == "collage")
         {
-            helper.printImage(collageImage.collageFileName)
+            if(printer.printImage(collageImage.collageFileName) < 0)
+            {
+                printer_error.visible = true;
+            }
+
             printForm.close()
         }
         else
         {
-            helper.printImage(fileNameFullScale)
+            if(printer.printImage(fileNameFullScale) < 0)
+            {
+                printer_error.visible = true;
+            }
+
             printForm.close()
         }
+    }
+
+    Dialog {
+        id: printer_error
+        title: "Printer"
+        Label {
+                text: "Printer not connected"
+            }
+        standardButtons: Dialog.Ok
+        modal: true
+        onAccepted: console.log("Ok clicked")
     }
 
     cancelButton.onClicked:

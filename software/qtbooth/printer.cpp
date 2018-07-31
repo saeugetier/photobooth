@@ -8,7 +8,8 @@
 
 Printer::Printer(QObject *parent) : QObject(parent)
 {
-    QObject::connect(&mPrinterWatcher, SIGNAL(finished()), this, SLOT(finished()));
+    QObject::connect(&mPrinterProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
+    QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));
 }
 
 
@@ -21,6 +22,11 @@ Printer* Printer::createInstance()
 Printer* Printer::instance()
 {
     return Singleton<Printer>::instance(Printer::createInstance);
+}
+
+bool Printer::busy()
+{
+    return mPrinterProcess.state() != QProcess::NotRunning;
 }
 
 QString Printer::getPrinterIp()
@@ -69,17 +75,17 @@ int Printer::printImage(const QString &filename)
     QString ip = getPrinterIp();
     if(ip.length() > 0)
     {
-        QStringList filenames;
-        filenames.push_back(filename);
-        /*std::function<int(const QString &)> print_func
-                = [&ip](const QString& filename) -> int
+        QStringList parameters;
+        parameters << "-printer_ip=" + ip;
+        parameters << filename.right(filename.length() - QString("file://").length());
+
+        if(mPrinterProcess.state() == QProcess::NotRunning)
         {
-           return print((char*)filename.toStdString().c_str(),
-                 (char*) ip.toStdString().c_str(),
-                 NULL);
-        };
-        mPrinterWatcher.setFuture(QtConcurrent::mapped(filenames, print_func));*/
-        return 0;
+            mPrinterProcess.start("selphy", parameters);
+            qDebug() << parameters;
+            return 0;
+        }
+        return -1;
     }
     else
         qDebug() << "Print failed. No printer connected!";
@@ -87,10 +93,14 @@ int Printer::printImage(const QString &filename)
     return -1;
 }
 
-void Printer::finished()
+void Printer::finished(int code, QProcess::ExitStatus status)
 {
-    if(mPrinterWatcher.result() < 0)
+    if(code != 0)
+    {
+        qDebug() << mPrinterProcess.readAllStandardError();
+        qDebug() << "Code: " << code << " - Status: " << status;
         emit failed();
+    }
     else
         emit success();
 }

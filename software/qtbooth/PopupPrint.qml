@@ -72,6 +72,15 @@ PopupPrintForm {
         }
     }
 
+    Component.onCompleted: {
+        printer.failed.connect(showPrinterError)
+    }
+
+    function showPrinterError()
+    {
+        printer_error.visible = true;
+    }
+
     Dialog {
         id: printer_error
         title: "Printer"

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QSize>
-#include <QtConcurrent>
+#include <QProcess>
 
 class Printer : public QObject
 {
@@ -13,6 +13,8 @@ private:
     static Printer* createInstance();
 public:
     static Printer* instance();
+
+    bool busy();
 
 signals:
     void progress(int);
@@ -25,9 +27,9 @@ public slots:
     Q_INVOKABLE QSize getPrintSize();
 
 protected slots:
-    void finished();
+    void finished(int code, QProcess::ExitStatus status);
 protected:
-    QFutureWatcher<int> mPrinterWatcher;
+    QProcess mPrinterProcess;
 };
 
 #endif // PRINTER_H

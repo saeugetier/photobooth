@@ -4,7 +4,6 @@
 #include <QRegExp>
 #include <QTextStream>
 #include <QDebug>
-#include "libselphy.h"
 
 
 Printer::Printer(QObject *parent) : QObject(parent)
@@ -72,14 +71,14 @@ int Printer::printImage(const QString &filename)
     {
         QStringList filenames;
         filenames.push_back(filename);
-        std::function<int(const QString &)> print_func
+        /*std::function<int(const QString &)> print_func
                 = [&ip](const QString& filename) -> int
         {
            return print((char*)filename.toStdString().c_str(),
                  (char*) ip.toStdString().c_str(),
                  NULL);
         };
-        mPrinterWatcher.setFuture(QtConcurrent::mapped(filenames, print_func));
+        mPrinterWatcher.setFuture(QtConcurrent::mapped(filenames, print_func));*/
         return 0;
     }
     else

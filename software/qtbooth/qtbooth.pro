@@ -2,8 +2,6 @@ QT += qml quick multimedia concurrent
 
 CONFIG += c++14
 
-LIBS += -L$$PWD -lselphy
-
 linux {
     contains(QT_ARCH, arm):{
         DEFINES += WIRINGPI

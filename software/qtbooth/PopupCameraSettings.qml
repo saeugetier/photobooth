@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import Qt.labs.settings 1.0
-import QtQuick.Dialogs 1.2
+import Qt.labs.platform 1.0
 
 PopupCameraSettingsForm {
     property alias cameraPrintSettings: settings
@@ -40,6 +40,43 @@ PopupCameraSettingsForm {
         mainWindow.close()
     }
 
+    advancedSettings.onClicked:
+    {
+        passwordPopup.open()
+    }
+
+    SettingsPassword
+    {
+        x: (parent.width - width) / 2
+        id: passwordPopup
+        modal: true
+        transformOrigin: Popup.Center
+        closePolicy: Popup.CloseOnEscape
+
+        password: settings.password
+
+        onUnlockedChanged:
+        {
+            console.log("Settings unlock state changed")
+            if(passwordPopup.unlocked)
+            {
+                console.log("Visible")
+                Label.visible = true;
+                RangeSlider.visible = true;
+                Label.visibleChildren = true;
+                RangeSlider.visibleChildren = true;
+            }
+            else
+            {
+                console.log("Hidden")
+                Label.visible = false;
+                RangeSlider.visible = false;
+                Label.visibleChildren = false;
+                RangeSlider.visibleChildren = false;
+            }
+        }
+    }
+
     Settings //settings with default values
     {
         id: settings
@@ -49,6 +86,7 @@ PopupCameraSettingsForm {
         property bool flashEnable: true
         property real brightness: 0.1
         property int countdown: 3
+        property string password: "1234"
 
         Component.onCompleted:
         {

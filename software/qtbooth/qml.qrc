@@ -20,5 +20,7 @@
         <file>scripts/script.js</file>
         <file>styles/RoundProgressBarStyle.qml</file>
         <file>CollageImage.qml</file>
+        <file>SettingsPassword.qml</file>
+        <file>SettingsPasswordForm.ui.qml</file>
     </qresource>
 </RCC>

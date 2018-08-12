@@ -10,6 +10,7 @@ Dialog {
     property alias settingBrightness: brightnessSlider.value
     property alias settingCountdown: countdownSpinBox.value
     property alias quitButton: quitButton
+    property alias advancedSettings: advancedSettings
 
     GridLayout {
         id: grid
@@ -105,9 +106,28 @@ Dialog {
 
         Button
         {
-           id: quitButton
-           text: "Close program"
+            id: quitButton
+            text: "Close program"
         }
+
+        Button {
+            id: advancedSettings
+            text: qsTr("Advanced Settings")
+        }
+
+        Label {
+            id: label
+            text: qsTr("hidden")
+            visible: false
+        }
+
+        RangeSlider {
+            id: rangeSlider
+            visible: false
+            second.value: 0.75
+            first.value: 0.25
+        }
+
     }
 
 }

@@ -22,5 +22,7 @@
         <file>CollageImage.qml</file>
         <file>SettingsPassword.qml</file>
         <file>SettingsPasswordForm.ui.qml</file>
+        <file>AdvancedSettings.qml</file>
+        <file>AdvancedSettingsForm.ui.qml</file>
     </qresource>
 </RCC>

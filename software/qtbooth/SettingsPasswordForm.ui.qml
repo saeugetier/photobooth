@@ -6,7 +6,6 @@ import QtQuick.Layouts 1.0
 
 Popup {
     id: passwordPopup
-    dim: true
     modal: true
     height: 80
     property alias okButton: okButton
@@ -28,7 +27,7 @@ Popup {
             text: ""
             font.wordSpacing: 0
             cursorVisible: true
-            inputMethodHints: Qt.ImhDigitsOnly
+            inputMethodHints: Qt.ImhDialableCharactersOnly
             echoMode: TextInput.Password
             font.pixelSize: 32
             focus: true

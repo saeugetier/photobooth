@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import Qt.labs.settings 1.0
-import Qt.labs.platform 1.0
+import QtQuick.Dialogs 1.2
 
 PopupCameraSettingsForm {
     property alias cameraPrintSettings: settings
@@ -9,7 +9,8 @@ PopupCameraSettingsForm {
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     // sync settings and UI
-    settingPrintEnable: settings.printEnable
+    settingPrintEnable: settings.printEnable & settings.printerPermanentEnable
+    settingPrintEnableSwitchEnable:  settings.printerPermanentEnable
     settingPrintFullscale: settings.printFullscale
     settingFlashEnable: settings.flashEnable
     settingBrightness: settings.brightness
@@ -35,10 +36,10 @@ PopupCameraSettingsForm {
         console.log("Settings rejected")
     }
 
-    quitButton.onClicked:
+    /*quitButton.onClicked:
     {
         mainWindow.close()
-    }
+    }*/
 
     advancedSettings.onClicked:
     {
@@ -60,20 +61,24 @@ PopupCameraSettingsForm {
             console.log("Settings unlock state changed")
             if(passwordPopup.unlocked)
             {
-                console.log("Visible")
-                Label.visible = true;
-                RangeSlider.visible = true;
-                Label.visibleChildren = true;
-                RangeSlider.visibleChildren = true;
+                advancedSettings.open()
             }
-            else
-            {
-                console.log("Hidden")
-                Label.visible = false;
-                RangeSlider.visible = false;
-                Label.visibleChildren = false;
-                RangeSlider.visibleChildren = false;
-            }
+        }
+    }
+
+    AdvancedSettings
+    {
+        id: advancedSettings
+
+        onOpened:
+        {
+            advancedSettings.printerPermanentEnabled.checked = settings.printerPermanentEnable
+        }
+
+        onClosed:
+        {
+            passwordPopup.unlocked = false
+            settings.printerPermanentEnable = advancedSettings.printerPermanentEnabled.checked
         }
     }
 
@@ -87,10 +92,18 @@ PopupCameraSettingsForm {
         property real brightness: 0.1
         property int countdown: 3
         property string password: "1234"
+        property bool printerPermanentEnable: true
 
         Component.onCompleted:
         {
             flash.setBrightness(brightness)
+            if(!settings.printerPermanentEnable)
+                settings.printEnable = false
         }
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

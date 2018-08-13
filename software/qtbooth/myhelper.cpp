@@ -5,6 +5,7 @@
 #include <QStandardPaths>
 #include <QSettings>
 #include <QDebug>
+#include <QProcess>
 
 
 MyHelper::MyHelper(QObject *parent) : QObject(parent)
@@ -38,4 +39,15 @@ QString MyHelper::getImagePath()
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
 
+void MyHelper::shutdown()
+{
+    QProcess process;
+    process.startDetached("shutdown -P now");
+}
+
+void MyHelper::restart()
+{
+    QProcess process;
+    process.startDetached("reboot");
+}
 

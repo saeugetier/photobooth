@@ -8,6 +8,11 @@ import QtMultimedia 5.5
 PageCameraForm {
     property var locale: Qt.locale()
 
+    Timer
+    {
+        id: cameraTimeoutTimer
+    }
+
     cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
 
     cameraSettingsButton.onClicked:
@@ -18,14 +23,29 @@ PageCameraForm {
     cameraShutterButton.onClicked:
     {
         cameraCountdown.start()
+        tabBar.enabled = false
+        settingsButton.enabled = false
+        cameraShutterButton.enabled = false
     }
 
     cameraCountdown.onTimeout:
     {
-        camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg")
-        if(settingsPopup.settingFlashEnable)
+        if(camera.imageCapture.ready)
         {
-            flash.setFlash(true)
+            camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg")
+            if(settingsPopup.settingFlashEnable)
+            {
+                flash.setFlash(true)
+            }
+        }
+        else
+        {
+            flash.setFlash(false)
+            failureText.visible = true;
+            failureTimeout.start()
+            tabBar.enabled = true
+            settingsButton.enabled = true
+            cameraShutterButton.enabled = true
         }
     }
 
@@ -33,6 +53,9 @@ PageCameraForm {
     {
         flash.setFlash(false)
         previewPopup.showImage(preview)
+        tabBar.enabled = true
+        settingsButton.enabled = true
+        cameraShutterButton.enabled = true
     }
 
     camera.imageCapture.onImageSaved:
@@ -46,6 +69,9 @@ PageCameraForm {
         flash.setFlash(false)
         failureText.visible = true;
         failureTimeout.start()
+        tabBar.enabled = true
+        settingsButton.enabled = true
+        cameraShutterButton.enabled = true
     }
 
     Text

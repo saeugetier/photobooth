@@ -7,6 +7,7 @@ Item {
     property alias cameraSettingsButton: settingsButton
     property alias camera: camera
     property alias cameraCountdown: countdown
+    property alias settingsButton: settingsButton
 
     Camera {
         id: camera

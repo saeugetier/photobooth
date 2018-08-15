@@ -1,4 +1,4 @@
-QT += qml quick multimedia concurrent svg
+QT += qml quick multimedia concurrent
 
 CONFIG += c++14
 

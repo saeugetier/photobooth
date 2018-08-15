@@ -11,6 +11,19 @@ PageCameraForm {
     Timer
     {
         id: cameraTimeoutTimer
+        interval: 1000 * 60 * 1  //every minute
+
+        Component.onCompleted:
+        {
+            cameraTimeoutTimer.start()
+        }
+
+        onTriggered:
+        {
+            console.log("Focus Camera")
+            camera.searchAndLock()
+            restart()
+        }
     }
 
     cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
@@ -22,6 +35,7 @@ PageCameraForm {
 
     cameraShutterButton.onClicked:
     {
+        cameraTimeoutTimer.restart()
         cameraCountdown.start()
         tabBar.enabled = false
         settingsButton.enabled = false

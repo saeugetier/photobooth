@@ -7,14 +7,13 @@ import QtQuick.Layouts 1.0
 Popup {
     id: passwordPopup
     modal: true
-    height: 80
     property alias okButton: okButton
     property alias passwordInput: passwordInput
-    width: 250
+    width: 800
+    height: 350
 
     RowLayout {
-        x: 0
-        y: 0
+        anchors.horizontalCenter: parent.horizontalCenter
 
         Label {
             id: label
@@ -33,13 +32,39 @@ Popup {
             focus: true
         }
 
-
         Button {
             id: okButton
-            x: 85
-            text: qsTr("Button")
+            text: qsTr("Ok")
             highlighted: true
         }
 
+        Item {
+            // spacer item
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Rectangle {
+                anchors.fill: parent
+            } // to visualize the spacer
+        }
+    }
+
+    InputPanel {
+        id: inputPanel
+        y: parent.height // position the top of the keyboard to the bottom of the screen/display
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        Component.onCompleted: {
+            inputPanel.keyboard.style.languagePopupListEnabled = false
+        }
+        states: State {
+            name: "visible"
+            when: inputPanel.active
+            PropertyChanges {
+                target: inputPanel
+                // position the top of the keyboard to the bottom of the text input field
+                y: parent.height - inputPanel.height
+            }
+        }
     }
 }

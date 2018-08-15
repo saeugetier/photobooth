@@ -42,7 +42,7 @@ QString MyHelper::getImagePath()
 void MyHelper::shutdown()
 {
     QProcess process;
-    process.startDetached("shutdown -P now");
+    process.startDetached("shutdown now -P -h");
 }
 
 void MyHelper::restart()

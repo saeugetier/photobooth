@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.0
 import Qt.labs.platform 1.0
+import QtQuick.VirtualKeyboard 2.1
 
 SettingsPasswordForm {
     id: passwordForm
@@ -48,4 +49,5 @@ SettingsPasswordForm {
         }
         console.log("Password accepted: " + unlocked)
     }
+
 }

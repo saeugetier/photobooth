@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>Slideshow.qml</file>
         <file>fontello/font/fontello.ttf</file>
         <file>PageCamera.qml</file>
         <file>PageCameraForm.ui.qml</file>

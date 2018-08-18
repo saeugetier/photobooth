@@ -16,6 +16,7 @@ public:
 public slots:
     Q_INVOKABLE void setBrightness(float brightness);
     Q_INVOKABLE void setFlash(bool flash);
+    Q_INVOKABLE void triggerFocus();
 protected:
     float m_brightness;
 };

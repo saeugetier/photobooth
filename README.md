@@ -41,6 +41,8 @@ Framework: Qt 5.9 or higher - https://qt.io
 Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
 Qt GPhoto2 plugin: https://github.com/dept2/qtmultimedia-gphoto
 
+The software can be build to run on a local PC. Or it can run on an Raspberry Pi. In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
+
 ## Hardware
 Camera: Canon EOS 450D
 

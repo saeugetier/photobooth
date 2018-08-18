@@ -36,11 +36,6 @@ PopupCameraSettingsForm {
         console.log("Settings rejected")
     }
 
-    /*quitButton.onClicked:
-    {
-        mainWindow.close()
-    }*/
-
     advancedSettings.onClicked:
     {
         passwordPopup.open()
@@ -96,7 +91,6 @@ PopupCameraSettingsForm {
 
         Component.onCompleted:
         {
-            flash.setBrightness(brightness)
             if(!settings.printerPermanentEnable)
                 settings.printEnable = false
         }

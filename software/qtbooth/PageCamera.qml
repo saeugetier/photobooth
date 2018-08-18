@@ -8,10 +8,28 @@ import QtMultimedia 5.5
 PageCameraForm {
     property var locale: Qt.locale()
 
+    onFocusChanged:
+    {
+        console.log("Focus of camera page changed. Focus: " + focus)
+        if(focus)
+        {
+            cameraTimeoutTimer.restart()
+            flash.triggerFocus()
+            camera.start()
+            flash.setBrightness(settingsPopup.cameraPrintSettings.brightness)
+        }
+        else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
+        {
+            flash.setBrightness(0)
+            cameraTimeoutTimer.stop()
+            camera.stop()
+        }
+    }
+
     Timer
     {
         id: cameraTimeoutTimer
-        interval: 1000 * 60 * 1  //every minute
+        interval: 1000 * 60 * 4  //going inactive after 4 minutes
 
         Component.onCompleted:
         {
@@ -21,8 +39,8 @@ PageCameraForm {
         onTriggered:
         {
             console.log("Focus Camera")
-            camera.searchAndLock()
-            restart()
+            camera.stop()
+            swipeView.setCurrentIndex(swipeView.count - 1)
         }
     }
 

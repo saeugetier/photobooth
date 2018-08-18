@@ -13,6 +13,7 @@ extern "C"
 
 #define PWM_PIN 1
 #define ENABLE_PIN 4
+#define TRIGGER_PIN 6
 
 LedFlash::LedFlash(QObject *parent) : QObject(parent), m_brightness(0)
 {
@@ -23,6 +24,7 @@ LedFlash::LedFlash(QObject *parent) : QObject(parent), m_brightness(0)
     pwmSetRange(1024);
     pwmSetMode(PWM_MODE_MS);
     pinMode(ENABLE_PIN, OUTPUT);
+    pinMode(TRIGGER_PIN, OUTPUT);
     pinMode(PWM_PIN, PWM_OUTPUT);
 #else
 
@@ -85,6 +87,15 @@ void LedFlash::setFlash(bool flash)
     {
         setBrightness(m_brightness);
     }
+}
+
+void LedFlash::triggerFocus()
+{
+#ifdef WIRINGPI
+    digitalWrite(TRIGGER_PIN, 1);  //maybe a delay is needed?
+    digitalWrite(TRIGGER_PIN, 0);
+#endif
+    qDebug() << "Triggered focus";
 }
 
 LedFlash::~LedFlash()

@@ -6,7 +6,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QProcess>
-
+#include <QGuiApplication>
 
 MyHelper::MyHelper(QObject *parent) : QObject(parent)
 {
@@ -51,3 +51,20 @@ void MyHelper::restart()
     process.startDetached("reboot");
 }
 
+QTranslator* MyHelper::getTranslator()
+{
+    return mTranslator.get();
+}
+
+void MyHelper::setLanguage(QString code)
+{
+    if(mTranslator.get() != NULL)
+        QGuiApplication::removeTranslator(mTranslator.get());
+
+    std::unique_ptr<QTranslator> translator(new QTranslator);
+    mTranslator.swap(translator);
+    mTranslator->load("tr_" + code, ":/qml/");
+    QGuiApplication::installTranslator(mTranslator.get());
+
+    emit languageChanged();
+}

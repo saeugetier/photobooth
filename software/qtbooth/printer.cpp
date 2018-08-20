@@ -97,7 +97,7 @@ void Printer::finished(int code, QProcess::ExitStatus status)
 {
     if(code != 0)
     {
-        qDebug() << mPrinterProcess.readAllStandardError();
+        qDebug() << "Selphy Error: \n" << mPrinterProcess.readAllStandardError();
         qDebug() << "Code: " << code << " - Status: " << status;
         emit failed();
     }

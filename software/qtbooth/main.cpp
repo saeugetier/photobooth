@@ -5,6 +5,7 @@
 #include <QResource>
 #include <QSettings>
 #include <QQmlContext>
+#include <QTranslator>
 #include "myhelper.h"
 #include "photomontage.h"
 #include "ledflash.h"
@@ -13,6 +14,7 @@
 int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
@@ -33,6 +35,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
     engine.rootContext()->setContextProperty("printer", Printer::instance());
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));    
+
+    QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 
     int result = app.exec();
 

@@ -25,6 +25,7 @@ QML_IMPORT_PATH =
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 #!isEmpty(target.path): INSTALLS += target
 
+TRANSLATIONS = "tr_de.ts"
 
 DISTFILES +=
 

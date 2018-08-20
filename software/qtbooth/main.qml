@@ -15,8 +15,8 @@ ApplicationWindow {
     height: 480
     title: qsTr("QML Photo Booth")
 
-    Material.theme: Material.Dark
-    Material.accent: Material.Blue
+    //Material.theme: Material.Dark
+    //Material.accent: Material.Blue
 
     Shortcut {
         sequence: StandardKey.Quit

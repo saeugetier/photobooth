@@ -23,5 +23,6 @@
         <file>SettingsPasswordForm.ui.qml</file>
         <file>AdvancedSettings.qml</file>
         <file>AdvancedSettingsForm.ui.qml</file>
+        <file>tr_de.qm</file>
     </qresource>
 </RCC>

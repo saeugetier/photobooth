@@ -69,6 +69,14 @@ PopupPrintForm {
         }
     ]
 
+    onStateChanged:
+    {
+        if(state == "collage")
+        {
+            collageImage.clearPhotos()
+        }
+    }
+
     printerBusyStates:
     [
         State

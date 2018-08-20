@@ -23,9 +23,7 @@ Item {
 
         flash.mode: Camera.FlashRedEyeReduction
 
-        imageCapture
-        {
-
+        imageCapture {
         }
     }
 
@@ -33,7 +31,7 @@ Item {
         id: output
         source: camera
         anchors.fill: parent
-        focus : visible // to receive focus and capture key events when visible
+        focus: visible // to receive focus and capture key events when visible
     }
 
     ToolButton {
@@ -43,6 +41,13 @@ Item {
         text: "\uE801"
         font.family: "fontello"
         font.pointSize: 104
+
+        opacity: 0.7
+
+        //layer.enabled: true
+        //layer.effect: ShaderEffect {
+        //    blending: true
+        //}
     }
 
     ToolButton {
@@ -52,13 +57,22 @@ Item {
         text: "\uE80F"
         font.family: "fontello"
         font.pointSize: 36
+
+        opacity: 0.8
+
+        //layer.effect: ShaderEffect {
+        //    blending: true
+        //}
     }
 
-    Countdown
-    {
+    Countdown {
         id: countdown
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
     }
-
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

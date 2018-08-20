@@ -3,14 +3,55 @@ import QtQuick.Controls 2.1
 
 PopupPrintForm {
     id: printForm
-    property var fileNameFullScale : ""
+    property string fileNameFullScale : ""
+    property bool printerBusy: false
+    property bool fileReady: false
 
+    onPrinterBusyChanged:
+    {
+        if(printerBusy)
+        {
+            printerBusyState = "busy"
+            printButton.enabled = false
+        }
+        else
+        {
+            printerBusyState = "idle"
+            if(fileReady)
+            {
+                printButton.enabled = true
+            }
+        }
+    }
+
+    onFileReadyChanged:
+    {
+        if(fileReady) {
+            busyIndicator.visible = false
+            if(!printerBusy)
+            {
+                printButton.enabled = true
+            }
+        }
+        else {
+            busyIndicator.visible = true
+            printButton.enabled = false
+        }
+    }
 
     function setCollageType(type)
     {
         console.log(type)
         printForm.state = type
         collageImage.clearPhotos()
+    }
+
+    fullScaleImage.onSourceChanged: {
+        fileReady = true
+    }
+
+    collageImage.onSourceChanged: {
+        fileReady = true
     }
 
     states: [
@@ -28,9 +69,30 @@ PopupPrintForm {
         }
     ]
 
+    printerBusyStates:
+    [
+        State
+        {
+            name: "busy"
+            PropertyChanges {
+                target: printerBusyIndicator
+                visible: true
+            }
+        },
+        State
+        {
+            name: "idle"
+            PropertyChanges {
+                target: printerBusyIndicator
+                visible: false
+            }
+        }
+
+    ]
+
     function newPhoto(filename)
     {
-
+        fileReady = false
         if(state == "collage")
         {
             collageImage.addPhoto(filename)
@@ -45,8 +107,8 @@ PopupPrintForm {
         }
         else
         {
-            fileNameFullScale = filename
             printForm.open()
+            fileNameFullScale = filename
         }
     }
 
@@ -58,6 +120,10 @@ PopupPrintForm {
             {
                 printer_error.visible = true;
             }
+            else
+            {
+                printerBusy = true
+            }
 
             printForm.close()
         }
@@ -67,6 +133,10 @@ PopupPrintForm {
             {
                 printer_error.visible = true;
             }
+            else
+            {
+                printerBusy = true
+            }
 
             printForm.close()
         }
@@ -74,11 +144,18 @@ PopupPrintForm {
 
     Component.onCompleted: {
         printer.failed.connect(showPrinterError)
+        printer.success.connect(printerSuccess)
     }
 
     function showPrinterError()
     {
-        printer_error.visible = true;
+        printer_error.visible = true
+    }
+
+    function printerSuccess()
+    {
+        printerBusy = false
+        printer_error.visible = false
     }
 
     Dialog {
@@ -105,10 +182,10 @@ PopupPrintForm {
 
     onOpened:
     {
-        if(state == "collage")
+        /*if(state == "collage")
         {
-            busyIndicator.running = true;
             console.log("Canvas requested repaint")
-        }
+            printButton.enabled = false
+        }*/
     }
 }

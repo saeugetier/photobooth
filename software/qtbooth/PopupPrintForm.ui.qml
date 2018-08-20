@@ -1,10 +1,11 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
+import QtQuick.Layouts 1.2
 
 Popup {
+    id: popup
     property alias fullScaleImage: fullScaleImage
-    property alias collageImage : collageImage
-    property alias printBusyIndicator: busyIndicator
+    property alias collageImage: collageImage
     property alias states: printTypeProxy.states
     property alias state: printTypeProxy.state
     property alias busyIndicator: busyIndicator
@@ -12,8 +13,11 @@ Popup {
     property alias printButton: printButton
     property alias cancelButton: cancelButton
 
-    Item
-    {
+    property alias printerBusyIndicator: printerBusyIndicator
+    property alias printerBusyState: printerBusyIndicator.state
+    property alias printerBusyStates: printerBusyIndicator.states
+
+    Item {
         anchors.fill: parent
 
         id: printTypeProxy
@@ -25,23 +29,12 @@ Popup {
             sourceSize.height: 1024
             sourceSize.width: 1024
             fillMode: Image.PreserveAspectFit
-
-            onSourceChanged:
-            {
-                busyIndicator.running = false
-            }
         }
 
-        CollageImage
-        {
+        CollageImage {
             id: collageImage
             anchors.fill: parent
             fillMode: Image.PreserveAspectFit
-
-            onSourceChanged:
-            {
-                    busyIndicator.running = false
-            }
         }
     }
 
@@ -67,9 +60,33 @@ Popup {
         enabled: true
     }
 
-    BusyIndicator
-    {
+    BusyIndicator {
         id: busyIndicator
         anchors.centerIn: parent
+        visible: false
+    }
+
+    Item {
+        id: printerBusyIndicator
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: 400
+        visible: false
+
+        RowLayout {
+            BusyIndicator {
+                width: 50
+            }
+            Text {
+                text: qsTr("Printer is busy")
+                font.pointSize: 32
+                color: "white"
+            }
+        }
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

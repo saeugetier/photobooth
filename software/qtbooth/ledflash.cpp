@@ -29,6 +29,7 @@ LedFlash::LedFlash(QObject *parent) : QObject(parent), m_brightness(0)
 #else
 
 #endif
+    QObject::connect(&mTriggerTimer, SIGNAL(timeout()), this, SLOT(releaseTriggerFocus()));
 }
 
 LedFlash* LedFlash::createInstance()
@@ -93,9 +94,19 @@ void LedFlash::triggerFocus()
 {
 #ifdef WIRINGPI
     digitalWrite(TRIGGER_PIN, 1);  //maybe a delay is needed?
+
+#endif
+    mTriggerTimer.start(500);
+    qDebug() << "Triggered focus";
+}
+
+void LedFlash::releaseTriggerFocus()
+{
+#ifdef WIRINGPI
     digitalWrite(TRIGGER_PIN, 0);
 #endif
-    qDebug() << "Triggered focus";
+    mTriggerTimer.stop();
+    qDebug() << "Released trigger of focus";
 }
 
 LedFlash::~LedFlash()

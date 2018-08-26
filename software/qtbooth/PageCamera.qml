@@ -81,6 +81,23 @@ PageCameraForm {
         }
     }
 
+    function delay(delayTime, cb) {
+        timer = new Timer();
+        timer.interval = delayTime;
+        timer.repeat = false;
+        timer.triggered.connect(cb);
+        timer.start();
+    }
+
+    camera.onError:
+    {
+        camera.stop()
+        flash.triggerFocus()
+        delay(1000, function() {
+            camera.start()
+        });
+    }
+
     camera.imageCapture.onImageCaptured:
     {
         flash.setFlash(false)

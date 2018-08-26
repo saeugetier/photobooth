@@ -15,7 +15,9 @@ PageCameraForm {
         {
             cameraTimeoutTimer.restart()
             flash.triggerFocus()
-            camera.start()
+            delay(1000, function() {
+                camera.start()
+            });
             flash.setBrightness(settingsPopup.cameraPrintSettings.brightness)
         }
         else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
@@ -81,16 +83,21 @@ PageCameraForm {
         }
     }
 
+    Timer
+    {
+        id: delayTimer
+    }
+
     function delay(delayTime, cb) {
-        timer = new Timer();
-        timer.interval = delayTime;
-        timer.repeat = false;
-        timer.triggered.connect(cb);
-        timer.start();
+        delayTimer.interval = delayTime;
+        delayTimer.repeat = false;
+        delayTimer.triggered.connect(cb);
+        delayTimer.start();
     }
 
     camera.onError:
     {
+        console.log("Camera Error: " + camera.errorString)
         camera.stop()
         flash.triggerFocus()
         delay(1000, function() {

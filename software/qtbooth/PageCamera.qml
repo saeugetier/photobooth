@@ -14,17 +14,17 @@ PageCameraForm {
         if(focus)
         {
             cameraTimeoutTimer.restart()
-            flash.triggerFocus()
-            delay(1000, function() {
-                camera.start()
-            });
+            //flash.triggerFocus()
+            //delay(1000, function() {
+            //    camera.start()
+            //});
             flash.setBrightness(settingsPopup.cameraPrintSettings.brightness)
         }
         else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
         {
             flash.setBrightness(0)
             cameraTimeoutTimer.stop()
-            camera.stop()
+            //camera.stop()
         }
     }
 
@@ -41,7 +41,7 @@ PageCameraForm {
         onTriggered:
         {
             console.log("Focus Camera")
-            camera.stop()
+            //camera.stop()
             swipeView.setCurrentIndex(swipeView.count - 1)
         }
     }
@@ -98,11 +98,11 @@ PageCameraForm {
     camera.onError:
     {
         console.log("Camera Error: " + camera.errorString)
-        camera.stop()
-        flash.triggerFocus()
-        delay(1000, function() {
-            camera.start()
-        });
+        //camera.stop()
+        //flash.triggerFocus()
+        //delay(1000, function() {
+        //    camera.start()
+        //});
     }
 
     camera.imageCapture.onImageCaptured:

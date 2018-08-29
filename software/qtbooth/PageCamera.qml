@@ -13,7 +13,7 @@ PageCameraForm {
         console.log("Focus of camera page changed. Focus: " + focus)
         if(focus)
         {
-            cameraTimeoutTimer.restart()
+            //cameraTimeoutTimer.restart()
             //flash.triggerFocus()
             //delay(1000, function() {
             //    camera.start()
@@ -23,7 +23,7 @@ PageCameraForm {
         else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
         {
             flash.setBrightness(0)
-            cameraTimeoutTimer.stop()
+            //cameraTimeoutTimer.stop()
             //camera.stop()
         }
     }
@@ -35,7 +35,7 @@ PageCameraForm {
 
         Component.onCompleted:
         {
-            cameraTimeoutTimer.start()
+            //cameraTimeoutTimer.start()
         }
 
         onTriggered:
@@ -76,7 +76,7 @@ PageCameraForm {
 
     cameraShutterButton.onClicked:
     {
-        cameraTimeoutTimer.restart()
+        //cameraTimeoutTimer.restart()
         cameraCountdown.start()
         tabBar.enabled = false
         settingsButton.enabled = false

@@ -31,7 +31,7 @@ PageCameraForm {
     Timer
     {
         id: cameraTimeoutTimer
-        interval: 1000 * 60 * 4  //going inactive after 4 minutes
+        interval: 1000 * 60 * 5  //going inactive after 4 minutes
 
         Component.onCompleted:
         {
@@ -43,6 +43,27 @@ PageCameraForm {
             console.log("Focus Camera")
             //camera.stop()
             swipeView.setCurrentIndex(swipeView.count - 1)
+        }
+    }
+
+    Timer
+    {
+        id: cameraDiscoveryTimer
+
+        interval: 1000
+        repeat: true
+
+        onTriggered:
+        {
+            var availableCameras = QtMultimedia.availableCameras
+            printDevicesToConsole(availableCameras)
+
+            if(availableCameras.length > 0)
+            {
+                camera.deviceId = availableCameras[0].deviceId
+                camera.start()
+            }
+
         }
     }
 
@@ -97,12 +118,41 @@ PageCameraForm {
 
     camera.onError:
     {
-        console.log("Camera Error: " + camera.errorString)
-        //camera.stop()
-        //flash.triggerFocus()
-        //delay(1000, function() {
-        //    camera.start()
-        //});
+        console.log("Camera Error: " + errorString)
+    }
+
+    camera.onCameraStateChanged:
+    {
+        if(camera.cameraState == Camera.UnloadedState)
+        {
+            console.log("Camera State Changed: Unloaded")
+            printDevicesToConsole(QtMultimedia.availableCameras)
+            camera.stop()
+            cameraDiscoveryTimer.start()
+        }
+        else if(camera.cameraState == Camera.LoadedState)
+        {
+            console.log("Camera State Changed: Loaded")
+            printDevicesToConsole(QtMultimedia.availableCameras)
+        }
+        else if(camera.cameraState == Camera.ActiveState)
+        {
+            console.log("Camera State Changed: Active");
+            cameraDiscoveryTimer.stop()
+        }
+        else
+        {
+            console.log("Camera State Changed: Unknown");
+        }
+    }
+
+    function printDevicesToConsole(devices)
+    {
+        console.log("Found " + devices.length + " camera devices!")
+        for(var i = 0; i < devices.length; i++)
+        {
+            console.log("Found device: " + devices[i].deviceId + " with number " + i);
+        }
     }
 
     camera.imageCapture.onImageCaptured:

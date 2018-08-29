@@ -10,7 +10,7 @@ import Qt.labs.platform 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
-    visibility: "FullScreen"
+    //visibility: "FullScreen"
     width: 640
     height: 480
     title: qsTr("QML Photo Booth")

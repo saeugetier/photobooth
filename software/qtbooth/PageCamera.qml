@@ -7,42 +7,19 @@ import QtMultimedia 5.5
 
 PageCameraForm {
     property var locale: Qt.locale()
+    cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
 
     onFocusChanged:
     {
         console.log("Focus of camera page changed. Focus: " + focus)
         if(focus)
         {
-            //cameraTimeoutTimer.restart()
-            //flash.triggerFocus()
-            //delay(1000, function() {
-            //    camera.start()
-            //});
+            cameraTimeoutTimer.restart()
             flash.setBrightness(settingsPopup.cameraPrintSettings.brightness)
         }
         else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
         {
             flash.setBrightness(0)
-            //cameraTimeoutTimer.stop()
-            //camera.stop()
-        }
-    }
-
-    Timer
-    {
-        id: cameraTimeoutTimer
-        interval: 1000 * 60 * 5  //going inactive after 4 minutes
-
-        Component.onCompleted:
-        {
-            //cameraTimeoutTimer.start()
-        }
-
-        onTriggered:
-        {
-            console.log("Focus Camera")
-            //camera.stop()
-            swipeView.setCurrentIndex(swipeView.count - 1)
         }
     }
 
@@ -66,8 +43,6 @@ PageCameraForm {
 
         }
     }
-
-    cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
 
     cameraSettingsButton.onClicked:
     {
@@ -102,18 +77,6 @@ PageCameraForm {
             settingsButton.enabled = true
             cameraShutterButton.enabled = true
         }
-    }
-
-    Timer
-    {
-        id: delayTimer
-    }
-
-    function delay(delayTime, cb) {
-        delayTimer.interval = delayTime;
-        delayTimer.repeat = false;
-        delayTimer.triggered.connect(cb);
-        delayTimer.start();
     }
 
     camera.onError:
@@ -245,3 +208,8 @@ PageCameraForm {
         height: parent.height
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

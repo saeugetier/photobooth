@@ -12,6 +12,7 @@ Item {
     property alias scrollBar: galleryScrollbar
     property alias photosGrid: photosGridView
     property alias photoView: photosListView
+    property alias viewState: root.state
 
     Rectangle {
         id: root
@@ -138,7 +139,10 @@ Item {
         MouseArea {
             anchors.fill: root
             z: root.state == 'inGrid' ? -1 : 0
-            onClicked: root.state = 'inGrid'
+            onClicked: {
+                root.state = 'inGrid'
+                galleryShuffleTimer.stop()
+            }
         }
     }
 

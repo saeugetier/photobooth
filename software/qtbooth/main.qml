@@ -45,6 +45,24 @@ ApplicationWindow {
         }
     }
 
+    Timer
+    {
+        id: cameraTimeoutTimer
+        interval: 1000 * 60 * 5  //going inactive after 5 minutes
+
+        Component.onCompleted:
+        {
+            cameraTimeoutTimer.start()
+        }
+
+        onTriggered:
+        {
+            console.log("Inactive changing to gallery tab...")
+            swipeView.setCurrentIndex(swipeView.count - 1)
+            gallery.galleryShuffleTimer.start()
+        }
+    }
+
     header: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex

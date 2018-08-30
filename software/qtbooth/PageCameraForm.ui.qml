@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtMultimedia 5.5
 import QtQuick.Controls 2.0
+import QtGraphicalEffects 1.0
 
 Item {
     property alias cameraShutterButton: shutterButton
@@ -44,6 +45,13 @@ Item {
 
         opacity: 0.7
 
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
+
         //layer.enabled: true
         //layer.effect: ShaderEffect {
         //    blending: true
@@ -59,6 +67,13 @@ Item {
         font.pointSize: 36
 
         opacity: 0.8
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
 
         //layer.effect: ShaderEffect {
         //    blending: true

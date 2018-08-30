@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
+import QtGraphicalEffects 1.0
 
 Popup {
     id: popup
@@ -47,6 +48,13 @@ Popup {
         font.family: "fontello"
         font.pointSize: 72
         enabled: true
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
     }
 
     ToolButton {
@@ -58,6 +66,13 @@ Popup {
         font.family: "fontello"
         font.pointSize: 72
         enabled: true
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
     }
 
     BusyIndicator {

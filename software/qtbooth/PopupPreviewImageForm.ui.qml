@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import QtGraphicalEffects 1.0
 
 Popup {
     property alias imageSaveButton: saveButton
@@ -22,6 +23,13 @@ Popup {
         text: "\uE803" // icon-save
         font.family: "fontello"
         font.pointSize: 72
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
     }
     ToolButton {
         id: deleteButton
@@ -31,6 +39,13 @@ Popup {
         text: "\uE800" // icon-folder-open-empty
         font.family: "fontello"
         font.pointSize: 72
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
     }
 
     BusyIndicator

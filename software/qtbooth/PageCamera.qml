@@ -51,7 +51,7 @@ PageCameraForm {
 
     cameraShutterButton.onClicked:
     {
-        //cameraTimeoutTimer.restart()
+        cameraTimeoutTimer.restart()
         cameraCountdown.start()
         tabBar.enabled = false
         settingsButton.enabled = false

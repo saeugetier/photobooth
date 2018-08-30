@@ -38,6 +38,12 @@ PageGalleryForm {
     photoView.onCurrentIndexChanged: {
         photosGrid.positionViewAtIndex(photoView.currentIndex, GridView.Contain)
     }
+
+    function resetGallery()
+    {
+        viewState = "inGrid"
+        galleryShuffleTimer.stop()
+    }
 }
 
 

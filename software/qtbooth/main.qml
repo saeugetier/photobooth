@@ -43,6 +43,18 @@ ApplicationWindow {
         {
             id: gallery
         }
+
+        onCurrentIndexChanged:
+        {
+            if(swipeView.currentItem == camera)
+            {
+                gallery.resetGallery()
+            }
+            else
+            {
+                cameraTimeoutTimer.stop()
+            }
+        }
     }
 
     Timer

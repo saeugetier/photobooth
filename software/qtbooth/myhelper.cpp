@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QProcess>
 #include <QGuiApplication>
+#include <QStorageInfo>
 
 MyHelper::MyHelper(QObject *parent) : QObject(parent)
 {
@@ -67,4 +68,56 @@ void MyHelper::setLanguage(QString code)
     QGuiApplication::installTranslator(mTranslator.get());
 
     emit languageChanged();
+}
+
+bool MyHelper::removableDriveMounted()
+{
+    QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
+    for(int i = 0; i < drives.count(); i++)
+    {
+        if(!drives[i].isRoot() && !drives[i].isReadOnly())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void MyHelper::unmountRemoveableDrive()
+{
+    QProcess unmountProcess;
+    unmountProcess.setProgram("umount");
+    unmountProcess.setArguments(QStringList() << this->getRemovableDrivePath());
+}
+
+void MyHelper::startCopyFilesToRemovableDrive()
+{
+    QString imagePath = this->getImagePath();
+    QString removableDrivePath = this->getRemovableDrivePath();
+
+    if(removableDrivePath.length())
+    {
+        QDir imageDir(imagePath);
+        if(!imageDir.isEmpty() && !imageDir.exists())
+        {
+            //copy files
+        }
+        else
+            emit copyProgress(-1);
+    }
+    else
+        emit copyProgress(-1);
+}
+
+QString MyHelper::getRemovableDrivePath()
+{
+    QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
+    for(int i = 0; i < drives.count(); i++)
+    {
+        if(!drives[i].isRoot() && !drives[i].isReadOnly())
+        {
+            return drives[i].name();
+        }
+    }
+    return QString();
 }

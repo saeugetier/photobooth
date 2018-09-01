@@ -33,6 +33,15 @@ AdvancedSettingsForm {
     {
     }
 
+    copyButton.onClicked:
+    {
+        progressForm.open()
+    }
+
+    FileCopyProgress
+    {
+        id: progressForm
+    }
 
 }
 

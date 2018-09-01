@@ -24,5 +24,7 @@
         <file>AdvancedSettings.qml</file>
         <file>AdvancedSettingsForm.ui.qml</file>
         <file>tr_de.qm</file>
+        <file>FileCopyProgressForm.ui.qml</file>
+        <file>FileCopyProgress.qml</file>
     </qresource>
 </RCC>

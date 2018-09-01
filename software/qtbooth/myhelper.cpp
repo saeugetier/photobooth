@@ -33,9 +33,9 @@ void MyHelper::removeFile(const QString &filename) {
 
 QString MyHelper::getImagePath()
 {
-    QSettings settings;
-    if(settings.contains("Application.foldername"))
-        return settings.value("Application.foldername").value<QString>();
+    QSettings settings("Timmedia", "QML Photo Booth");
+    if(settings.contains("Application/foldername"))
+        return settings.value("Application/foldername").value<QString>();
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
@@ -54,18 +54,18 @@ void MyHelper::restart()
 
 QTranslator* MyHelper::getTranslator()
 {
-    return mTranslator.get();
+    return m_Translator.get();
 }
 
 void MyHelper::setLanguage(QString code)
 {
-    if(mTranslator.get() != NULL)
-        QGuiApplication::removeTranslator(mTranslator.get());
+    if(m_Translator.get() != NULL)
+        QGuiApplication::removeTranslator(m_Translator.get());
 
     std::unique_ptr<QTranslator> translator(new QTranslator);
-    mTranslator.swap(translator);
-    mTranslator->load("tr_" + code, ":/qml/");
-    QGuiApplication::installTranslator(mTranslator.get());
+    m_Translator.swap(translator);
+    m_Translator->load("tr_" + code, ":/qml/");
+    QGuiApplication::installTranslator(m_Translator.get());
 
     emit languageChanged();
 }
@@ -93,13 +93,49 @@ void MyHelper::unmountRemoveableDrive()
 void MyHelper::startCopyFilesToRemovableDrive()
 {
     QString imagePath = this->getImagePath();
+    imagePath = imagePath.right(imagePath.length() - QString("file://").length());
     QString removableDrivePath = this->getRemovableDrivePath();
+    qDebug() << "Try to copy all images to removable drive";
 
     if(removableDrivePath.length())
     {
         QDir imageDir(imagePath);
-        if(!imageDir.isEmpty() && !imageDir.exists())
+        QStringList filters;
+        filters << "*.jpg" << "*.JPG";
+        imageDir.setFilter(QDir::Files);
+        imageDir.setNameFilters(filters);
+        if(!imageDir.isEmpty() && imageDir.exists())
         {
+            qDebug() << "Image folder not empty and found removable disc. Copying...";
+            m_copyFuture = QtConcurrent::run([removableDrivePath,imagePath, this]() {
+                QDir imageDir(imagePath);
+                QStringList filters;
+                filters << "*.jpg" << "*.JPG";
+                QStringList files = imageDir.entryList(filters, QDir::Files);
+
+                int i;
+                for(i = 0; i < files.count() && !this->m_copyFuture.isCanceled(); i++)
+                {
+                    int progress = (100 * i + 1) / files.count();
+                    qDebug() << "File: " << files[i] << " Progress: " << progress;
+                    if(QFile::exists(removableDrivePath + "/" + files[i]))
+                            QFile::remove(removableDrivePath + "/" + files[i]);
+
+                    QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]);
+
+                    emit this->copyProgress(progress);
+                }
+
+                QProcess progress;
+                progress.setProgram("sync");
+                progress.start();
+                progress.waitForFinished();
+
+                if(!this->m_copyFuture.isCanceled())
+                {
+                    emit this->copyFinished();
+                }
+            });
             //copy files
         }
         else
@@ -111,13 +147,30 @@ void MyHelper::startCopyFilesToRemovableDrive()
 
 QString MyHelper::getRemovableDrivePath()
 {
+    QRegExp regexDrive("\\/dev\\/sd*");
+    QRegExp regexBoot("\\/boot");
     QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
     for(int i = 0; i < drives.count(); i++)
     {
         if(!drives[i].isRoot() && !drives[i].isReadOnly())
         {
-            return drives[i].name();
+            if(-1 != regexDrive.indexIn(drives[i].device()))
+            {
+                if(-1 == regexBoot.indexIn(drives[i].rootPath()))
+                {
+                    return drives[i].rootPath();
+                }
+            }
         }
     }
     return QString();
+}
+
+void MyHelper::abortCopy()
+{
+    if(m_copyFuture.isRunning())
+    {
+        m_copyFuture.cancel();
+    }
+
 }

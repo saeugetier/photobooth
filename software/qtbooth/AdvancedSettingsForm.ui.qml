@@ -9,6 +9,7 @@ Popup {
     property alias shutDownButton: shutDownButton
     property alias closeButton: closeButton
     property alias printerEnabled: printerEnabled
+    property alias copyButton: copyButton
     modal: true
 
     ColumnLayout {
@@ -37,6 +38,11 @@ Popup {
             }
         }
 
+        Button {
+            id: copyButton
+            text: qsTr("Copy images to removable drive")
+        }
+
         RowLayout {
             Button {
                 id: closeButton
@@ -59,6 +65,9 @@ Popup {
                 Layout.preferredWidth: 131
             }
         }
+
+
+
     }
 }
 

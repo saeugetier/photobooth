@@ -93,7 +93,7 @@ Dialog {
         id: advancedSettings
         text: qsTr("Advanced Settings")
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
+        anchors.bottomMargin: 10
         anchors.right: parent.right
         anchors.rightMargin: 0
     }

@@ -72,13 +72,9 @@ void MyHelper::setLanguage(QString code)
 
 bool MyHelper::removableDriveMounted()
 {
-    QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
-    for(int i = 0; i < drives.count(); i++)
+    if(getRemovableDrivePath().length() > 0)
     {
-        if(!drives[i].isRoot() && !drives[i].isReadOnly())
-        {
-            return true;
-        }
+        return true;
     }
     return false;
 }

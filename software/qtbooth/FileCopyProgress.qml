@@ -34,4 +34,9 @@ FileCopyProgressForm {
         console.log("Cancel copy")
         helper.abortCopy()
     }
+
+    onClosed:
+    {
+        helper.unmountRemoveableDrive()
+    }
 }

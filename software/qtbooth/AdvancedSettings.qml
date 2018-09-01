@@ -7,6 +7,18 @@ AdvancedSettingsForm {
 
     property alias printerPermanentEnabled: form.printerEnabled
 
+    onOpened:
+    {
+        if(helper.removableDriveMounted())
+        {
+            copyButton.enabled = true
+        }
+        else
+        {
+            copyButton.enabled = false
+        }
+    }
+
     cancelButton.onClicked:
     {
         form.close()
@@ -36,6 +48,7 @@ AdvancedSettingsForm {
     copyButton.onClicked:
     {
         progressForm.open()
+        copyButton.enabled = false
     }
 
     FileCopyProgress

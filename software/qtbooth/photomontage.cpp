@@ -78,7 +78,7 @@ public:
     }
 protected:
     const int m_cElements;
-    const float m_cBorderMargin = 0.02f;
+    const float m_cBorderMargin = 0.01f;
     const int m_cColumns;
 };
 

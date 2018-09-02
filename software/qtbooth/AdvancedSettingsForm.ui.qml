@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.0
 
 Popup {
@@ -10,6 +10,7 @@ Popup {
     property alias closeButton: closeButton
     property alias printerEnabled: printerEnabled
     property alias copyButton: copyButton
+    property alias deleteButton: deleteButton
     modal: true
 
     ColumnLayout {
@@ -43,6 +44,12 @@ Popup {
             text: qsTr("Copy images to removable drive")
         }
 
+        DelayButton {
+            id: deleteButton
+            text: "Delete Images"
+            delay: 5000
+        }
+
         RowLayout {
             Button {
                 id: closeButton
@@ -65,9 +72,6 @@ Popup {
                 Layout.preferredWidth: 131
             }
         }
-
-
-
     }
 }
 

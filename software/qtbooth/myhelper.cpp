@@ -170,3 +170,25 @@ void MyHelper::abortCopy()
     }
 
 }
+
+void MyHelper::deleteAllImages()
+{
+    QString imagePath = this->getImagePath();
+    imagePath = imagePath.right(imagePath.length() - QString("file://").length());
+    QDir imageDir(imagePath);
+    QStringList filters;
+    filters << "*.jpg" << "*.JPG";
+    imageDir.setFilter(QDir::Files);
+    imageDir.setNameFilters(filters);
+    if(!imageDir.isEmpty() && imageDir.exists())
+    {
+        QStringList files = imageDir.entryList(filters, QDir::Files);
+
+        int i;
+        for(i = 0; i < files.count(); i++)
+        {
+            qDebug() << "removing file: " << files[i];
+            QFile::remove(imagePath + "/" + files[i]);
+        }
+    }
+}

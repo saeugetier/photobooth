@@ -56,6 +56,18 @@ AdvancedSettingsForm {
         id: progressForm
     }
 
+    deleteButton.onActivated:
+    {
+        console.log("Deletion promp")
+        deleteButton.progress = 0
+        deleteDialog.open()
+    }
+
+    DeleteConfirmDialog
+    {
+        id: deleteDialog
+    }
+
 }
 
 /*##^## Designer {

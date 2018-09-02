@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE void unmountRemoveableDrive();
     Q_INVOKABLE void startCopyFilesToRemovableDrive();
     Q_INVOKABLE void abortCopy();
+    Q_INVOKABLE void deleteAllImages();
 protected:
     std::unique_ptr<QTranslator> m_Translator;
     QString getRemovableDrivePath();

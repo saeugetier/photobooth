@@ -26,5 +26,6 @@
         <file>tr_de.qm</file>
         <file>FileCopyProgressForm.ui.qml</file>
         <file>FileCopyProgress.qml</file>
+        <file>DeleteConfirmDialog.qml</file>
     </qresource>
 </RCC>

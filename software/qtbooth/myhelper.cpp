@@ -117,7 +117,8 @@ void MyHelper::startCopyFilesToRemovableDrive()
                     if(QFile::exists(removableDrivePath + "/" + files[i]))
                             QFile::remove(removableDrivePath + "/" + files[i]);
 
-                    QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]);
+                    if(!QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]))
+                        qDebug() << "Copying file: " << files[i] << " was not successfull";
 
                     emit this->copyProgress(progress);
                 }

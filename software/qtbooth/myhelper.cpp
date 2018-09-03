@@ -113,7 +113,7 @@ void MyHelper::startCopyFilesToRemovableDrive()
                 for(i = 0; i < files.count() && !this->m_copyFuture.isCanceled(); i++)
                 {
                     int progress = (100 * i + 1) / files.count();
-                    qDebug() << "File: " << files[i] << " Progress: " << progress;
+                    qDebug() << "Copy file: " << imagePath + "/" + files[i] << " to: " << removableDrivePath + "/" + files[i] << " Progress: " << progress;
                     if(QFile::exists(removableDrivePath + "/" + files[i]))
                             QFile::remove(removableDrivePath + "/" + files[i]);
 

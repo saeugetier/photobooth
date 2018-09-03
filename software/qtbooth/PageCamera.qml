@@ -62,7 +62,7 @@ PageCameraForm {
     {
         if(camera.imageCapture.ready)
         {
-            camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd.MM.yyyy_hh:mm:ss") + ".jpg")
+            camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
             if(settingsPopup.settingFlashEnable)
             {
                 flash.setFlash(true)

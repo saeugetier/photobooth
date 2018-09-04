@@ -96,7 +96,8 @@ QStringList PhotoMontage::filenames()
 
 int PhotoMontage::addFile(QString file)
 {
-   m_filenames.append(file);
+   if(!m_filenames.contains(file))
+       m_filenames.append(file);
    return m_filenames.count();
 }
 

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 
 Dialog {
     standardButtons: Dialog.Yes | Dialog.No
+    closePolicy: Popup.CloseOnEscape
 
     Label
     {

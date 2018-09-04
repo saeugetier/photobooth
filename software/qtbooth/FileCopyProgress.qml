@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 FileCopyProgressForm {
     standardButtons: Dialog.Cancel
     id: copyFileDialog
+    closePolicy: Popup.CloseOnEscape
 
     Connections
     {

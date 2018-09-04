@@ -6,6 +6,7 @@ PopupPrintForm {
     property string fileNameFullScale : ""
     property bool printerBusy: false
     property bool fileReady: false
+    property alias printerBusyState: printForm.printerBusyState
 
     onPrinterBusyChanged:
     {

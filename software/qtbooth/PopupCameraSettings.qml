@@ -86,7 +86,7 @@ PopupCameraSettingsForm {
         property bool flashEnable: true
         property real brightness: 0.1
         property int countdown: 3
-        property string password: "1234"
+        property string password: "0815"
         property bool printerPermanentEnable: true
 
         Component.onCompleted:

@@ -6,6 +6,7 @@ AdvancedSettingsForm {
     id: form
 
     property alias printerPermanentEnabled: form.printerEnabled
+    property alias recycleBinEnabled: form.recycleEnabled
 
     onOpened:
     {

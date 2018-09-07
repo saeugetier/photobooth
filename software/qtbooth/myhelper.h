@@ -18,7 +18,7 @@ public:
 
     QTranslator* getTranslator();
 public:
-    Q_INVOKABLE void removeFile(const QString &filename);
+    Q_INVOKABLE void removeFile(const QString &filename, bool recycle);
     Q_INVOKABLE QString getImagePath();
     Q_INVOKABLE void shutdown();
     Q_INVOKABLE void restart();

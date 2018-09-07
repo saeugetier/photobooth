@@ -11,6 +11,7 @@ Popup {
     property alias printerEnabled: printerEnabled
     property alias copyButton: copyButton
     property alias deleteButton: deleteButton
+    property alias recycleEnabled: recycleEnabled
     modal: true
 
     ColumnLayout {
@@ -35,6 +36,20 @@ Popup {
 
             Switch {
                 id: printerEnabled
+                text: qsTr("enabled")
+            }
+        }
+
+        GridLayout {
+            width: 100
+            height: 100
+
+            Label {
+                text: qsTr("Recycle Bin:")
+            }
+
+            Switch {
+                id: recycleEnabled
                 text: qsTr("enabled")
             }
         }

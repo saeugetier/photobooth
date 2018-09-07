@@ -24,10 +24,22 @@ MyHelper* MyHelper::instance()
     return Singleton<MyHelper>::instance(MyHelper::createInstance);
 }
 
-void MyHelper::removeFile(const QString &filename) {
+void MyHelper::removeFile(const QString &filename, bool recycle) {
     QFile file(filename);
-    file.remove();
-    qDebug("File deleted: %s", filename.toStdString().c_str());
+    if(recycle)
+    {
+        QFileInfo info(filename);
+        QString path = info.absolutePath();
+        path.append("/recycle/");
+        path.append(info.fileName());
+        qDebug() << "Moving file :" << filename << " to dir: " << path;
+        QFile::rename(filename, path);
+    }
+    else
+    {
+        file.remove();
+        qDebug("File deleted: %s", filename.toStdString().c_str());
+    }
 }
 
 
@@ -181,6 +193,33 @@ void MyHelper::deleteAllImages()
     filters << "*.jpg" << "*.JPG";
     imageDir.setFilter(QDir::Files);
     imageDir.setNameFilters(filters);
+    if(!imageDir.isEmpty() && imageDir.exists())
+    {
+        QStringList files = imageDir.entryList(filters, QDir::Files);
+
+        int i;
+        for(i = 0; i < files.count(); i++)
+        {
+            qDebug() << "removing file: " << files[i];
+            QFile::remove(imagePath + "/" + files[i]);
+        }
+    }
+
+    imageDir.setPath(imagePath + "/collage");
+    if(!imageDir.isEmpty() && imageDir.exists())
+    {
+        QStringList files = imageDir.entryList(filters, QDir::Files);
+
+        int i;
+        for(i = 0; i < files.count(); i++)
+        {
+            qDebug() << "removing file: " << files[i];
+            QFile::remove(imagePath + "/" + files[i]);
+        }
+    }
+
+
+    imageDir.setPath(imagePath + "/recycle");
     if(!imageDir.isEmpty() && imageDir.exists())
     {
         QStringList files = imageDir.entryList(filters, QDir::Files);

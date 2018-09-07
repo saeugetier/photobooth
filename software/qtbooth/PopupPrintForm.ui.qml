@@ -42,7 +42,7 @@ Popup {
     ToolButton {
         id: printButton
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: 50
+        anchors.horizontalCenterOffset: 150
         anchors.bottom: parent.bottom
         text: "\uE802" // icon-print
         font.family: "fontello"
@@ -60,7 +60,7 @@ Popup {
     ToolButton {
         id: cancelButton
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: -50
+        anchors.horizontalCenterOffset: -150
         anchors.bottom: parent.bottom
         text: "\uE81F" // icon-cross
         font.family: "fontello"

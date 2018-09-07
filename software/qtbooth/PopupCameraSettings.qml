@@ -68,12 +68,14 @@ PopupCameraSettingsForm {
         onOpened:
         {
             advancedSettings.printerPermanentEnabled.checked = settings.printerPermanentEnable
+            advancedSettings.recycleBinEnabled.checked = applicationSettings.recycleBinEnabled
         }
 
         onClosed:
         {
             passwordPopup.unlocked = false
             settings.printerPermanentEnable = advancedSettings.printerPermanentEnabled.checked
+            applicationSettings.recycleBinEnabled = advancedSettings.recycleBinEnabled.checked
         }
     }
 

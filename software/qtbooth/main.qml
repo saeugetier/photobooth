@@ -92,5 +92,6 @@ ApplicationWindow {
         id: applicationSettings
         category: "Application"
         property string foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
+        property bool recycleBinEnabled: false
     }
 }

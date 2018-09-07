@@ -18,7 +18,7 @@ Popup {
     ToolButton {
         id: saveButton
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: -50
+        anchors.horizontalCenterOffset: -150
         anchors.bottom: parent.bottom
         text: "\uE803" // icon-save
         font.family: "fontello"
@@ -34,7 +34,7 @@ Popup {
     ToolButton {
         id: deleteButton
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: 50
+        anchors.horizontalCenterOffset: 150
         anchors.bottom: parent.bottom
         text: "\uE800" // icon-folder-open-empty
         font.family: "fontello"
@@ -54,3 +54,8 @@ Popup {
         anchors.centerIn: parent
     }
 }
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

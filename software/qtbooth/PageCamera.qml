@@ -181,7 +181,7 @@ PageCameraForm {
 
         onImageRejected:
         {
-            helper.removeFile(filename)
+            helper.removeFile(filename, applicationSettings.recycleBinEnabled)
         }
     }
 

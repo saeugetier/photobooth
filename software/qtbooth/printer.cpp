@@ -71,7 +71,7 @@ bool Printer::printerOnline()
         return false;
 
     QStringList arguments;
-    arguments << " -c 1 " << ip;
+    arguments << "-c 1" << ip;
     int exitcode = QProcess::execute("ping", arguments);
     if(exitcode == 0)
         return true;

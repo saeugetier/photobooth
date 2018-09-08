@@ -32,12 +32,14 @@ AdvancedSettingsForm {
 
     shutDownButton.onClicked:
     {
+        flash.setBrightness(0);
         mainWindow.close()
         helper.shutdown()
     }
 
     restartButton.onClicked:
     {
+        flash.setBrightness(0);
         mainWindow.close()
         helper.restart()
     }

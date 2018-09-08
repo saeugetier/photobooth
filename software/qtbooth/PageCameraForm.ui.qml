@@ -2,6 +2,7 @@ import QtQuick 2.5
 import QtMultimedia 5.5
 import QtQuick.Controls 2.0
 import QtGraphicalEffects 1.0
+import QtQuick.Layouts 1.2
 
 Item {
     property alias cameraShutterButton: shutterButton
@@ -9,6 +10,7 @@ Item {
     property alias camera: camera
     property alias cameraCountdown: countdown
     property alias settingsButton: settingsButton
+    property alias printerBusyIndicator: printerBusyIndicator
 
     Camera {
         id: camera
@@ -84,6 +86,28 @@ Item {
         id: countdown
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+    }
+
+    Item {
+        id: printerBusyIndicator
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: 120
+        anchors.bottomMargin: 60
+        visible: false
+
+        RowLayout {
+            BusyIndicator {
+                width: 30
+                height: 30
+            }
+            Text {
+                text: "\uE802" // icon-print
+                font.family: "fontello"
+                font.pointSize: 48
+                color: "white"
+            }
+        }
     }
 }
 

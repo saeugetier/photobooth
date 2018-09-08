@@ -64,6 +64,21 @@ QString Printer::getPrinterIp()
     return ip;
 }
 
+bool Printer::printerOnline()
+{
+    QString ip = getPrinterIp();
+    if(ip.length() == 0)
+        return false;
+
+    QStringList arguments;
+    arguments << " -c 1 " << ip;
+    int exitcode = QProcess::execute("ping", arguments);
+    if(exitcode == 0)
+        return true;
+    else
+        return false;
+}
+
 
 QSize Printer::getPrintSize()
 {
@@ -75,17 +90,24 @@ int Printer::printImage(const QString &filename)
     QString ip = getPrinterIp();
     if(ip.length() > 0)
     {
+
         QStringList parameters;
         parameters << "-printer_ip=" + ip;
         parameters << filename.right(filename.length() - QString("file://").length());
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {
-            mPrinterProcess.start("selphy", parameters);
-            qDebug() << parameters;
-            return 0;
+            if(printerOnline())
+            {
+                mPrinterProcess.start("selphy", parameters);
+                qDebug() << parameters;
+                return 0;
+            }
+            else
+                return -1;
         }
-        return -1;
+        else
+            return -1;
     }
     else
         qDebug() << "Print failed. No printer connected!";

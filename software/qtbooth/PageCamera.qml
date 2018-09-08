@@ -6,6 +6,8 @@ import QtMultimedia 5.5
 
 
 PageCameraForm {
+    id: cameraPage
+
     property var locale: Qt.locale()
     cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
 
@@ -196,6 +198,19 @@ PageCameraForm {
         closePolicy: Popup.CloseOnEscape
 
         state: settingsPopup.settingPrintFullscale ? "fullscale" : "collage"
+
+        onPrinterBusyStateChanged:
+        {
+            console.log("Printer State changed " + printPopup.printerBusyState)
+            if(printPopup.printerBusyState == "busy")
+            {
+                cameraPage.printerBusyIndicator.visible = true
+            }
+            else
+            {
+                cameraPage.printerBusyIndicator.visible = false
+            }
+        }
     }
 
 

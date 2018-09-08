@@ -25,6 +25,7 @@ public slots:
     Q_INVOKABLE QString getPrinterIp();
     Q_INVOKABLE int printImage(const QString &filename);
     Q_INVOKABLE QSize getPrintSize();
+    Q_INVOKABLE bool printerOnline();
 
 protected slots:
     void finished(int code, QProcess::ExitStatus status);

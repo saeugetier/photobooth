@@ -71,12 +71,18 @@ bool Printer::printerOnline()
         return false;
 
     QStringList arguments;
-    arguments << "-c 1" << ip;
+    arguments << "-c" << "1" << ip;
     int exitcode = QProcess::execute("ping", arguments);
     if(exitcode == 0)
+    {
+        qDebug() << "Printer on IP " << ip << " is online.";
         return true;
+    }
     else
+    {
+        qDebug() << "Printer on IP " << ip << " seems to be offline.";
         return false;
+    }
 }
 
 

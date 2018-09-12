@@ -2,6 +2,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.0
 import Qt.labs.settings 1.0
 import QtQuick.Dialogs 1.2
+import QtMultimedia 5.5
 
 PopupCameraSettingsForm {
     property alias cameraPrintSettings: settings
@@ -69,6 +70,7 @@ PopupCameraSettingsForm {
         {
             advancedSettings.printerPermanentEnabled.checked = settings.printerPermanentEnable
             advancedSettings.recycleBinEnabled.checked = applicationSettings.recycleBinEnabled
+            advancedSettings.setWhiteBalance(settings.whiteBalance)
         }
 
         onClosed:
@@ -76,6 +78,7 @@ PopupCameraSettingsForm {
             passwordPopup.unlocked = false
             settings.printerPermanentEnable = advancedSettings.printerPermanentEnabled.checked
             applicationSettings.recycleBinEnabled = advancedSettings.recycleBinEnabled.checked
+            settings.whiteBalance = advancedSettings.getWhiteBalance()
         }
     }
 
@@ -90,6 +93,7 @@ PopupCameraSettingsForm {
         property int countdown: 3
         property string password: "0815"
         property bool printerPermanentEnable: true
+        property int whiteBalance: CameraImageProcessing.WhiteBalanceAuto
 
         Component.onCompleted:
         {

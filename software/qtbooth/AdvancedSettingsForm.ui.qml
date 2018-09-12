@@ -12,6 +12,7 @@ Popup {
     property alias copyButton: copyButton
     property alias deleteButton: deleteButton
     property alias recycleEnabled: recycleEnabled
+    property alias comboBoxWhiteBalance: comboBoxWhiteBalance
     modal: true
 
     ColumnLayout {
@@ -51,6 +52,23 @@ Popup {
             Switch {
                 id: recycleEnabled
                 text: qsTr("enabled")
+            }
+        }
+
+        GridLayout {
+            id: gridLayout1
+            width: 100
+            height: 100
+
+            Label {
+                id: labelWhiteBalance
+                text: qsTr("White Balance:")
+            }
+
+            ComboBox {
+                id: comboBoxWhiteBalance
+                currentIndex: 0
+                model: ["Auto", "Cloudy", "Flourescent", "Sunlight", "Flash", "Shade", "Sunset", "Thungsten"]
             }
         }
 

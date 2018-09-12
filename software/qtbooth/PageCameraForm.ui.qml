@@ -17,8 +17,8 @@ Item {
 
         position: Camera.FrontFace
 
-        imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
 
+        //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
         exposure {
             exposureCompensation: -1.0
             exposureMode: Camera.ExposurePortrait
@@ -110,8 +110,8 @@ Item {
         }
     }
 }
-
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}
 }
  ##^##*/
+

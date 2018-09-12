@@ -86,6 +86,14 @@ PageCameraForm {
         console.log("Camera Error: " + errorString)
     }
 
+    camera.imageProcessing.whiteBalanceMode: settingsPopup.cameraPrintSettings.whiteBalance
+
+    camera.imageProcessing.onWhiteBalanceModeChanged:
+    {
+        console.log("Changed camera white balance to: " + camera.imageProcessing.whiteBalanceMode)
+        console.log("Setting is " + settingsPopup.cameraPrintSettings.whiteBalance)
+    }
+
     camera.onCameraStateChanged:
     {
         if(camera.cameraState == Camera.UnloadedState)

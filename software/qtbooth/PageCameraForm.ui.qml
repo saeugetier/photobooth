@@ -11,12 +11,12 @@ Item {
     property alias cameraCountdown: countdown
     property alias settingsButton: settingsButton
     property alias printerBusyIndicator: printerBusyIndicator
+    property alias animatedProgressBar: animatedProgressBar
 
     Camera {
         id: camera
 
         position: Camera.FrontFace
-
 
         //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
         exposure {
@@ -41,6 +41,7 @@ Item {
         id: shutterButton
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
         text: "\uE801"
         font.family: "fontello"
         font.pointSize: 104
@@ -109,9 +110,15 @@ Item {
             }
         }
     }
+
+    AnimatedProgressBar {
+        id: animatedProgressBar
+        width: parent.width
+        anchors.bottom: parent.bottom
+    }
 }
+
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}
 }
  ##^##*/
-

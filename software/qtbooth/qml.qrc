@@ -27,5 +27,6 @@
         <file>FileCopyProgressForm.ui.qml</file>
         <file>FileCopyProgress.qml</file>
         <file>DeleteConfirmDialog.qml</file>
+        <file>AnimatedProgressBar.qml</file>
     </qresource>
 </RCC>

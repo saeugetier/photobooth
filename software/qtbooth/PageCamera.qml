@@ -58,6 +58,7 @@ PageCameraForm {
         tabBar.enabled = false
         settingsButton.enabled = false
         cameraShutterButton.enabled = false
+        animatedProgressBar.value = 1 / cameraCountdown.defaultSeconds
     }
 
     cameraCountdown.onTimeout:
@@ -78,6 +79,21 @@ PageCameraForm {
             tabBar.enabled = true
             settingsButton.enabled = true
             cameraShutterButton.enabled = true
+        }
+    }
+
+    cameraCountdown.onSecondsChanged:
+    {
+        if(cameraCountdown.seconds === cameraCountdown.defaultSeconds)
+        {
+            animatedProgressBar.value = 0.0
+        }
+        else
+        {
+            var progress = 1 - (cameraCountdown.seconds -1)/cameraCountdown.defaultSeconds
+            if(progress > 1.0)
+                progress = 1.0
+            animatedProgressBar.value = progress
         }
     }
 

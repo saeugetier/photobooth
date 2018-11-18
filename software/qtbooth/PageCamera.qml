@@ -55,12 +55,14 @@ PageCameraForm {
             camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
             if(settingsPopup.settingFlashEnable)
             {
-                flash.setFlash(true)
+                //flash.setFlash(true)
+                flash.setBrightness(settingsPopup.settingFlashBrightness)
             }
         }
         else
         {
-            flash.setFlash(false)
+            //flash.setFlash(false)
+            flash.setBrightness(settingsPopup.settingBrightness)
             failureText.visible = true;
             failureTimeout.start()
             tabBar.enabled = true
@@ -133,7 +135,8 @@ PageCameraForm {
 
     camera.imageCapture.onImageCaptured:
     {
-        flash.setFlash(false)
+        //flash.setFlash(false)
+        flash.setBrightness(settingsPopup.settingBrightness)
         previewPopup.showImage(preview)
         tabBar.enabled = true
         settingsButton.enabled = true
@@ -148,7 +151,8 @@ PageCameraForm {
 
     camera.imageCapture.onCaptureFailed:
     {
-        flash.setFlash(false)
+        //flash.setFlash(false)
+        flash.setBrightness(settingsPopup.settingBrightness)
         failureText.visible = true;
         failureTimeout.start()
         tabBar.enabled = true

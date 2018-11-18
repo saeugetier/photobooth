@@ -9,6 +9,7 @@ Dialog {
     property alias settingPrintFullscale: printFullscale.checked
     property alias settingFlashEnable: flashEnable.checked
     property alias settingBrightness: brightnessSlider.value
+    property alias settingFlashBrightness: flashBrightnessSlider.value
     property alias settingCountdown: countdownSpinBox.value
     property alias advancedSettings: advancedSettings
 
@@ -74,6 +75,15 @@ Dialog {
 
         Slider {
             id: brightnessSlider
+            stepSize: 0.05
+        }
+
+        Label {
+            text: qsTr("Flash brightness: ")
+        }
+
+        Slider {
+            id: flashBrightnessSlider
             stepSize: 0.05
         }
 

@@ -15,6 +15,7 @@ PopupCameraSettingsForm {
     settingPrintFullscale: settings.printFullscale
     settingFlashEnable: settings.flashEnable
     settingBrightness: settings.brightness
+    settingFlashBrightness: settings.flashBrightness
     settingCountdown: settings.countdown
 
     onAccepted: {
@@ -22,7 +23,14 @@ PopupCameraSettingsForm {
         settings.printFullscale = dialog.settingPrintFullscale
         settings.flashEnable = dialog.settingFlashEnable
         settings.brightness = dialog.settingBrightness
+        settings.flashBrightness = dialog.settingFlashBrightness
         settings.countdown = dialog.settingCountdown
+
+        if(settings.flashBrightness < settings.brightness)
+        {
+            settings.flashBrightness = settings.brightness
+            dialog.settingFlashBrightness = settings.flashBrightness
+        }
 
         flash.setBrightness(settings.brightness)
         console.log("Settings accepted")
@@ -33,6 +41,7 @@ PopupCameraSettingsForm {
         dialog.settingPrintFullscale = settings.printFullscale
         dialog.settingFlashEnable = settings.flashEnable
         dialog.settingBrightness = settings.brightness
+        dialog.settingFlashBrightness = settings.flashBrightness
         dialog.settingCountdown = settings.countdown
         console.log("Settings rejected")
     }
@@ -90,6 +99,7 @@ PopupCameraSettingsForm {
         property bool printFullscale: true
         property bool flashEnable: true
         property real brightness: 0.1
+        property real flashBrightness: 1.0
         property int countdown: 3
         property string password: "0815"
         property bool printerPermanentEnable: true

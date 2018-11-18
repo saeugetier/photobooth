@@ -49,10 +49,13 @@ ApplicationWindow {
             if(swipeView.currentItem == camera)
             {
                 gallery.resetGallery()
+                cameraTimeoutTimer.restart()
+                flash.setBrightness(camera.settingsPopup.cameraPrintSettings.brightness)
             }
             else
             {
                 cameraTimeoutTimer.stop()
+                flash.setBrightness(0)
             }
         }
     }

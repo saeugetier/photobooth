@@ -13,12 +13,12 @@
         <file>PageGalleryForm.ui.qml</file>
         <file>PopupCameraSettings.qml</file>
         <file>PopupCameraSettingsForm.ui.qml</file>
-        <file>Countdown.qml</file>
-        <file>DelegateGalleryItem.qml</file>
+        <file>content/Countdown.qml</file>
+        <file>content/DelegateGalleryItem.qml</file>
         <file>images/box-shadow.png</file>
         <file>scripts/script.js</file>
         <file>styles/RoundProgressBarStyle.qml</file>
-        <file>CollageImage.qml</file>
+        <file>content/CollageImage.qml</file>
         <file>SettingsPassword.qml</file>
         <file>SettingsPasswordForm.ui.qml</file>
         <file>AdvancedSettings.qml</file>
@@ -27,6 +27,7 @@
         <file>FileCopyProgressForm.ui.qml</file>
         <file>FileCopyProgress.qml</file>
         <file>DeleteConfirmDialog.qml</file>
-        <file>AnimatedProgressBar.qml</file>
+        <file>content/AnimatedProgressBar.qml</file>
+        <file>content/PhotoboothCamera.qml</file>
     </qresource>
 </RCC>

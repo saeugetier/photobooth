@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
-import "scripts/script.js" as Script
-import "styles" as Style
+import "../scripts/script.js" as Script
+import "../styles" as Style
 
 Package {
 
@@ -33,7 +33,7 @@ Package {
                     rightMargin: -8
                     bottomMargin: -8
                 }
-                source: 'images/box-shadow.png'
+                source: '../images/box-shadow.png'
                 border {
                     top: 10
                     left: 10

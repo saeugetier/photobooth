@@ -3,6 +3,7 @@ import QtMultimedia 5.5
 import QtQuick.Controls 2.0
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
+import "content"
 
 Item {
     property alias cameraShutterButton: shutterButton

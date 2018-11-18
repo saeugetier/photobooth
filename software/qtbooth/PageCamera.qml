@@ -9,21 +9,8 @@ PageCameraForm {
     id: cameraPage
 
     property var locale: Qt.locale()
+    property alias settingsPopup: settingsPopup
     cameraCountdown.defaultSeconds: settingsPopup.settingCountdown
-
-    onFocusChanged:
-    {
-        console.log("Focus of camera page changed. Focus: " + focus)
-        if(focus)
-        {
-            cameraTimeoutTimer.restart()
-            flash.setBrightness(settingsPopup.cameraPrintSettings.brightness)
-        }
-        else if(swipeView.currentIndex != 0) //ignore popups in current swipe view
-        {
-            flash.setBrightness(0)
-        }
-    }
 
     Timer
     {

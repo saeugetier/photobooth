@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.1
 import QtQuick.Window 2.0
 import QtQml.Models 2.2
+import "content"
 
 Item {
     property alias foldermodel: folderModel
@@ -54,6 +55,7 @@ Item {
 
             //rightMargin: 100
 
+
             /*Rectangle {
                     anchors.centerIn: parent
                     width: parent.width-10; height: parent.height-10
@@ -98,6 +100,7 @@ Item {
 
             highlightRangeMode: ListView.StrictlyEnforceRange
             snapMode: ListView.SnapOneItem
+
             /*Rectangle {
                     anchors.centerIn: parent
                     width: parent.width-10; height: parent.height-10
@@ -162,6 +165,7 @@ Item {
         value: root.downloadProgress
     }
 }
+
 
 /*##^## Designer {
     D{i:0;autoSize:true;height:480;width:640}

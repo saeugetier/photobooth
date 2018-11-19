@@ -29,5 +29,6 @@
         <file>DeleteConfirmDialog.qml</file>
         <file>content/AnimatedProgressBar.qml</file>
         <file>content/PhotoboothCamera.qml</file>
+        <file>content/WhiteOverlay.qml</file>
     </qresource>
 </RCC>

@@ -13,6 +13,7 @@ Item {
     property alias settingsButton: settingsButton
     property alias printerBusyIndicator: printerBusyIndicator
     property alias animatedProgressBar: animatedProgressBar
+    property alias whiteOverlay: whiteOverlay
 
     Camera {
         id: camera
@@ -36,6 +37,15 @@ Item {
         source: camera
         anchors.fill: parent
         focus: visible // to receive focus and capture key events when visible
+    }
+
+    WhiteOverlay
+    {
+        id: whiteOverlay
+        x: output.x
+        y: output.y
+        width: output.width
+        height: output.height
     }
 
     ToolButton {

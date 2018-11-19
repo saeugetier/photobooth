@@ -57,12 +57,14 @@ PageCameraForm {
             {
                 //flash.setFlash(true)
                 flash.setBrightness(settingsPopup.settingFlashBrightness)
+                whiteOverlay.state = "triggered"
             }
         }
         else
         {
             //flash.setFlash(false)
             flash.setBrightness(settingsPopup.settingBrightness)
+            whiteOverlay.state = "released"
             failureText.visible = true;
             failureTimeout.start()
             tabBar.enabled = true
@@ -137,6 +139,7 @@ PageCameraForm {
     {
         //flash.setFlash(false)
         flash.setBrightness(settingsPopup.settingBrightness)
+        whiteOverlay.state = "released"
         previewPopup.showImage(preview)
         tabBar.enabled = true
         settingsButton.enabled = true
@@ -153,6 +156,7 @@ PageCameraForm {
     {
         //flash.setFlash(false)
         flash.setBrightness(settingsPopup.settingBrightness)
+        whiteOverlay.state = "released"
         failureText.visible = true;
         failureTimeout.start()
         tabBar.enabled = true

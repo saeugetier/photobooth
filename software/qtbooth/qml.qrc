@@ -30,5 +30,7 @@
         <file>content/AnimatedProgressBar.qml</file>
         <file>content/PhotoboothCamera.qml</file>
         <file>content/WhiteOverlay.qml</file>
+        <file>content/CollagePreview.qml</file>
+        <file>content/PhotoProxy.qml</file>
     </qresource>
 </RCC>

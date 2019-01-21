@@ -1,13 +1,15 @@
 # Overview
 
+This project contains yet another Photobooth. The software is intended to run on a Raspberry Pi 2/3, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed as 2 by 2 collage image. All saved images are shown in the gallery page.
 
+As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or webcam) can be used.
 
 # Technology
 ## Software
 Framework: Qt 5.9 or higher - https://qt.io
 
 Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
-Qt GPhoto2 plugin: https://github.com/dept2/qtmultimedia-gphoto
+Qt GPhoto2 plugin: https://github.com/saeugetier/qtmultimedia-gphoto
 
 The software can be build to run on a local PC. Or it can run on an Raspberry Pi. In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
 

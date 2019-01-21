@@ -1,6 +1,6 @@
 # Overview
 
-This project contains yet another Photobooth. The software is intended to run on a Raspberry Pi 2/3, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed as 2 by 2 collage image. All saved images are shown in the gallery page.
+This project contains yet another [Photobooth](https://github.com/saeugetier/photobooth). The software is intended to run on a Raspberry Pi 2/3, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed as 2 by 2 collage image. All saved images are shown in the gallery page.
 
 As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or webcam) can be used.
 
@@ -30,4 +30,4 @@ Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://f
 
 ## Video
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Z9pVK-X5Wz4/0.jpg)](https://youtu.be/Z9pVK-X5Wz4)
+[![Video](https://img.youtube.com/vi/Z9pVK-X5Wz4/0.jpg)](https://youtu.be/Z9pVK-X5Wz4)

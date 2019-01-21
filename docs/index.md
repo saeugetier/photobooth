@@ -4,6 +4,8 @@ This project contains yet another Photobooth. The software is intended to run on
 
 As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or webcam) can be used.
 
+The application can be either compiled and deployed on an existing Raspbian installation, or a ready to go image can be build by Yocto build system: https://github.com/saeugetier/poky-photobooth/
+
 # Technology
 ## Software
 Framework: Qt 5.9 or higher - https://qt.io

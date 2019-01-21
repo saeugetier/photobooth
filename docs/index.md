@@ -6,12 +6,17 @@ As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or web
 
 The application can be either compiled and deployed on an existing Raspbian installation, or a ready to go image can be build by Yocto build system: [https://github.com/saeugetier/poky-photobooth/](https://github.com/saeugetier/poky-photobooth/)
 
+## Video
+
+[![Video](https://img.youtube.com/vi/Z9pVK-X5Wz4/0.jpg)](https://youtu.be/Z9pVK-X5Wz4)
+
 # Technology
 ## Software
 Framework: Qt 5.9 or higher - https://qt.io
 
-Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
-Qt GPhoto2 plugin: https://github.com/saeugetier/qtmultimedia-gphoto
+By default V4L2 are used. If you use a Raspberry Pi Camera, the v4l2 camera kernel module must be used.
+
+In order to use GPhoto2 cameras, the [QT Multimedia Gphoto Plugin](https://github.com/saeugetier/qtmultimedia-gphoto) must be installed. A [list of supported cameras](http://www.gphoto.org/proj/libgphoto2/support.php) can be trieved from the GPhoto2 website.
 
 The software can be build to run on a local PC. Or it can run on an Raspberry Pi. In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
 
@@ -28,6 +33,3 @@ Wii Nunchuck: https://www.aliexpress.com/item/Nunchuck-Nunchuk-Video-Game-Contro
 
 Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://festi.info/boxes.py/
 
-## Video
-
-[![Video](https://img.youtube.com/vi/Z9pVK-X5Wz4/0.jpg)](https://youtu.be/Z9pVK-X5Wz4)

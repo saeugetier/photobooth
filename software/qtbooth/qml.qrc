@@ -32,5 +32,6 @@
         <file>content/WhiteOverlay.qml</file>
         <file>content/CollagePreview.qml</file>
         <file>content/PhotoProxy.qml</file>
+        <file>Application.qml</file>
     </qresource>
 </RCC>

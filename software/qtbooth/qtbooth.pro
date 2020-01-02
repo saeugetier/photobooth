@@ -1,4 +1,4 @@
-QT += qml quick multimedia concurrent
+QT += qml quick multimedia concurrent xml
 
 CONFIG += c++14
 
@@ -10,6 +10,10 @@ linux {
 }
 
 SOURCES += main.cpp \
+    collageiconmodel.cpp \
+    collageimagemodel.cpp \
+    collagemodelfactory.cpp \
+    modelparser.cpp \
     myhelper.cpp \
     photomontage.cpp \
     ledflash.cpp \
@@ -30,6 +34,10 @@ TRANSLATIONS = "tr_de.ts"
 DISTFILES +=
 
 HEADERS += \
+    collageiconmodel.h \
+    collageimagemodel.h \
+    collagemodelfactory.h \
+    modelparser.h \
     myhelper.h \
     photomontage.h \
     ledflash.h \

@@ -10,6 +10,7 @@
 #include "photomontage.h"
 #include "ledflash.h"
 #include "printer.h"
+#include "collagemodelfactory.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +29,9 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
+    qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
+    qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
+    qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

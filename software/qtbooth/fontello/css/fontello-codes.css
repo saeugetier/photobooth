@@ -33,7 +33,11 @@
 .icon-cancel-circled:before { content: '\e81f'; } /* '' */
 .icon-star:before { content: '\e820'; } /* '' */
 .icon-star-empty:before { content: '\e821'; } /* '' */
+.icon-camera-alt:before { content: '\e822'; } /* '' */
+.icon-cog:before { content: '\e823'; } /* '' */
+.icon-lightbulb-1:before { content: '\e824'; } /* '' */
 .icon-resize-full-alt:before { content: '\f0b2'; } /* '' */
+.icon-sun-1:before { content: '\f185'; } /* '' */
 .icon-sliders:before { content: '\f1de'; } /* '' */
 .icon-toggle-off:before { content: '\f204'; } /* '' */
 .icon-toggle-on:before { content: '\f205'; } /* '' */

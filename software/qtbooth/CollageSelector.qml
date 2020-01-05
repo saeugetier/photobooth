@@ -3,6 +3,7 @@ import QtQuick 2.4
 CollageSelectorForm {
     id: form
     property alias iconModel: form.iconModel
+    property string iconName: ""
 
     upButton.onClicked:
     {
@@ -12,6 +13,21 @@ CollageSelectorForm {
     downButton.onClicked:
     {
         scrollIdicator.decrease()
+    }
+
+    iconListView.delegate: iconDelegate
+
+    Component
+    {
+        id: iconDelegate
+        CollageIconButton {
+            onClicked:
+            {
+                iconListView.currentIndex = index
+                console.log("Selected index: " + Number(index).toString())
+                iconName = name
+            }
+        }
     }
 }
 

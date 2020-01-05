@@ -47,7 +47,6 @@ Flickable {
             leftMargin: 25
             transformOrigin: Item.Center
             Layout.fillWidth: true
-            delegate: CollageIconButton {}
 
             ScrollBar.vertical: ScrollBar {
                 id: iconListScrollIndicator

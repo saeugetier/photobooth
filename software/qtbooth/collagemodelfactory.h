@@ -36,7 +36,6 @@ signals:
     void sourceChanged(const QUrl &);
     void statusChanged(const Status &);
     void errorMsgChanged(const QString &);
-
 protected:
     void loadModels();
     bool parseXml(const QDomNode &node) override;

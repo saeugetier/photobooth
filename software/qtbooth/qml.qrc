@@ -33,5 +33,20 @@
         <file>content/CollagePreview.qml</file>
         <file>content/PhotoProxy.qml</file>
         <file>Application.qml</file>
+        <file>ApplicationFlow.qml</file>
+        <file>ApplicationFlowForm.ui.qml</file>
+        <file>MainMenu.qml</file>
+        <file>MainMenuForm.ui.qml</file>
+        <file>SnapshotMenu.qml</file>
+        <file>SnapshotMenuForm.ui.qml</file>
+        <file>ImagePreview.qml</file>
+        <file>ImagePreviewForm.ui.qml</file>
+        <file>CollageMenu.qml</file>
+        <file>CollageMenuForm.ui.qml</file>
+        <file>CollageIconButton.qml</file>
+        <file>images/icon/Unknown.svg</file>
+        <file>CollageSelector.qml</file>
+        <file>CollageSelectorForm.ui.qml</file>
+        <file>XmlData.xml</file>
     </qresource>
 </RCC>

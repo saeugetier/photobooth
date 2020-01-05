@@ -233,6 +233,11 @@ QPointF CollageImage::position() const
     return mPosition;
 }
 
+float CollageImage::rotation() const
+{
+    return mAngle;
+}
+
 QSizeF CollageImage::size() const
 {
     return mSize;
@@ -246,4 +251,9 @@ QUrl CollageImage::borderImage() const
 void CollageImage::setImage(QUrl imagePath)
 {
     mImagePath = imagePath;
+}
+
+bool CollageImage::validateBoundary()
+{
+    return true;
 }

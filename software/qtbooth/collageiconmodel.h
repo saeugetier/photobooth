@@ -17,7 +17,6 @@ public:
     QString name() const;
     QUrl icon() const;
     bool printable() const;
-    bool validBoundary() const;
 protected:
     QString mName;
     QUrl mIcon;
@@ -28,7 +27,8 @@ class CollageIconModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ rowCount NOTIFY rowCountChanged)
-   public:
+    Q_PROPERTY(bool showPrintable READ showPrintable WRITE setShowPrintable NOTIFY showPrintableChanged)
+public:
     enum IconRoles {
        NameRole = Qt::UserRole + 1,
        IconRole,
@@ -37,15 +37,19 @@ class CollageIconModel : public QAbstractListModel
 
     CollageIconModel(QObject *parent = 0);
     void addIcon(const CollageIcon& icon);
-    Q_INVOKABLE int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
     void clear();
     Q_INVOKABLE QString getIconName(int index);
+    bool showPrintable() const;
+    void setShowPrintable(bool printable);
 signals:
     void rowCountChanged(int count);
+    void showPrintableChanged(bool printable);
 private:
     QList<CollageIcon> mIcons;
+    bool mShowPrintable;
 };
 
 #endif // COLLAGEICON_H

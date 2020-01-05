@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("flash", LedFlash::instance());
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
     engine.rootContext()->setContextProperty("printer", Printer::instance());
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));    
+    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 

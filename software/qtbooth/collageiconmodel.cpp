@@ -59,13 +59,7 @@ bool CollageIcon::printable() const
     return mPrintable;
 }
 
-bool CollageIcon::validBoundary() const
-{
-    // @TODO
-    return true;
-}
-
-CollageIconModel::CollageIconModel(QObject *parent) : QAbstractListModel(parent)
+CollageIconModel::CollageIconModel(QObject *parent) : QAbstractListModel(parent), mShowPrintable(true)
 {
 }
 
@@ -113,4 +107,17 @@ QString CollageIconModel::getIconName(int index)
 
      const CollageIcon &icon = mIcons[index];
      return icon.name();
+}
+
+bool CollageIconModel::showPrintable() const
+{
+    return mShowPrintable;
+}
+
+void CollageIconModel::setShowPrintable(bool printable)
+{
+    if(printable == mShowPrintable)
+        return;
+    mShowPrintable = printable;
+    rowCountChanged(rowCount());
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog version="1.0">
+    <collage>
+        <name>Test</name>
+        <icon>1234</icon>
+        <background>BG</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+        </images>
+    </collage>
+    <collage>
+        <name>Test2</name>
+        <icon>1234</icon>
+        <background>BG</background>
+        <images>
+            <image>
+                <position x="0.0" y="0.0"/>
+                <size width="1.0" height="1.0"/>
+                <border>Test1234</border>
+            </image>
+        </images>
+    </collage>
+    <collage>
+        <name>Test3</name>
+        <icon>1234</icon>
+        <background>BG</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+        </images>
+    </collage>
+</catalog>

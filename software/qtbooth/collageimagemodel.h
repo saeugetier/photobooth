@@ -13,29 +13,31 @@ class CollageImage : public QObject, public ModelParser
     Q_OBJECT
     Q_PROPERTY(QUrl imagePath READ imagePath NOTIFY imagePathChanged)
     Q_PROPERTY(QPointF position READ position NOTIFY positionChanged)
+    Q_PROPERTY(float rotation READ rotation NOTIFY rotationChanged)
     Q_PROPERTY(QSizeF size READ size NOTIFY sizeChanged)
     Q_PROPERTY(QUrl borderImage READ borderImage NOTIFY borderImageChanged)
-    //Q_PROPERTY(QQuickScaleGrid *border READ border CONSTANT)
 public:
     CollageImage(QObject* parent = nullptr);
     bool parseXml(const QDomNode& node) override;
     QUrl imagePath() const;
     QPointF position() const;
+    float rotation() const;
     QSizeF size() const;
     QUrl borderImage() const;
     void setImage(QUrl imagePath);
 signals:
     void imagePathChanged(QUrl url);
     void positionChanged(QPointF pos);
+    void rotationChanged(float angle);
     void sizeChanged(QSizeF size);
     void borderImageChanged(QUrl url);
 protected:
+    bool validateBoundary();
     QUrl mImagePath;
     QSizeF mSize;
     QPointF mPosition;
     float mAngle;
     QUrl mBorderImage;
-    //QQuickScaleGrid mBorderGrid;
 };
 
 class CollageImageModel : public QAbstractListModel, public ModelParser

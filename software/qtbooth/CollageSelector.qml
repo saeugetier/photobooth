@@ -4,6 +4,7 @@ CollageSelectorForm {
     id: form
     property alias iconModel: form.iconModel
     property string iconName: ""
+    signal selected
 
     upButton.onClicked:
     {
@@ -26,6 +27,7 @@ CollageSelectorForm {
                 iconListView.currentIndex = index
                 console.log("Selected index: " + Number(index).toString())
                 iconName = name
+                selected()
             }
         }
     }

@@ -19,7 +19,7 @@ Flickable {
         x: 0
         width: sidebar.width
         height: sidebar.height
-        color: "#eec1a2"
+        color: "#4d60ea"
     }
 
     ColumnLayout {
@@ -33,6 +33,7 @@ Flickable {
             font.family: "fontello"
             font.pointSize: 54
             Layout.fillWidth: true
+            autoRepeat: true
             z: 1
         }
 
@@ -66,6 +67,7 @@ Flickable {
             font.family: "fontello"
             font.pointSize: 54
             Layout.fillWidth: true
+            autoRepeat: true
             z: 1
         }
     }

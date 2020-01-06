@@ -48,5 +48,10 @@
         <file>CollageSelector.qml</file>
         <file>CollageSelectorForm.ui.qml</file>
         <file>XmlData.xml</file>
+        <file>scripts/utils.js</file>
+        <file>images/cardboard.png</file>
+        <file>NavigationButton.qml</file>
+        <file>images/buttons/go/white.png</file>
+        <file>images/buttons/back/white.png</file>
     </qresource>
 </RCC>

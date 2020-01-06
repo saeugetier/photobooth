@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtGraphicalEffects 1.0
 
 CollageSelectorForm {
     id: form
@@ -22,6 +23,7 @@ CollageSelectorForm {
     {
         id: iconDelegate
         CollageIconButton {
+            id: iconButton
             onClicked:
             {
                 iconListView.currentIndex = index
@@ -31,6 +33,25 @@ CollageSelectorForm {
             }
         }
     }
+
+
+    NumberAnimation on scrollIdicator.position {
+        duration: 200
+        easing.type: Easing.InOutQuad
+    }
+
+    NumberAnimation on iconListView.contentY {
+        duration: 1000
+        easing.type: Easing.InOutQuad
+    }
+
+   /* scrollIdicator.transitions: Transition {
+        NumberAnimation {
+            property: "position"
+            duration: 200
+            easing.type: Easing.InOutQuad
+        }
+    }*/
 }
 
 

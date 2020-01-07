@@ -116,17 +116,68 @@ QUrl CollageImageModel::backgroundImage() const
 
 bool CollageImageModel::addImagePath(QUrl source)
 {
-
+    if(rowCount() > countImagePathSet()) {
+        mImages[countImagePathSet()]->setImage(source);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void CollageImageModel::clearImagePathes()
 {
+    for(int i = 0; i < mImages.length(); i++)
+    {
+        mImages[i]->setImage(QUrl(""));
+    }
+}
 
+bool CollageImageModel::clearImagePath(int index)
+{
+    if(index < rowCount())
+    {
+        if(mImages[index]->imagePath() != QUrl(""))
+        {
+            mImages[index]->setImage(QUrl(""));
+
+            for(int i = 0; i < rowCount() - 1; i++)
+            {
+                if(mImages[i]->imagePath() == QUrl(""))
+                {
+                    for(int j = i + 1; i < rowCount(); j++)
+                    {
+                        if(mImages[j]->imagePath() != QUrl(""))
+                        {
+                            mImages[i]->setImage(mImages[j]->imagePath());
+                            mImages[j]->setImage(QUrl(""));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
 }
 
 int CollageImageModel::countImagePathSet() const
 {
+    int i = 0;
 
+    for(;i < rowCount(); i++)
+    {
+        if(mImages[i]->imagePath() == QUrl(""))
+            break;
+    }
+    return i;
 }
 
 CollageImage::CollageImage(QObject *parent) : QObject(parent)

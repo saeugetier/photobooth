@@ -62,6 +62,7 @@ public:
     QUrl backgroundImage() const;
     Q_INVOKABLE bool addImagePath(QUrl source);
     Q_INVOKABLE void clearImagePathes();
+    Q_INVOKABLE bool clearImagePath(int index);
     int countImagePathSet() const;
 signals:
     void backgroundImageChanged(const QUrl &image);

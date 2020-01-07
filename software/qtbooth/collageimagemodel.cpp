@@ -114,6 +114,21 @@ QUrl CollageImageModel::backgroundImage() const
     return mBackgroundImage;
 }
 
+bool CollageImageModel::addImagePath(QUrl source)
+{
+
+}
+
+void CollageImageModel::clearImagePathes()
+{
+
+}
+
+int CollageImageModel::countImagePathSet() const
+{
+
+}
+
 CollageImage::CollageImage(QObject *parent) : QObject(parent)
 {
 

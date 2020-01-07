@@ -44,6 +44,7 @@ class CollageImageModel : public QAbstractListModel, public ModelParser
 {
     Q_OBJECT
     Q_PROPERTY(QUrl backgroundImage READ backgroundImage NOTIFY backgroundImageChanged)
+    Q_PROPERTY(int countImagePathSet READ countImagePathSet NOTIFY countImagePatchSetChanged)
 public:
     enum ImageRoles {
         ImagePathRole = Qt::UserRole + 1,
@@ -59,8 +60,12 @@ public:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
     QUrl backgroundImage() const;
+    Q_INVOKABLE bool addImagePath(QUrl source);
+    Q_INVOKABLE void clearImagePathes();
+    int countImagePathSet() const;
 signals:
     void backgroundImageChanged(const QUrl &image);
+    void countImagePatchSetChanged(const int &count);
 protected:
     QList<CollageImage*> mImages;
     QUrl mBackgroundImage;

@@ -53,7 +53,7 @@ public:
     };
 
     explicit CollageImageModel(QObject *parent = nullptr);
-    virtual ~CollageImageModel();
+    virtual ~CollageImageModel() override;
     bool parseXml(const QDomNode& node) override;
     int rowCount(const QModelIndex & parent = QModelIndex()) const override;
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;

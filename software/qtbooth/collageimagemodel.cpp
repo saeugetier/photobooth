@@ -13,6 +13,8 @@ CollageImageModel::~CollageImageModel()
         delete mImages.at(i);
     }
     mImages.clear();
+
+    QAbstractListModel::~QAbstractListModel();
 }
 
 bool CollageImageModel::parseXml(const QDomNode& node)
@@ -144,7 +146,7 @@ bool CollageImage::parseXml(const QDomNode &node)
     {
         bool ok;
         QString x = posNode.item(0).toElement().attribute("x");
-        mPosition.setX(x.toFloat(&ok));
+        mPosition.setX(x.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "position 'x' must be defined as float";
@@ -153,7 +155,7 @@ bool CollageImage::parseXml(const QDomNode &node)
         }
 
         QString y = posNode.item(0).toElement().attribute("y");
-        mPosition.setY(y.toFloat(&ok));
+        mPosition.setY(y.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "position 'y' must be defined as float";
@@ -184,7 +186,7 @@ bool CollageImage::parseXml(const QDomNode &node)
     {
         bool ok;
         QString x = sizeNode.item(0).toElement().attribute("width");
-        mSize.setWidth(x.toFloat(&ok));
+        mSize.setWidth(x.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "size 'width' must be defined as float";
@@ -193,7 +195,7 @@ bool CollageImage::parseXml(const QDomNode &node)
         }
 
         QString y = sizeNode.item(0).toElement().attribute("height");
-        mSize.setHeight(y.toFloat(&ok));
+        mSize.setHeight(y.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "size 'height' must be defined as float";

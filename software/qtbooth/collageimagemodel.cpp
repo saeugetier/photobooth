@@ -323,5 +323,6 @@ void CollageImage::setImage(QUrl imagePath)
 
 bool CollageImage::validateBoundary()
 {
+    // @TODO: validate
     return true;
 }

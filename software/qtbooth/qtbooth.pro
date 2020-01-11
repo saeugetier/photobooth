@@ -1,6 +1,6 @@
 QT += qml quick multimedia concurrent xml
 
-CONFIG += c++14
+CONFIG += c++14 qtquickcompiler
 
 linux {
     contains(QT_ARCH, arm):{

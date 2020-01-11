@@ -13,8 +13,6 @@ CollageImageModel::~CollageImageModel()
         delete mImages.at(i);
     }
     mImages.clear();
-
-    QAbstractListModel::~QAbstractListModel();
 }
 
 bool CollageImageModel::parseXml(const QDomNode& node)

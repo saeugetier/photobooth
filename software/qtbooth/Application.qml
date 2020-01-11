@@ -10,6 +10,7 @@ import CollageModel 1.0
 ApplicationWindow {
     id: mainWindow
     visible: true
+    visibility: "Maximized"
     width: 640
     height: 480
 

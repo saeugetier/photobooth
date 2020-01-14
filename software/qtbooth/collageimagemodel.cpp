@@ -85,17 +85,17 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
     if (index.row() < 0 || index.row() > mImages.count())
         return QVariant();
 
-    const CollageImage &image = mImages[index.row()];
+    CollageImage *image = mImages[index.row()];
     if (role == ImagePathRole)
-        return image.imagePath();
+        return image->imagePath();
     else if(role == ImageRectRole)
-        return image.imageRect();
+        return image->imageRect();
     else if(role == RotationRole)
-        return image.rotation();
+        return image->rotation();
     else if(role == BorderImageRole)
-        return image.borderImage();
+        return image->borderImage();
     else if(role == BorderRectRole)
-        return image.borderRect();
+        return image->borderRect();
     return QVariant();
 }
 

@@ -30,5 +30,7 @@
         <file>NavigationButton.qml</file>
         <file>images/buttons/go/white.png</file>
         <file>images/buttons/back/white.png</file>
+        <file>content/CollageImageDelegate.qml</file>
+        <file>content/CollageRenderer.qml</file>
     </qresource>
 </RCC>

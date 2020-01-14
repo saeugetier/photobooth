@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QSizeF>
 #include <QPointF>
+#include <QRectF>
 #include <QDomNode>
 #include "modelparser.h"
 
@@ -12,32 +13,29 @@ class CollageImage : public QObject, public ModelParser
 {
     Q_OBJECT
     Q_PROPERTY(QUrl imagePath READ imagePath NOTIFY imagePathChanged)
-    Q_PROPERTY(QPointF position READ position NOTIFY positionChanged)
-    Q_PROPERTY(float rotation READ rotation NOTIFY rotationChanged)
-    Q_PROPERTY(QSizeF size READ size NOTIFY sizeChanged)
-    Q_PROPERTY(QUrl borderImage READ borderImage NOTIFY borderImageChanged)
+    Q_PROPERTY(QRectF imageRect READ imageRect CONSTANT)
+    Q_PROPERTY(float rotation READ rotation CONSTANT)
+    Q_PROPERTY(QUrl borderImage READ borderImage CONSTANT)
+    Q_PROPERTY(QRect borderRect READ borderRect CONSTANT)
 public:
     CollageImage(QObject* parent = nullptr);
     bool parseXml(const QDomNode& node) override;
     QUrl imagePath() const;
-    QPointF position() const;
+    QRectF imageRect() const;
     float rotation() const;
-    QSizeF size() const;
     QUrl borderImage() const;
+    QRect borderRect() const;
+
     void setImage(QUrl imagePath);
 signals:
     void imagePathChanged(QUrl url);
-    void positionChanged(QPointF pos);
-    void rotationChanged(float angle);
-    void sizeChanged(QSizeF size);
-    void borderImageChanged(QUrl url);
 protected:
     bool validateBoundary();
     QUrl mImagePath;
-    QSizeF mSize;
-    QPointF mPosition;
+    QRectF mImageRect;
     float mAngle;
     QUrl mBorderImage;
+    QRect mBorderRect;
 };
 
 class CollageImageModel : public QAbstractListModel, public ModelParser
@@ -48,9 +46,10 @@ class CollageImageModel : public QAbstractListModel, public ModelParser
 public:
     enum ImageRoles {
         ImagePathRole = Qt::UserRole + 1,
-        PositionRole,
-        SizeRole,
-        BoarderImageRole
+        ImageRectRole,
+        RotationRole,
+        BorderImageRole,
+        BorderRectRole
     };
 
     explicit CollageImageModel(QObject *parent = nullptr);

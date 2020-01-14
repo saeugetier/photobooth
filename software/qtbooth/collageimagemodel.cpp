@@ -3,7 +3,7 @@
 
 CollageImageModel::CollageImageModel(QObject *parent) : QAbstractListModel(parent)
 {
-
+    mImages.clear();
 }
 
 CollageImageModel::~CollageImageModel()
@@ -77,7 +77,7 @@ bool CollageImageModel::parseXml(const QDomNode& node)
 int CollageImageModel::rowCount(const QModelIndex &parent) const
 {
     (void)(parent);
-    return mImages.count();
+    return mImages.size();
 }
 
 QVariant CollageImageModel::data(const QModelIndex &index, int role) const
@@ -88,22 +88,25 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
     const CollageImage &image = mImages[index.row()];
     if (role == ImagePathRole)
         return image.imagePath();
-    else if (role == PositionRole)
-        return image.position();
-    else if(role == SizeRole)
-        return image.size();
-    else if(role == BoarderImageRole)
+    else if(role == ImageRectRole)
+        return image.imageRect();
+    else if(role == RotationRole)
+        return image.rotation();
+    else if(role == BorderImageRole)
         return image.borderImage();
+    else if(role == BorderRectRole)
+        return image.borderRect();
     return QVariant();
 }
 
 QHash<int, QByteArray> CollageImageModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[PositionRole] = "position";
-    roles[SizeRole] = "size";
+    roles[ImageRectRole] = "imageRect";
+    roles[RotationRole] = "rotation";
     roles[ImagePathRole] = "imagePath";
-    roles[BoarderImageRole] = "borderImage";
+    roles[BorderImageRole] = "borderImage";
+    roles[BorderRectRole] = "borderRect";
     return roles;
 }
 
@@ -210,7 +213,7 @@ bool CollageImage::parseXml(const QDomNode &node)
     {
         bool ok;
         QString x = posNode.item(0).toElement().attribute("x");
-        mPosition.setX(x.toDouble(&ok));
+        mImageRect.setX(x.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "position 'x' must be defined as float";
@@ -219,7 +222,7 @@ bool CollageImage::parseXml(const QDomNode &node)
         }
 
         QString y = posNode.item(0).toElement().attribute("y");
-        mPosition.setY(y.toDouble(&ok));
+        mImageRect.setY(y.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "position 'y' must be defined as float";
@@ -250,7 +253,7 @@ bool CollageImage::parseXml(const QDomNode &node)
     {
         bool ok;
         QString x = sizeNode.item(0).toElement().attribute("width");
-        mSize.setWidth(x.toDouble(&ok));
+        mImageRect.setWidth(x.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "size 'width' must be defined as float";
@@ -259,7 +262,7 @@ bool CollageImage::parseXml(const QDomNode &node)
         }
 
         QString y = sizeNode.item(0).toElement().attribute("height");
-        mSize.setHeight(y.toDouble(&ok));
+        mImageRect.setHeight(y.toDouble(&ok));
         if(!ok)
         {
             mErrorMsg = "size 'height' must be defined as float";
@@ -277,7 +280,71 @@ bool CollageImage::parseXml(const QDomNode &node)
     QDomNodeList borderImageNode = element.elementsByTagName("border");
     if(borderImageNode.count() == 1)
     {
-        mBorderImage = borderImageNode.item(0).toElement().text();
+        QDomNodeList borderFileNode = borderImageNode.item(0).toElement().elementsByTagName("file");
+        if(borderFileNode.count() == 1)
+        {
+            mBorderImage = borderFileNode.item(0).toElement().text();
+        }
+        else
+        {
+            mErrorMsg = "one border image file must be defined";
+            mLine = borderImageNode.item(0).toElement().lineNumber();
+            return false;
+        }
+
+        QDomNodeList borderMarginNode = borderImageNode.item(0).toElement().elementsByTagName("margin");
+        if(borderMarginNode.count() == 1)
+        {
+            if(borderMarginNode.item(0).hasAttributes() &&
+                    borderMarginNode.item(0).toElement().hasAttribute("top") &&
+                    borderMarginNode.item(0).toElement().hasAttribute("left") &&
+                    borderMarginNode.item(0).toElement().hasAttribute("right") &&
+                    borderMarginNode.item(0).toElement().hasAttribute("bottom"))
+            {
+                bool ok;
+                QString top = borderMarginNode.item(0).toElement().attribute("top");
+                mBorderRect.setTop(top.toInt(&ok));
+                if(!ok)
+                {
+                    mErrorMsg = "margin 'top' must be defined as int";
+                    mLine = borderMarginNode.item(0).lineNumber();
+                    return false;
+                }
+
+                QString left = borderMarginNode.item(0).toElement().attribute("left");
+                mBorderRect.setLeft(left.toInt(&ok));
+                if(!ok)
+                {
+                    mErrorMsg = "margin 'left' must be defined as int";
+                    mLine = borderMarginNode.item(0).lineNumber();
+                    return false;
+                }
+
+                QString right = borderMarginNode.item(0).toElement().attribute("right");
+                mBorderRect.setRight(right.toInt(&ok));
+                if(!ok)
+                {
+                    mErrorMsg = "margin 'right' must be defined as int";
+                    mLine = borderMarginNode.item(0).lineNumber();
+                    return false;
+                }
+
+                QString bottom = borderMarginNode.item(0).toElement().attribute("bottom");
+                mBorderRect.setBottom(bottom.toInt(&ok));
+                if(!ok)
+                {
+                    mErrorMsg = "margin 'bottom' must be defined as int";
+                    mLine = borderMarginNode.item(0).lineNumber();
+                    return false;
+                }
+            }
+            else
+            {
+                mErrorMsg = "border margin node must have attributes 'top', 'left', 'right' and 'bottom'";
+                mLine = borderMarginNode.item(0).toElement().lineNumber();
+                return false;
+            }
+        }
     }
     else if(borderImageNode.count() > 1)
     {
@@ -294,19 +361,14 @@ QUrl CollageImage::imagePath() const
     return mImagePath;
 }
 
-QPointF CollageImage::position() const
+QRectF CollageImage::imageRect() const
 {
-    return mPosition;
+    return mImageRect;
 }
 
 float CollageImage::rotation() const
 {
     return mAngle;
-}
-
-QSizeF CollageImage::size() const
-{
-    return mSize;
 }
 
 QUrl CollageImage::borderImage() const
@@ -316,7 +378,16 @@ QUrl CollageImage::borderImage() const
 
 void CollageImage::setImage(QUrl imagePath)
 {
-    mImagePath = imagePath;
+    if(mImagePath != imagePath)
+    {
+        mImagePath = imagePath;
+        emit imagePathChanged(mImagePath);
+    }
+}
+
+QRect CollageImage::borderRect() const
+{
+    return mBorderRect;
 }
 
 bool CollageImage::validateBoundary()

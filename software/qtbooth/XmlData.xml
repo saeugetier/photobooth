@@ -16,7 +16,7 @@
             <image>
                 <position x="0.0" y="0.0"/>
                 <size width="1.0" height="1.0"/>
-                <border>Test1234</border>
+                <border><file>Test1234</file><margin top="10" left="10" right="10" bottom="10"/></border>
             </image>
         </images>
     </collage>

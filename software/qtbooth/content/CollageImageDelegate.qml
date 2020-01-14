@@ -4,7 +4,9 @@ Item {
     property alias imageSource: proxy.imageFileName
     property alias borderImageSource: border.source
     property alias number: proxy.number
-    property rect imageRect
+    //property rect imageRect
+
+    //sanchors.fill: parent
 
     BorderImage {
         id: border
@@ -16,10 +18,11 @@ Item {
     PhotoProxy
     {
         id: proxy
-        x: parent.x * imageRect.x
-        y: parent.y * imageRect.y
-        width: parent.width * imageRect.width
-        height: parent.height * imageRect.height
+        anchors.fill: parent
+        //x: parent.x * imageRect.x
+        //y: parent.y * imageRect.y
+        //width: parent.width * imageRect.width
+        //height: parent.height * imageRect.height
     }
 
 }

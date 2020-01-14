@@ -2,6 +2,7 @@ import QtQuick 2.0
 import CollageModel 1.0
 
 Item {
+    id: renderer
     property CollageImageModel imageModel
 
     Image
@@ -16,14 +17,20 @@ Item {
         id: imageDelegate
         CollageImageDelegate
         {
+            id: collageImage
             borderImageSource: borderImage
             imageSource: imagePath
             number: index
+            x: imageRect.x * renderer.width
+            y: imageRect.y * renderer.height
+            width: imageRect.width * renderer.width
+            height: imageRect.height * renderer.height
         }
     }
 
-    ListView
+    Repeater
     {
+        anchors.fill: parent
         model: imageModel
         delegate: imageDelegate
     }

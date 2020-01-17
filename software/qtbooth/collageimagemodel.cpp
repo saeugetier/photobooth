@@ -118,7 +118,10 @@ QUrl CollageImageModel::backgroundImage() const
 bool CollageImageModel::addImagePath(QUrl source)
 {
     if(rowCount() > countImagePathSet()) {
-        mImages[countImagePathSet()]->setImage(source);
+        int i = countImagePathSet();
+        mImages[i]->setImage(source);
+        QModelIndex ii = index(i,0);
+        emit dataChanged(ii, ii);
         return true;
     }
     else {

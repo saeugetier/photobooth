@@ -2,14 +2,15 @@ import QtQuick 2.4
 import QtQuick.Controls 2.13
 import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
+import "content"
 
 Item {
     id: element
     width: 640
     height: 480
+    property alias collageRenderer: collageRenderer
     property alias backButton: backButton
     property alias continueButton: continueButton
-    property alias labelIconName: labelIconName
     property alias imageSlider: imageSlider
     property alias collageSelector: collageSelector
     property alias iconModel: collageSelector.iconModel
@@ -58,11 +59,12 @@ Item {
             }
         }
 
-        Label {
-            id: labelIconName
-            x: 141
-            y: 232
-            text: qsTr("Label")
+        CollageRenderer {
+            id: collageRenderer
+            x: 57
+            y: 150
+            width: 480
+            height: 360
             visible: false
         }
     }
@@ -126,22 +128,12 @@ Item {
                 target: imageSlider
                 visible: true
             }
-
-            PropertyChanges {
-                target: labelIconName
-                visible: false
-            }
         },
         State {
             name: "IconSelected"
             PropertyChanges {
                 target: imageSlider
                 visible: false
-            }
-
-            PropertyChanges {
-                target: labelIconName
-                visible: true
             }
 
             PropertyChanges {
@@ -154,13 +146,18 @@ Item {
                 anchors.leftMargin: 20
                 visible: true
             }
+
+            PropertyChanges {
+                target: collageRenderer
+                visible: true
+            }
         }
     ]
 }
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:11;anchors_x:139;anchors_y:394}
+    D{i:0;height:480;width:640}D{i:13;anchors_x:139;anchors_y:394}
 }
 ##^##*/
 

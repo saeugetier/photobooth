@@ -5,7 +5,9 @@ import "scripts/utils.js" as Utils
 
 MainMenuForm {
     id: form
+    property alias collageRenderer: form.collageRenderer
     property alias iconModel: form.iconModel
+    property string selectedCollageName : ""
     state: "IconNotSelected"
     signal collageSelected
 
@@ -21,7 +23,7 @@ MainMenuForm {
     collageSelector.onSelected:
     {
         state = "IconSelected"
-        labelIconName.text = collageSelector.iconName
+        selectedCollageName = collageSelector.iconName
     }
 
     continueButton.onClicked:

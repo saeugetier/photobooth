@@ -4,40 +4,81 @@ import CollageModel 1.0
 Item {
     id: renderer
     property CollageImageModel imageModel
+    property rect backgroundRect : Qt.rect(0, 0, renderer.width, renderer.height) // initial value
 
     Image
     {
-        anchors.fill: parent
-        source: imageModel.backgroundImage
+        id: background
+        anchors.fill: renderer
+        //source: imageModel.backgroundImage //set onImageModeChanged
         fillMode: Image.PreserveAspectFit
-    }
 
-    Component
-    {
-        id: imageDelegate
-        CollageImageDelegate
+        sourceSize.height: 2048
+        sourceSize.width: 2048
+
+        onStatusChanged:
         {
-            id: collageImage
-            borderImageSource: borderImage
-            imageSource: imagePath
-            number: index
-            x: imageRect.x * renderer.width
-            y: imageRect.y * renderer.height
-            width: imageRect.width * renderer.width
-            height: imageRect.height * renderer.height
+            if(background.paintedHeight != 0 && background.paintedWidth != 0)
+            {
+                backgroundRect.x = background.x
+                backgroundRect.y = background.y
+                backgroundRect.width = background.paintedWidth
+                backgroundRect.height = background.paintedHeight
+            }
         }
-    }
 
-    Repeater
-    {
-        anchors.fill: parent
-        model: imageModel
-        delegate: imageDelegate
+        Component
+        {
+            id: imageDelegate
+            CollageImageDelegate
+            {
+                id: collageImage
+                borderImageSource: borderImage
+                imageSource: imagePath
+                number: index
+                x: imageRect.x * backgroundRect.width + (renderer.width - backgroundRect.width) / 2
+                y: imageRect.y * backgroundRect.height + (renderer.height - backgroundRect.height) / 2
+                width: imageRect.width * backgroundRect.width
+                height: imageRect.height * backgroundRect.height
+
+                Component.onCompleted:
+                {
+                    console.log("Picture placed at: " + Number(x).toString() + " " + Number(y).toString())
+                }
+
+                onImageSourceChanged:
+                {
+                    console.log(imageSource)
+                }
+            }
+        }
+
+        Repeater
+        {
+            anchors.fill: background
+            model: imageModel
+            delegate: imageDelegate
+        }
     }
 
     onImageModelChanged:
     {
+        background.source = imageModel.backgroundImage
         console.log("model chnaged. Size: " + Number(imageModel.rowCount()).toString())
+
+
+    }
+    onBackgroundRectChanged:
+    {
+        console.log("background rect: " + Number(backgroundRect.width).toString()
+                    + " " + Number(backgroundRect.height))
     }
 
+    function saveImage(filename)
+    {
+        // TODO clip the image and bringing everything into right format...
+        background.grabToImage(function(result) {
+            result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
+        });
+    }
 }

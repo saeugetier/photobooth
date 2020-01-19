@@ -11,9 +11,10 @@ Item {
         id: image
         source: imageFileName
         asynchronous: true
-        sourceSize.height: 512
-        sourceSize.width: 512
-        fillMode: Image.PreserveAspectFit
+        cache: false
+        sourceSize.height: 2048
+        sourceSize.width: 2048
+        fillMode: Image.PreserveAspectCrop
     }
 
     Rectangle

@@ -3,7 +3,7 @@
     <collage>
         <name>Test</name>
         <icon>1234</icon>
-        <background>BG</background>
+        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>
@@ -11,25 +11,28 @@
     <collage>
         <name>Test2</name>
         <icon>1234</icon>
-        <background>BG</background>
+        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
         <images>
             <image>
-                <position x="0.0" y="0.0"/>
-                <size width="1.0" height="1.0"/>
+                <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
                 <border><file>Test1234</file><margin top="10" left="10" right="10" bottom="10"/></border>
+            </image>
+            <image>
+                <position x="0.5" y="0.0"/><size width="0.5" height="1.0"/>
+                <border><file>Test12345</file><margin top="10" left="10" right="10" bottom="10"/></border>
             </image>
         </images>
     </collage>
     <collage>
         <name>Test3</name>
         <icon>1234</icon>
-        <background>BG</background>
+        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
         <images>
-            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
-            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
-            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
-            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
-            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+            <image><position x="0.0" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.2" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.4" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.6" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.0" y="0.5"/><size width="0.15" height="0.5"/></image>
         </images>
     </collage>
 </catalog>

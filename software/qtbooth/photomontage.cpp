@@ -14,14 +14,14 @@
 typedef QPair<int,QString> indexedString;
 typedef QPair<int, QImage> indexedImage;
 
-CollageImage::CollageImage() : QImage(Printer::instance()->getPrintSize(), QImage::Format_RGB888)
+CollageImageDrawer::CollageImageDrawer() : QImage(Printer::instance()->getPrintSize(), QImage::Format_RGB888)
 {
     this->fill(Qt::GlobalColor::white);
 }
 
-void CollageImage::paintImage(const QImage &image, QRectF position)
+void CollageImageDrawer::paintImage(const QImage &image, QRectF position)
 {
-    qDebug() << "Placing image at position " << position << " Data size " << image.byteCount();
+    qDebug() << "Placing image at position " << position << " Data size " << image.sizeInBytes();
 
     QPainter painter(this);
 
@@ -61,7 +61,7 @@ public:
 
     }
 
-    void operator()(CollageImage &collage, const indexedImage &source)
+    void operator()(CollageImageDrawer &collage, const indexedImage &source)
     {
         //calculate row and column
         int index = source.first;
@@ -118,8 +118,8 @@ bool PhotoMontage::generate()
         file_list.append(QPair<int, QString>(i, m_filenames[i]));
     }
 
-    QFuture<CollageImage> future
-            = QtConcurrent::mappedReduced<CollageImage>(file_list,
+    QFuture<CollageImageDrawer> future
+            = QtConcurrent::mappedReduced<CollageImageDrawer>(file_list,
                                                         ImageLoader(),
                                                         CollageReduce(file_list.size()),
                                                         QtConcurrent::ReduceOptions(QtConcurrent::OrderedReduce | QtConcurrent::SequentialReduce));

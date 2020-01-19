@@ -10,6 +10,7 @@
 #include "photomontage.h"
 #include "ledflash.h"
 #include "printer.h"
+#include "collagemodelfactory.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,13 +29,16 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
+    qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
+    qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
+    qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
     engine.rootContext()->setContextProperty("flash", LedFlash::instance());
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
     engine.rootContext()->setContextProperty("printer", Printer::instance());
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));    
+    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 

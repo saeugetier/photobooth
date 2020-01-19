@@ -6,10 +6,10 @@
 #include <QFutureWatcher>
 #include <QImage>
 
-class CollageImage : public QImage
+class CollageImageDrawer : public QImage
 {
 public:
-    CollageImage();
+    CollageImageDrawer();
     void paintImage(const QImage &image, QRectF position);
 };
 
@@ -36,7 +36,7 @@ public slots:
 
 protected:
     QStringList m_filenames;
-    QFutureWatcher<CollageImage> m_future;
+    QFutureWatcher<CollageImageDrawer> m_future;
 };
 
 #endif // PHOTOMONTAGE_H

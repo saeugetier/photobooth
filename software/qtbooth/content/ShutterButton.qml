@@ -6,6 +6,12 @@ import "../styles"
 
 Item {
     property int countDownTime: 3
+    signal triggerSnapshot
+
+    function reset()
+    {
+        state = "idle"
+    }
 
     ProgressBar
     {
@@ -94,6 +100,7 @@ Item {
         onTimeout:
         {
             parent.state = "snapshot"
+            triggerSnapshot()
         }
     }
 

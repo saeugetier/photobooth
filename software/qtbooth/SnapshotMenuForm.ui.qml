@@ -2,32 +2,34 @@ import QtQuick 2.4
 import QtQuick.Controls 2.13
 import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
+import "content"
 
 Item {
     width: 640
     height: 480
+    property alias cameraRenderer: cameraRenderer
+    property alias shutterButton: shutterButton
 
-    ToolButton {
+    CameraRenderer {
+        id: cameraRenderer
+        anchors.fill: parent
+    }
+
+    ShutterButton {
         id: shutterButton
+        x: 268
+        y: 356
+        width: 104
+        height: 104
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 20
-        text: "\uE801"
-        font.family: "fontello"
-        font.pointSize: 104
-
-        opacity: 0.7
-
-        layer.enabled: true
-        layer.effect: Glow {
-            color: "black"
-            samples: 20
-            spread: 0.3
-        }
-
-        //layer.enabled: true
-        //layer.effect: ShaderEffect {
-        //    blending: true
-        //}
     }
 }
+
+/*##^##
+Designer {
+    D{i:1;anchors_height:138;anchors_width:350;anchors_x:174;anchors_y:129}
+}
+##^##*/
+

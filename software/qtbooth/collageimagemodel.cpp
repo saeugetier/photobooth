@@ -135,6 +135,8 @@ void CollageImageModel::clearImagePathes()
     {
         mImages[i]->setImage(QUrl(""));
     }
+
+    emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
 }
 
 bool CollageImageModel::clearImagePath(int index)
@@ -149,7 +151,7 @@ bool CollageImageModel::clearImagePath(int index)
             {
                 if(mImages[i]->imagePath() == QUrl(""))
                 {
-                    for(int j = i + 1; i < rowCount(); j++)
+                    for(int j = i + 1; j < rowCount(); j++)
                     {
                         if(mImages[j]->imagePath() != QUrl(""))
                         {
@@ -160,7 +162,7 @@ bool CollageImageModel::clearImagePath(int index)
                     }
                 }
             }
-
+            emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
             return true;
         }
         else {

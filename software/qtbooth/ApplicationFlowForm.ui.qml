@@ -1,10 +1,10 @@
 import QtQuick 2.4
 import CollageModel 1.0
+import "content"
 
 Item {
     id: root
     property alias mainMenuModel: mainMenu.iconModel
-    property alias collageModel: collageMenu.model
     property alias mainMenu: mainMenu
     property alias snapshotMenu: snapshotMenu
     property alias imagePreview: imagePreview
@@ -57,12 +57,52 @@ Item {
                 target: snapshotMenu
                 x: 0
             }
+            PropertyChanges {
+                target: imagePreview
+                visible: false
+            }
         },
         State {
             name: "imagePreview"
+            PropertyChanges {
+                target: mainMenu
+                x: -root.width
+                visible: false
+            }
+
+            PropertyChanges {
+                target: snapshotMenu
+                x: -root.width
+            }
+
+            PropertyChanges {
+                target: imagePreview
+                x: 0
+            }
         },
         State {
             name: "collageMenu"
+
+            PropertyChanges {
+                target: mainMenu
+                x: -root.width
+                visible: false
+            }
+
+            PropertyChanges {
+                target: snapshotMenu
+                x: -root.width
+                visible: false
+            }
+
+            PropertyChanges {
+                target: imagePreview
+                x: -root.width
+            }
+            PropertyChanges {
+                target: collageMenu
+                x: 0
+            }
         }
     ]
 }

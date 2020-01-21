@@ -20,6 +20,30 @@ ApplicationFlowForm {
     mainMenu.onCollageSelected:
     {
         state = "snapshot"
+        collageMenu.collageImage.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
+        collageMenu.collageImage.imageModel.clearImagePathescollageImageMonCollageSelectedodel()
+    }
+
+    snapshotMenu.onCaptured:
+    {
+        state = "imagePreview"
+        imagePreview.setPreviewImage(filename)
+    }
+
+    imagePreview.onAccept:
+    {
+        state = "collageMenu"
+        collageMenu.collageImage.imageModel.addImagePath(filename)
+    }
+
+    imagePreview.onAbort:
+    {
+        state = "snapshot"
+    }
+
+    collageMenu.onOk:
+    {
+        state = "snapshot"
     }
 
     Behavior on mainMenu.x {

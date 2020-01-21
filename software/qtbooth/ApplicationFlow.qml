@@ -21,7 +21,7 @@ ApplicationFlowForm {
     {
         state = "snapshot"
         collageMenu.collageImage.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
-        collageMenu.collageImage.imageModel.clearImagePathescollageImageMonCollageSelectedodel()
+        collageMenu.collageImage.imageModel.clearImagePathes()
     }
 
     snapshotMenu.onCaptured:

@@ -4,6 +4,7 @@ Item {
     property alias imageSource: proxy.imageFileName
     property alias borderImageSource: border.source
     property alias number: proxy.number
+    property alias proxy: proxy
     //property rect imageRect
 
     //sanchors.fill: parent

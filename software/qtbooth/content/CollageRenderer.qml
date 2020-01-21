@@ -50,6 +50,12 @@ Item {
                 {
                     console.log(imageSource)
                 }
+
+                proxy.onDeletePhoto:
+                {
+                    console.log("Delete photo: " + Number(number).toString())
+                    imageModel.clearImagePath(number)
+                }
             }
         }
 

@@ -13,11 +13,24 @@ Item {
 
     Image {
         id: previewImage
-        x: 73
-        y: 64
-        width: 484
-        height: 342
+        anchors.topMargin: 100
+        anchors.bottomMargin: 100
+        anchors.leftMargin: 100
+        anchors.rightMargin: 100
+        anchors.fill: parent
+        rotation: -10
         fillMode: Image.PreserveAspectFit
+    }
+
+    DropShadow {
+        anchors.fill: previewImage
+        horizontalOffset: 3
+        verticalOffset: 0
+        radius: 30.0
+        samples: 17
+        rotation: previewImage.rotation
+        color: "#80000000"
+        source: previewImage
     }
 
     ToolButton {
@@ -58,3 +71,10 @@ Item {
         anchors.centerIn: parent
     }
 }
+
+/*##^##
+Designer {
+    D{i:1;anchors_height:342;anchors_width:484;anchors_x:73;anchors_y:64}
+}
+##^##*/
+

@@ -57,6 +57,8 @@ Item {
         }
     }
 
+    state: "number"
+
     states:
     [
         State

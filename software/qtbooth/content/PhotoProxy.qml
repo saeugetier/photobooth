@@ -30,7 +30,7 @@ Item {
         Text
         {
             anchors.fill: parent
-            text: Number(number).toString()
+            text: Number(number + 1).toString()
             fontSizeMode: Text.Fit
             font.pixelSize: 144
             horizontalAlignment: Text.AlignHCenter

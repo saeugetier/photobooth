@@ -35,4 +35,15 @@
             <image><position x="0.0" y="0.5"/><size width="0.15" height="0.5"/></image>
         </images>
     </collage>
+    <collage>
+        <name>Test4</name>
+        <icon>1234</icon>
+        <background>file://home/timm/Bilder/photobooth/ExamplePBTemplate.jpg</background>
+        <images>
+            <image><position x="0.42" y="0.03"/><size width="0.55" height="0.62"/></image>
+            <image><position x="0.1" y="0.7"/><size width="0.25" height="0.25"/></image>
+            <image><position x="0.4" y="0.7"/><size width="0.25" height="0.25"/></image>
+            <image><position x="0.7" y="0.7"/><size width="0.25" height="0.25"/></image>
+        </images>
+    </collage>
 </catalog>

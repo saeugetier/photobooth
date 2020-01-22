@@ -117,11 +117,15 @@ QUrl CollageImageModel::backgroundImage() const
 
 bool CollageImageModel::addImagePath(QUrl source)
 {
-    if(rowCount() > countImagePathSet()) {
+    if(!collageFull()) {
         int i = countImagePathSet();
         mImages[i]->setImage(source);
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
+        if(collageFull())
+        {
+            emit collageFullChanged(true);
+        }
         return true;
     }
     else {
@@ -131,6 +135,11 @@ bool CollageImageModel::addImagePath(QUrl source)
 
 void CollageImageModel::clearImagePathes()
 {
+    if(collageFull())
+    {
+        emit collageFullChanged(false);
+    }
+
     for(int i = 0; i < mImages.length(); i++)
     {
         mImages[i]->setImage(QUrl(""));
@@ -143,6 +152,11 @@ bool CollageImageModel::clearImagePath(int index)
 {
     if(index < rowCount())
     {
+        if(collageFull())
+        {
+            emit collageFullChanged(false);
+        }
+
         if(mImages[index]->imagePath() != QUrl(""))
         {
             mImages[index]->setImage(QUrl(""));
@@ -174,16 +188,25 @@ bool CollageImageModel::clearImagePath(int index)
     }
 }
 
+bool CollageImageModel::collageFull()
+{
+    if(rowCount() == countImagePathSet())
+        return true;
+    else
+        return false;
+}
+
 int CollageImageModel::countImagePathSet() const
 {
-    int i = 0;
-
-    for(;i < rowCount(); i++)
+    int currentCount = 0;
+    for(int i = 0; i < rowCount(); i++)
     {
-        if(mImages[i]->imagePath() == QUrl(""))
-            break;
+        if(mImages[i]->imagePath() != QUrl(""))
+        {
+            currentCount++;
+        }
     }
-    return i;
+    return currentCount;
 }
 
 CollageImage::CollageImage(QObject *parent) : QObject(parent)

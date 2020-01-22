@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 
 Item {
     property url imageFileName : ""
@@ -48,6 +49,8 @@ Item {
         enabled: true
         z: 1 // on top
         visible: false
+
+        Material.foreground: Material.Red
 
         opacity: 0.7
 

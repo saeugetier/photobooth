@@ -19,8 +19,8 @@ Item {
         id: shutterButton
         x: 268
         y: 356
-        width: 104
-        height: 104
+        width: 150
+        height: 150
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 20

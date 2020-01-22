@@ -4,6 +4,7 @@ SnapshotMenuForm {
     id: form
 
     signal captured(string filename)
+    signal abort
 
     shutterButton.onTriggerSnapshot:
     {
@@ -14,6 +15,11 @@ SnapshotMenuForm {
     {
         captured(filename)
         shutterButton.state = "idle"
+    }
+
+    exitButton.onClicked:
+    {
+        abort()
     }
 
 }

@@ -44,6 +44,10 @@ Item {
     states: [
         State {
             name: "collageSelection"
+            PropertyChanges {
+                target: mainMenu
+                state: "NoIconSelected"
+            }
         },
         State {
             name: "snapshot"

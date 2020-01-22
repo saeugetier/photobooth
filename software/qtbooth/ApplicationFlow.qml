@@ -30,6 +30,11 @@ ApplicationFlowForm {
         imagePreview.setPreviewImage(filename)
     }
 
+    snapshotMenu.onAbort:
+    {
+        state = "collageSelection"
+    }
+
     imagePreview.onAccept:
     {
         state = "collageMenu"

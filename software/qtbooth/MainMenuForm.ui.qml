@@ -61,10 +61,14 @@ Item {
 
         CollageRenderer {
             id: collageRenderer
-            x: 57
-            y: 150
-            width: 480
-            height: 360
+            anchors.right: parent.right
+            anchors.rightMargin: 30
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 150
+            anchors.top: parent.top
+            anchors.topMargin: 150
+            anchors.left: parent.left
+            anchors.leftMargin: 30
             visible: false
         }
     }
@@ -157,7 +161,8 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:13;anchors_x:139;anchors_y:394}
+    D{i:0;height:480;width:640}D{i:6;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
+D{i:13;anchors_x:139;anchors_y:394}
 }
 ##^##*/
 

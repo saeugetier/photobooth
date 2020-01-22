@@ -27,7 +27,7 @@
         <file>XmlData.xml</file>
         <file>scripts/utils.js</file>
         <file>images/cardboard.png</file>
-        <file>NavigationButton.qml</file>
+        <file>content/NavigationButton.qml</file>
         <file>images/buttons/go/white.png</file>
         <file>images/buttons/back/white.png</file>
         <file>content/CollageImageDelegate.qml</file>

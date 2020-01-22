@@ -20,17 +20,22 @@ Item {
         anchors.fill: parent
         rotation: -10
         fillMode: Image.PreserveAspectFit
-    }
 
-    DropShadow {
-        anchors.fill: previewImage
-        horizontalOffset: 3
-        verticalOffset: 0
-        radius: 30.0
-        samples: 17
-        rotation: previewImage.rotation
-        color: "#80000000"
-        source: previewImage
+        BorderImage {
+            anchors.horizontalCenter: previewImage.horizontalCenter
+            anchors.verticalCenter: previewImage.verticalCenter
+            id: borderImage
+            border.bottom: 65
+            border.top: 25
+            border.right: 25
+            border.left: 25
+            width: previewImage.paintedWidth + 40
+            height: previewImage.paintedHeight + 60
+            anchors.verticalCenterOffset: 10
+            horizontalTileMode: BorderImage.Stretch
+            verticalTileMode: BorderImage.Stretch
+            source: "images/polaroid.svg.png"
+        }
     }
 
     ToolButton {
@@ -68,6 +73,7 @@ Item {
 
     BusyIndicator {
         id: fileLoadIndicator
+        anchors.verticalCenterOffset: 0
         anchors.centerIn: parent
     }
 }

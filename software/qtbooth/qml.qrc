@@ -37,5 +37,7 @@
         <file>content/ShutterButton.qml</file>
         <file>styles/ArcProgressbarStyle.qml</file>
         <file>content/Countdown.qml</file>
+        <file>images/polaroid.svg</file>
+        <file>images/polaroid.svg.png</file>
     </qresource>
 </RCC>

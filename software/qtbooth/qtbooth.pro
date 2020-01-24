@@ -1,6 +1,6 @@
 QT += qml quick multimedia concurrent xml
 
-CONFIG += c++14 qtquickcompiler
+CONFIG += c++17 qtquickcompiler
 
 linux {
     contains(QT_ARCH, arm):{
@@ -13,6 +13,7 @@ SOURCES += main.cpp \
     collageiconmodel.cpp \
     collageimagemodel.cpp \
     collagemodelfactory.cpp \
+    gpio.cpp \
     modelparser.cpp \
     myhelper.cpp \
     photomontage.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     collageiconmodel.h \
     collageimagemodel.h \
     collagemodelfactory.h \
+    gpio.h \
     modelparser.h \
     myhelper.h \
     photomontage.h \

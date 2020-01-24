@@ -11,6 +11,7 @@
 #include "ledflash.h"
 #include "printer.h"
 #include "collagemodelfactory.h"
+#include "gpio.h"
 
 int main(int argc, char *argv[])
 {
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
     qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
     qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
+
+    qmlRegisterType<GPIO>("GPIO", 1, 0, "GPIO");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

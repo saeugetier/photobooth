@@ -5,10 +5,21 @@ CollageMenuForm {
     property alias collageImage: form.collageRenderer
 
     signal next
+    signal exit
 
     nextButton.onClicked:
     {
         next()
+    }
+
+    printButton.onClicked:
+    {
+        exit()
+    }
+
+    exitButton.onClicked:
+    {
+        exit()
     }
 
     Connections

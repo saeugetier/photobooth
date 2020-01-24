@@ -51,6 +51,11 @@ ApplicationFlowForm {
         state = "snapshot"
     }
 
+    collageMenu.onExit:
+    {
+        state = "collageSelection"
+    }
+
     Behavior on mainMenu.x {
         PropertyAnimation {
             duration: flow.animationDuration

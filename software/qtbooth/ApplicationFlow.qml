@@ -46,7 +46,7 @@ ApplicationFlowForm {
         state = "snapshot"
     }
 
-    collageMenu.onOk:
+    collageMenu.onNext:
     {
         state = "snapshot"
     }

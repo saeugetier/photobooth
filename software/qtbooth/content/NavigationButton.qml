@@ -8,7 +8,7 @@ Row {
 
     signal clicked
 
-    property alias text: brewLabel.text
+    property alias text: textLabel.text
 
     property bool forward: true
     layoutDirection: row.forward ? Qt.LeftToRight : Qt.RightToLeft
@@ -23,7 +23,7 @@ Row {
     }
 
     Text {
-        id: brewLabel
+        id: textLabel
         color: "#ffffff"
         text: qsTr("Continue")
         font.family: "DejaVu Serif"

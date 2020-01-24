@@ -5,6 +5,9 @@ Item {
     id: renderer
     property CollageImageModel imageModel
     property rect backgroundRect : Qt.rect(0, 0, renderer.width, renderer.height) // initial value
+    property bool saving: false
+
+    signal collageFull(bool full)
 
     Image
     {
@@ -71,20 +74,30 @@ Item {
     {
         background.source = imageModel.backgroundImage
         console.log("model chnaged. Size: " + Number(imageModel.rowCount()).toString())
-
-
     }
+
     onBackgroundRectChanged:
     {
         console.log("background rect: " + Number(backgroundRect.width).toString()
                     + " " + Number(backgroundRect.height))
     }
 
+    Connections
+    {
+        target: imageModel
+        onCollageFullChanged: {
+            collageFull(full)
+            console.log("Collage Full Changed to " + Boolean(full).toString());
+        }
+    }
+
     function saveImage(filename)
     {
+        saving = true;
         // TODO clip the image and bringing everything into right format...
         background.grabToImage(function(result) {
             result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
+            saving = false;
         });
     }
 }

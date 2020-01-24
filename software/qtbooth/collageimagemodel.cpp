@@ -118,7 +118,12 @@ QUrl CollageImageModel::backgroundImage() const
 bool CollageImageModel::addImagePath(QUrl source)
 {
     if(!collageFull()) {
-        int i = countImagePathSet();
+        int i = 0;
+        for(;i < rowCount(); i++)
+        {
+            if(mImages[i]->imagePath() == QUrl(""))
+                break;
+        }
         mImages[i]->setImage(source);
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
@@ -161,6 +166,7 @@ bool CollageImageModel::clearImagePath(int index)
         {
             mImages[index]->setImage(QUrl(""));
 
+#ifdef SORT_AFTER_DELETE
             for(int i = 0; i < rowCount() - 1; i++)
             {
                 if(mImages[i]->imagePath() == QUrl(""))
@@ -176,6 +182,7 @@ bool CollageImageModel::clearImagePath(int index)
                     }
                 }
             }
+#endif
             emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
             return true;
         }

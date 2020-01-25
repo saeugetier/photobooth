@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import FileIO 1.0
 
 ImagePreviewForm {
     signal abort
@@ -22,9 +23,16 @@ ImagePreviewForm {
         accept(previewImage.source)
     }
 
+    FileIO
+    {
+        id: fileio
+    }
+
     deleteButton.onClicked:
     {
         // TODO delete file
+        fileio.source = previewImage.source
+        fileio.remove()
         abort()
     }
 }

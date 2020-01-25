@@ -12,6 +12,7 @@
 #include "printer.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
+#include "fileio.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +36,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
 
     qmlRegisterType<GPIO>("GPIO", 1, 0, "GPIO");
+
+    qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

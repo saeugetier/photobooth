@@ -19,7 +19,7 @@ SOURCES += main.cpp \
     myhelper.cpp \
     photomontage.cpp \
     ledflash.cpp \
-    printer.cpp
+    selphyprinter.cpp
 
 RESOURCES += qml.qrc
 
@@ -46,5 +46,5 @@ HEADERS += \
     photomontage.h \
     ledflash.h \
     call_once.h \
-    singleton.h \
-    printer.h
+    selphyprinter.h \
+    singleton.h

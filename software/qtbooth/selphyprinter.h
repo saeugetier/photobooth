@@ -5,14 +5,14 @@
 #include <QSize>
 #include <QProcess>
 
-class Printer : public QObject
+class SelphyPrinter : public QObject
 {
     Q_OBJECT
 private:
-    Printer(QObject *parent = nullptr);
-    static Printer* createInstance();
+    SelphyPrinter(QObject *parent = nullptr);
+    static SelphyPrinter* createInstance();
 public:
-    static Printer* instance();
+    static SelphyPrinter* instance();
 
     bool busy();
 

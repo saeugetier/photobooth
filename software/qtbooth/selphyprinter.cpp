@@ -1,4 +1,4 @@
-#include "printer.h"
+#include "selphyprinter.h"
 #include "singleton.h"
 #include <QFile>
 #include <QRegExp>

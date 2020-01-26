@@ -9,12 +9,12 @@
 #include <QImage>
 #include <QPair>
 
-#include "printer.h"
+#include "selphyprinter.h"
 
 typedef QPair<int,QString> indexedString;
 typedef QPair<int, QImage> indexedImage;
 
-CollageImageDrawer::CollageImageDrawer() : QImage(Printer::instance()->getPrintSize(), QImage::Format_RGB888)
+CollageImageDrawer::CollageImageDrawer() : QImage(SelphyPrinter::instance()->getPrintSize(), QImage::Format_RGB888)
 {
     this->fill(Qt::GlobalColor::white);
 }

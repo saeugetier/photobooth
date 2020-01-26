@@ -6,30 +6,30 @@
 #include <QDebug>
 
 
-Printer::Printer(QObject *parent) : QObject(parent)
+SelphyPrinter::SelphyPrinter(QObject *parent) : QObject(parent)
 {
     QObject::connect(&mPrinterProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
     QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));
 }
 
 
-Printer* Printer::createInstance()
+SelphyPrinter* SelphyPrinter::createInstance()
 {
-    return new Printer();
+    return new SelphyPrinter();
 }
 
 
-Printer* Printer::instance()
+SelphyPrinter* SelphyPrinter::instance()
 {
-    return Singleton<Printer>::instance(Printer::createInstance);
+    return Singleton<SelphyPrinter>::instance(SelphyPrinter::createInstance);
 }
 
-bool Printer::busy()
+bool SelphyPrinter::busy()
 {
     return mPrinterProcess.state() != QProcess::NotRunning;
 }
 
-QString Printer::getPrinterIp()
+QString SelphyPrinter::getPrinterIp()
 {
     QString ip;
 
@@ -49,7 +49,7 @@ QString Printer::getPrinterIp()
                 if(regex.indexIn(line) != -1)
                 {
                     ip = regex.capturedTexts().first();
-                    qDebug() << "Printer - Found IP: " << ip;
+                    qDebug() << "Selphy Printer - Found IP: " << ip;
                 }
                 break;
             }
@@ -64,7 +64,7 @@ QString Printer::getPrinterIp()
     return ip;
 }
 
-bool Printer::printerOnline()
+bool SelphyPrinter::printerOnline()
 {
     QString ip = getPrinterIp();
     if(ip.length() == 0)
@@ -75,30 +75,30 @@ bool Printer::printerOnline()
     int exitcode = QProcess::execute("ping", arguments);
     if(exitcode == 0)
     {
-        qDebug() << "Printer on IP " << ip << " is online.";
+        qDebug() << "SelphyPrinter on IP " << ip << " is online.";
         return true;
     }
     else
     {
-        qDebug() << "Printer on IP " << ip << " seems to be offline.";
+        qDebug() << "SelphyPrinter on IP " << ip << " seems to be offline.";
         return false;
     }
 }
 
 
-QSize Printer::getPrintSize()
+QSize SelphyPrinter::getPrintSize()
 {
     return QSize(3570,2380); //hard coded pixel size
 }
 
-int Printer::printImage(const QString &filename)
+int SelphyPrinter::printImage(const QString &filename)
 {
     QString ip = getPrinterIp();
     if(ip.length() > 0)
     {
 
         QStringList parameters;
-        parameters << "-printer_ip=" + ip;
+        parameters << "-SelphyPrinter_ip=" + ip;
         parameters << filename.right(filename.length() - QString("file://").length());
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
@@ -116,12 +116,12 @@ int Printer::printImage(const QString &filename)
             return -1;
     }
     else
-        qDebug() << "Print failed. No printer connected!";
+        qDebug() << "Print failed. No Selphy Printer connected!";
 
     return -1;
 }
 
-void Printer::finished(int code, QProcess::ExitStatus status)
+void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 {
     if(code != 0)
     {

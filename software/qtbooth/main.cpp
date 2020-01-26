@@ -9,10 +9,11 @@
 #include "myhelper.h"
 #include "photomontage.h"
 #include "ledflash.h"
-#include "printer.h"
+#include "selphyprinter.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
 #include "fileio.h"
+#include "system.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,11 +40,13 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 
+    qmlRegisterType<System>("Syetem", 1, 0, "System");
+
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
     engine.rootContext()->setContextProperty("flash", LedFlash::instance());
     engine.rootContext()->setContextProperty("helper", MyHelper::instance());
-    engine.rootContext()->setContextProperty("printer", Printer::instance());
+    engine.rootContext()->setContextProperty("printer", SelphyPrinter::instance());
     engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));

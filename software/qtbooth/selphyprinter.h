@@ -8,14 +8,10 @@
 class SelphyPrinter : public QObject
 {
     Q_OBJECT
-private:
-    SelphyPrinter(QObject *parent = nullptr);
-    static SelphyPrinter* createInstance();
 public:
-    static SelphyPrinter* instance();
+    SelphyPrinter(QObject *parent = nullptr);
 
-    bool busy();
-
+    Q_INVOKABLE bool busy();
 signals:
     void progress(int);
     void success();

@@ -42,11 +42,10 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("Syetem", 1, 0, "System");
 
+    qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
+
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
-    engine.rootContext()->setContextProperty("flash", LedFlash::instance());
-    engine.rootContext()->setContextProperty("helper", MyHelper::instance());
-    engine.rootContext()->setContextProperty("printer", SelphyPrinter::instance());
     engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));

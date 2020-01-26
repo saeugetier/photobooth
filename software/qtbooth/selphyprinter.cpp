@@ -12,18 +12,6 @@ SelphyPrinter::SelphyPrinter(QObject *parent) : QObject(parent)
     QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));
 }
 
-
-SelphyPrinter* SelphyPrinter::createInstance()
-{
-    return new SelphyPrinter();
-}
-
-
-SelphyPrinter* SelphyPrinter::instance()
-{
-    return Singleton<SelphyPrinter>::instance(SelphyPrinter::createInstance);
-}
-
 bool SelphyPrinter::busy()
 {
     return mPrinterProcess.state() != QProcess::NotRunning;

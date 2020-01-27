@@ -11,6 +11,7 @@ Item {
     property alias exitButton: exitButton
     property alias cameraRenderer: cameraRenderer
     property alias shutterButton: shutterButton
+    property alias countdown: shutterButton.countDownTime
 
     CameraRenderer {
         id: cameraRenderer
@@ -37,11 +38,15 @@ Item {
         anchors.topMargin: 30
         forward: false
     }
+    states: [
+        State {
+            name: "deactivated"
+        },
+        State {
+            name: "activated"
+        }
+    ]
 }
 
-/*##^##
-Designer {
-    D{i:1;anchors_height:138;anchors_width:350;anchors_x:174;anchors_y:129}D{i:3;anchors_x:19;anchors_y:15}
-}
-##^##*/
+
 

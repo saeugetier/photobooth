@@ -7,8 +7,6 @@
 #include <QQmlContext>
 #include <QTranslator>
 #include "myhelper.h"
-#include "photomontage.h"
-#include "ledflash.h"
 #include "selphyprinter.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
@@ -31,7 +29,6 @@ int main(int argc, char *argv[])
     if (fontDatabase.addApplicationFont(":/fontello/font/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
 
-    qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
     qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
     qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");

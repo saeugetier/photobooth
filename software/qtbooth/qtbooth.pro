@@ -17,8 +17,6 @@ SOURCES += main.cpp \
     gpio.cpp \
     modelparser.cpp \
     myhelper.cpp \
-    photomontage.cpp \
-    ledflash.cpp \
     selphyprinter.cpp \
     system.cpp
 
@@ -44,8 +42,6 @@ HEADERS += \
     gpio.h \
     modelparser.h \
     myhelper.h \
-    photomontage.h \
-    ledflash.h \
     call_once.h \
     selphyprinter.h \
     singleton.h \

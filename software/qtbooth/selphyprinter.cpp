@@ -6,7 +6,7 @@
 #include <QDebug>
 
 
-SelphyPrinter::SelphyPrinter(QObject *parent) : QObject(parent)
+SelphyPrinter::SelphyPrinter(QObject *parent) : AbstractPrinter(parent)
 {
     QObject::connect(&mPrinterProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
     QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));

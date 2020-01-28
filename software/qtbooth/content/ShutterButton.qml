@@ -94,7 +94,7 @@ Item {
     Countdown
     {
         id: countdown
-        seconds: countDownTime
+        defaultSeconds: countDownTime
         anchors.fill: parent
 
         onTimeout:

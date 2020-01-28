@@ -5,8 +5,11 @@ import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
 
 Item {
+    id: renderer
     signal savedPhoto(string filename)
     signal failed
+
+    property bool photoProcessing: (state == "snapshot")
 
     function printDevicesToConsole(devices)
     {
@@ -33,18 +36,19 @@ Item {
         imageCapture {
             onImageSaved:
             {
+                renderer.state = "preview"
                 savedPhoto("file:" + camera.imageCapture.capturedImagePath)
                 console.log("Saved: " + camera.imageCapture.capturedImagePath)
             }
             onImageCaptured:
             {
                 whiteOverlay.state = "released"
-                parent.state = "store"
+                renderer.state = "store"
                 console.log("Captured")
             }
             onCaptureFailed:
             {
-                parent.state = "preview"
+                renderer.state = "preview"
                 failed()
             }
             onErrorStringChanged:
@@ -128,16 +132,10 @@ Item {
         {
             state  = "snapshot"
             camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
-
-            /*if(settingsPopup.settingFlashEnable)
-            {
-                flash.setBrightness(settingsPopup.settingFlashBrightness)
-            }*/
         }
         else
         {
-            //flash.setBrightness(settingsPopup.settingBrightness)
-            state = "preview"
+            renderer.state = "preview"
             failed()
         }
     }

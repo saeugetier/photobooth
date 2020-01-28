@@ -24,6 +24,7 @@ Item {
         y: 0
         width: root.width
         height: root.height
+        state: "deactivated"
     }
 
     ImagePreview {
@@ -60,6 +61,7 @@ Item {
             PropertyChanges {
                 target: snapshotMenu
                 x: 0
+                state: "activated"
             }
             PropertyChanges {
                 target: imagePreview

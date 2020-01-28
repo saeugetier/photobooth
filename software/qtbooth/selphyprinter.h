@@ -12,7 +12,7 @@ public:
     QString getPrinterIp();
     Q_INVOKABLE QSize getPrintSize();
     Q_INVOKABLE bool printerOnline();
-    Q_INVOKABLE bool busy();
+    bool busy();
 public slots:
     Q_INVOKABLE int printImage(const QString &filename);
 protected slots:

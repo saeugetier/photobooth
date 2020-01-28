@@ -20,12 +20,14 @@ int FakePrinter::printImage(const QString &filename)
 {
     qDebug() << "Fake printer starts printing " << filename;
     mBusyTimer.start(1000 * 30); // 30 seconds;
-
+    emit busyChanged(true);
     QObject::connect(&mBusyTimer, SIGNAL(timeout()), this, SLOT(busyTimeout()));
 }
 
 void FakePrinter::busyTimeout()
 {
+    mBusyTimer.stop();
     emit success();
+    emit busyChanged(false);
     qDebug() << "Fake printer has finished";
 }

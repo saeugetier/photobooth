@@ -93,6 +93,7 @@ int SelphyPrinter::printImage(const QString &filename)
         {
             if(printerOnline())
             {
+                emit busyChanged(true);
                 mPrinterProcess.start("selphy", parameters);
                 qDebug() << parameters;
                 return 0;
@@ -111,6 +112,7 @@ int SelphyPrinter::printImage(const QString &filename)
 
 void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 {
+    emit busyChanged(false);
     if(code != 0)
     {
         qDebug() << "Selphy Error: \n" << mPrinterProcess.readAllStandardError();

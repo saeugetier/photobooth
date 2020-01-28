@@ -35,6 +35,7 @@ TRANSLATIONS = "tr_de.ts"
 DISTFILES +=
 
 HEADERS += \
+    abstractprinter.h \
     collageiconmodel.h \
     collageimagemodel.h \
     collagemodelfactory.h \

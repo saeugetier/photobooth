@@ -1,5 +1,4 @@
 import QtQuick 2.4
-import Qt.labs.settings 1.0
 import GPIO 1.0
 
 SnapshotMenuForm {
@@ -8,16 +7,16 @@ SnapshotMenuForm {
     signal captured(string filename)
     signal abort
 
-    countdown: settings.countdown
+    countdown: snapshotSettings.countdown
 
-    Settings
+    cameraRenderer.onPhotoProcessingChanged:
     {
-        id: settings
-        category: "Camera"
-        property bool flashEnabled: true
-        property real viewFinderBrightness: 0.1
-        property real flashBrightness: 1.0
-        property int countdown: 1
+        console.log("photo processing: " + Boolean(cameraRenderer.photoProcessing).toString())
+    }
+
+    onStateChanged:
+    {
+        console.log("Snapshot menu state changed: " + state)
     }
 
     GPIO
@@ -37,6 +36,14 @@ SnapshotMenuForm {
     shutterButton.onTriggerSnapshot:
     {
         cameraRenderer.takePhoto()
+    }
+
+    shutterButton.onStateChanged:
+    {
+        if(shutterButton.state != "idle")
+        {
+            form.state = "snapshot"
+        }
     }
 
     cameraRenderer.onSavedPhoto:

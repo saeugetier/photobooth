@@ -40,6 +40,7 @@ Item {
 
     SnapshotSettings {
         id: snapshotSettings
+        visible: false
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.right: parent.right
@@ -53,9 +54,14 @@ Item {
         },
         State {
             name: "activated"
+
+            PropertyChanges {
+                target: snapshotSettings
+                visible: true
+            }
+        },
+        State {
+            name: "snapshot"
         }
     ]
 }
-
-
-

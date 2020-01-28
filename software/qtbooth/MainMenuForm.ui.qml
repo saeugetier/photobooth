@@ -88,6 +88,7 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         text: "\uE80F"
+        visible: false
         font.family: "fontello"
         font.pointSize: 36
 
@@ -161,8 +162,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:6;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
-D{i:13;anchors_x:139;anchors_y:394}
+    D{i:0;height:480;width:640}D{i:13;anchors_x:139;anchors_y:394}D{i:6;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
 }
 ##^##*/
 

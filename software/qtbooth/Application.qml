@@ -6,6 +6,7 @@ import Qt.labs.folderlistmodel 1.0
 import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
+import Selphy 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -15,6 +16,11 @@ ApplicationWindow {
     height: 480
 
     title: qsTr("QML Photo Booth")
+
+    Printer
+    {
+        id: printer
+    }
 
     CollageModelFactory
     {
@@ -26,6 +32,7 @@ ApplicationWindow {
     {
         height: parent.height
         width: parent.width
+        collageMenu.printer : printer
     }
 
     Settings

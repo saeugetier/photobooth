@@ -1,8 +1,10 @@
 import QtQuick 2.4
+import Selphy 1.0
 
 CollageMenuForm {
     id: form
     property alias collageImage: form.collageRenderer
+    property Printer printer
 
     signal next
     signal exit
@@ -14,6 +16,7 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        printer.printImage("Test")
         exit()
     }
 

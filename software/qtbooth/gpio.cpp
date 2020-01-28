@@ -10,7 +10,7 @@ bool cmpf(float A, float B, float epsilon = 0.005f)
     return (fabs(A - B) < epsilon);
 }
 
-GPIO::GPIO(QObject *parent) : QObject(parent)
+GPIO::GPIO(QObject *parent) : QObject(parent), pinValue(0.0f)
 {
 
 }

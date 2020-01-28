@@ -44,9 +44,10 @@ CollageIconModel *CollageModelFactory::getCollageIconModel()
 
 CollageImageModel *CollageModelFactory::getCollageImageModel(const QString &name)
 {
-    if(mCollageModels.find(name) != mCollageModels.end())
+    auto iter = mCollageModels.find(name);
+    if(iter != mCollageModels.end())
     {
-        CollageImageModel* model = *mCollageModels.find(name);
+        CollageImageModel* model = *iter;
         model->clearImagePathes();
         return model;
     }

@@ -7,11 +7,14 @@
 #include <QQmlContext>
 #include <QTranslator>
 #include "myhelper.h"
+#include "fakeprinter.h"
 #include "selphyprinter.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
 #include "fileio.h"
 #include "system.h"
+
+#define FAKEPRINTER 1
 
 int main(int argc, char *argv[])
 {
@@ -39,7 +42,11 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("Syetem", 1, 0, "System");
 
+#if FAKEPRINTER == 1
+    qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
+#else
     qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
+#endif
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

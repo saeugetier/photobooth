@@ -14,11 +14,6 @@ SnapshotMenuForm {
         console.log("photo processing: " + Boolean(cameraRenderer.photoProcessing).toString())
     }
 
-    onStateChanged:
-    {
-        console.log("Snapshot menu state changed: " + state)
-    }
-
     GPIO
     {
         id: ledEnablePin
@@ -26,11 +21,36 @@ SnapshotMenuForm {
         value: 0.0
     }
 
+    onStateChanged:
+    {
+        console.log("Snapshot menu state changed: " + state)
+        if(state == "deactivated")
+        {
+            ledEnablePin.value = 0.0
+        }
+        else
+        {
+            ledEnablePin.value = 1.0
+        }
+    }
+
     GPIO
     {
         id: ledBrightnessPin
         pin:  1
-        value: 0.0
+        value: snapshotSettings.viewFinderBrightness
+    }
+
+    cameraRenderer.onStateChanged:
+    {
+        if(cameraRenderer.state == "snapshot" && snapshotSettings.flashEnabled)
+        {
+            ledBrightnessPin.value = snapshotSettings.flashBrightness
+        }
+        else
+        {
+            ledBrightnessPin.value = snapshotSettings.viewFinderBrightness
+        }
     }
 
     shutterButton.onTriggerSnapshot:

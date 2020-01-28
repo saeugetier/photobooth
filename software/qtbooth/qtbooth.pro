@@ -13,6 +13,7 @@ SOURCES += main.cpp \
     collageiconmodel.cpp \
     collageimagemodel.cpp \
     collagemodelfactory.cpp \
+    fakeprinter.cpp \
     fileio.cpp \
     gpio.cpp \
     modelparser.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     collageiconmodel.h \
     collageimagemodel.h \
     collagemodelfactory.h \
+    fakeprinter.h \
     fileio.h \
     gpio.h \
     modelparser.h \

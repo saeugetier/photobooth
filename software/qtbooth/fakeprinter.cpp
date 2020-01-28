@@ -26,5 +26,6 @@ int FakePrinter::printImage(const QString &filename)
 
 void FakePrinter::busyTimeout()
 {
+    emit success();
     qDebug() << "Fake printer has finished";
 }

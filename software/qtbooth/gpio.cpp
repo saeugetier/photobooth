@@ -2,6 +2,7 @@
 #include <QFile>
 #include <algorithm>
 #include <cmath>
+#include <QDebug>
 
 #define IO_DEVICE "/dev/pi-blaster"
 
@@ -42,6 +43,8 @@ void GPIO::setPin(int pin)
             pinNumber = pin;
             emit pinChanged(pin);
         }
+
+        qDebug() << "Allocated pin: " << pinNumber;
     }
 }
 
@@ -68,5 +71,7 @@ void GPIO::setValue(float value)
             QString io_string = QString::number(pinNumber) + QString("=") + QString::number(pinValue);
             io.write(io_string.toLatin1());
         }
+
+        qDebug() << "Pin: " << pinNumber << " is set to " << pinValue;
     }
 }

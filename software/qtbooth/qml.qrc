@@ -39,5 +39,7 @@
         <file>content/Countdown.qml</file>
         <file>images/polaroid.svg</file>
         <file>images/polaroid.svg.png</file>
+        <file>SnapshotSettings.qml</file>
+        <file>SnapshotSettingsForm.ui.qml</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@ Item {
     id: element
     width: 640
     height: 480
+    property alias snapshotSettings: snapshotSettings
     property alias exitButton: exitButton
     property alias cameraRenderer: cameraRenderer
     property alias shutterButton: shutterButton
@@ -20,13 +21,11 @@ Item {
 
     ShutterButton {
         id: shutterButton
-        x: 268
-        y: 356
         width: 150
         height: 150
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
+        anchors.bottomMargin: 0
     }
 
     NavigationButton {
@@ -37,6 +36,16 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 30
         forward: false
+    }
+
+    SnapshotSettings {
+        id: snapshotSettings
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
     }
     states: [
         State {

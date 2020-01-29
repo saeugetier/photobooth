@@ -9,6 +9,12 @@ Item {
 
     signal collageFull(bool full)
 
+    Rectangle
+    {
+        color: "white"
+        anchors.fill: parent
+    }
+
     Image
     {
         id: background
@@ -54,7 +60,7 @@ Item {
                     console.log(imageSource)
                 }
 
-                proxy.onDeletePhoto:
+                onDeletePhoto:
                 {
                     console.log("Delete photo: " + Number(number).toString())
                     imageModel.clearImagePath(number)
@@ -91,13 +97,13 @@ Item {
         }
     }
 
-    function saveImage(filename)
+    function saveImage(filename, size)
     {
         saving = true;
         // TODO clip the image and bringing everything into right format...
-        background.grabToImage(function(result) {
+        renderer.grabToImage(function(result) {
             result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
             saving = false;
-        });
+        }, size);
     }
 }

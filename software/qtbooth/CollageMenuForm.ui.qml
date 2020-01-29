@@ -10,17 +10,43 @@ Item {
     property alias busyIndicator: busyIndicator
     property alias nextButton: nextButton
     property alias exitButton: exitButton
+    property real printerRatio: 3 / 4
+
+    Rectangle {
+        color: "white"
+        anchors.verticalCenter: collageRenderer.verticalCenter
+        anchors.horizontalCenter: collageRenderer.horizontalCenter
+        width: collageRenderer.width + 20
+        height: collageRenderer.height + 20
+    }
 
     CollageRenderer {
         id: collageRenderer
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 150
-        anchors.right: parent.right
-        anchors.rightMargin: 30
-        anchors.left: parent.left
-        anchors.leftMargin: 30
+        // INPUTS
+        property double rightMargin: 50
+        property double bottomMargin: 150
+        property double leftMargin: 50
+        property double topMargin: 30
+        property double aimedRatio: printerRatio
+
+        // SIZING
+        property double availableWidth: parent.width - rightMargin - leftMargin
+        property double availableHeight: parent.height - bottomMargin - topMargin
+
+        property bool parentIsLarge: parentRatio > aimedRatio
+
+        property double parentRatio: availableHeight / availableWidth
+
+        height: parentIsLarge ? width * aimedRatio : availableHeight
+        width: parentIsLarge ? availableWidth : height / aimedRatio
+
+        property double verticalSpacing: (availableHeight - height) / 2
+        property double horzitontalSpacing: (availableWidth - width) / 2
+
         anchors.top: parent.top
-        anchors.topMargin: 30
+        anchors.topMargin: topMargin + verticalSpacing
+        anchors.left: parent.left
+        anchors.leftMargin: leftMargin + horzitontalSpacing
     }
 
     Row {
@@ -96,6 +122,15 @@ Item {
         anchors.leftMargin: 20
         forward: false
     }
+
+    Text {
+        id: element1
+        x: 200
+        y: 197
+        text: qsTr("Printer is still busy")
+        visible: false
+        font.pixelSize: 12
+    }
     states: [
         State {
             name: "CollageNotFull"
@@ -117,13 +152,17 @@ Item {
                 target: nextButton
                 visible: false
             }
+
+            PropertyChanges {
+                target: element1
+                visible: printer.busy
+            }
         }
     ]
 }
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:1;anchors_height:300;anchors_width:400;anchors_x:103;anchors_y:74}
-D{i:8;anchors_x:175}D{i:9;anchors_x:165}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
 

@@ -9,6 +9,11 @@ CollageMenuForm {
     signal next
     signal exit
 
+    printButton.enabled: !printer.busy
+    property real printerHeight : printer.getPrintSize().height
+    property real printerWidth : printer.getPrintSize().width
+    printerRatio:  printerHeight / printerWidth
+
     nextButton.onClicked:
     {
         next()
@@ -16,6 +21,7 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        collageRenderer.saveImage("Test.jpg", printer.getPrintSize())
         printer.printImage("Test")
         exit()
     }
@@ -34,3 +40,9 @@ CollageMenuForm {
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

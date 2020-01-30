@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
-    qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
-    qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
+    qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
+    qmlRegisterUncreatableType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel", "CollageImageModel can only be created via CollageModeFactory");
 
     qmlRegisterType<GPIO>("GPIO", 1, 0, "GPIO");
 

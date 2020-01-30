@@ -4,13 +4,14 @@ import QtGraphicalEffects 1.0
 import "content"
 
 Item {
-    id: element
+    id: menu
     property alias collageRenderer: collageRenderer
     property alias printButton: printButton
     property alias busyIndicator: busyIndicator
     property alias nextButton: nextButton
     property alias exitButton: exitButton
     property real printerRatio: 3 / 4
+    property alias printerBusyPopup: printerBusyPopup
 
     Rectangle {
         color: "white"
@@ -123,14 +124,12 @@ Item {
         forward: false
     }
 
-    Text {
-        id: element1
-        x: 200
-        y: 197
-        text: qsTr("Printer is still busy")
-        visible: false
-        font.pixelSize: 12
+    PrinterBusyPopup {
+        id: printerBusyPopup
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
     }
+
     states: [
         State {
             name: "CollageNotFull"
@@ -151,11 +150,6 @@ Item {
             PropertyChanges {
                 target: nextButton
                 visible: false
-            }
-
-            PropertyChanges {
-                target: element1
-                visible: printer.busy
             }
         }
     ]

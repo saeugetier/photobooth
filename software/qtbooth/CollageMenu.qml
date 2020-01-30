@@ -31,12 +31,36 @@ CollageMenuForm {
         exit()
     }
 
+    onStateChanged:
+    {
+        if(state == "CollageFull")
+        {
+            if(printer.busy)
+            {
+                printerBusyPopup.modal = 1
+                printerBusyPopup.open()
+            }
+        }
+    }
+
     Connections
     {
         target: collageImage
         onCollageFull: {
             if(full) form.state = "CollageFull";
             else form.state = "CollageNotFull";
+        }
+    }
+
+    Connections
+    {
+        target: printer
+        onBusyChanged:
+        {
+            if(!printer.busy && printerBusyPopup.opened)
+            {
+                printerBusyPopup.close()
+            }
         }
     }
 }

@@ -7,11 +7,14 @@
 #include <QQmlContext>
 #include <QTranslator>
 #include "myhelper.h"
+#include "fakeprinter.h"
 #include "selphyprinter.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
 #include "fileio.h"
 #include "system.h"
+
+#define FAKEPRINTER 1
 
 int main(int argc, char *argv[])
 {
@@ -30,8 +33,8 @@ int main(int argc, char *argv[])
         qWarning() << "Failed to load fontello.ttf";
 
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
-    qmlRegisterType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel");
-    qmlRegisterType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel");
+    qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
+    qmlRegisterUncreatableType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel", "CollageImageModel can only be created via CollageModeFactory");
 
     qmlRegisterType<GPIO>("GPIO", 1, 0, "GPIO");
 
@@ -39,7 +42,11 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("Syetem", 1, 0, "System");
 
+#if FAKEPRINTER == 1
+    qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
+#else
     qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
+#endif
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");

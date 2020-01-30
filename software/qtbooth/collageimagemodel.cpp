@@ -140,15 +140,12 @@ bool CollageImageModel::addImagePath(QUrl source)
 
 void CollageImageModel::clearImagePathes()
 {
-    if(collageFull())
-    {
-        emit collageFullChanged(false);
-    }
-
     for(int i = 0; i < mImages.length(); i++)
     {
         mImages[i]->setImage(QUrl(""));
     }
+
+    emit collageFullChanged(false);
 
     emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
 }

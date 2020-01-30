@@ -41,5 +41,7 @@
         <file>images/polaroid.svg.png</file>
         <file>SnapshotSettings.qml</file>
         <file>SnapshotSettingsForm.ui.qml</file>
+        <file>PrinterBusyPopup.qml</file>
+        <file>PrinterBusyPopupForm.ui.qml</file>
     </qresource>
 </RCC>

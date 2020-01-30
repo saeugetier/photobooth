@@ -1,28 +1,20 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include <QObject>
-#include <QSize>
+#include "abstractprinter.h"
 #include <QProcess>
 
-class SelphyPrinter : public QObject
+class SelphyPrinter : public AbstractPrinter
 {
     Q_OBJECT
 public:
     SelphyPrinter(QObject *parent = nullptr);
-
-    Q_INVOKABLE bool busy();
-signals:
-    void progress(int);
-    void success();
-    void failed();
-
-public slots:
-    Q_INVOKABLE QString getPrinterIp();
-    Q_INVOKABLE int printImage(const QString &filename);
+    QString getPrinterIp();
     Q_INVOKABLE QSize getPrintSize();
     Q_INVOKABLE bool printerOnline();
-
+    bool busy();
+public slots:
+    Q_INVOKABLE int printImage(const QString &filename);
 protected slots:
     void finished(int code, QProcess::ExitStatus status);
 protected:

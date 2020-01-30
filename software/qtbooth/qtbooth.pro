@@ -13,6 +13,7 @@ SOURCES += main.cpp \
     collageiconmodel.cpp \
     collageimagemodel.cpp \
     collagemodelfactory.cpp \
+    fakeprinter.cpp \
     fileio.cpp \
     gpio.cpp \
     modelparser.cpp \
@@ -35,9 +36,11 @@ TRANSLATIONS = "tr_de.ts"
 DISTFILES +=
 
 HEADERS += \
+    abstractprinter.h \
     collageiconmodel.h \
     collageimagemodel.h \
     collagemodelfactory.h \
+    fakeprinter.h \
     fileio.h \
     gpio.h \
     modelparser.h \

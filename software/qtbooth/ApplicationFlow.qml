@@ -13,8 +13,11 @@ ApplicationFlowForm {
 
     mainMenu.onSelectedCollageNameChanged:
     {
-        mainMenu.collageRenderer.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
-        mainMenu.collageRenderer.imageModel.clearImagePathes()
+        if(mainMenu.selectedCollageName != "")
+        {
+            mainMenu.collageRenderer.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
+            mainMenu.collageRenderer.imageModel.clearImagePathes()
+        }
     }
 
     mainMenu.onCollageSelected:
@@ -22,6 +25,7 @@ ApplicationFlowForm {
         state = "snapshot"
         collageMenu.collageImage.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
         collageMenu.collageImage.imageModel.clearImagePathes()
+        mainMenu.selectedCollageName = ""
     }
 
     snapshotMenu.onCaptured:

@@ -5,8 +5,7 @@ import QtQuick.Controls.Material 2.0
 Item {
     property url imageFileName : ""
     property int number : 0
-
-    signal deletePhoto(int number)
+    property bool enableDeleteButton : true
 
     id: photoProxy
 
@@ -39,27 +38,6 @@ Item {
         }
     }
 
-    ToolButton {
-        id: deleteButton
-        anchors.horizontalCenter: image.right
-        anchors.verticalCenter: image.top
-        text: "\uE81F"  // cancel button
-        font.family: "fontello"
-        font.pixelSize: 32
-        enabled: true
-        z: 1 // on top
-        visible: false
-
-        Material.foreground: Material.Red
-
-        opacity: 0.7
-
-        onClicked:
-        {
-            deletePhoto(number)
-        }
-    }
-
     state: "number"
 
     states:
@@ -69,14 +47,12 @@ Item {
             name: "number"
             PropertyChanges { target: numberRect; visible: true }
             PropertyChanges { target: image; visible: false }
-            PropertyChanges { target: deleteButton; visible: false }
         },
         State
         {
             name: "image"
             PropertyChanges { target: numberRect; visible: false }
             PropertyChanges { target: image; visible: true }
-            PropertyChanges { target: deleteButton; visible: true }
         }
     ]
 

@@ -6,7 +6,7 @@
 #include <QDebug>
 
 
-SelphyPrinter::SelphyPrinter(QObject *parent) : QObject(parent)
+SelphyPrinter::SelphyPrinter(QObject *parent) : AbstractPrinter(parent)
 {
     QObject::connect(&mPrinterProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
     QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));
@@ -93,6 +93,7 @@ int SelphyPrinter::printImage(const QString &filename)
         {
             if(printerOnline())
             {
+                emit busyChanged(true);
                 mPrinterProcess.start("selphy", parameters);
                 qDebug() << parameters;
                 return 0;
@@ -111,6 +112,7 @@ int SelphyPrinter::printImage(const QString &filename)
 
 void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 {
+    emit busyChanged(false);
     if(code != 0)
     {
         qDebug() << "Selphy Error: \n" << mPrinterProcess.readAllStandardError();

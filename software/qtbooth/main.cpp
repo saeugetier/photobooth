@@ -7,9 +7,14 @@
 #include <QQmlContext>
 #include <QTranslator>
 #include "myhelper.h"
-#include "photomontage.h"
-#include "ledflash.h"
-#include "printer.h"
+#include "fakeprinter.h"
+#include "selphyprinter.h"
+#include "collagemodelfactory.h"
+#include "gpio.h"
+#include "fileio.h"
+#include "system.h"
+
+#define FAKEPRINTER 1
 
 int main(int argc, char *argv[])
 {
@@ -27,14 +32,25 @@ int main(int argc, char *argv[])
     if (fontDatabase.addApplicationFont(":/fontello/font/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
 
-    qmlRegisterType<PhotoMontage>("Montage", 1, 0, "PhotoMontage");
+    qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
+    qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
+    qmlRegisterUncreatableType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel", "CollageImageModel can only be created via CollageModeFactory");
+
+    qmlRegisterType<GPIO>("GPIO", 1, 0, "GPIO");
+
+    qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
+
+    qmlRegisterType<System>("Syetem", 1, 0, "System");
+
+#if FAKEPRINTER == 1
+    qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
+#else
+    qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
+#endif
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
-    engine.rootContext()->setContextProperty("flash", LedFlash::instance());
-    engine.rootContext()->setContextProperty("helper", MyHelper::instance());
-    engine.rootContext()->setContextProperty("printer", Printer::instance());
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));    
+    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 

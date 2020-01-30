@@ -1,7 +1,3 @@
-[submodule "software/kivybooth/libs/kivy"]
-	path = software/kivybooth/libs/kivy
-	url = https://github.com/saeugetier/kivy
-
 [submodule "software/qtbooth/lib/qtmultimedia-gphoto"]
 	path = software/qtbooth/lib/qtmultimedia-gphoto
 	url = https://github.com/saeugetier/qtmultimedia-gphoto

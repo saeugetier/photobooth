@@ -1,8 +1,11 @@
 import QtQuick 2.0
+import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
 
 Item {
-    property string imageFileName : ""
+    property url imageFileName : ""
     property int number : 0
+    property bool enableDeleteButton : true
 
     id: photoProxy
 
@@ -11,9 +14,11 @@ Item {
         id: image
         source: imageFileName
         asynchronous: true
-        sourceSize.height: 512
-        sourceSize.width: 512
-        fillMode: Image.PreserveAspectFit
+        cache: false
+        sourceSize.height: 2048
+        sourceSize.width: 2048
+        visible: false
+        fillMode: Image.PreserveAspectCrop
     }
 
     Rectangle
@@ -21,7 +26,19 @@ Item {
         id: numberRect
         anchors.fill: parent
         color: "gray"
+        z: 0.5
+        Text
+        {
+            anchors.fill: parent
+            text: Number(number + 1).toString()
+            fontSizeMode: Text.Fit
+            font.pixelSize: 144
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
     }
+
+    state: "number"
 
     states:
     [
@@ -38,4 +55,16 @@ Item {
             PropertyChanges { target: image; visible: true }
         }
     ]
+
+    onImageFileNameChanged:
+    {
+        if(imageFileName == "")
+        {
+            state = "number"
+        }
+        else
+        {
+            state = "image"
+        }
+    }
 }

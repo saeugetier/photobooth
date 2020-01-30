@@ -1,36 +1,47 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>fontello/font/fontello.ttf</file>
-        <file>PageCamera.qml</file>
-        <file>PageCameraForm.ui.qml</file>
-        <file>PopupPreviewImage.qml</file>
-        <file>PopupPreviewImageForm.ui.qml</file>
-        <file>PopupPrint.qml</file>
-        <file>PopupPrintForm.ui.qml</file>
-        <file>PageGallery.qml</file>
-        <file>PageGalleryForm.ui.qml</file>
-        <file>PopupCameraSettings.qml</file>
-        <file>PopupCameraSettingsForm.ui.qml</file>
-        <file>content/Countdown.qml</file>
-        <file>content/DelegateGalleryItem.qml</file>
         <file>images/box-shadow.png</file>
         <file>scripts/script.js</file>
         <file>styles/RoundProgressBarStyle.qml</file>
-        <file>content/CollageImage.qml</file>
         <file>SettingsPassword.qml</file>
         <file>SettingsPasswordForm.ui.qml</file>
-        <file>AdvancedSettings.qml</file>
-        <file>AdvancedSettingsForm.ui.qml</file>
         <file>tr_de.qm</file>
-        <file>FileCopyProgressForm.ui.qml</file>
-        <file>FileCopyProgress.qml</file>
-        <file>DeleteConfirmDialog.qml</file>
-        <file>content/AnimatedProgressBar.qml</file>
-        <file>content/PhotoboothCamera.qml</file>
-        <file>content/WhiteOverlay.qml</file>
-        <file>content/CollagePreview.qml</file>
         <file>content/PhotoProxy.qml</file>
+        <file>Application.qml</file>
+        <file>ApplicationFlow.qml</file>
+        <file>ApplicationFlowForm.ui.qml</file>
+        <file>MainMenu.qml</file>
+        <file>MainMenuForm.ui.qml</file>
+        <file>SnapshotMenu.qml</file>
+        <file>SnapshotMenuForm.ui.qml</file>
+        <file>ImagePreview.qml</file>
+        <file>ImagePreviewForm.ui.qml</file>
+        <file>CollageMenu.qml</file>
+        <file>CollageMenuForm.ui.qml</file>
+        <file>CollageIconButton.qml</file>
+        <file>images/icon/Unknown.svg</file>
+        <file>CollageSelector.qml</file>
+        <file>CollageSelectorForm.ui.qml</file>
+        <file>XmlData.xml</file>
+        <file>scripts/utils.js</file>
+        <file>images/cardboard.png</file>
+        <file>content/NavigationButton.qml</file>
+        <file>images/buttons/go/white.png</file>
+        <file>images/buttons/back/white.png</file>
+        <file>content/CollageImageDelegate.qml</file>
+        <file>content/CollageRenderer.qml</file>
+        <file>content/WhiteOverlay.qml</file>
+        <file>content/CameraRenderer.qml</file>
+        <file>content/ShutterButton.qml</file>
+        <file>styles/ArcProgressbarStyle.qml</file>
+        <file>content/Countdown.qml</file>
+        <file>images/polaroid.svg</file>
+        <file>images/polaroid.svg.png</file>
+        <file>SnapshotSettings.qml</file>
+        <file>SnapshotSettingsForm.ui.qml</file>
+        <file>PrinterBusyPopup.qml</file>
+        <file>PrinterBusyPopupForm.ui.qml</file>
     </qresource>
 </RCC>

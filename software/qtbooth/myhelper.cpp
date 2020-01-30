@@ -24,25 +24,6 @@ MyHelper* MyHelper::instance()
     return Singleton<MyHelper>::instance(MyHelper::createInstance);
 }
 
-void MyHelper::removeFile(const QString &filename, bool recycle) {
-    QFile file(filename);
-    if(recycle)
-    {
-        QFileInfo info(filename);
-        QString path = info.absolutePath();
-        path.append("/recycle/");
-        path.append(info.fileName());
-        qDebug() << "Moving file :" << filename << " to dir: " << path;
-        QFile::rename(filename, path);
-    }
-    else
-    {
-        file.remove();
-        qDebug("File deleted: %s", filename.toStdString().c_str());
-    }
-}
-
-
 QString MyHelper::getImagePath()
 {
     QSettings settings("Timmedia", "QML Photo Booth");
@@ -50,18 +31,6 @@ QString MyHelper::getImagePath()
         return settings.value("Application/foldername").value<QString>();
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-}
-
-void MyHelper::shutdown()
-{
-    QProcess process;
-    process.startDetached("shutdown now -P -h");
-}
-
-void MyHelper::restart()
-{
-    QProcess process;
-    process.startDetached("reboot");
 }
 
 QTranslator* MyHelper::getTranslator()

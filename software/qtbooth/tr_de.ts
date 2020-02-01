@@ -4,91 +4,127 @@
 <context>
     <name>AdvancedSettingsForm.ui</name>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="19"/>
         <source>X</source>
-        <translation>X</translation>
+        <translation type="vanished">X</translation>
     </message>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="31"/>
         <source>Printer:</source>
-        <translation>Drucker:</translation>
+        <translation type="vanished">Drucker:</translation>
     </message>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="36"/>
         <source>enabled</source>
-        <translation>aktiviert</translation>
+        <translation type="vanished">aktiviert</translation>
     </message>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="43"/>
         <source>Close Program</source>
-        <translation>Programm beenden</translation>
+        <translation type="vanished">Programm beenden</translation>
     </message>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="50"/>
         <source>Shut Down</source>
-        <translation>Herunterfahren</translation>
+        <translation type="vanished">Herunterfahren</translation>
     </message>
     <message>
-        <location filename="AdvancedSettingsForm.ui.qml" line="57"/>
         <source>Restart</source>
-        <translation>Neustart</translation>
+        <translation type="vanished">Neustart</translation>
+    </message>
+</context>
+<context>
+    <name>Application</name>
+    <message>
+        <location filename="Application.qml" line="18"/>
+        <source>QML Photo Booth</source>
+        <translation>QML Photo Booth</translation>
+    </message>
+</context>
+<context>
+    <name>CollageMenuForm.ui</name>
+    <message>
+        <location filename="CollageMenuForm.ui.qml" line="73"/>
+        <source>Print</source>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>Countdown</name>
     <message>
-        <location filename="Countdown.qml" line="16"/>
+        <location filename="content/Countdown.qml" line="16"/>
         <source>Smile</source>
         <translation>Lächeln</translation>
     </message>
 </context>
 <context>
+    <name>MainMenuForm.ui</name>
+    <message>
+        <location filename="MainMenuForm.ui.qml" line="111"/>
+        <source>Continue</source>
+        <translation>Weiter</translation>
+    </message>
+    <message>
+        <location filename="MainMenuForm.ui.qml" line="121"/>
+        <source>Back</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>NavigationButton</name>
+    <message>
+        <location filename="content/NavigationButton.qml" line="28"/>
+        <source>Continue</source>
+        <translation>Weiter</translation>
+    </message>
+</context>
+<context>
     <name>PageCamera</name>
     <message>
-        <location filename="PageCamera.qml" line="114"/>
         <source>Please try again</source>
-        <translation>Bitte noch einmal versuchen</translation>
+        <translation type="vanished">Bitte noch einmal versuchen</translation>
     </message>
 </context>
 <context>
     <name>PopupCameraSettingsForm.ui</name>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="21"/>
         <source>Print: </source>
-        <translation>Drucken: </translation>
+        <translation type="vanished">Drucken: </translation>
     </message>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="36"/>
         <source>Print type: </source>
-        <translation>Ausgabeformat: </translation>
+        <translation type="vanished">Ausgabeformat: </translation>
     </message>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="57"/>
         <source>Flash: </source>
-        <translation>Blitz: </translation>
+        <translation type="vanished">Blitz: </translation>
     </message>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="72"/>
         <source>Light brightness: </source>
-        <translation>Helligkeit Licht: </translation>
+        <translation type="vanished">Helligkeit Licht: </translation>
     </message>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="81"/>
         <source>Count down timer: </source>
-        <translation>Auslösedauer: </translation>
+        <translation type="vanished">Auslösedauer: </translation>
     </message>
     <message>
-        <location filename="PopupCameraSettingsForm.ui.qml" line="94"/>
         <source>Advanced Settings</source>
-        <translation>Erweiterte Einstellungen</translation>
+        <translation type="vanished">Erweiterte Einstellungen</translation>
     </message>
 </context>
 <context>
     <name>PopupPrintForm.ui</name>
     <message>
-        <location filename="PopupPrintForm.ui.qml" line="81"/>
         <source>Printer is busy</source>
-        <translation>Drucker ist beschäftigt</translation>
+        <translation type="vanished">Drucker ist beschäftigt</translation>
+    </message>
+</context>
+<context>
+    <name>PrinterBusyPopupForm.ui</name>
+    <message>
+        <location filename="PrinterBusyPopupForm.ui.qml" line="19"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="PrinterBusyPopupForm.ui.qml" line="26"/>
+        <source>Printer is busy currently. Please stand by.</source>
+        <translation>Drucker ist noch beschäftigt. Bitte warten.</translation>
     </message>
 </context>
 <context>
@@ -105,21 +141,57 @@
     </message>
 </context>
 <context>
+    <name>SnapshotSettingsForm.ui</name>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="26"/>
+        <source>Flash</source>
+        <translation>Blitz</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="38"/>
+        <source>enabled</source>
+        <translation>aktiviert</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="38"/>
+        <source>disabled</source>
+        <translation>deaktiviert</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="61"/>
+        <location filename="SnapshotSettingsForm.ui.qml" line="99"/>
+        <source>Brightness</source>
+        <translation>Helligkeit</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="78"/>
+        <source>Preview Light</source>
+        <translation>Vorschau Licht</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="116"/>
+        <source>Countdown</source>
+        <translation>Coundown</translation>
+    </message>
+    <message>
+        <location filename="SnapshotSettingsForm.ui.qml" line="138"/>
+        <source>seconds</source>
+        <translation>Sekunden</translation>
+    </message>
+</context>
+<context>
     <name>main</name>
     <message>
-        <location filename="main.qml" line="16"/>
         <source>QML Photo Booth</source>
-        <translation>QML Photo Booth</translation>
+        <translation type="vanished">QML Photo Booth</translation>
     </message>
     <message>
-        <location filename="main.qml" line="53"/>
         <source>Camera</source>
-        <translation>Kamera</translation>
+        <translation type="vanished">Kamera</translation>
     </message>
     <message>
-        <location filename="main.qml" line="56"/>
         <source>Gallery</source>
-        <translation>Fotos</translation>
+        <translation type="vanished">Fotos</translation>
     </message>
 </context>
 </TS>

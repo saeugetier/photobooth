@@ -3,7 +3,7 @@
     <collage>
         <name>Test</name>
         <icon>1234</icon>
-        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
+        <background>qrc:/images/WhiteBackground.png</background>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>
@@ -11,22 +11,20 @@
     <collage>
         <name>Test2</name>
         <icon>1234</icon>
-        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
+        <background>qrc:/images/WhiteBackground.png</background>
         <images>
             <image>
                 <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
-                <border><file>Test1234</file><margin top="10" left="10" right="10" bottom="10"/></border>
             </image>
             <image>
                 <position x="0.5" y="0.0"/><size width="0.5" height="1.0"/>
-                <border><file>Test12345</file><margin top="10" left="10" right="10" bottom="10"/></border>
             </image>
         </images>
     </collage>
     <collage>
         <name>Test3</name>
         <icon>1234</icon>
-        <background>file://home/timm/Bilder/photobooth/Pict_20_01_2019_20_47_44.jpg</background>
+        <background>qrc:/images/WhiteBackground.png</background>
         <images>
             <image><position x="0.0" y="0.0"/><size width="0.15" height="0.5"/></image>
             <image><position x="0.2" y="0.0"/><size width="0.15" height="0.5"/></image>
@@ -38,7 +36,7 @@
     <collage>
         <name>Test4</name>
         <icon>1234</icon>
-        <background>file://home/timm/Bilder/photobooth/ExamplePBTemplate.jpg</background>
+        <background>qrc:/images/WhiteBackground.png</background>
         <images>
             <image><position x="0.42" y="0.03"/><size width="0.55" height="0.62"/></image>
             <image><position x="0.1" y="0.7"/><size width="0.25" height="0.25"/></image>

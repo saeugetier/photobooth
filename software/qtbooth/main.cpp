@@ -20,13 +20,12 @@ int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 
-
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
-    QGuiApplication::setOrganizationName("Timmedia");
-    QGuiApplication::setOrganizationDomain("timmedia.de");
-    QGuiApplication::setApplicationName("QML Photo Booth");
+    QGuiApplication::setOrganizationName("saeugetier");
+    QGuiApplication::setOrganizationDomain("github.com");
+    QGuiApplication::setApplicationName("qtbooth");
 
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/fontello/font/fontello.ttf") == -1)

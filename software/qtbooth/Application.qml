@@ -22,10 +22,21 @@ ApplicationWindow {
         id: printer
     }
 
+    function findCollagesFile()
+    {
+        var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
+        console.log(StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation))
+        console.log("Path: " + path)
+        if(path != "")
+            return path
+        else
+            return "XmlData.xml"
+    }
+
     CollageModelFactory
     {
         id: modelFactory
-        source: "XmlData.xml"
+        source: findCollagesFile()
     }
 
     ApplicationFlow

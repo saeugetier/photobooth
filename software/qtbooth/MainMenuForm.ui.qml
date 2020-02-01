@@ -45,6 +45,8 @@ Item {
                 width: imageSlider.width / 2
                 x: imageSlider.width / 4
                 source: fileURL
+                sourceSize.height: 1024
+                sourceSize.width: 1024
                 fillMode: Image.PreserveAspectFit
                 transform: Rotation {
                     origin.x: imageSlider.width / 4

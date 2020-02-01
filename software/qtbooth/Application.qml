@@ -15,6 +15,18 @@ ApplicationWindow {
     width: 640
     height: 480
 
+    FontLoader
+    {
+        name: "fontello"
+        source: "fontello/font/fontello.ttf"
+    }
+
+    FontLoader
+    {
+        name: "DejaVu Serif"
+        source: "font/DejaVuSerif.ttf"
+    }
+
     title: qsTr("QML Photo Booth")
 
     Printer

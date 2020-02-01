@@ -43,5 +43,6 @@
         <file>SnapshotSettingsForm.ui.qml</file>
         <file>PrinterBusyPopup.qml</file>
         <file>PrinterBusyPopupForm.ui.qml</file>
+        <file>images/WhiteBackground.png</file>
     </qresource>
 </RCC>

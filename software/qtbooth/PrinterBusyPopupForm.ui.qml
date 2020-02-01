@@ -24,6 +24,7 @@ Popup {
     Text {
         id: element
         text: qsTr("Printer is busy currently. Please stand by.")
+        font.family: "DejaVu Serif"
         anchors.top: parent.top
         anchors.topMargin: 16
         horizontalAlignment: Text.AlignHCenter
@@ -32,7 +33,7 @@ Popup {
         anchors.left: parent.left
         anchors.leftMargin: 10
         wrapMode: Text.WordWrap
-        font.pixelSize: 72
+        font.pixelSize: 70
     }
 }
 
@@ -41,3 +42,4 @@ Designer {
     D{i:2;anchors_x:8;anchors_y:16}
 }
 ##^##*/
+

@@ -62,7 +62,7 @@ ApplicationWindow {
     {
         id: applicationSettings
         category: "Application"
-        property string foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
+        property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
         property bool recycleBinEnabled: false
         property bool printEnable: true
         property string password: "0815"

@@ -131,7 +131,12 @@ Item {
         if(camera.imageCapture.ready)
         {
             state  = "snapshot"
-            camera.imageCapture.captureToLocation(applicationSettings.foldername.substring(7, applicationSettings.foldername.length) + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+            console.log(applicationSettings.foldername.toString())
+            var path = applicationSettings.foldername.toString()
+            path = path.replace(/^(file:\/{2})/,"");
+            var cleanPath = decodeURIComponent(path);
+            console.log(cleanPath)
+            camera.imageCapture.captureToLocation(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
         }
         else
         {

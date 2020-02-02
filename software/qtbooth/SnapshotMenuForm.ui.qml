@@ -31,6 +31,7 @@ Item {
     NavigationButton {
         id: exitButton
         text: "Abort"
+        visible: false
         anchors.left: parent.left
         anchors.leftMargin: 30
         anchors.top: parent.top
@@ -57,6 +58,11 @@ Item {
 
             PropertyChanges {
                 target: snapshotSettings
+                visible: true
+            }
+
+            PropertyChanges {
+                target: exitButton
                 visible: true
             }
         },

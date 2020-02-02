@@ -26,6 +26,8 @@ Item {
         id: numberRect
         anchors.fill: parent
         color: "gray"
+        border.color: "black"
+        border.width: 2
         z: 0.5
         Text
         {

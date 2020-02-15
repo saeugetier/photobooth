@@ -30,6 +30,10 @@ SnapshotSettingsForm {
     sliderViewfinderBrightness.value: settings.viewFinderBrightness
     sliderViewfinderBrightness.onValueChanged:
     {
+        if(sliderFlashBrightness.value < sliderViewfinderBrightness.value)
+        {
+            sliderFlashBrightness.value = sliderViewfinderBrightness.value
+        }
         settings.viewFinderBrightness = sliderViewfinderBrightness.value
     }
 

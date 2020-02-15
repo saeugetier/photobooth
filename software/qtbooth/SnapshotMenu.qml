@@ -72,9 +72,32 @@ SnapshotMenuForm {
         shutterButton.state = "idle"
     }
 
+    cameraRenderer.onFailed:
+    {
+        shutterButton.state = "idle"
+        failureAnimation.start()
+    }
+
+    SequentialAnimation
+    {
+        id: failureAnimation
+        running: false
+        loops: 1
+        PropertyAnimation { target: failureText; property: "visible"; to: true}
+        PropertyAnimation { target: failureText; property: "opacity"; to: 1.0}
+        NumberAnimation { target: failureText; property: "opacity"; to: 0.0; duration: 1000}
+        PropertyAnimation { target: failureText; property: "visible"; to: false}
+    }
+
     exitButton.onClicked:
     {
         abort()
     }
 
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

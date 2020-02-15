@@ -8,6 +8,7 @@ Item {
     id: element
     width: 640
     height: 480
+    property alias failureText: failureText
     property alias snapshotSettings: snapshotSettings
     property alias exitButton: exitButton
     property alias cameraRenderer: cameraRenderer
@@ -17,6 +18,19 @@ Item {
     CameraRenderer {
         id: cameraRenderer
         anchors.fill: parent
+
+        Text {
+            id: failureText
+            x: 308
+            y: 233
+            text: qsTr("Please Try Again")
+            font.bold: true
+            visible: false
+            font.family: "DejaVu Serif"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 42
+        }
     }
 
     ShutterButton {

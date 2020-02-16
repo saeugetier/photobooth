@@ -126,8 +126,7 @@ Item {
 
     PrinterBusyPopup {
         id: printerBusyPopup
-        x: (parent.width - width) / 2
-        y: (parent.height - height) / 2
+        anchors.centerIn: parent
     }
 
     states: [

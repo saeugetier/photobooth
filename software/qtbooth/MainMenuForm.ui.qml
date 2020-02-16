@@ -34,6 +34,7 @@ Item {
 
         ListView {
             id: imageSlider
+            interactive: false
             anchors.right: parent.right
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -41,6 +42,7 @@ Item {
             spacing: height / 8
 
             delegate: Image {
+                id: randomImage
                 height: imageSlider.height / 2
                 width: imageSlider.width / 2
                 x: imageSlider.width / 4
@@ -56,7 +58,22 @@ Item {
                         y: 0
                         z: 1
                     }
-                    angle: (Math.random() * 90) - 45
+                    angle: (Math.random() * 60) - 30
+                }
+                BorderImage {
+                    anchors.horizontalCenter: randomImage.horizontalCenter
+                    anchors.verticalCenter: randomImage.verticalCenter
+                    id: borderImage
+                    border.bottom: 65
+                    border.top: 25
+                    border.right: 25
+                    border.left: 25
+                    width: randomImage.paintedWidth + 40
+                    height: randomImage.paintedHeight + 60
+                    anchors.verticalCenterOffset: 10
+                    horizontalTileMode: BorderImage.Stretch
+                    verticalTileMode: BorderImage.Stretch
+                    source: "images/polaroid.svg.png"
                 }
             }
         }

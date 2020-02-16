@@ -11,6 +11,9 @@ MainMenuForm {
     state: "IconNotSelected"
     signal collageSelected
 
+    property real scrollPosition: 0.0
+    property real scrollDuration: 50000.0
+
     FolderListModel
     {
         id: folderModel
@@ -37,6 +40,39 @@ MainMenuForm {
     }
 
     imageSlider.model: folderModel //Utils.shuffle(folderModel)
+
+    onScrollPositionChanged:
+    {
+        imageSlider.contentY = scrollPosition * (imageSlider.contentHeight - imageSlider.height)
+    }
+
+    imageSlider.onContentHeightChanged:
+    {
+        scrollDuration = imageSlider.contentHeight * 20
+        scrollAnimation.start()
+    }
+
+    SequentialAnimation
+    {
+        id: scrollAnimation
+        running: true
+        loops: Animation.Infinite
+        NumberAnimation{
+            target: form
+            property: "scrollPosition"
+            from: 0.0
+            to: 1.0
+            duration: scrollDuration
+        }
+        NumberAnimation
+        {
+            target: form
+            property: "scrollPosition"
+            from: 1.0
+            to: 0.0
+            duration: scrollDuration
+        }
+    }
 }
 
 

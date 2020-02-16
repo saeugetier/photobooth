@@ -8,6 +8,7 @@ Item {
     id: element
     width: 640
     height: 480
+    property alias settingsButton: settingsButton
     property alias collageRenderer: collageRenderer
     property alias backButton: backButton
     property alias continueButton: continueButton
@@ -43,9 +44,28 @@ Item {
 
             delegate: Image {
                 id: randomImage
-                height: imageSlider.height / 2
-                width: imageSlider.width / 2
-                x: imageSlider.width / 4
+                property double rightMargin: 50
+                property double bottomMargin: 150
+                property double leftMargin: 50
+                property double topMargin: 30
+                property double aimedRatio: 3 / 4
+
+                // SIZING
+                property double availableWidth: imageSlider.width - rightMargin - leftMargin
+                property double availableHeight: imageSlider.height - bottomMargin - topMargin
+
+                property bool parentIsLarge: parentRatio > aimedRatio
+
+                property double parentRatio: availableHeight / availableWidth
+
+                height: parentIsLarge ? width * aimedRatio : availableHeight
+                width: parentIsLarge ? availableWidth : height / aimedRatio
+
+                property double verticalSpacing: (availableHeight - height) / 2
+                property double horzitontalSpacing: (availableWidth - width) / 2
+
+                x: leftMargin + horzitontalSpacing
+
                 source: fileURL
                 sourceSize.height: 1024
                 sourceSize.width: 1024
@@ -107,7 +127,7 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         text: "\uE80F"
-        visible: false
+        visible: true
         font.family: "fontello"
         font.pointSize: 36
 
@@ -145,11 +165,17 @@ Item {
         anchors.leftMargin: 20
         visible: false
     }
+
     states: [
         State {
             name: "NoIconSelected"
             PropertyChanges {
                 target: imageSlider
+                visible: true
+            }
+
+            PropertyChanges {
+                target: settingsButton
                 visible: true
             }
         },
@@ -175,13 +201,19 @@ Item {
                 target: collageRenderer
                 visible: true
             }
+
+            PropertyChanges {
+                target: settingsButton
+                visible: false
+            }
         }
     ]
 }
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:13;anchors_x:139;anchors_y:394}D{i:6;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
+    D{i:0;height:480;width:640}D{i:7;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
+D{i:14;anchors_x:139;anchors_y:394}D{i:13;anchors_x:139;anchors_y:394}
 }
 ##^##*/
 

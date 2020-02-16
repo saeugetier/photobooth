@@ -58,6 +58,16 @@ MainMenuForm {
         scrollAnimation.restart()
     }
 
+    SettingsPassword {
+        id: settingsPassword
+        anchors.centerIn: parent
+    }
+
+    settingsButton.onClicked:
+    {
+        settingsPassword.open()
+    }
+
     SequentialAnimation
     {
         id: scrollAnimation

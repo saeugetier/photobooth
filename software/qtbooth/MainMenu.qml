@@ -46,10 +46,16 @@ MainMenuForm {
         imageSlider.contentY = scrollPosition * (imageSlider.contentHeight - imageSlider.height)
     }
 
+    imageSlider.onModelChanged:
+    {
+        console.log("image list changed")
+    }
+
     imageSlider.onContentHeightChanged:
     {
-        scrollDuration = imageSlider.contentHeight * 20
-        scrollAnimation.start()
+        console.log("list content height: " + Number(imageSlider.contentHeight).toString())
+        scrollDuration = imageSlider.contentHeight * 10
+        scrollAnimation.restart()
     }
 
     SequentialAnimation

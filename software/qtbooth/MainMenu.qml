@@ -61,6 +61,21 @@ MainMenuForm {
     SettingsPassword {
         id: settingsPassword
         anchors.centerIn: parent
+
+        onPasswordAccepted:
+        {
+            settingsPopup.open()
+        }
+    }
+
+    SettingsPopup
+    {
+        id: settingsPopup
+        anchors.centerIn: parent
+
+        modal: true
+        focus: true
+        closePolicy: Popup.CloseOnEscape
     }
 
     settingsButton.onClicked:

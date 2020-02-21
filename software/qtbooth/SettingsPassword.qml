@@ -8,6 +8,7 @@ SettingsPasswordForm {
 
     property bool unlocked: false
     property string password: "1234"
+    signal passwordAccepted()
 
     onOpened:
     {
@@ -42,6 +43,7 @@ SettingsPasswordForm {
         if(passwordInput.text == password)
         {
             unlocked = true
+            passwordAccepted()
         }
         else
         {

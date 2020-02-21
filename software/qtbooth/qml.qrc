@@ -45,5 +45,7 @@
         <file>PrinterBusyPopupForm.ui.qml</file>
         <file>images/WhiteBackground.png</file>
         <file>font/DejaVuSerif.ttf</file>
+        <file>SettingsPopup.qml</file>
+        <file>SettingsPopupForm.ui.qml</file>
     </qresource>
 </RCC>

@@ -12,16 +12,16 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
     if(filename.length() == 0)
         return file;
 
-    //test if filename is a absolute file path
+    //test if filename is a file path
     if(QUrl(filename).isValid())
     {
-        if(QFile(QUrl(filename).toLocalFile()).exists())
+        if(QUrl(filename).isLocalFile())
         {
             file = QUrl(filename);
         }
     }
 
-    //search for local file
+    //filename is not a path. search for local file in search paths.
     for(auto iter = searchPaths.begin(); iter != searchPaths.end() && file.isEmpty(); iter++)
     {
         if(iter->isLocalFile())

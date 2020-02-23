@@ -48,7 +48,7 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
             QFileInfo info(filepath);
             if(info.fileName() == filename)
             {
-                file = it.filePath();
+                file = QUrl("qrc" + it.filePath());
                 break;
             }
         }

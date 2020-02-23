@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import CollageModel 1.0
+import Qt.labs.platform 1.0
 
 Item {
     id: renderer
@@ -78,7 +79,7 @@ Item {
 
     onImageModelChanged:
     {
-        background.source = imageModel.backgroundImage
+        background.source = filesystem.findFile(imageModel.backgroundImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
         console.log("model chnaged. Size: " + Number(imageModel.rowCount()).toString())
     }
 

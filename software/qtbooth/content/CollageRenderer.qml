@@ -43,7 +43,7 @@ Item {
             CollageImageDelegate
             {
                 id: collageImage
-                borderImageSource: borderImage
+                borderImageSource: filesystem.findFile(borderImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation, true))
                 imageSource: imagePath
                 number: index
                 x: imageRect.x * backgroundRect.width + (renderer.width - backgroundRect.width) / 2

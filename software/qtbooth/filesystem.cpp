@@ -7,7 +7,54 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent)
 
 QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool searchInResource)
 {
+    QUrl file;
 
+    if(filename.length() == 0)
+        return file;
+
+    //test if filename is a absolute file path
+    if(QUrl(filename).isValid())
+    {
+        if(QFile(QUrl(filename).toLocalFile()).exists())
+        {
+            file = QUrl(filename);
+        }
+    }
+
+    //search for local file
+    for(auto iter = searchPaths.begin(); iter != searchPaths.end() && file.isEmpty(); iter++)
+    {
+        if(iter->isLocalFile())
+        {
+            QFileInfo info(iter->path());
+            if(info.isDir())
+            {
+                QDir dir(iter->path());
+                if(dir.exists(filename))
+                {
+                    QString filepath = dir.filePath(filename);
+                    file = QUrl::fromLocalFile(filepath);
+                }
+            }
+        }
+    }
+
+    //if no file is found, search for file in QRC
+    if(file.isEmpty())
+    {
+        QDirIterator it(":", QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString filepath = it.next();
+            QFileInfo info(filepath);
+            if(info.fileName() == filename)
+            {
+                file = it.filePath();
+                break;
+            }
+        }
+    }
+
+    return file;
 }
 
 QString FileSystem::getImagePath()

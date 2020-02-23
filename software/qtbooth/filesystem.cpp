@@ -1,30 +1,16 @@
-#include "myhelper.h"
-#include "singleton.h"
-#include <QFile>
-#include <QImage>
-#include <QStandardPaths>
-#include <QSettings>
-#include <QDebug>
-#include <QProcess>
-#include <QGuiApplication>
-#include <QStorageInfo>
+#include "filesystem.h"
 
-MyHelper::MyHelper(QObject *parent) : QObject(parent)
+FileSystem::FileSystem(QObject *parent) : QObject(parent)
 {
+
 }
 
-MyHelper* MyHelper::createInstance()
+QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool searchInResource)
 {
-    return new MyHelper();
+
 }
 
-
-MyHelper* MyHelper::instance()
-{
-    return Singleton<MyHelper>::instance(MyHelper::createInstance);
-}
-
-QString MyHelper::getImagePath()
+QString FileSystem::getImagePath()
 {
     QSettings settings("Timmedia", "QML Photo Booth");
     if(settings.contains("Application/foldername"))
@@ -33,25 +19,7 @@ QString MyHelper::getImagePath()
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
 
-QTranslator* MyHelper::getTranslator()
-{
-    return m_Translator.get();
-}
-
-void MyHelper::setLanguage(QString code)
-{
-    if(m_Translator.get() != NULL)
-        QGuiApplication::removeTranslator(m_Translator.get());
-
-    std::unique_ptr<QTranslator> translator(new QTranslator);
-    m_Translator.swap(translator);
-    m_Translator->load("tr_" + code, ":/qml/");
-    QGuiApplication::installTranslator(m_Translator.get());
-
-    emit languageChanged();
-}
-
-bool MyHelper::removableDriveMounted()
+bool FileSystem::removableDriveMounted()
 {
     if(getRemovableDrivePath().length() > 0)
     {
@@ -60,14 +28,14 @@ bool MyHelper::removableDriveMounted()
     return false;
 }
 
-void MyHelper::unmountRemoveableDrive()
+void FileSystem::unmountRemoveableDrive()
 {
     QProcess unmountProcess;
     unmountProcess.setProgram("umount");
     unmountProcess.setArguments(QStringList() << this->getRemovableDrivePath());
 }
 
-void MyHelper::startCopyFilesToRemovableDrive()
+void FileSystem::startCopyFilesToRemovableDrive()
 {
     QString imagePath = this->getImagePath();
     imagePath = imagePath.right(imagePath.length() - QString("file://").length());
@@ -123,7 +91,7 @@ void MyHelper::startCopyFilesToRemovableDrive()
         emit copyProgress(-1);
 }
 
-QString MyHelper::getRemovableDrivePath()
+QString FileSystem::getRemovableDrivePath()
 {
     QRegExp regexDrive("\\/dev\\/sd*");
     QRegExp regexBoot("\\/boot");
@@ -144,7 +112,7 @@ QString MyHelper::getRemovableDrivePath()
     return QString();
 }
 
-void MyHelper::abortCopy()
+void FileSystem::abortCopy()
 {
     if(m_copyFuture.isRunning())
     {
@@ -153,7 +121,7 @@ void MyHelper::abortCopy()
 
 }
 
-void MyHelper::deleteAllImages()
+void FileSystem::deleteAllImages()
 {
     QString imagePath = this->getImagePath();
     imagePath = imagePath.right(imagePath.length() - QString("file://").length());

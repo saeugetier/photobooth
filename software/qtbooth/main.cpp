@@ -6,12 +6,13 @@
 #include <QSettings>
 #include <QQmlContext>
 #include <QTranslator>
-#include "myhelper.h"
+#include "translationhelper.h"
 #include "fakeprinter.h"
 #include "selphyprinter.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
 #include "fileio.h"
+#include "filesystem.h"
 #include "system.h"
 
 #define FAKEPRINTER 1
@@ -47,11 +48,15 @@ int main(int argc, char *argv[])
     qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
 #endif
 
+    FileSystem fileSystem;
+    TranslationHelper translationHelper;
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
     engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
+    engine.rootContext()->setContextProperty("translation", &translationHelper);
+    engine.rootContext()->setContextProperty("filesystem", &fileSystem);
 
-    QObject::connect(MyHelper::instance(), SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
+    QObject::connect(&translationHelper, SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 
     int result = app.exec();
 

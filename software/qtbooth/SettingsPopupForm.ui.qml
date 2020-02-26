@@ -5,6 +5,8 @@ Popup {
     id: popup
     width: 400
     height: 400
+    property alias buttonShutdown: buttonShutdown
+    property alias buttonRestart: buttonRestart
     property alias buttonCopyTemplates: buttonCopyTemplates
     property alias buttonDeletePhotos: buttonDeletePhotos
     property alias buttonClose: buttonClose
@@ -83,6 +85,24 @@ Popup {
         anchors.top: parent.top
         anchors.topMargin: 50
         orientation: Qt.Horizontal
+    }
+
+    Button {
+        id: buttonRestart
+        text: qsTr("Restart")
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 10
+    }
+
+    Button {
+        id: buttonShutdown
+        text: qsTr("Shutdown")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 10
+        anchors.left: buttonRestart.right
+        anchors.leftMargin: 30
     }
 }
 

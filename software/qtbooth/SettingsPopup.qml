@@ -44,4 +44,14 @@ SettingsPopupForm {
     {
         copyProgressPopup.open()
     }
+
+    buttonShutdown.onClicked:
+    {
+        system.shutdown()
+    }
+
+    buttonRestart.onClicked:
+    {
+        system.restart()
+    }
 }

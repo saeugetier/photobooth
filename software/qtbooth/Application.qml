@@ -62,6 +62,24 @@ ApplicationWindow {
         {
             applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
         }
+
+        mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
+        {
+            applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
+            console.log("Language changed to: " + mainMenu.settingsPopup.comboBoxLanguages.displayText)
+            translation.setLanguage(applicationSettings.language)
+        }
+
+        mainMenu.settingsPopup.comboBoxLanguages.onCountChanged:
+        {
+            if(mainMenu.settingsPopup.comboBoxLanguages.count != 0)
+            {
+                var indexOfLanguage = mainMenu.settingsPopup.comboBoxLanguages.find(applicationSettings.language)
+                mainMenu.settingsPopup.comboBoxLanguages.currentIndex = indexOfLanguage
+                console.log("Language selected: " + Number(indexOfLanguage).toString() + " - " + applicationSettings.language + " - " + Number(mainMenu.settingsPopup.comboBoxLanguages.count).toString())
+                translation.setLanguage(applicationSettings.language)
+            }
+        }
     }
 
     Settings
@@ -71,6 +89,7 @@ ApplicationWindow {
         property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
         property bool printEnable: true
         property string password: "0815"
+        property string language: "en"
 
         Component.onCompleted:
         {

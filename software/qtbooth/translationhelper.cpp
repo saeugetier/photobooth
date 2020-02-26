@@ -1,5 +1,6 @@
 #include "translationhelper.h"
 #include <QGuiApplication>
+#include <QDirIterator>
 
 TranslationHelper::TranslationHelper(QObject *parent) : QObject(parent)
 {
@@ -18,13 +19,25 @@ void TranslationHelper::setLanguage(QString code)
 
     std::unique_ptr<QTranslator> translator(new QTranslator);
     m_Translator.swap(translator);
-    m_Translator->load("tr_" + code, ":/qml/");
-    QGuiApplication::installTranslator(m_Translator.get());
+    if(m_Translator->load("tr_" + code, ":/qml/"))
+    {
+        QGuiApplication::installTranslator(m_Translator.get());
+    }
 
     emit languageChanged();
 }
 
 QStringList TranslationHelper::getAvailableLanguages()
 {
-
+    QStringList translationFiles("en");
+    QDirIterator it(":", QStringList("*.qm"), QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        QString filepath = it.next();
+        QFileInfo info(filepath);
+        QString filename = info.fileName();
+        filename.remove("tr_");
+        filename.remove(".qm");
+        translationFiles << filename;
+    }
+    return translationFiles;
 }

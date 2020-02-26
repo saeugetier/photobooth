@@ -8,6 +8,7 @@
 class TranslationHelper : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList languages READ getAvailableLanguages CONSTANT)
 public:
     explicit TranslationHelper(QObject *parent = nullptr);
     QTranslator* getTranslator();

@@ -5,6 +5,7 @@ Popup {
     id: popup
     width: 400
     height: 400
+    property alias comboBoxLanguages: comboBoxLanguages
     property alias buttonShutdown: buttonShutdown
     property alias buttonRestart: buttonRestart
     property alias buttonCopyTemplates: buttonCopyTemplates
@@ -74,7 +75,8 @@ Popup {
         }
 
         ComboBox {
-            id: comboBox
+            id: comboBoxLanguages
+            model: translation.languages
         }
     }
 

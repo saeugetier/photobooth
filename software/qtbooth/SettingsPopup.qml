@@ -34,4 +34,9 @@ SettingsPopupForm {
     {
         filesystem.copyLayoutFiles()
     }
+
+    buttonCopyPhotos.onClicked:
+    {
+        filesystem.startCopyFilesToRemovableDrive()
+    }
 }

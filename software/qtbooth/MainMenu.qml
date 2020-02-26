@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtQuick.Controls 2.2
 import QtQml.Models 2.11
 import Qt.labs.folderlistmodel 2.1
 import "scripts/utils.js" as Utils
@@ -7,6 +8,8 @@ MainMenuForm {
     id: form
     property alias collageRenderer: form.collageRenderer
     property alias iconModel: form.iconModel
+    property alias settingsPopup: settingsPopup
+    property alias settingsPinCode: settingsPassword.password
     property string selectedCollageName : ""
     state: "IconNotSelected"
     signal collageSelected
@@ -61,6 +64,7 @@ MainMenuForm {
     SettingsPassword {
         id: settingsPassword
         anchors.centerIn: parent
+        closePolicy: Popup.CloseOnEscape
 
         onPasswordAccepted:
         {

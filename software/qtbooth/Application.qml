@@ -53,9 +53,15 @@ ApplicationWindow {
 
     ApplicationFlow
     {
+        id: flow
         height: parent.height
         width: parent.width
         collageMenu.printer : printer
+
+        mainMenu.settingsPopup.switchPrinter.onCheckedChanged:
+        {
+            applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
+        }
     }
 
     Settings
@@ -65,5 +71,11 @@ ApplicationWindow {
         property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
         property bool printEnable: true
         property string password: "0815"
+
+        Component.onCompleted:
+        {
+            flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
+            flow.mainMenu.settingsPinCode = password
+        }
     }
 }

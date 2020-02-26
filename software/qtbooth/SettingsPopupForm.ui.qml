@@ -5,12 +5,18 @@ Popup {
     id: popup
     width: 400
     height: 400
+    property alias buttonCopyTemplates: buttonCopyTemplates
+    property alias buttonDeletePhotos: buttonDeletePhotos
+    property alias buttonClose: buttonClose
+    property alias switchPrinter: switchPrinter
+    property alias buttonCopyPhotos: buttonCopyPhotos
 
     DelayButton {
         id: buttonDeletePhotos
         x: 239
         y: 321
         text: qsTr("Delete all photos")
+        delay: 5000
         anchors.right: parent.right
         anchors.rightMargin: 10
         anchors.bottom: parent.bottom
@@ -56,13 +62,17 @@ Popup {
         }
 
         Button {
-            id: button
+            id: buttonCopyPhotos
             text: qsTr("Copy photos to removable disk")
         }
 
         Button {
-            id: button1
+            id: buttonCopyTemplates
             text: qsTr("Copy layout templates from removable disk")
+        }
+
+        ComboBox {
+            id: comboBox
         }
     }
 
@@ -78,7 +88,7 @@ Popup {
 
 /*##^##
 Designer {
-    D{i:2;anchors_y:23}D{i:5;anchors_y:23}D{i:10;anchors_x:39;anchors_y:-69}
+    D{i:2;anchors_y:23}D{i:5;anchors_y:23}D{i:11;anchors_x:39;anchors_y:"-69"}
 }
 ##^##*/
 

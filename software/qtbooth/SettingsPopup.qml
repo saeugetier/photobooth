@@ -35,8 +35,13 @@ SettingsPopupForm {
         filesystem.copyLayoutFiles()
     }
 
+    FileCopyProgress
+    {
+        id: copyProgressPopup
+    }
+
     buttonCopyPhotos.onClicked:
     {
-        filesystem.startCopyFilesToRemovableDrive()
+        copyProgressPopup.open()
     }
 }

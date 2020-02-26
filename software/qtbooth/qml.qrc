@@ -47,5 +47,7 @@
         <file>font/DejaVuSerif.ttf</file>
         <file>SettingsPopup.qml</file>
         <file>SettingsPopupForm.ui.qml</file>
+        <file>FileCopyProgressForm.ui.qml</file>
+        <file>FileCopyProgress.qml</file>
     </qresource>
 </RCC>

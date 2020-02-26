@@ -10,7 +10,7 @@ FileCopyProgressForm {
 
     Connections
     {
-        target: helper
+        target: filesystem
         onCopyProgress:  {
             updateProgress(progress)
         }
@@ -22,7 +22,7 @@ FileCopyProgressForm {
 
     onOpened:
     {
-        helper.startCopyFilesToRemovableDrive()
+        filesystem.startCopyFilesToRemovableDrive()
     }
 
     function updateProgress(progress)
@@ -33,11 +33,11 @@ FileCopyProgressForm {
     onRejected:
     {
         console.log("Cancel copy")
-        helper.abortCopy()
+        filesystem.abortCopy()
     }
 
     onClosed:
     {
-        helper.unmountRemoveableDrive()
+        filesystem.unmountRemoveableDrive()
     }
 }

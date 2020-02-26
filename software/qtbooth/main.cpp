@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
     TranslationHelper translationHelper;
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:///");
-    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
     engine.rootContext()->setContextProperty("translation", &translationHelper);
     engine.rootContext()->setContextProperty("filesystem", &fileSystem);
+    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
 
     QObject::connect(&translationHelper, SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 

@@ -15,11 +15,12 @@ SOURCES += main.cpp \
     collagemodelfactory.cpp \
     fakeprinter.cpp \
     fileio.cpp \
+    filesystem.cpp \
     gpio.cpp \
     modelparser.cpp \
-    myhelper.cpp \
     selphyprinter.cpp \
-    system.cpp
+    system.cpp \
+    translationhelper.cpp
 
 RESOURCES += qml.qrc
 
@@ -42,10 +43,10 @@ HEADERS += \
     collagemodelfactory.h \
     fakeprinter.h \
     fileio.h \
+    filesystem.h \
     gpio.h \
     modelparser.h \
-    myhelper.h \
     call_once.h \
     selphyprinter.h \
-    singleton.h \
-    system.h
+    system.h \
+    translationhelper.h

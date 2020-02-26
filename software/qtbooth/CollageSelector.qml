@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import QtGraphicalEffects 1.0
+import Qt.labs.platform 1.0
 
 CollageSelectorForm {
     id: form
@@ -24,6 +25,15 @@ CollageSelectorForm {
         id: iconDelegate
         CollageIconButton {
             id: iconButton
+            source:
+            {
+                var filename = filesystem.findFile(icon, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
+                if(filename.toString().length === 0)
+                {
+                    filename = "images/icon/Unknown.svg"
+                }
+                filename
+            }
             onClicked:
             {
                 iconListView.currentIndex = index

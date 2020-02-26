@@ -17,6 +17,8 @@ public:
     Q_INVOKABLE void startCopyFilesToRemovableDrive();
     Q_INVOKABLE void abortCopy();
     Q_INVOKABLE void deleteAllImages();
+    Q_INVOKABLE bool layoutFilesOnRemovableDrive();
+    Q_INVOKABLE void copyLayoutFiles();
 protected:
     QString getRemovableDrivePath();
     QFuture<void> m_copyFuture;

@@ -216,3 +216,49 @@ void FileSystem::deleteAllImages()
         }
     }
 }
+
+bool FileSystem::layoutFilesOnRemovableDrive()
+{
+    bool result = false;
+    if(removableDriveMounted())
+    {
+        QString path = getRemovableDrivePath();
+        while(path.endsWith( '/' )) path.chop(1);
+        if(QFile::exists(path + "/layout/" + "Collages.xml"))
+        {
+            result = true;
+        }
+    }
+    return result;
+}
+
+void FileSystem::copyLayoutFiles()
+{
+    QStringList fileNameFilter;
+    fileNameFilter << "*.xml" << "*.png" << "*.PNG" << "*.jpg" << "*.JPG" << "*.svg" << "*.SVG";
+
+    QString path = getRemovableDrivePath();
+    while(path.endsWith( '/' )) path.chop(1);
+    QDir layoutDirectory(path + "/layout/");
+    layoutDirectory.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    layoutDirectory.setNameFilters(fileNameFilter);
+    QStringList files = layoutDirectory.entryList();
+
+    QString destiny = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir destinyDirectory = QDir(destiny);
+    destinyDirectory.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+    destinyDirectory.setNameFilters(fileNameFilter);
+    QStringList oldFiles = destinyDirectory.entryList();
+
+    //first remove the files
+    for(const QString& file : oldFiles)
+    {
+        QFile::remove(destiny + "/" + file);
+    }
+
+    //then copy new files
+    for(const QString& file : files)
+    {
+        QFile::copy(path + "/layout/" + file, destiny + "/" + file);
+    }
+}

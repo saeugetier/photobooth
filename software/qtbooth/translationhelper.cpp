@@ -1,6 +1,7 @@
 #include "translationhelper.h"
 #include <QGuiApplication>
 #include <QDirIterator>
+#include <QDebug>
 
 TranslationHelper::TranslationHelper(QObject *parent) : QObject(parent)
 {
@@ -19,9 +20,14 @@ void TranslationHelper::setLanguage(QString code)
 
     std::unique_ptr<QTranslator> translator(new QTranslator);
     m_Translator.swap(translator);
-    if(m_Translator->load("tr_" + code, ":/qml/"))
+    if(m_Translator->load("tr_" + code, ":/"))
     {
         QGuiApplication::installTranslator(m_Translator.get());
+        qDebug() << "Info: loaded translator - " << code;
+    }
+    else
+    {
+        qDebug() << "Error: translator load failed";
     }
 
     emit languageChanged();

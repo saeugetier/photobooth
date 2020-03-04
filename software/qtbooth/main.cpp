@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("filesystem", &fileSystem);
     engine.rootContext()->setContextProperty("system", &system);
     engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
+    engine.retranslate();
 
     QObject::connect(&translationHelper, SIGNAL(languageChanged()), &engine, SLOT(retranslate()));
 

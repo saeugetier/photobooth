@@ -4,23 +4,37 @@ import QtQuick.Controls.Material 2.0
 
 Item {
     property alias imageSource: proxy.imageFileName
-    property alias borderImageSource: border.source
+    property alias borderImageSource: borderImage.source
     property alias number: proxy.number
     property alias proxy: proxy
+    property int borderSizeLeft : 30
+    property int borderSizeRight : 30
+    property int borderSizeTop : 30
+    property int borderSizeBottom : 30
 
     signal deletePhoto(int number)
-
-    BorderImage {
-        id: border
-        width: 100; height: 100
-        border.left: 5; border.top: 5
-        border.right: 5; border.bottom: 5
-    }
 
     PhotoProxy
     {
         id: proxy
         anchors.fill: parent
+    }
+
+    BorderImage {
+        id: borderImage
+
+        border.left: borderSizeLeft
+        border.top: borderSizeTop
+        border.bottom: borderSizeBottom
+        border.right: borderSizeRight
+
+        anchors.horizontalCenter: proxy.horizontalCenter
+        anchors.verticalCenter: proxy.verticalCenter
+        width: proxy.width; height: proxy.height
+        visible: source != "" ? true : false
+        horizontalTileMode: BorderImage.Stretch
+        verticalTileMode: BorderImage.Stretch
+        z: 1
     }
 
     ToolButton {
@@ -53,3 +67,9 @@ Item {
         hoverEnabled: true
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

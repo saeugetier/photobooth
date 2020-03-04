@@ -45,6 +45,10 @@ Item {
                 id: collageImage
                 borderImageSource: filesystem.findFile(borderImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation, true))
                 imageSource: imagePath
+                borderSizeLeft: borderRect.left
+                borderSizeTop: borderRect.top
+                borderSizeBottom: borderRect.bottom
+                borderSizeRight: borderRect.right
                 number: index
                 x: imageRect.x * backgroundRect.width + (renderer.width - backgroundRect.width) / 2
                 y: imageRect.y * backgroundRect.height + (renderer.height - backgroundRect.height) / 2

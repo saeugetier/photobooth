@@ -48,7 +48,7 @@ Item {
                 property double bottomMargin: 150
                 property double leftMargin: 50
                 property double topMargin: 30
-                property double aimedRatio: 3 / 4
+                property double aimedRatio: 2380 / 3570
 
                 // SIZING
                 property double availableWidth: imageSlider.width - rightMargin - leftMargin
@@ -100,14 +100,32 @@ Item {
 
         CollageRenderer {
             id: collageRenderer
-            anchors.right: parent.right
-            anchors.rightMargin: 30
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 150
+
+            property double rightMargin: 50
+            property double bottomMargin: 120
+            property double leftMargin: 50
+            property double topMargin: 120
+            property double aimedRatio: 2380 / 3570
+
+            // SIZING
+            property double availableWidth: parent.width - rightMargin - leftMargin
+            property double availableHeight: parent.height - bottomMargin - topMargin
+
+            property bool parentIsLarge: parentRatio > aimedRatio
+
+            property double parentRatio: availableHeight / availableWidth
+
+            height: parentIsLarge ? width * aimedRatio : availableHeight
+            width: parentIsLarge ? availableWidth : height / aimedRatio
+
+            property double verticalSpacing: (availableHeight - height) / 2
+            property double horzitontalSpacing: (availableWidth - width) / 2
+
             anchors.top: parent.top
-            anchors.topMargin: 150
+            anchors.topMargin: topMargin + verticalSpacing
             anchors.left: parent.left
-            anchors.leftMargin: 30
+            anchors.leftMargin: leftMargin + horzitontalSpacing
+
             visible: false
         }
     }

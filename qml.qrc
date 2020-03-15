@@ -6,7 +6,6 @@
         <file>tr_de.qm</file>
         <file>images/icon/Unknown.svg</file>
         <file>XmlData.xml</file>
-        <file>scripts/utils.js</file>
         <file>images/cardboard.png</file>
         <file>images/buttons/go/white.png</file>
         <file>images/buttons/back/white.png</file>
@@ -48,5 +47,6 @@
         <file>qml/content/WhiteOverlay.qml</file>
         <file>font/DejaVuSerif/DejaVuSerif.ttf</file>
         <file>font/fontello/fontello.ttf</file>
+        <file>qml/scripts/utils.js</file>
     </qresource>
 </RCC>

@@ -10,7 +10,6 @@ linux {
 }
 
 SOURCES += main.cpp \
-    collageiconmodel.cpp \
     collageimagemodel.cpp \
     collagemodelfactory.cpp \
     fakeprinter.cpp \
@@ -19,6 +18,18 @@ SOURCES += main.cpp \
     gpio.cpp \
     modelparser.cpp \
     selphyprinter.cpp \
+    src/collageiconmodel.cpp \
+    src/collageimagemodel.cpp \
+    src/collagemodelfactory.cpp \
+    src/fakeprinter.cpp \
+    src/fileio.cpp \
+    src/filesystem.cpp \
+    src/gpio.cpp \
+    src/main.cpp \
+    src/modelparser.cpp \
+    src/selphyprinter.cpp \
+    src/system.cpp \
+    src/translationhelper.cpp \
     system.cpp \
     translationhelper.cpp
 
@@ -48,5 +59,18 @@ HEADERS += \
     modelparser.h \
     call_once.h \
     selphyprinter.h \
+    src/abstractprinter.h \
+    src/call_once.h \
+    src/collageiconmodel.h \
+    src/collageimagemodel.h \
+    src/collagemodelfactory.h \
+    src/fakeprinter.h \
+    src/fileio.h \
+    src/filesystem.h \
+    src/gpio.h \
+    src/modelparser.h \
+    src/selphyprinter.h \
+    src/system.h \
+    src/translationhelper.h \
     system.h \
     translationhelper.h

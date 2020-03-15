@@ -36,7 +36,7 @@ Row {
         id: image
 
         anchors.verticalCenter: parent.verticalCenter
-        source: row.forward ? "../images/buttons/go/white.png" : "../images/buttons/back/white.png"
+        source: row.forward ? "../../images/buttons/go/white.png" : "../../images/buttons/back/white.png"
         scale: mouseArea.containsMouse ? 1.1 : 1
         MouseArea {
             id: mouseArea

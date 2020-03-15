@@ -30,7 +30,7 @@ CollageSelectorForm {
                 var filename = filesystem.findFile(icon, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
                 if(filename.toString().length === 0)
                 {
-                    filename = "images/icon/Unknown.svg"
+                    filename = "../images/icon/Unknown.svg"
                 }
                 filename
             }

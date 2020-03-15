@@ -18,13 +18,13 @@ ApplicationWindow {
     FontLoader
     {
         name: "fontello"
-        source: "fontello/font/fontello.ttf"
+        source: "../font/fontello/fontello.ttf"
     }
 
     FontLoader
     {
         name: "DejaVu Serif"
-        source: "font/DejaVuSerif.ttf"
+        source: "../font/DejaVuSerif/DejaVuSerif.ttf"
     }
 
     title: qsTr("QML Photo Booth")

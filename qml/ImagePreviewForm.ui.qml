@@ -36,7 +36,7 @@ Item {
             anchors.verticalCenterOffset: 10
             horizontalTileMode: BorderImage.Stretch
             verticalTileMode: BorderImage.Stretch
-            source: "images/polaroid.svg.png"
+            source: "../../images/polaroid.svg.png"
         }
     }
 

@@ -29,8 +29,10 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationName("qtbooth");
 
     QFontDatabase fontDatabase;
-    if (fontDatabase.addApplicationFont(":/fontello/font/fontello.ttf") == -1)
+    if (fontDatabase.addApplicationFont(":/font/fontello/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
+    if (fontDatabase.addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
+        qWarning() << "Failed to load DejaVuSerif.ttf";
 
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
     qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
@@ -56,7 +58,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("translation", &translationHelper);
     engine.rootContext()->setContextProperty("filesystem", &fileSystem);
     engine.rootContext()->setContextProperty("system", &system);
-    engine.load(QUrl(QLatin1String("qrc:/Application.qml")));
+    engine.load(QUrl(QLatin1String("qrc:/qml/Application.qml")));
     engine.retranslate();
 
     QObject::connect(&translationHelper, SIGNAL(languageChanged()), &engine, SLOT(retranslate()));

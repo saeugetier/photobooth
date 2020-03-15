@@ -30,7 +30,7 @@ Item {
         anchors.left: collageSelector.right
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        source: "images/cardboard.png"
+        source: "../images/cardboard.png"
         fillMode: Image.Tile
 
         ListView {
@@ -93,7 +93,7 @@ Item {
                     anchors.verticalCenterOffset: 10
                     horizontalTileMode: BorderImage.Stretch
                     verticalTileMode: BorderImage.Stretch
-                    source: "images/polaroid.svg.png"
+                    source: "../images/polaroid.svg.png"
                 }
             }
         }

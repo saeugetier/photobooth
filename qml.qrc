@@ -3,51 +3,50 @@
         <file>qtquickcontrols2.conf</file>
         <file>fontello/font/fontello.ttf</file>
         <file>images/box-shadow.png</file>
-        <file>scripts/script.js</file>
         <file>styles/RoundProgressBarStyle.qml</file>
-        <file>SettingsPassword.qml</file>
-        <file>SettingsPasswordForm.ui.qml</file>
         <file>tr_de.qm</file>
-        <file>content/PhotoProxy.qml</file>
-        <file>Application.qml</file>
-        <file>ApplicationFlow.qml</file>
-        <file>ApplicationFlowForm.ui.qml</file>
-        <file>MainMenu.qml</file>
-        <file>MainMenuForm.ui.qml</file>
-        <file>SnapshotMenu.qml</file>
-        <file>SnapshotMenuForm.ui.qml</file>
-        <file>ImagePreview.qml</file>
-        <file>ImagePreviewForm.ui.qml</file>
-        <file>CollageMenu.qml</file>
-        <file>CollageMenuForm.ui.qml</file>
-        <file>CollageIconButton.qml</file>
         <file>images/icon/Unknown.svg</file>
-        <file>CollageSelector.qml</file>
-        <file>CollageSelectorForm.ui.qml</file>
         <file>XmlData.xml</file>
         <file>scripts/utils.js</file>
         <file>images/cardboard.png</file>
-        <file>content/NavigationButton.qml</file>
         <file>images/buttons/go/white.png</file>
         <file>images/buttons/back/white.png</file>
-        <file>content/CollageImageDelegate.qml</file>
-        <file>content/CollageRenderer.qml</file>
-        <file>content/WhiteOverlay.qml</file>
-        <file>content/CameraRenderer.qml</file>
-        <file>content/ShutterButton.qml</file>
         <file>styles/ArcProgressbarStyle.qml</file>
-        <file>content/Countdown.qml</file>
         <file>images/polaroid.svg</file>
         <file>images/polaroid.svg.png</file>
-        <file>SnapshotSettings.qml</file>
-        <file>SnapshotSettingsForm.ui.qml</file>
-        <file>PrinterBusyPopup.qml</file>
-        <file>PrinterBusyPopupForm.ui.qml</file>
         <file>images/WhiteBackground.png</file>
         <file>font/DejaVuSerif.ttf</file>
-        <file>SettingsPopup.qml</file>
-        <file>SettingsPopupForm.ui.qml</file>
-        <file>FileCopyProgressForm.ui.qml</file>
-        <file>FileCopyProgress.qml</file>
+        <file>qml/Application.qml</file>
+        <file>qml/ApplicationFlow.qml</file>
+        <file>qml/ApplicationFlowForm.ui.qml</file>
+        <file>qml/CollageIconButton.qml</file>
+        <file>qml/CollageMenu.qml</file>
+        <file>qml/CollageMenuForm.ui.qml</file>
+        <file>qml/CollageSelector.qml</file>
+        <file>qml/CollageSelectorForm.ui.qml</file>
+        <file>qml/FileCopyProgress.qml</file>
+        <file>qml/FileCopyProgressForm.ui.qml</file>
+        <file>qml/ImagePreview.qml</file>
+        <file>qml/ImagePreviewForm.ui.qml</file>
+        <file>qml/MainMenu.qml</file>
+        <file>qml/MainMenuForm.ui.qml</file>
+        <file>qml/PrinterBusyPopup.qml</file>
+        <file>qml/PrinterBusyPopupForm.ui.qml</file>
+        <file>qml/SettingsPassword.qml</file>
+        <file>qml/SettingsPasswordForm.ui.qml</file>
+        <file>qml/SettingsPopup.qml</file>
+        <file>qml/SettingsPopupForm.ui.qml</file>
+        <file>qml/SnapshotMenu.qml</file>
+        <file>qml/SnapshotMenuForm.ui.qml</file>
+        <file>qml/SnapshotSettings.qml</file>
+        <file>qml/SnapshotSettingsForm.ui.qml</file>
+        <file>qml/content/CameraRenderer.qml</file>
+        <file>qml/content/CollageImageDelegate.qml</file>
+        <file>qml/content/CollageRenderer.qml</file>
+        <file>qml/content/Countdown.qml</file>
+        <file>qml/content/NavigationButton.qml</file>
+        <file>qml/content/PhotoProxy.qml</file>
+        <file>qml/content/ShutterButton.qml</file>
+        <file>qml/content/WhiteOverlay.qml</file>
     </qresource>
 </RCC>

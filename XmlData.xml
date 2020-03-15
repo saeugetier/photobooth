@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog version="1.0">
+    <collage>
+        <name>Test</name>
+        <icon>1234</icon>
+        <background>qrc:/images/WhiteBackground.png</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+        </images>
+    </collage>
+    <collage>
+        <name>Test2</name>
+        <icon>1234</icon>
+        <background>qrc:/images/WhiteBackground.png</background>
+        <images>
+            <image>
+                <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
+            </image>
+            <image>
+                <position x="0.5" y="0.0"/><size width="0.5" height="1.0"/>
+            </image>
+        </images>
+    </collage>
+    <collage>
+        <name>Test3</name>
+        <icon>1234</icon>
+        <background>qrc:/images/WhiteBackground.png</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.2" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.4" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.6" y="0.0"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.0" y="0.5"/><size width="0.15" height="0.5"/></image>
+        </images>
+    </collage>
+    <collage>
+        <name>Test4</name>
+        <icon>1234</icon>
+        <background>qrc:/images/WhiteBackground.png</background>
+        <images>
+            <image><position x="0.42" y="0.03"/><size width="0.55" height="0.62"/></image>
+            <image><position x="0.1" y="0.7"/><size width="0.25" height="0.25"/></image>
+            <image><position x="0.4" y="0.7"/><size width="0.25" height="0.25"/></image>
+            <image><position x="0.7" y="0.7"/><size width="0.25" height="0.25"/></image>
+        </images>
+    </collage>
+</catalog>

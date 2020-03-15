@@ -1,10 +1,8 @@
 #include "selphyprinter.h"
-#include "singleton.h"
 #include <QFile>
 #include <QRegExp>
 #include <QTextStream>
 #include <QDebug>
-
 
 SelphyPrinter::SelphyPrinter(QObject *parent) : AbstractPrinter(parent)
 {

@@ -9,16 +9,7 @@ linux {
     }
 }
 
-SOURCES += main.cpp \
-    collageimagemodel.cpp \
-    collagemodelfactory.cpp \
-    fakeprinter.cpp \
-    fileio.cpp \
-    filesystem.cpp \
-    gpio.cpp \
-    modelparser.cpp \
-    selphyprinter.cpp \
-    src/collageiconmodel.cpp \
+SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \
     src/collagemodelfactory.cpp \
     src/fakeprinter.cpp \
@@ -29,9 +20,7 @@ SOURCES += main.cpp \
     src/modelparser.cpp \
     src/selphyprinter.cpp \
     src/system.cpp \
-    src/translationhelper.cpp \
-    system.cpp \
-    translationhelper.cpp
+    src/translationhelper.cpp
 
 RESOURCES += qml.qrc
 
@@ -47,18 +36,9 @@ TRANSLATIONS = "tr_de.ts"
 
 DISTFILES +=
 
+INCLUDEPATH += src/
+
 HEADERS += \
-    abstractprinter.h \
-    collageiconmodel.h \
-    collageimagemodel.h \
-    collagemodelfactory.h \
-    fakeprinter.h \
-    fileio.h \
-    filesystem.h \
-    gpio.h \
-    modelparser.h \
-    call_once.h \
-    selphyprinter.h \
     src/abstractprinter.h \
     src/call_once.h \
     src/collageiconmodel.h \
@@ -71,6 +51,4 @@ HEADERS += \
     src/modelparser.h \
     src/selphyprinter.h \
     src/system.h \
-    src/translationhelper.h \
-    system.h \
-    translationhelper.h
+    src/translationhelper.h

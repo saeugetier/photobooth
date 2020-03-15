@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>qtquickcontrols2.conf</file>
-        <file>fontello/font/fontello.ttf</file>
         <file>images/box-shadow.png</file>
         <file>styles/RoundProgressBarStyle.qml</file>
         <file>tr_de.qm</file>
@@ -15,7 +14,6 @@
         <file>images/polaroid.svg</file>
         <file>images/polaroid.svg.png</file>
         <file>images/WhiteBackground.png</file>
-        <file>font/DejaVuSerif.ttf</file>
         <file>qml/Application.qml</file>
         <file>qml/ApplicationFlow.qml</file>
         <file>qml/ApplicationFlowForm.ui.qml</file>
@@ -48,5 +46,7 @@
         <file>qml/content/PhotoProxy.qml</file>
         <file>qml/content/ShutterButton.qml</file>
         <file>qml/content/WhiteOverlay.qml</file>
+        <file>font/DejaVuSerif/DejaVuSerif.ttf</file>
+        <file>font/fontello/fontello.ttf</file>
     </qresource>
 </RCC>

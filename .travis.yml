@@ -31,7 +31,8 @@ script:
     - echo "Building for ${MKSPEC} in ${BUILD_MODE} mode..."
     - mkdir build
     - cd build
-    - qmake ../qtbooth.pro -spec ${MKSPEC} CONFIG+=${BUILD_MODE}
+    - qmake --version
+    - qmake ../qtbooth.pro -qt=qt5 -spec ${MKSPEC} CONFIG+=${BUILD_MODE}
     - make
     - ls -lRa .
     - file qtbooth

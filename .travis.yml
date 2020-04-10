@@ -1,5 +1,5 @@
 sudo: required
-dist: disco
+dist: bionic
 language: cpp
 
 compiler:
@@ -11,8 +11,8 @@ os:
     - osx
 
 env:
-  - BUILD_MODE=release
-  - BUILD_MODE=debug
+  - BUILD_MODE="release c++17"
+  - BUILD_MODE="debug c++17"
 
 install:
     - if [ "${TRAVIS_OS_NAME}" = "linux" -a "${CXX}" = "clang++" ]; then export MKSPEC=linux-clang; fi

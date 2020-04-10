@@ -2,6 +2,7 @@
 #include <QFile>
 #include <cmath>
 #include <QDebug>
+#include "assert.h"
 
 #define IO_DEVICE "/dev/pi-blaster"
 

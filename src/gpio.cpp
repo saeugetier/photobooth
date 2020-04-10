@@ -1,6 +1,5 @@
 #include "gpio.h"
 #include <QFile>
-#include <algorithm>
 #include <cmath>
 #include <QDebug>
 
@@ -9,6 +8,13 @@
 bool cmpf(float A, float B, float epsilon = 0.005f)
 {
     return (fabs(A - B) < epsilon);
+}
+
+template<class T>
+constexpr const T& clamp( const T& v, const T& lo, const T& hi )
+{
+    assert( !(hi < lo) );
+    return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
 GPIO::GPIO(QObject *parent) : QObject(parent), pinValue(0.0f)
@@ -55,7 +61,7 @@ float GPIO::value() const
 
 void GPIO::setValue(float value)
 {
-    float _value = std::clamp<float>(value, 0.0, 1.0);
+    float _value = clamp<float>(value, 0.0, 1.0);
 
     if(!cmpf(_value,pinValue))
     {

@@ -21,7 +21,7 @@ install:
     - if [ "${TRAVIS_OS_NAME}" = "osx" -a "${CXX}" = "clang++" ]; then export MKSPEC=macx-clang; fi
     - if [ "${TRAVIS_OS_NAME}" = "osx" -a "${CXX}" = "g++" ]; then export MKSPEC=macx-g++; fi
 
-    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sudo add-apt-repository ppa:beineri/opt-qt-5.14.1-bionic -y && sudo apt-get -y update -qq && sudo apt-get -y install qt514base qt514multimedia qt514declarative &&  source /opt/qt*/bin/qt*-env.sh; fi
+    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then sudo add-apt-repository ppa:beineri/opt-qt-5.14.1-bionic -y && sudo apt-get -y update -qq && sudo apt-get -y install qt514base qt514multimedia qt514declarative libgl-dev &&  source /opt/qt*/bin/qt*-env.sh; fi
 
     - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update; fi
     - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install qt5; fi

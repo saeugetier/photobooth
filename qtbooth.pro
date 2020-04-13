@@ -1,13 +1,6 @@
-QT += qml quick multimedia concurrent xml
+QT += qml quick multimedia concurrent xml svg
 
 CONFIG += c++17
-
-linux {
-    contains(QT_ARCH, arm):{
-        DEFINES += WIRINGPI
-        LIBS += -lwiringPi -lwiringPiDev
-    }
-}
 
 SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \

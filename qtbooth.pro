@@ -1,6 +1,6 @@
 QT += qml quick multimedia concurrent xml svg
 
-CONFIG += c++17
+CONFIG += c++17 qml_debug
 
 SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \

@@ -42,7 +42,7 @@ ApplicationWindow {
         if(path != "")
             return path
         else
-            return "XmlData.xml"
+            return "../XmlData.xml"
     }
 
     CollageModelFactory

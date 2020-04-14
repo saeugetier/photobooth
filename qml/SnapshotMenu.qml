@@ -30,6 +30,7 @@ SnapshotMenuForm {
         }
         else
         {
+            shutterButton.reset()
             ledEnablePin.value = 1.0
         }
     }
@@ -60,6 +61,7 @@ SnapshotMenuForm {
 
     shutterButton.onStateChanged:
     {
+        //while shutter button is triggered
         if(shutterButton.state != "idle")
         {
             form.state = "snapshot"
@@ -69,12 +71,12 @@ SnapshotMenuForm {
     cameraRenderer.onSavedPhoto:
     {
         captured(filename)
-        shutterButton.state = "idle"
+        shutterButton.reset()
     }
 
     cameraRenderer.onFailed:
     {
-        shutterButton.state = "idle"
+        shutterButton.reset()
         failureAnimation.start()
     }
 

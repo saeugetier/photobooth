@@ -7,13 +7,13 @@
 class FakePrinter : public AbstractPrinter
 {
     Q_OBJECT
+    Q_INTERFACES(AbstractPrinter)
 public:
-    FakePrinter(QObject *parent = nullptr) : AbstractPrinter(parent) {};
-    Q_INVOKABLE virtual QSize getPrintSize();
-    Q_INVOKABLE virtual bool printerOnline();
-    virtual bool busy();
-public slots:
-    Q_INVOKABLE virtual int printImage(const QString &filename);
+    explicit FakePrinter(QObject *parent = nullptr);
+    QSize getPrintSize() override;
+    bool printerOnline() override;
+    bool busy() override;
+    int printImage(const QString &filename) override;
 protected slots:
     void busyTimeout();
 protected:

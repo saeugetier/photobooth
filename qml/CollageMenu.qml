@@ -21,7 +21,9 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        console.log("Print button pressed")
         collageRenderer.saveImage("Test.jpg", printer.getPrintSize())
+        console.log("Collage rendered")
         printer.printImage("Test")
         exit()
     }

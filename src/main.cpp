@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("Syetem", 1, 0, "System");
 
+    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
 #if FAKEPRINTER == 1
     qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
 #else

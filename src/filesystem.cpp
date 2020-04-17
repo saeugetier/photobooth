@@ -10,7 +10,10 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
     QUrl file; //instance of a "unknown" url
 
     if(filename.length() == 0) //will return empty url, if no filename is given
+    {
+        qDebug() << "Filesystem Error: filename is empty!";
         return file;
+    }
 
     //test if filename is a file path
     if(QUrl(filename).isValid())
@@ -52,6 +55,11 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
                 break;
             }
         }
+    }
+
+    if(file.isEmpty())
+    {
+        qDebug() << "Filesystem Error: Could not find file " << filename;
     }
 
     return file;

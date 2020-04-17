@@ -27,7 +27,14 @@ QML_IMPORT_PATH =
 
 TRANSLATIONS = "tr_de.ts"
 
-DISTFILES +=
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
 
 INCLUDEPATH += src/
 
@@ -45,3 +52,8 @@ HEADERS += \
     src/selphyprinter.h \
     src/system.h \
     src/translationhelper.h
+
+contains(ANDROID_TARGET_ARCH,x86) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}

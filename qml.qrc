@@ -47,5 +47,6 @@
         <file>font/fontello/fontello.ttf</file>
         <file>qml/scripts/utils.js</file>
         <file>images/icon/Unknown.png</file>
+        <file>images/icon/Single.svg</file>
     </qresource>
 </RCC>

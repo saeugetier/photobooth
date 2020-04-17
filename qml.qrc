@@ -49,5 +49,7 @@
         <file>images/icon/Unknown.png</file>
         <file>images/icon/Single.svg</file>
         <file>images/icon/Double.svg</file>
+        <file>images/icon/Four.svg</file>
+        <file>images/icon/FourStars.svg</file>
     </qresource>
 </RCC>

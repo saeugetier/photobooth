@@ -51,5 +51,6 @@
         <file>images/icon/Double.svg</file>
         <file>images/icon/Four.svg</file>
         <file>images/icon/FourStars.svg</file>
+        <file>images/StarsBackground.jpg</file>
     </qresource>
 </RCC>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog version="1.0">
     <collage>
-        <name>Test</name>
-        <icon>1234</icon>
-        <background>qrc:/images/WhiteBackground.png</background>
+        <name>Signle Image</name>
+        <icon>Single.svg</icon>
+        <background>WhiteBackground.png</background>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>
     </collage>
     <collage>
-        <name>Test2</name>
-        <icon>1234</icon>
-        <background>qrc:/images/WhiteBackground.png</background>
+        <name>Two Images</name>
+        <icon>Double.svg</icon>
+        <background>WhiteBackground.png</background>
         <images>
             <image>
                 <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
@@ -22,26 +22,48 @@
         </images>
     </collage>
     <collage>
-        <name>Test3</name>
-        <icon>1234</icon>
-        <background>qrc:/images/WhiteBackground.png</background>
+        <name>Four Images</name>
+        <icon>Four.svg</icon>
+        <background>WhiteBackground.png</background>
         <images>
-            <image><position x="0.0" y="0.0"/><size width="0.15" height="0.5"/></image>
-            <image><position x="0.2" y="0.0"/><size width="0.15" height="0.5"/></image>
-            <image><position x="0.4" y="0.0"/><size width="0.15" height="0.5"/></image>
-            <image><position x="0.6" y="0.0"/><size width="0.15" height="0.5"/></image>
-            <image><position x="0.0" y="0.5"/><size width="0.15" height="0.5"/></image>
+            <image><position x="0.0" y="0.0"/><size width="0.5" height="0.5"/></image>
+            <image><position x="0.5" y="0.0"/><size width="0.5" height="0.5"/></image>
+            <image><position x="0.0" y="0.5"/><size width="0.5" height="0.5"/></image>
+            <image><position x="0.5" y="0.5"/><size width="0.5" height="0.5"/></image>
         </images>
     </collage>
     <collage>
-        <name>Test4</name>
-        <icon>1234</icon>
-        <background>qrc:/images/WhiteBackground.png</background>
+        <name>Four Images with Background</name>
+        <icon>FourStars.svg</icon>
+        <background>StarsBackground.jpg</background>
         <images>
-            <image><position x="0.42" y="0.03"/><size width="0.55" height="0.62"/></image>
-            <image><position x="0.1" y="0.7"/><size width="0.25" height="0.25"/></image>
-            <image><position x="0.4" y="0.7"/><size width="0.25" height="0.25"/></image>
-            <image><position x="0.7" y="0.7"/><size width="0.25" height="0.25"/></image>
+            <image><position x="0.05" y="0.05"/><size width="0.4" height="0.4"/></image>
+            <image><position x="0.55" y="0.05"/><size width="0.4" height="0.4"/></image>
+            <image><position x="0.05" y="0.55"/><size width="0.4" height="0.4"/></image>
+            <image><position x="0.55" y="0.55"/><size width="0.4" height="0.4"/></image>
+        </images>
+    </collage>
+    <collage>
+        <name>Four Images Border</name>
+        <icon>FourBorder.svg</icon>
+        <background>WhiteBackground.png</background>
+        <images>
+            <image>
+                <position x="0.0" y="0.0"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="10" left="10" right="10" bottom="10"/></border>
+            </image>
+            <image>
+                <position x="0.5" y="0.0"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="30" left="30" right="30" bottom="30"/></border>
+            </image>
+            <image>
+                <position x="0.0" y="0.5"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="20" left="20" right="20" bottom="20"/></border>
+            </image>
+            <image>
+                <position x="0.5" y="0.5"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="50" left="50" right="50" bottom="50"/></border>
+            </image>
         </images>
     </collage>
 </catalog>

@@ -48,5 +48,6 @@
         <file>qml/scripts/utils.js</file>
         <file>images/icon/Unknown.png</file>
         <file>images/icon/Single.svg</file>
+        <file>images/icon/Double.svg</file>
     </qresource>
 </RCC>

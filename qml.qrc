@@ -52,5 +52,6 @@
         <file>images/icon/Four.svg</file>
         <file>images/icon/FourStars.svg</file>
         <file>images/StarsBackground.jpg</file>
+        <file>images/RedBorder.png</file>
     </qresource>
 </RCC>

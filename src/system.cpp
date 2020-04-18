@@ -17,3 +17,11 @@ void System::restart()
     QProcess process;
     process.startDetached("reboot");
 }
+
+bool System::setTime(QDate date)
+{
+    QDateTime time(date);
+
+    time_t t = time.toTime_t();
+    return (stime(&t) == 0); //return zero on success
+}

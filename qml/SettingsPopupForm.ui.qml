@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 400
+    property alias labelTime: labelTime
     property alias comboBoxLanguages: comboBoxLanguages
     property alias buttonShutdown: buttonShutdown
     property alias buttonRestart: buttonRestart
@@ -122,11 +123,16 @@ Popup {
 
             Column {
                 spacing: 5
-                Row
-                {
+
+                Label {
+                    id: labelTime
+                    text: qsTr("Current time")
+                }
+
+                Row {
                     spacing: 5
-                    Label
-                    {
+                    Label {
+                        id: labelLanguage
                         text: qsTr("Language:")
                         anchors.verticalCenter: comboBoxLanguages.verticalCenter
                     }
@@ -141,8 +147,7 @@ Popup {
                     text: qsTr("Copy layout templates from removable disk")
                 }
 
-                Row
-                {
+                Row {
                     spacing: 10
                     Button {
                         id: buttonShutdown

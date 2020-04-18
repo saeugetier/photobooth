@@ -54,4 +54,21 @@ SettingsPopupForm {
     {
         system.restart()
     }
+
+    Timer
+    {
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered:
+        {
+            labelTime.text = qsTr("Time: ") + Date().toString();
+        }
+
+        Component.onCompleted:
+        {
+            labelTime.text = qsTr("Time: ") + Date().toString();
+        }
+    }
+
 }

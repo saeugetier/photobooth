@@ -33,6 +33,14 @@ Item {
 
         flash.mode: Camera.FlashRedEyeReduction
 
+        Component.onCompleted:
+        {
+            for(var filterType in imageProcessing.supportedColorFilters)
+            {
+                console.log("Filter: " + Number(filterType).toString())
+            }
+        }
+
         imageCapture {
             onImageSaved:
             {

@@ -54,5 +54,7 @@
         <file>images/StarsBackground.jpg</file>
         <file>images/RedBorder.png</file>
         <file>images/icon/FourBorder.svg</file>
+        <file>qml/TimeSettings.qml</file>
+        <file>qml/TimeSettingsForm.ui.qml</file>
     </qresource>
 </RCC>

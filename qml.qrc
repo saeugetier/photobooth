@@ -64,5 +64,6 @@
         <file>shaders/redseeker.fsh</file>
         <file>shaders/warhol.fsh</file>
         <file>shaders/yellowseeker.fsh</file>
+        <file>qml/content/ImageEffect.qml</file>
     </qresource>
 </RCC>

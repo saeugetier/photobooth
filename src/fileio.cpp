@@ -4,7 +4,18 @@
 
 QByteArray FileIO::read()
 {
-    QFile file(mSource.toLocalFile());
+    QString scheme = mSource.scheme();
+    QFile file;
+
+    if(scheme == "qrc")
+    {
+        file.setFileName(mSource.toString().remove(0,3)); //remove qrc
+    }
+    else
+    {
+         file.setFileName(mSource.toLocalFile());
+    }
+
     if (!file.open(QIODevice::ReadOnly))
         return QByteArray();
 

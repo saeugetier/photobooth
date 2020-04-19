@@ -25,6 +25,10 @@ bool System::setTime(QDate date)
     time_t t = time.toTime_t();
 #ifdef __linux__
     result = stime(&t); //return zero on success
+#elif __APPLE__
+    #pragma message ( "setting the time is not implemented for MacOS" )
+#elif _WIN32
+    #pragma message ( "setting the time is not implemented for Windows" )
 #endif
     return (result == 0);
 }

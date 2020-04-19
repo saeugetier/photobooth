@@ -20,8 +20,11 @@ void System::restart()
 
 bool System::setTime(QDate date)
 {
+    int result = -1;
     QDateTime time(date);
     time_t t = time.toTime_t();
-    int result = stime(&t); //return zero on success
+#ifdef __linux__
+    result = stime(&t); //return zero on success
+#endif
     return (result == 0);
 }

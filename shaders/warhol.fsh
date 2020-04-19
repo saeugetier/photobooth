@@ -1,8 +1,8 @@
 // source: http://kodemongki.blogspot.com/2011/06/kameraku-custom-shader-effects-example.html
 
-precision mediump float;
-uniform sampler2D vTex;
-varying vec2 vCoord;
+uniform sampler2D source;
+uniform lowp float qt_Opacity;
+varying vec2 qt_TexCoord0;
 
 void main(void)
 {

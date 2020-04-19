@@ -62,12 +62,32 @@ SettingsPopupForm {
         repeat: true
         onTriggered:
         {
-            labelTime.text = qsTr("Time: ") + Date().toString();
+            var date = new Date()
+            var dateString = date.toLocaleString(Qt.locale(), Locale.NarrowFormat);
+            labelTime.text = qsTr("Time: ") + dateString;
         }
 
         Component.onCompleted:
         {
-            labelTime.text = qsTr("Time: ") + Date().toString();
+            var date = new Date()
+            var dateString = date.toLocaleString(Qt.locale(), Locale.NarrowFormat);
+            labelTime.text = qsTr("Time: ") + dateString;
+        }
+    }
+
+    buttonSetTime.onClicked:
+    {
+        timeSettings.open()
+    }
+
+
+    TimeSettings
+    {
+        id: timeSettings
+
+        onSetTime:
+        {
+            system.setTime(time)
         }
     }
 

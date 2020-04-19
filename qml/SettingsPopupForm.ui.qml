@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.10
 Popup {
     id: popup
     width: 400
-    height: 400
+    height: 500
     property alias labelTime: labelTime
     property alias comboBoxLanguages: comboBoxLanguages
     property alias buttonShutdown: buttonShutdown
@@ -15,6 +15,7 @@ Popup {
     property alias buttonClose: buttonClose
     property alias switchPrinter: switchPrinter
     property alias buttonCopyPhotos: buttonCopyPhotos
+    property alias buttonSetTime: buttonSetTime
 
     Button {
         id: buttonClose
@@ -95,6 +96,18 @@ Popup {
                     text: qsTr("Delete all photos")
                     delay: 5000
                 }
+
+                Row {
+                    spacing: 5
+                    Label {
+                        id: labelCamera
+                        text: qsTr("Camera:")
+                        anchors.verticalCenter: comboBoxCamera.verticalCenter
+                    }
+                    ComboBox {
+                        id: comboBoxCamera
+                    }
+                }
             }
         }
 
@@ -124,9 +137,19 @@ Popup {
             Column {
                 spacing: 5
 
-                Label {
-                    id: labelTime
-                    text: qsTr("Current time")
+                Row {
+                    spacing: 5
+
+                    Label {
+                        id: labelTime
+                        text: qsTr("Current time")
+                        anchors.verticalCenter: buttonSetTime.verticalCenter
+                    }
+
+                    Button {
+                        id: buttonSetTime
+                        text: qsTr("Set time")
+                    }
                 }
 
                 Row {
@@ -164,9 +187,5 @@ Popup {
     }
 }
 
-/*##^##
-Designer {
-    D{i:1;anchors_y:23}D{i:3;anchors_x:39;anchors_y:"-69"}D{i:4;anchors_x:22;anchors_y:44}
-}
-##^##*/
+
 

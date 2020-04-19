@@ -65,5 +65,6 @@
         <file>shaders/warhol.fsh</file>
         <file>shaders/yellowseeker.fsh</file>
         <file>qml/content/ImageEffect.qml</file>
+        <file>shaders/fisheye.fsh</file>
     </qresource>
 </RCC>

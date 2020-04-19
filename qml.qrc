@@ -56,5 +56,13 @@
         <file>images/icon/FourBorder.svg</file>
         <file>qml/TimeSettings.qml</file>
         <file>qml/TimeSettingsForm.ui.qml</file>
+        <file>shaders/sepia.fsh</file>
+        <file>shaders/vignette.fsh</file>
+        <file>shaders/blueseeker.fsh</file>
+        <file>shaders/bw.fsh</file>
+        <file>shaders/greenseeker.fsh</file>
+        <file>shaders/redseeker.fsh</file>
+        <file>shaders/warhol.fsh</file>
+        <file>shaders/yellowseeker.fsh</file>
     </qresource>
 </RCC>

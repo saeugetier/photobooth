@@ -257,6 +257,18 @@
       "css": "lightbulb-1",
       "code": 59428,
       "src": "elusive"
+    },
+    {
+      "uid": "ff70f7b3228702e0d590e60ed3b90bea",
+      "css": "magic",
+      "code": 61648,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "d35a1d35efeb784d1dc9ac18b9b6c2b6",
+      "css": "pencil",
+      "code": 59429,
+      "src": "fontawesome"
     }
   ]
 }

@@ -3,11 +3,12 @@ import FileIO 1.0
 
 ImagePreviewForm {
     signal abort
-    signal accept(string filename)
+    signal accept(string filename, string effect)
 
     function setPreviewImage(filename)
     {
         previewImage.source = filename
+        shaderName = ""
     }
 
     previewImage.onStatusChanged:
@@ -20,7 +21,7 @@ ImagePreviewForm {
 
     saveButton.onClicked:
     {
-        accept(previewImage.source)
+        accept(previewImage.source, shaderName)
     }
 
     FileIO
@@ -30,7 +31,6 @@ ImagePreviewForm {
 
     deleteButton.onClicked:
     {
-        // TODO delete file
         fileio.source = previewImage.source
         fileio.remove()
         abort()
@@ -43,6 +43,7 @@ ImagePreviewForm {
 
     effectSelector.onEffectSelected:
     {
+        console.log("Current effect: " + effect)
         shaderName = effect
         state = "idle"
     }

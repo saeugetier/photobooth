@@ -14,7 +14,7 @@ Item {
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
     property alias previewImage: previewImage
-    property string shaderName: "passthrough.fsh"
+    property var shaderName: ""
 
     Image {
         id: previewImage
@@ -27,7 +27,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         layer.enabled: true
         layer.effect: ImageEffect {
-            clip: true
+            id: effectPreview
             source: previewImage
             fragmentShaderFilename: shaderName
         }

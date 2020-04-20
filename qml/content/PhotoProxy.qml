@@ -4,8 +4,8 @@ import QtQuick.Controls.Material 2.0
 
 Item {
     property url imageFileName : ""
+    property string effectName: ""
     property int number : 0
-    property bool enableDeleteButton : true
 
     id: photoProxy
 
@@ -19,6 +19,12 @@ Item {
         sourceSize.width: 2048
         visible: false
         fillMode: Image.PreserveAspectCrop
+        layer.enabled: true
+        layer.effect: ImageEffect
+        {
+            source: image
+            fragmentShaderFilename: effectName
+        }
     }
 
     Rectangle

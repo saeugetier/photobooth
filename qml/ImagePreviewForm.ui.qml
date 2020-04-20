@@ -19,6 +19,8 @@ Item {
     Image {
         id: previewImage
 
+        mipmap: true
+
         // INPUTS
         property double rightMargin: 100
         property double bottomMargin: 100

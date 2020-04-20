@@ -10,15 +10,13 @@ Flickable {
     property alias downButton: downButton
     property alias upButton: upButton
     property alias iconListView: iconListView
-    property alias scrollIdicator: iconListScrollIndicator
+    property alias scrollIndicator: iconListScrollIndicator
 
     property CollageIconModel iconModel: ({})
 
     Rectangle {
         id: background
-        x: 0
-        width: sidebar.width
-        height: sidebar.height
+        anchors.fill: parent
         color: "#4d60ea"
     }
 

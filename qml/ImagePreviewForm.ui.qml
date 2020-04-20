@@ -18,13 +18,34 @@ Item {
 
     Image {
         id: previewImage
-        anchors.topMargin: 100
-        anchors.bottomMargin: 100
-        anchors.leftMargin: 100
-        anchors.rightMargin: 100
-        anchors.fill: parent
+
+        // INPUTS
+        property double rightMargin: 100
+        property double bottomMargin: 100
+        property double leftMargin: 100
+        property double topMargin:  100
+        property double aimedRatio: sourceSize.height / sourceSize.width
+
+        // SIZING
+        property double availableWidth: parent.width - rightMargin - leftMargin
+        property double availableHeight: parent.height - bottomMargin - topMargin
+
+        property bool parentIsLarge: parentRatio > aimedRatio
+
+        property double parentRatio: availableHeight / availableWidth
+
+        height: parentIsLarge ? width * aimedRatio : availableHeight
+        width: parentIsLarge ? availableWidth : height / aimedRatio
+
+        property double verticalSpacing: (availableHeight - height) / 2
+        property double horzitontalSpacing: (availableWidth - width) / 2
+
+        anchors.top: parent.top
+        anchors.topMargin: topMargin + verticalSpacing
+        anchors.left: parent.left
+        anchors.leftMargin: leftMargin + horzitontalSpacing
+
         rotation: -10
-        fillMode: Image.PreserveAspectFit
         layer.enabled: true
         layer.effect: ImageEffect {
             id: effectPreview

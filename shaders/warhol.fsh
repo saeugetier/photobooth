@@ -6,7 +6,8 @@ varying vec2 qt_TexCoord0;
 
 void main(void)
 {
-    vec3 col = texture2D(vTex, vCoord).bgr;
+    vec2 uv = qt_TexCoord0.xy;
+    vec3 col = texture2D(source, uv).bgr;
     float y = 0.3 *col.r + 0.59 * col.g + 0.11 * col.b;
     y = y < 0.3 ? 0.0 : (y < 0.6 ? 0.5 : 1.0);
     if (y == 0.5)
@@ -16,7 +17,7 @@ void main(void)
     else
         col = vec3(0.0, 0.0, 0.0);
         
-    gl_FragColor.a = 1.0;
-    gl_FragColor.rgb = col;
+    gl_FragColor.a = qt_Opacity * 1.0;
+    gl_FragColor.rgb = qt_Opacity * col;
 }
 

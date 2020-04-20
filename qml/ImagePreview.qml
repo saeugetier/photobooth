@@ -35,4 +35,15 @@ ImagePreviewForm {
         fileio.remove()
         abort()
     }
+
+    effectButton.onClicked:
+    {
+        state = "effectSelection"
+    }
+
+    effectSelector.onEffectSelected:
+    {
+        shaderName = effect
+        state = "idle"
+    }
 }

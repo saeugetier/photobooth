@@ -96,6 +96,8 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
         return image->borderImage();
     else if(role == BorderRectRole)
         return image->borderRect();
+    else if(role == EffectRole)
+        return image->effect();
     return QVariant();
 }
 
@@ -107,6 +109,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
+    roles[EffectRole] = "effect";
     return roles;
 }
 
@@ -115,7 +118,7 @@ QUrl CollageImageModel::backgroundImage() const
     return mBackgroundImage;
 }
 
-bool CollageImageModel::addImagePath(QUrl source)
+bool CollageImageModel::addImagePath(QUrl source, QString effect)
 {
     if(!collageFull()) {
         int i = 0;
@@ -125,6 +128,7 @@ bool CollageImageModel::addImagePath(QUrl source)
                 break;
         }
         mImages[i]->setImage(source);
+        mImages[i]->setEffect(effect);
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
         if(collageFull())
@@ -213,7 +217,7 @@ int CollageImageModel::countImagePathSet() const
     return currentCount;
 }
 
-CollageImage::CollageImage(QObject *parent) : QObject(parent)
+CollageImage::CollageImage(QObject *parent) : QObject(parent), mEffect("")
 {
 
 }
@@ -393,6 +397,11 @@ QUrl CollageImage::imagePath() const
     return mImagePath;
 }
 
+QString CollageImage::effect() const
+{
+    return mEffect;
+}
+
 QRectF CollageImage::imageRect() const
 {
     return mImageRect;
@@ -415,6 +424,12 @@ void CollageImage::setImage(QUrl imagePath)
         mImagePath = imagePath;
         emit imagePathChanged(mImagePath);
     }
+}
+
+void CollageImage::setEffect(QString effect)
+{
+    mEffect = effect;
+    effectChanged(effect);
 }
 
 QRect CollageImage::borderRect() const

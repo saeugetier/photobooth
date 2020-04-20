@@ -30,6 +30,11 @@ ShaderEffect {
 
     onFragmentShaderFilenameChanged:
     {
+        if(fragmentShaderFilename.length == 0)
+        {
+            fragmentShaderFilename = "passthrough.fsh"
+        }
+
         let filename = "qrc:/shaders/" + fragmentShaderFilename
         file.source = filename
         console.log("Shader file: " + filename)

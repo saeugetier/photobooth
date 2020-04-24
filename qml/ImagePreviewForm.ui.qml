@@ -14,7 +14,6 @@ Item {
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
     property alias previewImage: previewImage
-    property var shaderName: ""
 
     Image {
         id: previewImage
@@ -49,11 +48,6 @@ Item {
 
         rotation: -10
         layer.enabled: true
-        layer.effect: ImageEffect {
-            id: effectPreview
-            source: previewImage
-            fragmentShaderFilename: shaderName
-        }
     }
 
     BorderImage {

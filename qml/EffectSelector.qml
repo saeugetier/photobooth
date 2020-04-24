@@ -31,6 +31,12 @@ EffectSelectorForm {
         easing.type: Easing.InOutQuad
     }
 
+    function reset()
+    {
+        effectListView.currentIndex = 0
+        effectSelected(effectListView.currentItem.effectSource)
+    }
+
     effectListView.delegate: effectDelegate
 
 

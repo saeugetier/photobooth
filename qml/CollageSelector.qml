@@ -10,12 +10,12 @@ CollageSelectorForm {
 
     upButton.onClicked:
     {
-        scrollIdicator.increase()
+        scrollIndicator.increase()
     }
 
     downButton.onClicked:
     {
-        scrollIdicator.decrease()
+        scrollIndicator.decrease()
     }
 
     iconListView.delegate: iconDelegate
@@ -45,7 +45,7 @@ CollageSelectorForm {
     }
 
 
-    NumberAnimation on scrollIdicator.position {
+    NumberAnimation on scrollIndicator.position {
         duration: 200
         easing.type: Easing.InOutQuad
     }

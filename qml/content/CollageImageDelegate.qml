@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.0
 
 Item {
     property alias imageSource: proxy.imageFileName
+    property alias effectSource: proxy.effectName
     property alias borderImageSource: borderImage.source
     property alias number: proxy.number
     property alias proxy: proxy

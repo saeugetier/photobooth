@@ -56,5 +56,20 @@
         <file>images/icon/FourBorder.svg</file>
         <file>qml/TimeSettings.qml</file>
         <file>qml/TimeSettingsForm.ui.qml</file>
+        <file>shaders/sepia.fsh</file>
+        <file>shaders/vignette.fsh</file>
+        <file>shaders/blueseeker.fsh</file>
+        <file>shaders/bw.fsh</file>
+        <file>shaders/greenseeker.fsh</file>
+        <file>shaders/redseeker.fsh</file>
+        <file>shaders/warhol.fsh</file>
+        <file>shaders/yellowseeker.fsh</file>
+        <file>qml/content/ImageEffect.qml</file>
+        <file>shaders/fisheye.fsh</file>
+        <file>qml/EffectSelector.qml</file>
+        <file>qml/EffectSelectorForm.ui.qml</file>
+        <file>qml/content/EffectList.qml</file>
+        <file>shaders/passthrough.fsh</file>
+        <file>shaders/greyscale.fsh</file>
     </qresource>
 </RCC>

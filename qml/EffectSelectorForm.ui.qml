@@ -1,24 +1,23 @@
 import QtQuick 2.4
-import QtQuick.Layouts 1.3
-import QtGraphicalEffects 1.0
-import QtQuick.Controls 2.13
-import CollageModel 1.0
+import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.2
+import QtQuick.Controls.Material 2.2
+import "content"
 
-Flickable {
+Pane {
     id: sidebar
-    width: 300
+    width: 400
+    property alias effectListView: effectListView
     property alias downButton: downButton
     property alias upButton: upButton
-    property alias iconListView: iconListView
-    property alias scrollIndicator: iconListScrollIndicator
+    property alias scrollIndicator: effectListScrollIndicator
 
-    property CollageIconModel iconModel: ({})
+    background: Rectangle {
+            opacity: 0.8
+            color: Material.backgroundColor
+        }
 
-    Rectangle {
-        id: background
-        anchors.fill: parent
-        color: "#4d60ea"
-    }
+    z: 0.1
 
     ColumnLayout {
         anchors.fill: parent
@@ -36,25 +35,28 @@ Flickable {
         }
 
         ListView {
-            id: iconListView
+            id: effectListView
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.fillHeight: true
-            spacing: 20
+            spacing: 10
             width: sidebar.width
-            height: sidebar.height
             clip: true
             leftMargin: 25
             transformOrigin: Item.Center
             Layout.fillWidth: true
 
+            opacity: 1
+
+            z: 0.5
+
             ScrollBar.vertical: ScrollBar {
-                id: iconListScrollIndicator
-                parent: iconListView
+                id: effectListScrollIndicator
+                parent: effectListView
                 interactive: false
                 Layout.alignment: Qt.AlignLeft
             }
 
-            model: iconModel
+            model: EffectList {}
         }
 
         Button {

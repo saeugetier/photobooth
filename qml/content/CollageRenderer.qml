@@ -45,6 +45,7 @@ Item {
                 id: collageImage
                 borderImageSource: filesystem.findFile(borderImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation, true))
                 imageSource: imagePath
+                effectSource: effect
                 borderSizeLeft: borderRect.left
                 borderSizeTop: borderRect.top
                 borderSizeBottom: borderRect.bottom

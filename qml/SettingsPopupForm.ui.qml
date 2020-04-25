@@ -128,7 +128,7 @@ Popup {
                     Label {
                         id: labelMirrorCamera
                         text: qsTr("Mirror Camera")
-                        anchors.verticalCenter: switchPrinter.verticalCenter
+                        anchors.verticalCenter: switchMirrorCamera.verticalCenter
                         horizontalAlignment: Text.AlignLeft
                     }
 

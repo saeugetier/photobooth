@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import Selphy 1.0
+import Printer 1.0
 
 CollageMenuForm {
     id: form

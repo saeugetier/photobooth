@@ -6,7 +6,6 @@ import Qt.labs.folderlistmodel 1.0
 import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
-import Selphy 1.0
 import Printer 1.0
 
 ApplicationWindow {
@@ -56,6 +55,11 @@ ApplicationWindow {
     {
         id: modelFactory
         source: findCollagesFile()
+    }
+
+    onPrinterChanged:
+    {
+        flow.collageMenu.printer = printer
     }
 
     ApplicationFlow

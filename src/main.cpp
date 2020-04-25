@@ -16,8 +16,6 @@
 #include "filesystem.h"
 #include "system.h"
 
-#define FAKEPRINTER 1
-
 int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
@@ -47,11 +45,6 @@ int main(int argc, char *argv[])
 
     qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");
-#if FAKEPRINTER == 1
-    qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
-#else
-    qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
-#endif
     qmlRegisterType<PrinterFactory>("Printer", 1, 0, "PrinterFactory");
 
     FileSystem fileSystem;

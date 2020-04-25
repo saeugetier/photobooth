@@ -71,5 +71,6 @@
         <file>qml/content/EffectList.qml</file>
         <file>shaders/passthrough.fsh</file>
         <file>shaders/greyscale.fsh</file>
+        <file>shaders/vmirror.fsh</file>
     </qresource>
 </RCC>

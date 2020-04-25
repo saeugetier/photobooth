@@ -14,6 +14,8 @@ SnapshotMenuForm {
         console.log("photo processing: " + Boolean(cameraRenderer.photoProcessing).toString())
     }
 
+    cameraRenderer.mirrored: applicationSettings.cameraMirrored
+
     GPIO
     {
         id: ledEnablePin

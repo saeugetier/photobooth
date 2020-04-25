@@ -16,6 +16,7 @@ Popup {
     property alias switchPrinter: switchPrinter
     property alias buttonCopyPhotos: buttonCopyPhotos
     property alias buttonSetTime: buttonSetTime
+    property alias switchMirrorCamera: switchMirrorCamera
 
     Button {
         id: buttonClose
@@ -60,6 +61,12 @@ Popup {
             id: tabButtonPhotos
             text: qsTr("Photos")
         }
+
+        TabButton {
+            id: tabButtonCamera
+            text: qsTr("Camera")
+        }
+
         TabButton {
             id: tabButtonPrinter
             text: qsTr("Printer")
@@ -96,7 +103,13 @@ Popup {
                     text: qsTr("Delete all photos")
                     delay: 5000
                 }
+            }
+        }
 
+        Item {
+            id: elementCamera
+            Column {
+                spacing: 5
                 Row {
                     spacing: 5
                     Label {
@@ -106,6 +119,22 @@ Popup {
                     }
                     ComboBox {
                         id: comboBoxCamera
+                    }
+                }
+
+                Row {
+                    id: rowMirrorCamera
+                    spacing: 5
+                    Label {
+                        id: labelMirrorCamera
+                        text: qsTr("Mirror Camera")
+                        anchors.verticalCenter: switchPrinter.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchMirrorCamera
+                        text: qsTr("mirror")
                     }
                 }
             }

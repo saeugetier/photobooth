@@ -70,6 +70,11 @@ ApplicationWindow {
             translation.setLanguage(applicationSettings.language)
         }
 
+        mainMenu.settingsPopup.switchMirrorCamera.onCheckedChanged:
+        {
+            applicationSettings.cameraMirrored = mainMenu.settingsPopup.switchMirrorCamera.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onCountChanged:
         {
             if(mainMenu.settingsPopup.comboBoxLanguages.count != 0)
@@ -90,11 +95,13 @@ ApplicationWindow {
         property bool printEnable: true
         property string password: "0815"
         property string language: "en"
+        property bool cameraMirrored: true
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
             flow.mainMenu.settingsPinCode = password
+            flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
         }
     }
 }

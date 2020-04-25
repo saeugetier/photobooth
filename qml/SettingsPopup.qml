@@ -3,6 +3,7 @@ import QtQuick 2.4
 SettingsPopupForm {
     id: form
     property alias printerEnabled: form.switchPrinter
+    property alias mirrorCamera: form.switchMirrorCamera
 
     onOpened:
     {

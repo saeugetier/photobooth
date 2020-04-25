@@ -174,11 +174,6 @@ Popup {
                     ComboBox {
                         id: comboBoxPrinter
                     }
-
-                    Switch {
-
-                        text: qsTr("enabled")
-                    }
                 }
             }
         }

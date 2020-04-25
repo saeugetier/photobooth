@@ -10,7 +10,6 @@ class FakePrinter : public AbstractPrinter, public PrinterList<FakePrinter>
     Q_OBJECT
     Q_INTERFACES(AbstractPrinter)
 public:
-    explicit FakePrinter(QObject *parent = nullptr);
     QSize getPrintSize() override;
     bool printerOnline() override;
     bool busy() override;
@@ -18,6 +17,7 @@ public:
 protected slots:
     void busyTimeout();
 protected:
+    explicit FakePrinter(QObject *parent = nullptr);
     QTimer mBusyTimer;
     static QStringList getAvailablePrintersInternal();
     static FakePrinter* createInternal(const QString &name);

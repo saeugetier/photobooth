@@ -10,6 +10,7 @@ Item {
     signal failed
 
     property bool photoProcessing: (state == "snapshot")
+    property bool mirrored: true
 
     function printDevicesToConsole(devices)
     {
@@ -23,7 +24,7 @@ Item {
     Camera {
         id: camera
 
-        position: Camera.FrontFace
+        position: Camera.UnspecifiedPosition
 
         //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
         exposure {
@@ -100,6 +101,13 @@ Item {
         id: output
         source: camera
         anchors.fill: parent
+
+        layer.enabled: true
+        layer.effect: ImageEffect {
+            source: output
+            fragmentShaderFilename: mirrored ? "vmirror.fsh" : "passthrough.fsh"
+        }
+
         //focus: visible // to receive focus and capture key events when visible
     }
 

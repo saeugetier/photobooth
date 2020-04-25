@@ -7,6 +7,7 @@ import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
 import Selphy 1.0
+import Printer 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -14,6 +15,8 @@ ApplicationWindow {
     visibility: "Maximized"
     width: 640
     height: 480
+
+    property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
     FontLoader
     {
@@ -29,9 +32,13 @@ ApplicationWindow {
 
     title: qsTr("QML Photo Booth")
 
-    Printer
+    PrinterFactory
     {
-        id: printer
+        id: printerFactory
+        Component.onCompleted:
+        {
+            flow.mainMenu.settingsPopup.comboBoxPrinter.model = printerFactory.printers
+        }
     }
 
     function findCollagesFile()
@@ -85,6 +92,11 @@ ApplicationWindow {
                 translation.setLanguage(applicationSettings.language)
             }
         }
+
+        mainMenu.settingsPopup.comboBoxPrinter.onCurrentTextChanged:
+        {
+            applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+        }
     }
 
     Settings
@@ -96,12 +108,18 @@ ApplicationWindow {
         property string password: "0815"
         property string language: "en"
         property bool cameraMirrored: true
+        property string printerName: printerFactory.defaultPrinterName
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+        }
+
+        onPrinterNameChanged:
+        {
+            printer = printerFactory.getPrinter(printerName)
         }
     }
 }

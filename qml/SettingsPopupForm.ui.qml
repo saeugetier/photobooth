@@ -17,6 +17,7 @@ Popup {
     property alias buttonCopyPhotos: buttonCopyPhotos
     property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
+    property alias comboBoxPrinter: comboBoxPrinter
 
     Button {
         id: buttonClose
@@ -142,20 +143,42 @@ Popup {
 
         Item {
             id: elementPrinter
-
-            Row {
-                id: rowPrinter
+            Column {
                 spacing: 5
-                Label {
-                    id: labelPrinter
-                    text: qsTr("Enable Printing")
-                    anchors.verticalCenter: switchPrinter.verticalCenter
-                    horizontalAlignment: Text.AlignLeft
+                Row {
+                    id: rowPrinterEnable
+                    spacing: 5
+                    Label {
+                        id: labelPrinterEnable
+                        text: qsTr("Enable Printing")
+                        anchors.verticalCenter: switchPrinter.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchPrinter
+                        text: qsTr("enabled")
+                    }
                 }
 
-                Switch {
-                    id: switchPrinter
-                    text: qsTr("enabled")
+                Row {
+                    id: rowPrinter
+                    spacing: 5
+                    Label {
+                        id: labelPrinter
+                        text: qsTr("Printer: ")
+                        anchors.verticalCenter: comboBoxPrinter.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    ComboBox {
+                        id: comboBoxPrinter
+                    }
+
+                    Switch {
+
+                        text: qsTr("enabled")
+                    }
                 }
             }
         }
@@ -215,6 +238,3 @@ Popup {
         }
     }
 }
-
-
-

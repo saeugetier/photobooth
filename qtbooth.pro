@@ -11,6 +11,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/gpio.cpp \
     src/main.cpp \
     src/modelparser.cpp \
+    src/printerfactory.cpp \
     src/selphyprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp
@@ -49,6 +50,7 @@ HEADERS += \
     src/filesystem.h \
     src/gpio.h \
     src/modelparser.h \
+    src/printerfactory.h \
     src/selphyprinter.h \
     src/system.h \
     src/translationhelper.h

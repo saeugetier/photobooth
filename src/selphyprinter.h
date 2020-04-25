@@ -4,11 +4,12 @@
 #include "abstractprinter.h"
 #include <QProcess>
 
-class SelphyPrinter : public AbstractPrinter
+class SelphyPrinter : public AbstractPrinter, public PrinterList<SelphyPrinter>
 {
+    friend PrinterList<SelphyPrinter>;
     Q_OBJECT
+    Q_INTERFACES(AbstractPrinter)
 public:
-    SelphyPrinter(QObject *parent = nullptr);
     QString getPrinterIp();
     Q_INVOKABLE QSize getPrintSize();
     Q_INVOKABLE bool printerOnline();
@@ -18,7 +19,10 @@ public slots:
 protected slots:
     void finished(int code, QProcess::ExitStatus status);
 protected:
+    explicit SelphyPrinter(QObject *parent = nullptr);
     QProcess mPrinterProcess;
+    static QStringList getAvailablePrintersInternal();
+    static SelphyPrinter* createInternal(const QString &name);
 };
 
 #endif // PRINTER_H

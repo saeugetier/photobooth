@@ -4,8 +4,9 @@
 #include "abstractprinter.h"
 #include <QTimer>
 
-class FakePrinter : public AbstractPrinter
+class FakePrinter : public AbstractPrinter, public PrinterList<FakePrinter>
 {
+    friend class PrinterList<FakePrinter>;
     Q_OBJECT
     Q_INTERFACES(AbstractPrinter)
 public:
@@ -18,6 +19,8 @@ protected slots:
     void busyTimeout();
 protected:
     QTimer mBusyTimer;
+    static QStringList getAvailablePrintersInternal();
+    static FakePrinter* createInternal(const QString &name);
 };
 
 #endif // FAKEPRINTER_H

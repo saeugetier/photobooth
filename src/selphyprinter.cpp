@@ -121,3 +121,15 @@ void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
         emit success();
 }
 
+QStringList SelphyPrinter::getAvailablePrintersInternal()
+{
+    QStringList list;
+    list.append("Selphy");
+    return list;
+}
+
+SelphyPrinter *SelphyPrinter::createInternal(const QString &name)
+{
+    Q_UNUSED(name);
+    return new SelphyPrinter();
+}

@@ -36,3 +36,16 @@ void FakePrinter::busyTimeout()
     emit busyChanged(false);
     qDebug() << "Fake printer has finished";
 }
+
+QStringList FakePrinter::getAvailablePrintersInternal()
+{
+    QStringList list;
+    list.append("Fake Printer");
+    return list;
+}
+
+FakePrinter *FakePrinter::createInternal(const QString &name)
+{
+    Q_UNUSED(name);
+    return new FakePrinter();
+}

@@ -4,6 +4,14 @@
 #include <QObject>
 #include <QSize>
 
+template<class PrinterClass>
+class PrinterList
+{
+public:
+    static PrinterClass* create(const QString &name) { return PrinterClass::createInternal(name); }
+    static QStringList getAvailablePrinters() { return PrinterClass::getAvailablePrintersInternal();}
+};
+
 class AbstractPrinter : public QObject
 {
     Q_OBJECT

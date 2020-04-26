@@ -389,6 +389,13 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    if(validateBoundary() == false)
+    {
+        mErrorMsg = "Validation of size constrains failed.";
+        mLine = node.toElement().lineNumber();
+        return false;
+    }
+
     return true;
 }
 
@@ -411,6 +418,7 @@ float CollageImage::rotation() const
 {
     return mAngle;
 }
+
 
 QUrl CollageImage::borderImage() const
 {
@@ -439,6 +447,27 @@ QRect CollageImage::borderRect() const
 
 bool CollageImage::validateBoundary()
 {
-    // @TODO: validate
-    return true;
+    //test position and size parameter
+    bool result = true;
+    if(mImageRect.x() < 0 || mImageRect.x() > 1.0)
+    {
+        result = false;
+    }
+    if(mImageRect.y() < 0 || mImageRect.x() > 1.0)
+    {
+        result = false;
+    }
+    if((mImageRect.x() + mImageRect.width()) > 1.0 || mImageRect.width() < 0)
+    {
+        result = false;
+    }
+    if((mImageRect.y() + mImageRect.height()) > 1.0 || mImageRect.height() < 0)
+    {
+        result = false;
+    }
+
+    //TODO: Validate Border
+    //TODO: Validate with rotation
+
+    return result;
 }

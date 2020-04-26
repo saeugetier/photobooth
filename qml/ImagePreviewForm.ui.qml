@@ -8,6 +8,8 @@ Item {
     id: element
     width: 640
     height: 480
+    property alias effectButton: effectButton
+    property alias effectSelector: effectSelector
     property alias deleteButton: deleteButton
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
@@ -15,29 +17,54 @@ Item {
 
     Image {
         id: previewImage
-        anchors.topMargin: 100
-        anchors.bottomMargin: 100
-        anchors.leftMargin: 100
-        anchors.rightMargin: 100
-        anchors.fill: parent
-        rotation: -10
-        fillMode: Image.PreserveAspectFit
 
-        BorderImage {
-            anchors.horizontalCenter: previewImage.horizontalCenter
-            anchors.verticalCenter: previewImage.verticalCenter
-            id: borderImage
-            border.bottom: 65
-            border.top: 25
-            border.right: 25
-            border.left: 25
-            width: previewImage.paintedWidth + 40
-            height: previewImage.paintedHeight + 60
-            anchors.verticalCenterOffset: 10
-            horizontalTileMode: BorderImage.Stretch
-            verticalTileMode: BorderImage.Stretch
-            source: "../../images/polaroid.svg.png"
-        }
+        mipmap: true
+
+        // INPUTS
+        property double rightMargin: 100
+        property double bottomMargin: 100
+        property double leftMargin: 100
+        property double topMargin:  100
+        property double aimedRatio: sourceSize.height / sourceSize.width
+
+        // SIZING
+        property double availableWidth: parent.width - rightMargin - leftMargin
+        property double availableHeight: parent.height - bottomMargin - topMargin
+
+        property bool parentIsLarge: parentRatio > aimedRatio
+
+        property double parentRatio: availableHeight / availableWidth
+
+        height: parentIsLarge ? width * aimedRatio : availableHeight
+        width: parentIsLarge ? availableWidth : height / aimedRatio
+
+        property double verticalSpacing: (availableHeight - height) / 2
+        property double horzitontalSpacing: (availableWidth - width) / 2
+
+        anchors.top: parent.top
+        anchors.topMargin: topMargin + verticalSpacing
+        anchors.left: parent.left
+        anchors.leftMargin: leftMargin + horzitontalSpacing
+
+        rotation: -10
+        layer.enabled: true
+    }
+
+    BorderImage {
+        anchors.horizontalCenter: previewImage.horizontalCenter
+        anchors.verticalCenter: previewImage.verticalCenter
+        id: borderImage
+        border.bottom: 65
+        border.top: 25
+        border.right: 25
+        border.left: 25
+        rotation: -10
+        width: previewImage.paintedWidth + 40
+        height: previewImage.paintedHeight + 60
+        anchors.verticalCenterOffset: 10
+        horizontalTileMode: BorderImage.Stretch
+        verticalTileMode: BorderImage.Stretch
+        source: "../../images/polaroid.svg.png"
     }
 
     BusyIndicator {
@@ -66,6 +93,92 @@ Item {
         anchors.topMargin: 40
         forward: false
     }
+
+    EffectSelector {
+        id: effectSelector
+
+        visible: false
+
+        anchors.right: element.right
+        anchors.top: element.top
+        anchors.bottom: element.bottom
+
+        previewImage: previewImage.source
+    }
+
+    Row {
+        id: effectButtonRow
+        visible: true
+        anchors.right: parent.right
+        anchors.rightMargin: 40
+        anchors.top: parent.top
+        anchors.topMargin: 40
+
+        spacing: 10
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
+
+        Text {
+            id: textLabelEffectButton
+            color: "#ffffff"
+            text: qsTr("Effect")
+            font.family: "DejaVu Serif"
+            wrapMode: Text.WrapAnywhere
+            font.pixelSize: 64
+            font.capitalization: Font.AllUppercase
+        }
+
+        ToolButton {
+            id: effectButton
+            text: "\uF0D0" // icon-print
+            font.family: "fontello"
+            font.pointSize: 82
+            enabled: true
+
+            scale: hovered ? 1.1 : 1
+
+            layer.enabled: true
+            layer.effect: Glow {
+                color: "black"
+                samples: 20
+                spread: 0.3
+            }
+        }
+    }
+
+    states: [
+        State {
+            name: "idle"
+        },
+        State {
+            name: "effectSelection"
+
+            PropertyChanges {
+                target: effectSelector
+                visible: true
+            }
+
+            PropertyChanges {
+                target: effectButtonRow
+                visible: false
+            }
+
+            PropertyChanges {
+                target: saveButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: deleteButton
+                visible: false
+            }
+        }
+    ]
 }
 
 /*##^##

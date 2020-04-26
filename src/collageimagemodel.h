@@ -17,6 +17,7 @@ class CollageImage : public QObject, public ModelParser
     Q_PROPERTY(float rotation READ rotation CONSTANT)
     Q_PROPERTY(QUrl borderImage READ borderImage CONSTANT)
     Q_PROPERTY(QRect borderRect READ borderRect CONSTANT)
+    Q_PROPERTY(QString effect READ effect NOTIFY effectChanged)
 public:
     CollageImage(QObject* parent = nullptr);
     bool parseXml(const QDomNode& node) override;
@@ -25,10 +26,13 @@ public:
     float rotation() const;
     QUrl borderImage() const;
     QRect borderRect() const;
+    QString effect() const;
 
     void setImage(QUrl imagePath);
+    void setEffect(QString effect);
 signals:
     void imagePathChanged(QUrl url);
+    void effectChanged(QString effect);
 protected:
     bool validateBoundary();
     QUrl mImagePath;
@@ -36,6 +40,7 @@ protected:
     float mAngle;
     QUrl mBorderImage;
     QRect mBorderRect;
+    QString mEffect;
 };
 
 class CollageImageModel : public QAbstractListModel, public ModelParser
@@ -50,7 +55,8 @@ public:
         ImageRectRole,
         RotationRole,
         BorderImageRole,
-        BorderRectRole
+        BorderRectRole,
+        EffectRole
     };
 
     explicit CollageImageModel(QObject *parent = nullptr);
@@ -60,7 +66,7 @@ public:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
     QUrl backgroundImage() const;
-    Q_INVOKABLE bool addImagePath(QUrl source);
+    Q_INVOKABLE bool addImagePath(QUrl source, QString effect = "");
     Q_INVOKABLE void clearImagePathes();
     Q_INVOKABLE bool clearImagePath(int index);
     Q_INVOKABLE bool collageFull();

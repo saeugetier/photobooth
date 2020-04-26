@@ -2,6 +2,7 @@
 #define SYSTEM_H
 
 #include <QObject>
+#include <QDate>
 
 class System : public QObject
 {
@@ -10,6 +11,7 @@ public:
     System();
     Q_INVOKABLE void shutdown();
     Q_INVOKABLE void restart();
+    Q_INVOKABLE bool setTime(QDate date);
 };
 
 #endif // SYSTEM_H

@@ -1,6 +1,8 @@
 #include "collagemodelfactory.h"
 #include <QFile>
 #include <QDomDocument>
+#include <QQmlEngine>
+#include <QQmlContext>
 
 CollageModelFactory::CollageModelFactory(QObject *parent) : QObject(parent), mStatus(Null)
 {
@@ -47,7 +49,7 @@ CollageImageModel *CollageModelFactory::getCollageImageModel(const QString &name
     auto iter = mCollageModels.find(name);
     if(iter != mCollageModels.end())
     {
-        CollageImageModel* model = *iter;
+        CollageImageModel* model = iter.value();
         model->clearImagePathes();
         return model;
     }
@@ -153,7 +155,10 @@ bool CollageModelFactory::parseXml(const QDomNode &node)
 
         mIconModel.addIcon(icon);
 
+        QQmlEngine *ownerEngine = QQmlEngine::contextForObject(this)->engine();
+
         CollageImageModel* imageModel = new CollageImageModel();
+        ownerEngine->setObjectOwnership(imageModel, QQmlEngine::CppOwnership);
         result = imageModel->parseXml(collageNodes.item(i));
 
         if(!result)

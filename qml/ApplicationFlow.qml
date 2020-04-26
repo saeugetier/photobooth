@@ -42,7 +42,7 @@ ApplicationFlowForm {
     imagePreview.onAccept:
     {
         state = "collageMenu"
-        collageMenu.collageImage.imageModel.addImagePath(filename)
+        collageMenu.collageImage.imageModel.addImagePath(filename, effect)
     }
 
     imagePreview.onAbort:

@@ -46,5 +46,31 @@
         <file>font/DejaVuSerif/DejaVuSerif.ttf</file>
         <file>font/fontello/fontello.ttf</file>
         <file>qml/scripts/utils.js</file>
+        <file>images/icon/Unknown.png</file>
+        <file>images/icon/Single.svg</file>
+        <file>images/icon/Double.svg</file>
+        <file>images/icon/Four.svg</file>
+        <file>images/icon/FourStars.svg</file>
+        <file>images/StarsBackground.jpg</file>
+        <file>images/RedBorder.png</file>
+        <file>images/icon/FourBorder.svg</file>
+        <file>qml/TimeSettings.qml</file>
+        <file>qml/TimeSettingsForm.ui.qml</file>
+        <file>shaders/sepia.fsh</file>
+        <file>shaders/vignette.fsh</file>
+        <file>shaders/blueseeker.fsh</file>
+        <file>shaders/bw.fsh</file>
+        <file>shaders/greenseeker.fsh</file>
+        <file>shaders/redseeker.fsh</file>
+        <file>shaders/warhol.fsh</file>
+        <file>shaders/yellowseeker.fsh</file>
+        <file>qml/content/ImageEffect.qml</file>
+        <file>shaders/fisheye.fsh</file>
+        <file>qml/EffectSelector.qml</file>
+        <file>qml/EffectSelectorForm.ui.qml</file>
+        <file>qml/content/EffectList.qml</file>
+        <file>shaders/passthrough.fsh</file>
+        <file>shaders/greyscale.fsh</file>
+        <file>shaders/vmirror.fsh</file>
     </qresource>
 </RCC>

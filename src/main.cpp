@@ -9,13 +9,12 @@
 #include "translationhelper.h"
 #include "fakeprinter.h"
 #include "selphyprinter.h"
+#include "printerfactory.h"
 #include "collagemodelfactory.h"
 #include "gpio.h"
 #include "fileio.h"
 #include "filesystem.h"
 #include "system.h"
-
-#define FAKEPRINTER 1
 
 int main(int argc, char *argv[])
 {
@@ -44,11 +43,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("Syetem", 1, 0, "System");
 
-#if FAKEPRINTER == 1
-    qmlRegisterType<FakePrinter>("Selphy", 1, 0, "Printer");
-#else
-    qmlRegisterType<SelphyPrinter>("Selphy", 1, 0, "Printer");
-#endif
+    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
+    qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");
+    qmlRegisterType<PrinterFactory>("Printer", 1, 0, "PrinterFactory");
 
     FileSystem fileSystem;
     TranslationHelper translationHelper;

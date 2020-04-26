@@ -7,17 +7,20 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent)
 
 QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool searchInResource)
 {
-    QUrl file;
+    QUrl file; //instance of a "unknown" url
 
-    if(filename.length() == 0)
+    if(filename.length() == 0) //will return empty url, if no filename is given
+    {
+        qDebug() << "Filesystem Error: filename is empty!";
         return file;
+    }
 
     //test if filename is a file path
     if(QUrl(filename).isValid())
     {
         if(QUrl(filename).isLocalFile())
         {
-            file = QUrl(filename);
+            file = QUrl(filename); // filename is a real file --> convert to URL
         }
     }
 
@@ -40,7 +43,7 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
     }
 
     //if no file is found, search for file in QRC
-    if(file.isEmpty())
+    if(file.isEmpty() && searchInResource)
     {
         QDirIterator it(":", QDirIterator::Subdirectories);
         while (it.hasNext()) {
@@ -48,10 +51,15 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
             QFileInfo info(filepath);
             if(info.fileName() == filename)
             {
-                file = QUrl("qrc" + it.filePath());
+                file = QUrl("qrc" + it.filePath()); //url has structure "qrc:/some_dir/some_file"
                 break;
             }
         }
+    }
+
+    if(file.isEmpty())
+    {
+        qDebug() << "Filesystem Error: Could not find file " << filename;
     }
 
     return file;

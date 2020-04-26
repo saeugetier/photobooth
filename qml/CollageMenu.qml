@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import Selphy 1.0
+import Printer 1.0
 
 CollageMenuForm {
     id: form
@@ -21,8 +21,15 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
-        collageRenderer.saveImage("Test.jpg", printer.getPrintSize())
-        printer.printImage("Test")
+        console.log("Print button pressed")
+        var path = applicationSettings.foldername.toString()
+        path = path.replace(/^(file:\/{2})/,"");
+        var cleanPath = decodeURIComponent(path);
+        console.log(cleanPath)
+        var filename = cleanPath + "/collage/Coll_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg"
+        collageRenderer.saveImage(filename, printer.getPrintSize())
+        console.log("Collage rendered")
+        printer.printImage(filename)
         exit()
     }
 

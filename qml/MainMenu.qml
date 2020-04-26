@@ -84,7 +84,14 @@ MainMenuForm {
 
     settingsButton.onClicked:
     {
-        settingsPassword.open()
+        if(applicationSettings.password.length == 0)
+        {
+            settingsPopup.open()
+        }
+        else
+        {
+            settingsPassword.open()
+        }
     }
 
     SequentialAnimation

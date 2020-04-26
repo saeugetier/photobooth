@@ -1,13 +1,6 @@
-QT += qml quick multimedia concurrent xml
+QT += qml quick multimedia concurrent xml svg
 
-CONFIG += c++17
-
-linux {
-    contains(QT_ARCH, arm):{
-        DEFINES += WIRINGPI
-        LIBS += -lwiringPi -lwiringPiDev
-    }
-}
+CONFIG += c++17 qml_debug
 
 SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \
@@ -18,6 +11,8 @@ SOURCES += src/collageiconmodel.cpp \
     src/gpio.cpp \
     src/main.cpp \
     src/modelparser.cpp \
+    src/noprinter.cpp \
+    src/printerfactory.cpp \
     src/selphyprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp
@@ -34,7 +29,14 @@ QML_IMPORT_PATH =
 
 TRANSLATIONS = "tr_de.ts"
 
-DISTFILES +=
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
 
 INCLUDEPATH += src/
 
@@ -49,6 +51,13 @@ HEADERS += \
     src/filesystem.h \
     src/gpio.h \
     src/modelparser.h \
+    src/noprinter.h \
+    src/printerfactory.h \
     src/selphyprinter.h \
     src/system.h \
     src/translationhelper.h
+
+contains(ANDROID_TARGET_ARCH,x86) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}

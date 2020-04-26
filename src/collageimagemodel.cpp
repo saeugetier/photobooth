@@ -96,6 +96,8 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
         return image->borderImage();
     else if(role == BorderRectRole)
         return image->borderRect();
+    else if(role == EffectRole)
+        return image->effect();
     return QVariant();
 }
 
@@ -107,6 +109,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
+    roles[EffectRole] = "effect";
     return roles;
 }
 
@@ -115,7 +118,7 @@ QUrl CollageImageModel::backgroundImage() const
     return mBackgroundImage;
 }
 
-bool CollageImageModel::addImagePath(QUrl source)
+bool CollageImageModel::addImagePath(QUrl source, QString effect)
 {
     if(!collageFull()) {
         int i = 0;
@@ -125,6 +128,7 @@ bool CollageImageModel::addImagePath(QUrl source)
                 break;
         }
         mImages[i]->setImage(source);
+        mImages[i]->setEffect(effect);
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
         if(collageFull())
@@ -213,7 +217,7 @@ int CollageImageModel::countImagePathSet() const
     return currentCount;
 }
 
-CollageImage::CollageImage(QObject *parent) : QObject(parent)
+CollageImage::CollageImage(QObject *parent) : QObject(parent), mEffect("")
 {
 
 }
@@ -385,12 +389,24 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    if(validateBoundary() == false)
+    {
+        mErrorMsg = "Validation of size constrains failed.";
+        mLine = node.toElement().lineNumber();
+        return false;
+    }
+
     return true;
 }
 
 QUrl CollageImage::imagePath() const
 {
     return mImagePath;
+}
+
+QString CollageImage::effect() const
+{
+    return mEffect;
 }
 
 QRectF CollageImage::imageRect() const
@@ -402,6 +418,7 @@ float CollageImage::rotation() const
 {
     return mAngle;
 }
+
 
 QUrl CollageImage::borderImage() const
 {
@@ -417,6 +434,12 @@ void CollageImage::setImage(QUrl imagePath)
     }
 }
 
+void CollageImage::setEffect(QString effect)
+{
+    mEffect = effect;
+    effectChanged(effect);
+}
+
 QRect CollageImage::borderRect() const
 {
     return mBorderRect;
@@ -424,6 +447,27 @@ QRect CollageImage::borderRect() const
 
 bool CollageImage::validateBoundary()
 {
-    // @TODO: validate
-    return true;
+    //test position and size parameter
+    bool result = true;
+    if(mImageRect.x() < 0 || mImageRect.x() > 1.0)
+    {
+        result = false;
+    }
+    if(mImageRect.y() < 0 || mImageRect.x() > 1.0)
+    {
+        result = false;
+    }
+    if((mImageRect.x() + mImageRect.width()) > 1.0 || mImageRect.width() < 0)
+    {
+        result = false;
+    }
+    if((mImageRect.y() + mImageRect.height()) > 1.0 || mImageRect.height() < 0)
+    {
+        result = false;
+    }
+
+    //TODO: Validate Border
+    //TODO: Validate with rotation
+
+    return result;
 }

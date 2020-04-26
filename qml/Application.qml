@@ -6,7 +6,7 @@ import Qt.labs.folderlistmodel 1.0
 import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
-import Selphy 1.0
+import Printer 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -14,6 +14,8 @@ ApplicationWindow {
     visibility: "Maximized"
     width: 640
     height: 480
+
+    property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
     FontLoader
     {
@@ -29,9 +31,13 @@ ApplicationWindow {
 
     title: qsTr("QML Photo Booth")
 
-    Printer
+    PrinterFactory
     {
-        id: printer
+        id: printerFactory
+        Component.onCompleted:
+        {
+            flow.mainMenu.settingsPopup.comboBoxPrinter.model = printerFactory.printers
+        }
     }
 
     function findCollagesFile()
@@ -42,13 +48,18 @@ ApplicationWindow {
         if(path != "")
             return path
         else
-            return "XmlData.xml"
+            return "qrc:/XmlData.xml"
     }
 
     CollageModelFactory
     {
         id: modelFactory
         source: findCollagesFile()
+    }
+
+    onPrinterChanged:
+    {
+        flow.collageMenu.printer = printer
     }
 
     ApplicationFlow
@@ -70,6 +81,11 @@ ApplicationWindow {
             translation.setLanguage(applicationSettings.language)
         }
 
+        mainMenu.settingsPopup.switchMirrorCamera.onCheckedChanged:
+        {
+            applicationSettings.cameraMirrored = mainMenu.settingsPopup.switchMirrorCamera.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onCountChanged:
         {
             if(mainMenu.settingsPopup.comboBoxLanguages.count != 0)
@@ -79,6 +95,11 @@ ApplicationWindow {
                 console.log("Language selected: " + Number(indexOfLanguage).toString() + " - " + applicationSettings.language + " - " + Number(mainMenu.settingsPopup.comboBoxLanguages.count).toString())
                 translation.setLanguage(applicationSettings.language)
             }
+        }
+
+        mainMenu.settingsPopup.comboBoxPrinter.onCurrentTextChanged:
+        {
+            applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
         }
     }
 
@@ -90,11 +111,19 @@ ApplicationWindow {
         property bool printEnable: true
         property string password: "0815"
         property string language: "en"
+        property bool cameraMirrored: true
+        property string printerName: printerFactory.defaultPrinterName
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
             flow.mainMenu.settingsPinCode = password
+            flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+        }
+
+        onPrinterNameChanged:
+        {
+            printer = printerFactory.getPrinter(printerName)
         }
     }
 }

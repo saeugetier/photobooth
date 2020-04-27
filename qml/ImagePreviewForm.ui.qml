@@ -106,48 +106,27 @@ Item {
         previewImage: previewImage.source
     }
 
-    Row {
-        id: effectButtonRow
+    ToolButton {
+        id: effectButton
+        text: "\uF0D0" // icon-print
+        font.family: "fontello"
+        font.pointSize: 82
+        enabled: true
+
         visible: true
+
         anchors.right: parent.right
         anchors.rightMargin: 40
         anchors.top: parent.top
         anchors.topMargin: 40
 
-        spacing: 10
+        scale: hovered ? 1.1 : 1
 
         layer.enabled: true
         layer.effect: Glow {
             color: "black"
             samples: 20
             spread: 0.3
-        }
-
-        Text {
-            id: textLabelEffectButton
-            color: "#ffffff"
-            text: qsTr("Effect")
-            font.family: "DejaVu Serif"
-            wrapMode: Text.WrapAnywhere
-            font.pixelSize: 64
-            font.capitalization: Font.AllUppercase
-        }
-
-        ToolButton {
-            id: effectButton
-            text: "\uF0D0" // icon-print
-            font.family: "fontello"
-            font.pointSize: 82
-            enabled: true
-
-            scale: hovered ? 1.1 : 1
-
-            layer.enabled: true
-            layer.effect: Glow {
-                color: "black"
-                samples: 20
-                spread: 0.3
-            }
         }
     }
 
@@ -164,7 +143,7 @@ Item {
             }
 
             PropertyChanges {
-                target: effectButtonRow
+                target: effectButton
                 visible: false
             }
 

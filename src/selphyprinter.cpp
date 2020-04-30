@@ -85,7 +85,7 @@ int SelphyPrinter::printImage(const QString &filename)
 
         QStringList parameters;
         parameters << "-SelphyPrinter_ip=" + ip;
-        parameters << filename.right(filename.length() - QString("file://").length());
+        parameters << filename;
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {

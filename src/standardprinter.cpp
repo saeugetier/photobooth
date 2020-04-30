@@ -32,17 +32,24 @@ int StandardPrinter::printImage(const QString &filename)
     mPrinter.setColorMode(QPrinter::Color);
     mPrinter.setFullPage(true);
     mPrinter.setOrientation(QPrinter::Landscape);
-    QImage img(filename.right(filename.length() - QString("file://").length()));
-    QPainter painter(&mPrinter);
-    QRect rect = painter.viewport();
-    qDebug() << "Rect size: " << rect;
-    QSize size = img.size();
-    qDebug() << "Image size: " << size;
-    size.scale(rect.size(), Qt::KeepAspectRatio);
-    qDebug() << "Scaled Image size: " << size;
-    painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-    painter.drawImage(QRect(QPoint(0,0), size),img);
-    painter.end();
+    QImage img;
+    if(img.load(filename))
+    {
+        QPainter painter(&mPrinter);
+        QRect rect = painter.viewport();
+        qDebug() << "Rect size: " << rect;
+        QSize size = img.size();
+        qDebug() << "Image size: " << size;
+        size.scale(rect.size(), Qt::KeepAspectRatio);
+        qDebug() << "Scaled Image size: " << size;
+        painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+        painter.drawImage(QRect(QPoint(0,0), size),img);
+        painter.end();
+    }
+    else
+    {
+        qDebug() << "Could not load image file " << filename;
+    }
 }
 
 StandardPrinter::StandardPrinter(QPrinterInfo& info, QObject *parent) : AbstractPrinter(parent), mPrinter(info, QPrinter::HighResolution)
@@ -63,6 +70,7 @@ StandardPrinter *StandardPrinter::createInternal(const QString &name)
        if(printer.printerName() == name)
        {
             ptr = new StandardPrinter(printer);
+            break;
        }
     }
     return ptr;

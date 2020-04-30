@@ -43,7 +43,7 @@ AbstractPrinter *PrinterFactory::getPrinter(const QString &name)
     else if(StandardPrinter::getAvailablePrinters().contains(name))
     {
         qDebug() << "StandardPrinter selected";
-        decltype (mCurrentPrinter) ptr(SelphyPrinter::create(name));
+        decltype (mCurrentPrinter) ptr(StandardPrinter::create(name));
         mCurrentPrinter.swap(ptr);
     }
     else

@@ -2,6 +2,7 @@
 #include "noprinter.h"
 #include "fakeprinter.h"
 #include "selphyprinter.h"
+#include "standardprinter.h"
 
 PrinterFactory::PrinterFactory(QObject *parent) : QObject(parent)
 {
@@ -14,6 +15,7 @@ QStringList PrinterFactory::printers() const
     printerList.append(NoPrinter::getAvailablePrinters());
     printerList.append(FakePrinter::getAvailablePrinters());
     printerList.append(SelphyPrinter::getAvailablePrinters());
+    printerList.append(StandardPrinter::getAvailablePrinters());
     return printerList;
 }
 
@@ -34,6 +36,11 @@ AbstractPrinter *PrinterFactory::getPrinter(const QString &name)
         decltype (mCurrentPrinter) ptr(SelphyPrinter::create(name));
         mCurrentPrinter.swap(ptr);
     }
+    else if(StandardPrinter::getAvailablePrinters().contains(name))
+    {
+        decltype (mCurrentPrinter) ptr(SelphyPrinter::create(name));
+        mCurrentPrinter.swap(ptr);
+    }
     return mCurrentPrinter.get();
 }
 
@@ -41,3 +48,4 @@ QString PrinterFactory::defaultPrinterName() const
 {
     return NoPrinter::getAvailablePrinters().first();
 }
+;

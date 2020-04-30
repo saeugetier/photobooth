@@ -1,4 +1,4 @@
-QT += qml quick multimedia concurrent xml svg
+QT += qml quick multimedia concurrent xml svg printsupport
 
 CONFIG += c++17 qml_debug
 
@@ -14,6 +14,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
     src/selphyprinter.cpp \
+    src/standardprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp
 
@@ -54,6 +55,7 @@ HEADERS += \
     src/noprinter.h \
     src/printerfactory.h \
     src/selphyprinter.h \
+    src/standardprinter.h \
     src/system.h \
     src/translationhelper.h
 

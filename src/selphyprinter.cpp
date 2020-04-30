@@ -124,7 +124,7 @@ void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 QStringList SelphyPrinter::getAvailablePrintersInternal()
 {
     QStringList list;
-    list.append("Selphy");
+    list.append("Selphy over Wifi");
     return list;
 }
 

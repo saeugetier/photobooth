@@ -173,6 +173,7 @@ Popup {
 
                     ComboBox {
                         id: comboBoxPrinter
+                        width: 280
                     }
                 }
             }

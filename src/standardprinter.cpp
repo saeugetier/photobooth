@@ -42,7 +42,7 @@ int StandardPrinter::printImage(const QString &filename)
         qDebug() << "Image size: " << size;
         size.scale(rect.size(), Qt::KeepAspectRatio);
         qDebug() << "Scaled Image size: " << size;
-        painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+        painter.setViewport((rect.width() - size.width()), (rect.height() - size.height()), size.width(), size.height());
         painter.drawImage(QRect(QPoint(0,0), size),img);
         painter.end();
     }

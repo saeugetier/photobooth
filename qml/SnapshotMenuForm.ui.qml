@@ -55,7 +55,8 @@ Item {
 
     SnapshotSettings {
         id: snapshotSettings
-        visible: false
+        opacity: 0.0
+        visible: opacity == 0.0 ? false : true
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.right: parent.right
@@ -72,7 +73,7 @@ Item {
 
             PropertyChanges {
                 target: snapshotSettings
-                visible: true
+                opacity: 1.0
             }
 
             PropertyChanges {

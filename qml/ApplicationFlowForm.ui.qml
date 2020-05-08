@@ -10,9 +10,14 @@ Item {
     property alias imagePreview: imagePreview
     property alias collageMenu: collageMenu
 
+    property real slideValueCollageSelection: 0.0
+    property real slideValueSnapshotMenu: 1.0
+    property real slideValuePreviewMenu: 1.0
+    property real slideValueCollageMenu: 1.0
+
     MainMenu {
         id: mainMenu
-        x: 0
+        x: root.width * slideValueCollageSelection
         y: 0
         width: root.width
         height: root.height
@@ -20,7 +25,7 @@ Item {
 
     SnapshotMenu {
         id: snapshotMenu
-        x: root.width
+        x: root.width * slideValueSnapshotMenu
         y: 0
         width: root.width
         height: root.height
@@ -29,7 +34,7 @@ Item {
 
     ImagePreview {
         id: imagePreview
-        x: root.width * 2
+        x: root.width * slideValuePreviewMenu
         y: 0
         width: root.width
         height: root.height
@@ -37,7 +42,7 @@ Item {
 
     CollageMenu {
         id: collageMenu
-        x: root.width * 3
+        x: root.width * slideValueCollageMenu
         y: 0
         width: root.width
         height: root.height
@@ -54,13 +59,13 @@ Item {
             name: "snapshot"
 
             PropertyChanges {
-                target: mainMenu
-                x: -root.width
+                target: root
+                slideValueCollageSelection: -1.0
+                slideValueSnapshotMenu: 0.0
             }
 
             PropertyChanges {
                 target: snapshotMenu
-                x: 0
                 state: "activated"
             }
             PropertyChanges {
@@ -70,44 +75,38 @@ Item {
         },
         State {
             name: "imagePreview"
+
+            PropertyChanges {
+                target: root
+                slideValueCollageSelection: -1.0
+                slideValueSnapshotMenu: -1.0
+                slideValuePreviewMenu: 0.0
+            }
+
             PropertyChanges {
                 target: mainMenu
-                x: -root.width
                 visible: false
-            }
-
-            PropertyChanges {
-                target: snapshotMenu
-                x: -root.width
-            }
-
-            PropertyChanges {
-                target: imagePreview
-                x: 0
             }
         },
         State {
             name: "collageMenu"
 
             PropertyChanges {
+                target: root
+                slideValueCollageSelection: -1.0
+                slideValueSnapshotMenu: -1.0
+                slideValuePreviewMenu: -1.0
+                slideValueCollageMenu: 0.0
+            }
+
+            PropertyChanges {
                 target: mainMenu
-                x: -root.width
                 visible: false
             }
 
             PropertyChanges {
                 target: snapshotMenu
-                x: -root.width
                 visible: false
-            }
-
-            PropertyChanges {
-                target: imagePreview
-                x: -root.width
-            }
-            PropertyChanges {
-                target: collageMenu
-                x: 0
             }
         }
     ]

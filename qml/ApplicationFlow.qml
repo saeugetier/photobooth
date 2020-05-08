@@ -60,28 +60,28 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    Behavior on mainMenu.x {
+    Behavior on slideValueCollageSelection {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on snapshotMenu.x {
+    Behavior on slideValueSnapshotMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on imagePreview.x {
+    Behavior on slideValuePreviewMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on collageMenu.x {
+    Behavior on slideValueCollageMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad

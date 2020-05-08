@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias comboWindowMode: comboWindowMode
     property alias labelTime: labelTime
     property alias comboBoxLanguages: comboBoxLanguages
     property alias buttonShutdown: buttonShutdown
@@ -210,6 +211,26 @@ Popup {
                     ComboBox {
                         id: comboBoxLanguages
                         model: translation.languages
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    Label {
+                        id: labelWindowMode
+                        text: qsTr("Window Mode:")
+                        anchors.verticalCenter: comboWindowMode.verticalCenter
+                    }
+                    ComboBox {
+                        id: comboWindowMode
+                        model: ListModel {
+                            ListElement {
+                                text: qsTr("Window")
+                            }
+                            ListElement {
+                                text: qsTr("Fullscreen")
+                            }
+                        }
                     }
                 }
 

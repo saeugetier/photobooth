@@ -7,11 +7,12 @@ import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
 import Printer 1.0
+import QtQuick.Window 2.2
 
 ApplicationWindow {
     id: mainWindow
     visible: true
-    visibility: "Maximized"
+    visibility: applicationSettings.windowMode
     width: 640
     height: 480
 
@@ -101,6 +102,11 @@ ApplicationWindow {
         {
             applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
         }
+
+        mainMenu.settingsPopup.comboWindowMode.onCurrentIndexChanged:
+        {
+            applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
+        }
     }
 
     Settings
@@ -113,6 +119,7 @@ ApplicationWindow {
         property string language: "en"
         property bool cameraMirrored: true
         property string printerName: printerFactory.defaultPrinterName
+        property int windowMode: Window.Maximized
 
         Component.onCompleted:
         {

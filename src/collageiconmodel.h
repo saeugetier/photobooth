@@ -43,7 +43,7 @@ public:
     void clear();
     Q_INVOKABLE QString getIconName(int index);
     bool showPrintable() const;
-    void setShowPrintable(bool printable);
+    Q_INVOKABLE void setShowPrintable(bool printable);
 signals:
     void rowCountChanged(int count);
     void showPrintableChanged(bool printable);

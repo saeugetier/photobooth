@@ -71,7 +71,19 @@ void CollageIconModel::addIcon(const CollageIcon &icon)
 int CollageIconModel::rowCount(const QModelIndex &parent) const
 {
     (void)(parent);
-    return mIcons.count();
+    if(mShowPrintable)
+    {
+        return mIcons.count();
+    }
+    else
+    {
+        int count = 0;
+        for(auto icon : mIcons)
+        {
+            if(!icon.printable()) count++;
+        }
+        return count;
+    }
 }
 
 QVariant CollageIconModel::data(const QModelIndex &index, int role) const

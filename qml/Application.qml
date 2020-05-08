@@ -119,11 +119,17 @@ ApplicationWindow {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+            flow.mainMenuModel.setShowPrintable(printEnable)
         }
 
         onPrinterNameChanged:
         {
             printer = printerFactory.getPrinter(printerName)
+        }
+
+        onPrintEnableChanged:
+        {
+            flow.mainMenuModel.setShowPrintable(printEnable)
         }
     }
 }

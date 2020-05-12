@@ -35,7 +35,7 @@ bool CollageIcon::parseXml(const QDomNode& node)
     QDomNode iconNode = element.elementsByTagName("icon").item(0);
     mIcon = iconNode.toElement().text();
 
-    if(element.elementsByTagName("printable").length() == 0)
+    if(element.elementsByTagName("printable").length() != 0)
     {
         QDomNode printableNode = element.elementsByTagName("printable").item(0);
         mPrintable = (iconNode.toElement().text() == "true");
@@ -78,7 +78,7 @@ int CollageIconModel::rowCount(const QModelIndex &parent) const
     else
     {
         int count = 0;
-        for(auto icon : mIcons)
+        for(const auto icon : mIcons)
         {
             if(!icon.printable()) count++;
         }
@@ -88,10 +88,31 @@ int CollageIconModel::rowCount(const QModelIndex &parent) const
 
 QVariant CollageIconModel::data(const QModelIndex &index, int role) const
 {
-    if (index.row() < 0 || index.row() >= mIcons.count())
+    if (index.row() < 0 || index.row() >= rowCount(index))
         return QVariant();
 
-    const CollageIcon &icon = mIcons[index.row()];
+    int rowNumber = 0;
+
+    if(!mShowPrintable)
+    {
+        for(int i = index.row(); ; rowNumber++)
+        {
+            if(!mIcons[rowNumber].printable() )
+            {
+                if(i == 0)
+                {
+                    break;
+                }
+                i--;
+            }
+        }
+    }
+    else
+    {
+        rowNumber = index.row();
+    }
+
+    const CollageIcon &icon = mIcons[rowNumber];
     if (role == NameRole)
         return icon.name();
     else if (role == IconRole)

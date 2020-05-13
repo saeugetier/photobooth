@@ -151,6 +151,9 @@ void CollageIconModel::setShowPrintable(bool printable)
 {
     if(printable == mShowPrintable)
         return;
+
+    beginResetModel();
     mShowPrintable = printable;
-    rowCountChanged(rowCount());
+    emit rowCountChanged(rowCount());
+    endResetModel();
 }

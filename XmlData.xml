@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog version="1.0">
     <collage>
-        <name>Signle Image</name>
+        <name>Single Image</name>
+        <printable>false</printable>
         <icon>Single.svg</icon>
         <background>WhiteBackground.png</background>
         <images>

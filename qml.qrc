@@ -72,5 +72,6 @@
         <file>shaders/passthrough.fsh</file>
         <file>shaders/greyscale.fsh</file>
         <file>shaders/vmirror.fsh</file>
+        <file>shaders/posterize.fsh</file>
     </qresource>
 </RCC>

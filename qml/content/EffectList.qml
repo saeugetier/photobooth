@@ -5,6 +5,7 @@ ListModel {
     ListElement { name: "No effect"; effectText: qsTr("No effect"); effectSource: "passthrough.fsh" }
     ListElement { name: "Black & White"; effectText: qsTr("Black & White"); effectSource: "bw.fsh" }
     ListElement { name: "Greyscale"; effectText: qsTr("Greyscale"); effectSource: "greyscale.fsh" }
+    ListElement { name: "Posterize"; effectText: qsTr("Posterize"); effectSource: "posterize.fsh" }
     ListElement { name: "Fish Eye"; effectText: qsTr("Fish Eye"); effectSource: "fisheye.fsh" }
     ListElement { name: "Pop Art"; effectText: qsTr("Pop Art"); effectSource: "warhol.fsh" }
     ListElement { name: "Sepia"; effectText: qsTr("Sepia"); effectSource: "sepia.fsh" }

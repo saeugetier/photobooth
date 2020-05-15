@@ -14,6 +14,7 @@ Item {
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
     property alias previewImage: previewImage
+    property bool effectSelectable: true
 
     Image {
         id: previewImage
@@ -24,7 +25,7 @@ Item {
         property double rightMargin: 100
         property double bottomMargin: 100
         property double leftMargin: 100
-        property double topMargin:  100
+        property double topMargin: 100
         property double aimedRatio: sourceSize.height / sourceSize.width
 
         // SIZING
@@ -113,7 +114,7 @@ Item {
         font.pointSize: 82
         enabled: true
 
-        visible: true
+        visible: effectSelectable
 
         anchors.right: parent.right
         anchors.rightMargin: 40

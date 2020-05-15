@@ -31,6 +31,7 @@ ApplicationFlowForm {
     snapshotMenu.onCaptured:
     {
         state = "imagePreview"
+        imagePreview.effectSelectable = applicationSettings.printEnable
         imagePreview.setPreviewImage(filename)
     }
 
@@ -41,8 +42,15 @@ ApplicationFlowForm {
 
     imagePreview.onAccept:
     {
-        state = "collageMenu"
-        collageMenu.collageImage.imageModel.addImagePath(filename, effect)
+        if(applicationSettings.printEnable)
+        {
+            state = "collageMenu"
+            collageMenu.collageImage.imageModel.addImagePath(filename, effect)
+        }
+        else
+        {
+            state = "collageSelection"
+        }
     }
 
     imagePreview.onAbort:

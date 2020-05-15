@@ -56,6 +56,11 @@ SettingsPopupForm {
         system.restart()
     }
 
+    buttonCloseProgram.onClicked:
+    {
+        Qt.quit()
+    }
+
     Timer
     {
         interval: 1000

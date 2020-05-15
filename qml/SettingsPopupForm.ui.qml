@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias buttonCloseProgram: buttonCloseProgram
     property alias comboWindowMode: comboWindowMode
     property alias labelTime: labelTime
     property alias comboBoxLanguages: comboBoxLanguages
@@ -249,6 +250,10 @@ Popup {
                     Button {
                         id: buttonRestart
                         text: qsTr("Restart")
+                    }
+                    Button {
+                        id: buttonCloseProgram
+                        text: qsTr("Exit Photobooth")
                     }
                 }
             }

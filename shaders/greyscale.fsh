@@ -8,5 +8,5 @@ void main(void)
     vec3 col = texture2D(source, uv).rgb;
     float grey = dot(col, vec3(0.299, 0.587, 0.114));
     gl_FragColor.a = qt_Opacity * 1.0;
-    gl_FragColor.rgb = qt_Opacity * grey;
+    gl_FragColor.rgb = qt_Opacity * vec3(grey,grey,grey);
 }

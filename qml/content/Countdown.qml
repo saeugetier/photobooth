@@ -14,7 +14,7 @@ Item {
     {
         anchors.centerIn: parent
         text: innerTimer.running ? countDown.seconds : qsTr("Smile")
-        font.pointSize: 100
+        font.pixelSize: 100
         font.family: "DejaVu Serif"
         color: "white"
     }

@@ -111,9 +111,9 @@ Item {
 
     ToolButton {
         id: effectButton
-        text: "\uF0D0" // icon-print
+        text: "\uF0D0" // icon-effect
         font.family: "fontello"
-        font.pointSize: 75
+        font.pixelSize: 64
         enabled: true
 
         visible: effectSelectable

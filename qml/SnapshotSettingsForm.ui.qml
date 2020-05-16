@@ -22,7 +22,7 @@ Pane {
             id: rowFlash
             Label {
                 id: labelFlash
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("Flash")
                 font.family: "DejaVu Serif"
             }
@@ -36,7 +36,7 @@ Pane {
             Switch {
                 id: switchFlashEnable
                 text: checked ? qsTr("enabled") : qsTr("disabled")
-                font.pointSize: 32
+                font.pixelSize: 32
                 font.family: "DejaVu Serif"
                 width: 250
             }
@@ -57,7 +57,7 @@ Pane {
 
             Label {
                 id: labelFlashBrightness
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("Brightness")
                 anchors.verticalCenter: sliderFlashBrightness.verticalCenter
                 font.family: "DejaVu Serif"
@@ -74,7 +74,7 @@ Pane {
             id: rowViewfinder
             Label {
                 id: labelViewfinder
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("Preview Light")
                 font.family: "DejaVu Serif"
             }
@@ -95,7 +95,7 @@ Pane {
 
             Label {
                 id: labelViewfinderBrightness
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("Brightness")
                 anchors.verticalCenter: sliderViewfinderBrightness.verticalCenter
                 font.family: "DejaVu Serif"
@@ -112,7 +112,7 @@ Pane {
             id: countdown
             Label {
                 id: labelCountdown
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("Countdown")
                 font.family: "DejaVu Serif"
             }
@@ -134,7 +134,7 @@ Pane {
 
             Label {
                 id: labelCountdownTime
-                font.pointSize: 32
+                font.pixelSize: 32
                 text: qsTr("seconds")
                 anchors.verticalCenter: spinBoxCountdownTime.verticalCenter
                 font.family: "DejaVu Serif"

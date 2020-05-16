@@ -81,7 +81,7 @@ Item {
             id: printButton
             text: "\uE802" // icon-print
             font.family: "fontello"
-            font.pointSize: 82
+            font.pixelSize: 64
             enabled: true
 
             scale: hovered ? 1.1 : 1

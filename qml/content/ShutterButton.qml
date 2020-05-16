@@ -64,19 +64,12 @@ Item {
             }
     }
 
-    FontLoader
-    {
-        id: fontello
-        name: "fontello"
-        source: "qrc:/font/fontello/fontello.ttf"
-    }
-
     ToolButton {
         id: shutterButton
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         text: "\uE801"
-        font.family: fontello.name
+        font.family: "fontello"
         font.pixelSize: parent.width / 2
         enabled: true
 

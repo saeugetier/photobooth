@@ -139,20 +139,14 @@ Item {
         source: collageSelector
     }
 
-    FontLoader {
-        id: fontello
-        name: "fontello"
-        source: "qrc:/font/fontello/fontello.ttf"
-    }
-
     ToolButton {
         id: settingsButton
         anchors.right: parent.right
         anchors.top: parent.top
         text: "\uE80F"
         visible: true
-        font.family: fontello.name
-        font.pointSize: 75
+        font.family: "fontello"
+        font.pixelSize: 42
 
         opacity: 0.8
 
@@ -235,7 +229,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:15;anchors_x:139;anchors_y:394}D{i:14;anchors_x:139;anchors_y:394}
+    D{i:0;height:480;width:640}D{i:14;anchors_x:139;anchors_y:394}D{i:13;anchors_x:139;anchors_y:394}
 D{i:7;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
 }
 ##^##*/

@@ -25,9 +25,9 @@ Item {
             source: image
             fragmentShaderFilename: effectName
         }
-        onStateChanged:
+        onStatusChanged:
         {
-            if(state === Image.Loading)
+            if(status === Image.Loading)
             {
                 fileLoadIndicator.running = true;
             }

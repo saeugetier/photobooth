@@ -21,14 +21,16 @@ Item {
 
         asynchronous: true
 
-        mipmap: true
+        sourceSize.height: 2048
+        sourceSize.width: 2048
 
         // INPUTS
+        property size imageSize: Qt.size(400, 300)
         property double rightMargin: 100
         property double bottomMargin: 100
         property double leftMargin: 100
         property double topMargin: 100
-        property double aimedRatio: sourceSize.height / sourceSize.width
+        property double aimedRatio: imageSize.height / imageSize.width
 
         // SIZING
         property double availableWidth: parent.width - rightMargin - leftMargin

@@ -12,6 +12,7 @@ ImagePreviewForm {
 
     function setPreviewImage(filename)
     {
+        previewImage.imageSize = filesystem.getImageSize(filename)
         previewImage.source = filename
     }
 

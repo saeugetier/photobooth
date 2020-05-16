@@ -18,7 +18,7 @@ ApplicationWindow {
 
     property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
-    FontLoader
+/*  FontLoader
     {
         name: "fontello"
         source: "qrc:/font/fontello/fontello.ttf"
@@ -28,7 +28,7 @@ ApplicationWindow {
     {
         name: "DejaVu Serif"
         source: "qrc:/font/DejaVuSerif/DejaVuSerif.ttf"
-    }
+    }*/
 
     title: qsTr("QML Photo Booth")
 

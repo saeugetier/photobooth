@@ -19,6 +19,15 @@
         </images>
     </collage>
     <collage>
+        <name>Single Image with Effect Preset not selectable</name>
+        <printable>false</printable>
+        <icon>Single.svg</icon>
+        <background>WhiteBackground.png</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/><effectPreset>sepia.fsh</effectPreset><effectSelectable>false</effectSelectable></image>
+        </images>
+    </collage>
+    <collage>
         <name>Two Images</name>
         <icon>Double.svg</icon>
         <background>WhiteBackground.png</background>

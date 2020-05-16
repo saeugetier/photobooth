@@ -33,7 +33,7 @@ ApplicationFlowForm {
         state = "imagePreview"
         imagePreview.effectSelectable = applicationSettings.printEnable && collageMenu.collageImage.imageModel.nextImageIsEffectSelectable()
 
-        if(!applicationSettings.printEnable)
+        if(applicationSettings.printEnable)
         {
             imagePreview.effectPreset = collageMenu.collageImage.imageModel.nextImageEffectPreset()
         }

@@ -19,6 +19,8 @@ Item {
     Image {
         id: previewImage
 
+        asynchronous: true
+
         mipmap: true
 
         // INPUTS

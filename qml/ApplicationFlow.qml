@@ -31,7 +31,17 @@ ApplicationFlowForm {
     snapshotMenu.onCaptured:
     {
         state = "imagePreview"
-        imagePreview.effectSelectable = applicationSettings.printEnable
+        imagePreview.effectSelectable = applicationSettings.printEnable && collageMenu.collageImage.imageModel.nextImageIsEffectSelectable()
+
+        if(!applicationSettings.printEnable)
+        {
+            imagePreview.effectPreset = collageMenu.collageImage.imageModel.nextImageEffectPreset()
+        }
+        else
+        {
+            imagePreview.effectPreset = ""
+        }
+
         imagePreview.setPreviewImage(filename)
     }
 

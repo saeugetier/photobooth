@@ -128,7 +128,14 @@ bool CollageImageModel::addImagePath(QUrl source, QString effect)
                 break;
         }
         mImages[i]->setImage(source);
-        mImages[i]->setEffect(effect);
+        if(!mImages[i]->effectSelectable() || effect == "")
+        {
+            mImages[i]->setEffect(mImages[i]->effectPreset());
+        }
+        else
+        {
+            mImages[i]->setEffect(effect);
+        }
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
         if(collageFull())
@@ -389,6 +396,30 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    QDomNodeList effectPreset = element.elementsByTagName("effectPreset");
+    if(effectPreset.count() == 1)
+    {
+        mEffectPreset = effectPreset.item(0).toElement().text();
+    }
+    else if(effectPreset.count() > 1)
+    {
+        mErrorMsg = "multiple effect presets are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
+    QDomNodeList effectSelectable = element.elementsByTagName("effectSelectable");
+    if(effectSelectable.count() == 1)
+    {
+        mEffectSelectable = effectSelectable.item(0).toElement().text() == "true" ? true : false;
+    }
+    else if(effectSelectable.count() > 1)
+    {
+        mErrorMsg = "multiple effect selectable nodes are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
     if(validateBoundary() == false)
     {
         mErrorMsg = "Validation of size constrains failed.";
@@ -443,6 +474,16 @@ void CollageImage::setEffect(QString effect)
 QRect CollageImage::borderRect() const
 {
     return mBorderRect;
+}
+
+bool CollageImage::effectSelectable() const
+{
+    return mEffectSelectable;
+}
+
+QString CollageImage::effectPreset() const
+{
+    return mEffectPreset;
 }
 
 bool CollageImage::validateBoundary()

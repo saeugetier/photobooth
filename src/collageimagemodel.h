@@ -17,6 +17,8 @@ class CollageImage : public QObject, public ModelParser
     Q_PROPERTY(float rotation READ rotation CONSTANT)
     Q_PROPERTY(QUrl borderImage READ borderImage CONSTANT)
     Q_PROPERTY(QRect borderRect READ borderRect CONSTANT)
+    Q_PROPERTY(bool effectSelectable READ effectSelectable CONSTANT)
+    Q_PROPERTY(QString effectPreset READ effectPreset CONSTANT)
     Q_PROPERTY(QString effect READ effect NOTIFY effectChanged)
 public:
     CollageImage(QObject* parent = nullptr);
@@ -26,6 +28,8 @@ public:
     float rotation() const;
     QUrl borderImage() const;
     QRect borderRect() const;
+    bool effectSelectable() const;
+    QString effectPreset() const;
     QString effect() const;
 
     void setImage(QUrl imagePath);
@@ -37,10 +41,12 @@ protected:
     bool validateBoundary();
     QUrl mImagePath;
     QRectF mImageRect;
-    float mAngle;
+    float mAngle = 0.0f;
     QUrl mBorderImage;
     QRect mBorderRect;
-    QString mEffect;
+    bool mEffectSelectable = true;
+    QString mEffectPreset = "";
+    QString mEffect = "";
 };
 
 class CollageImageModel : public QAbstractListModel, public ModelParser

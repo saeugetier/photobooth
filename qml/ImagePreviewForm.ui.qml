@@ -113,7 +113,7 @@ Item {
         id: effectButton
         text: "\uF0D0" // icon-print
         font.family: "fontello"
-        font.pointSize: 82
+        font.pointSize: 75
         enabled: true
 
         visible: effectSelectable

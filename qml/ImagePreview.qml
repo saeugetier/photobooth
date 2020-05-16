@@ -8,6 +8,7 @@ ImagePreviewForm {
     signal accept(string filename, string effect)
 
     property var shaderName: ""
+    property string effectPreset: ""
 
     function setPreviewImage(filename)
     {
@@ -43,7 +44,7 @@ ImagePreviewForm {
         else
         {
             fileLoadIndicator.running = false;
-            shaderName = ""
+            shaderName = effectPreset
         }
     }
 

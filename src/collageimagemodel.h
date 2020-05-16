@@ -77,6 +77,8 @@ public:
     Q_INVOKABLE void clearImagePathes();
     Q_INVOKABLE bool clearImagePath(int index);
     Q_INVOKABLE bool collageFull();
+    Q_INVOKABLE bool nextImageIsEffectSelectable();
+    Q_INVOKABLE QString nextImageEffectPreset();
     int countImagePathSet() const;
 signals:
     void backgroundImageChanged(const QUrl &image);

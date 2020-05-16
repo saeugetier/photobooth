@@ -214,6 +214,36 @@ bool CollageImageModel::collageFull()
         return false;
 }
 
+bool CollageImageModel::nextImageIsEffectSelectable()
+{
+    if(!collageFull())
+    {
+        int i = 0;
+        for(;i < rowCount(); i++)
+        {
+            if(mImages[i]->imagePath() == QUrl(""))
+                break;
+        }
+        return mImages[i]->effectSelectable();
+    }
+    return false;
+}
+
+QString CollageImageModel::nextImageEffectPreset()
+{
+    if(!collageFull())
+    {
+        int i = 0;
+        for(;i < rowCount(); i++)
+        {
+            if(mImages[i]->imagePath() == QUrl(""))
+                break;
+        }
+        return mImages[i]->effectPreset();
+    }
+    return "";
+}
+
 int CollageImageModel::countImagePathSet() const
 {
     int currentCount = 0;

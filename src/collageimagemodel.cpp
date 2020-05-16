@@ -96,6 +96,8 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
         return image->borderImage();
     else if(role == BorderRectRole)
         return image->borderRect();
+    else if(role == EffectSelectableRole)
+        return image->effectSelectable();
     else if(role == EffectRole)
         return image->effect();
     return QVariant();
@@ -109,6 +111,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
+    roles[EffectSelectableRole] = "effectSelectable";
     roles[EffectRole] = "effect";
     return roles;
 }

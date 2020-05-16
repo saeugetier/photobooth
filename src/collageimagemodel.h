@@ -62,6 +62,7 @@ public:
         RotationRole,
         BorderImageRole,
         BorderRectRole,
+        EffectSelectableRole,
         EffectRole
     };
 

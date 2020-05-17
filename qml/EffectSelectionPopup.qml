@@ -145,7 +145,7 @@ EffectSelectionPopupForm {
                 id: label
                 text: effectText
                 visible: true
-                anchors.topMargin: -5
+                anchors.topMargin: -7
                 anchors.top: image.bottom
                 anchors.horizontalCenter: image.horizontalCenter
                 color: "#443224"

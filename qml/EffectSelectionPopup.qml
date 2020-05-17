@@ -24,6 +24,21 @@ EffectSelectionPopupForm {
         close()
     }
 
+    onOpened:
+    {
+        effectGridScrollBar.position = 0
+    }
+
+    upButton.onClicked:
+    {
+        effectGridScrollBar.decrease()
+    }
+
+    downButton.onClicked:
+    {
+        effectGridScrollBar.increase()
+    }
+
     Component
     {
         id: effectDelegate

@@ -9,7 +9,6 @@ Item {
     width: 640
     height: 480
     property alias effectButton: effectButton
-    property alias effectSelector: effectSelector
     property alias deleteButton: deleteButton
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
@@ -69,7 +68,7 @@ Item {
         anchors.verticalCenterOffset: 10
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
-        source: "../../images/polaroid.svg.png"
+        source: "qrc:/images/polaroid.svg.png"
     }
 
     BusyIndicator {
@@ -99,18 +98,6 @@ Item {
         forward: false
     }
 
-    EffectSelector {
-        id: effectSelector
-
-        visible: false
-
-        anchors.right: element.right
-        anchors.top: element.top
-        anchors.bottom: element.bottom
-
-        previewImage: previewImage.source
-    }
-
     ToolButton {
         id: effectButton
         text: "\uF0D0" // icon-effect
@@ -134,35 +121,6 @@ Item {
             spread: 0.3
         }
     }
-
-    states: [
-        State {
-            name: "idle"
-        },
-        State {
-            name: "effectSelection"
-
-            PropertyChanges {
-                target: effectSelector
-                visible: true
-            }
-
-            PropertyChanges {
-                target: effectButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: saveButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: deleteButton
-                visible: false
-            }
-        }
-    ]
 }
 
 /*##^##

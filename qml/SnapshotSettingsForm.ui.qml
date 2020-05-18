@@ -124,7 +124,7 @@ Pane {
                 Slider {
                     id: sliderFlashBrightness
                     value: 0.5
-                    width: 200
+                    width: 250
                 }
 
                 Label {
@@ -176,7 +176,7 @@ Pane {
                 Slider {
                     id: sliderViewfinderBrightness
                     value: 0.5
-                    width: 200
+                    width: 250
                 }
 
                 Label {
@@ -221,6 +221,7 @@ Pane {
                     id: spinBoxCountdownTime
                     to: 15
                     from: 3
+                    Layout.fillWidth: true
                     width: 200
                     font.pixelSize: 32
                     font.family: "DejaVu Serif"

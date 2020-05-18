@@ -34,7 +34,7 @@ Item {
                radius: Math.max(width, height) / 2
                color: "transparent"
                border.color: "gray"
-               border.width: 16
+               border.width: 25
             }
 
         contentItem:
@@ -47,7 +47,7 @@ Item {
                radius: outerRing.radius
                color: "transparent"
                border.color: "darkgray"
-               border.width: 8
+               border.width: 16
 
                ConicalGradient
                {

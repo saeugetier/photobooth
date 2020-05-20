@@ -16,6 +16,16 @@
         <source>Print</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="qml/CollageMenuForm.ui.qml" line="107"/>
+        <source>Next Photo</source>
+        <translation>Nächstes Foto</translation>
+    </message>
+    <message>
+        <location filename="qml/CollageMenuForm.ui.qml" line="118"/>
+        <source>Exit</source>
+        <translation>Zurück</translation>
+    </message>
 </context>
 <context>
     <name>Countdown</name>

@@ -292,6 +292,11 @@
         <source>Please Try Again</source>
         <translation>Bitte noch einmal probieren</translation>
     </message>
+    <message>
+        <location filename="qml/SnapshotMenuForm.ui.qml" line="46"/>
+        <source>Abort</source>
+        <translation>Beenden</translation>
+    </message>
 </context>
 <context>
     <name>SnapshotSettingsForm.ui</name>

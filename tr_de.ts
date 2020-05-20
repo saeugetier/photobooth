@@ -14,7 +14,7 @@
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="73"/>
         <source>Print</source>
-        <translation></translation>
+        <translation>Drucken</translation>
     </message>
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="107"/>
@@ -108,7 +108,7 @@
     <message>
         <location filename="qml/MainMenuForm.ui.qml" line="177"/>
         <source>Back</source>
-        <translation></translation>
+        <translation>Zurück</translation>
     </message>
 </context>
 <context>

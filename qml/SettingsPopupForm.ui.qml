@@ -113,6 +113,9 @@ Popup {
             id: elementCamera
             Column {
                 spacing: 5
+
+
+                /*
                 Row {
                     spacing: 5
                     Label {
@@ -123,8 +126,7 @@ Popup {
                     ComboBox {
                         id: comboBoxCamera
                     }
-                }
-
+                }*/
                 Row {
                     id: rowMirrorCamera
                     spacing: 5

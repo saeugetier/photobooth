@@ -100,7 +100,10 @@ ApplicationWindow {
 
         mainMenu.settingsPopup.comboBoxPrinter.onCurrentTextChanged:
         {
-            applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+            if(flow.mainMenu.settingsPopup.opened)
+            {
+                applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+            }
         }
 
         mainMenu.settingsPopup.comboWindowMode.onCurrentIndexChanged:
@@ -118,7 +121,7 @@ ApplicationWindow {
         property string password: "0815"
         property string language: "en"
         property bool cameraMirrored: true
-        property string printerName: printerFactory.defaultPrinterName
+        property string printerName: "No Printer"
         property int windowMode: Window.Maximized
 
         Component.onCompleted:

@@ -24,6 +24,10 @@ SettingsPopupForm {
         {
             buttonCopyPhotos.enabled = false
         }
+
+        var index = comboBoxPrinter.find(applicationSettings.printerName)
+        comboBoxPrinter.currentIndex = index
+        console.log("index: " + Number(index).toString())
     }
 
     buttonClose.onClicked:

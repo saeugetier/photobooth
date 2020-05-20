@@ -31,6 +31,17 @@ ApplicationFlowForm {
     snapshotMenu.onCaptured:
     {
         state = "imagePreview"
+        imagePreview.effectSelectable = applicationSettings.printEnable && collageMenu.collageImage.imageModel.nextImageIsEffectSelectable()
+
+        if(applicationSettings.printEnable)
+        {
+            imagePreview.effectPreset = collageMenu.collageImage.imageModel.nextImageEffectPreset()
+        }
+        else
+        {
+            imagePreview.effectPreset = ""
+        }
+
         imagePreview.setPreviewImage(filename)
     }
 
@@ -41,8 +52,15 @@ ApplicationFlowForm {
 
     imagePreview.onAccept:
     {
-        state = "collageMenu"
-        collageMenu.collageImage.imageModel.addImagePath(filename, effect)
+        if(applicationSettings.printEnable)
+        {
+            state = "collageMenu"
+            collageMenu.collageImage.imageModel.addImagePath(filename, effect)
+        }
+        else
+        {
+            state = "collageSelection"
+        }
     }
 
     imagePreview.onAbort:
@@ -60,28 +78,28 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    Behavior on mainMenu.x {
+    Behavior on slideValueCollageSelection {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on snapshotMenu.x {
+    Behavior on slideValueSnapshotMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on imagePreview.x {
+    Behavior on slideValuePreviewMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad
         }
     }
 
-    Behavior on collageMenu.x {
+    Behavior on slideValueCollageMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad

@@ -96,6 +96,8 @@ QVariant CollageImageModel::data(const QModelIndex &index, int role) const
         return image->borderImage();
     else if(role == BorderRectRole)
         return image->borderRect();
+    else if(role == EffectSelectableRole)
+        return image->effectSelectable();
     else if(role == EffectRole)
         return image->effect();
     return QVariant();
@@ -109,6 +111,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
+    roles[EffectSelectableRole] = "effectSelectable";
     roles[EffectRole] = "effect";
     return roles;
 }
@@ -128,7 +131,14 @@ bool CollageImageModel::addImagePath(QUrl source, QString effect)
                 break;
         }
         mImages[i]->setImage(source);
-        mImages[i]->setEffect(effect);
+        if(!mImages[i]->effectSelectable() || effect == "")
+        {
+            mImages[i]->setEffect(mImages[i]->effectPreset());
+        }
+        else
+        {
+            mImages[i]->setEffect(effect);
+        }
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
         if(collageFull())
@@ -202,6 +212,36 @@ bool CollageImageModel::collageFull()
         return true;
     else
         return false;
+}
+
+bool CollageImageModel::nextImageIsEffectSelectable()
+{
+    if(!collageFull())
+    {
+        int i = 0;
+        for(;i < rowCount(); i++)
+        {
+            if(mImages[i]->imagePath() == QUrl(""))
+                break;
+        }
+        return mImages[i]->effectSelectable();
+    }
+    return false;
+}
+
+QString CollageImageModel::nextImageEffectPreset()
+{
+    if(!collageFull())
+    {
+        int i = 0;
+        for(;i < rowCount(); i++)
+        {
+            if(mImages[i]->imagePath() == QUrl(""))
+                break;
+        }
+        return mImages[i]->effectPreset();
+    }
+    return "";
 }
 
 int CollageImageModel::countImagePathSet() const
@@ -389,6 +429,30 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    QDomNodeList effectPreset = element.elementsByTagName("effectPreset");
+    if(effectPreset.count() == 1)
+    {
+        mEffectPreset = effectPreset.item(0).toElement().text();
+    }
+    else if(effectPreset.count() > 1)
+    {
+        mErrorMsg = "multiple effect presets are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
+    QDomNodeList effectSelectable = element.elementsByTagName("effectSelectable");
+    if(effectSelectable.count() == 1)
+    {
+        mEffectSelectable = effectSelectable.item(0).toElement().text() == "true" ? true : false;
+    }
+    else if(effectSelectable.count() > 1)
+    {
+        mErrorMsg = "multiple effect selectable nodes are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
     if(validateBoundary() == false)
     {
         mErrorMsg = "Validation of size constrains failed.";
@@ -443,6 +507,16 @@ void CollageImage::setEffect(QString effect)
 QRect CollageImage::borderRect() const
 {
     return mBorderRect;
+}
+
+bool CollageImage::effectSelectable() const
+{
+    return mEffectSelectable;
+}
+
+QString CollageImage::effectPreset() const
+{
+    return mEffectPreset;
 }
 
 bool CollageImage::validateBoundary()

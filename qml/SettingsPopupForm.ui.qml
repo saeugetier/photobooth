@@ -6,6 +6,8 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias buttonCloseProgram: buttonCloseProgram
+    property alias comboWindowMode: comboWindowMode
     property alias labelTime: labelTime
     property alias comboBoxLanguages: comboBoxLanguages
     property alias buttonShutdown: buttonShutdown
@@ -111,6 +113,9 @@ Popup {
             id: elementCamera
             Column {
                 spacing: 5
+
+
+                /*
                 Row {
                     spacing: 5
                     Label {
@@ -121,8 +126,7 @@ Popup {
                     ComboBox {
                         id: comboBoxCamera
                     }
-                }
-
+                }*/
                 Row {
                     id: rowMirrorCamera
                     spacing: 5
@@ -173,6 +177,7 @@ Popup {
 
                     ComboBox {
                         id: comboBoxPrinter
+                        width: 280
                     }
                 }
             }
@@ -212,6 +217,26 @@ Popup {
                     }
                 }
 
+                Row {
+                    spacing: 5
+                    Label {
+                        id: labelWindowMode
+                        text: qsTr("Window Mode:")
+                        anchors.verticalCenter: comboWindowMode.verticalCenter
+                    }
+                    ComboBox {
+                        id: comboWindowMode
+                        model: ListModel {
+                            ListElement {
+                                text: qsTr("Window")
+                            }
+                            ListElement {
+                                text: qsTr("Fullscreen")
+                            }
+                        }
+                    }
+                }
+
                 Button {
                     id: buttonCopyTemplates
                     text: qsTr("Copy layout templates from removable disk")
@@ -227,6 +252,10 @@ Popup {
                     Button {
                         id: buttonRestart
                         text: qsTr("Restart")
+                    }
+                    Button {
+                        id: buttonCloseProgram
+                        text: qsTr("Exit Photobooth")
                     }
                 }
             }

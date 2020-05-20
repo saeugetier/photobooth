@@ -25,6 +25,23 @@ Item {
             source: image
             fragmentShaderFilename: effectName
         }
+        onStatusChanged:
+        {
+            if(status === Image.Loading)
+            {
+                fileLoadIndicator.running = true;
+            }
+            else
+            {
+                fileLoadIndicator.running = false;
+            }
+        }
+    }
+
+    BusyIndicator {
+        id: fileLoadIndicator
+        anchors.centerIn: parent
+        running: false
     }
 
     Rectangle

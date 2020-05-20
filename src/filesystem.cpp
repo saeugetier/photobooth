@@ -1,4 +1,5 @@
 #include "filesystem.h"
+#include <QImageReader>
 
 FileSystem::FileSystem(QObject *parent) : QObject(parent)
 {
@@ -269,4 +270,14 @@ void FileSystem::copyLayoutFiles()
     {
         QFile::copy(path + "/layout/" + file, destiny + "/" + file);
     }
+}
+
+QSize FileSystem::getImageSize(QString filename)
+{
+    if(filename.contains("file:"))
+    {
+        filename = filename.right(filename.length() - QString("file:").length());
+    }
+    QImageReader reader(filename);
+    return reader.size();
 }

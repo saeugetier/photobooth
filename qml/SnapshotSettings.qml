@@ -17,6 +17,18 @@ SnapshotSettingsForm {
         property int countdown: 1
     }
 
+    showButton.onClicked:
+    {
+        if(state !== "expanded")
+        {
+            state = "expanded"
+        }
+        else
+        {
+            state = "idle"
+        }
+    }
+
     sliderFlashBrightness.value: settings.flashBrightness
     sliderFlashBrightness.onValueChanged:
     {

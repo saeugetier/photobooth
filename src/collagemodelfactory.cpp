@@ -9,6 +9,11 @@ CollageModelFactory::CollageModelFactory(QObject *parent) : QObject(parent), mSt
 
 }
 
+CollageModelFactory::~CollageModelFactory()
+{
+    clearModels();
+}
+
 CollageModelFactory::Status CollageModelFactory::status() const
 {
     return mStatus;

@@ -9,23 +9,27 @@ Item {
     width: 640
     height: 480
     property alias effectButton: effectButton
-    property alias effectSelector: effectSelector
     property alias deleteButton: deleteButton
     property alias saveButton: saveButton
     property alias fileLoadIndicator: fileLoadIndicator
     property alias previewImage: previewImage
+    property bool effectSelectable: true
 
     Image {
         id: previewImage
 
-        mipmap: true
+        asynchronous: true
+
+        sourceSize.height: 2048
+        sourceSize.width: 2048
 
         // INPUTS
+        property size imageSize: Qt.size(400, 300)
         property double rightMargin: 100
         property double bottomMargin: 100
         property double leftMargin: 100
-        property double topMargin:  100
-        property double aimedRatio: sourceSize.height / sourceSize.width
+        property double topMargin: 100
+        property double aimedRatio: imageSize.height / imageSize.width
 
         // SIZING
         property double availableWidth: parent.width - rightMargin - leftMargin
@@ -64,7 +68,7 @@ Item {
         anchors.verticalCenterOffset: 10
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
-        source: "../../images/polaroid.svg.png"
+        source: "qrc:/images/polaroid.svg.png"
     }
 
     BusyIndicator {
@@ -77,7 +81,7 @@ Item {
         id: saveButton
         x: 122
         y: 453
-        text: "Accept"
+        text: qsTr("Accept")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 40
         anchors.right: parent.right
@@ -86,7 +90,7 @@ Item {
 
     NavigationButton {
         id: deleteButton
-        text: "Retry"
+        text: qsTr("Retry")
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top
@@ -94,27 +98,21 @@ Item {
         forward: false
     }
 
-    EffectSelector {
-        id: effectSelector
+    ToolButton {
+        id: effectButton
+        text: "\uF0D0" // icon-effect
+        font.family: "fontello"
+        font.pixelSize: 64
+        enabled: true
 
-        visible: false
+        visible: effectSelectable
 
-        anchors.right: element.right
-        anchors.top: element.top
-        anchors.bottom: element.bottom
-
-        previewImage: previewImage.source
-    }
-
-    Row {
-        id: effectButtonRow
-        visible: true
         anchors.right: parent.right
         anchors.rightMargin: 40
         anchors.top: parent.top
         anchors.topMargin: 40
 
-        spacing: 10
+        scale: hovered ? 1.1 : 1
 
         layer.enabled: true
         layer.effect: Glow {
@@ -122,63 +120,7 @@ Item {
             samples: 20
             spread: 0.3
         }
-
-        Text {
-            id: textLabelEffectButton
-            color: "#ffffff"
-            text: qsTr("Effect")
-            font.family: "DejaVu Serif"
-            wrapMode: Text.WrapAnywhere
-            font.pixelSize: 64
-            font.capitalization: Font.AllUppercase
-        }
-
-        ToolButton {
-            id: effectButton
-            text: "\uF0D0" // icon-print
-            font.family: "fontello"
-            font.pointSize: 82
-            enabled: true
-
-            scale: hovered ? 1.1 : 1
-
-            layer.enabled: true
-            layer.effect: Glow {
-                color: "black"
-                samples: 20
-                spread: 0.3
-            }
-        }
     }
-
-    states: [
-        State {
-            name: "idle"
-        },
-        State {
-            name: "effectSelection"
-
-            PropertyChanges {
-                target: effectSelector
-                visible: true
-            }
-
-            PropertyChanges {
-                target: effectButtonRow
-                visible: false
-            }
-
-            PropertyChanges {
-                target: saveButton
-                visible: false
-            }
-
-            PropertyChanges {
-                target: deleteButton
-                visible: false
-            }
-        }
-    ]
 }
 
 /*##^##

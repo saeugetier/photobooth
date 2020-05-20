@@ -24,6 +24,10 @@ SettingsPopupForm {
         {
             buttonCopyPhotos.enabled = false
         }
+
+        var index = comboBoxPrinter.find(applicationSettings.printerName)
+        comboBoxPrinter.currentIndex = index
+        console.log("index: " + Number(index).toString())
     }
 
     buttonClose.onClicked:
@@ -54,6 +58,11 @@ SettingsPopupForm {
     buttonRestart.onClicked:
     {
         system.restart()
+    }
+
+    buttonCloseProgram.onClicked:
+    {
+        Qt.quit()
     }
 
     Timer

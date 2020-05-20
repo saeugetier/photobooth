@@ -18,7 +18,7 @@ Popup {
         height: 65
         text: qsTr("OK")
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pointSize: 32
+        font.pixelSize: 32
     }
 
     Text {

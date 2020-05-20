@@ -269,6 +269,54 @@
       "css": "pencil",
       "code": 59429,
       "src": "fontawesome"
+    },
+    {
+      "uid": "9248ce8062fb4707a6919bfe9ac1af8e",
+      "css": "popup",
+      "code": 59430,
+      "src": "entypo"
+    },
+    {
+      "uid": "cb8b402e2efdc57d6d37ad7d3da819fe",
+      "css": "stopwatch",
+      "code": 59431,
+      "src": "typicons"
+    },
+    {
+      "uid": "53c977df16b09e3f7700a27ec90c43dc",
+      "css": "stopwatch-1",
+      "code": 59432,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "8933c2579166c2ee56ae40dc6a0b4dc6",
+      "css": "angle-circled-left",
+      "code": 61751,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "94089b37297572e936b0943bcfa041d3",
+      "css": "angle-circled-right",
+      "code": 61752,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "8cbd5bcfb00043b8094fd7ac21ae5e06",
+      "css": "angle-circled-up",
+      "code": 61753,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "c35e0796f6f806945a44b1655ce7bbe7",
+      "css": "angle-circled-down",
+      "code": 61754,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "2cfb3f2b46b34a1790aec0aa846297b6",
+      "css": "menu",
+      "code": 59433,
+      "src": "entypo"
     }
   ]
 }

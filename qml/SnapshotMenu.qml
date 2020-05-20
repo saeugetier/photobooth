@@ -93,6 +93,13 @@ SnapshotMenuForm {
         PropertyAnimation { target: failureText; property: "visible"; to: false}
     }
 
+    Behavior on snapshotSettings.opacity {
+        PropertyAnimation {
+            duration: flow.animationDuration
+            easing.type: Easing.InOutQuad
+        }
+    }
+
     exitButton.onClicked:
     {
         abort()

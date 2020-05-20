@@ -7,27 +7,28 @@ import Qt.labs.settings 1.0
 import Qt.labs.platform 1.0
 import CollageModel 1.0
 import Printer 1.0
+import QtQuick.Window 2.2
 
 ApplicationWindow {
     id: mainWindow
     visible: true
-    visibility: "Maximized"
+    visibility: applicationSettings.windowMode
     width: 640
     height: 480
 
     property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
-    FontLoader
+/*  FontLoader
     {
         name: "fontello"
-        source: "../font/fontello/fontello.ttf"
+        source: "qrc:/font/fontello/fontello.ttf"
     }
 
     FontLoader
     {
         name: "DejaVu Serif"
-        source: "../font/DejaVuSerif/DejaVuSerif.ttf"
-    }
+        source: "qrc:/font/DejaVuSerif/DejaVuSerif.ttf"
+    }*/
 
     title: qsTr("QML Photo Booth")
 
@@ -99,7 +100,15 @@ ApplicationWindow {
 
         mainMenu.settingsPopup.comboBoxPrinter.onCurrentTextChanged:
         {
-            applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+            if(flow.mainMenu.settingsPopup.opened)
+            {
+                applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+            }
+        }
+
+        mainMenu.settingsPopup.comboWindowMode.onCurrentIndexChanged:
+        {
+            applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
         }
     }
 
@@ -112,18 +121,25 @@ ApplicationWindow {
         property string password: "0815"
         property string language: "en"
         property bool cameraMirrored: true
-        property string printerName: printerFactory.defaultPrinterName
+        property string printerName: "No Printer"
+        property int windowMode: Window.Maximized
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+            flow.mainMenuModel.setShowPrintable(printEnable)
         }
 
         onPrinterNameChanged:
         {
             printer = printerFactory.getPrinter(printerName)
+        }
+
+        onPrintEnableChanged:
+        {
+            flow.mainMenuModel.setShowPrintable(printEnable)
         }
     }
 }

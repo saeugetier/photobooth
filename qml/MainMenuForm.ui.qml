@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.13
-import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
 import "content"
 
@@ -147,7 +146,7 @@ Item {
         text: "\uE80F"
         visible: true
         font.family: "fontello"
-        font.pointSize: 36
+        font.pixelSize: 42
 
         opacity: 0.8
 
@@ -230,8 +229,8 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:7;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
-D{i:14;anchors_x:139;anchors_y:394}D{i:13;anchors_x:139;anchors_y:394}
+    D{i:0;height:480;width:640}D{i:14;anchors_x:139;anchors_y:394}D{i:13;anchors_x:139;anchors_y:394}
+D{i:7;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
 }
 ##^##*/
 

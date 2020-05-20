@@ -8,9 +8,11 @@ ImagePreviewForm {
     signal accept(string filename, string effect)
 
     property var shaderName: ""
+    property string effectPreset: ""
 
     function setPreviewImage(filename)
     {
+        previewImage.imageSize = filesystem.getImageSize(filename)
         previewImage.source = filename
     }
 
@@ -43,7 +45,7 @@ ImagePreviewForm {
         else
         {
             fileLoadIndicator.running = false;
-            shaderName = ""
+            shaderName = effectPreset
         }
     }
 
@@ -66,13 +68,29 @@ ImagePreviewForm {
 
     effectButton.onClicked:
     {
-        state = "effectSelection"
+        popup.open()
     }
 
-    effectSelector.onEffectSelected:
+    EffectSelectionPopup
     {
-        console.log("Current effect: " + effect)
-        shaderName = effect
-        state = "idle"
+        id: popup
+        x: 50
+        y: 50
+        height: parent.height - 100
+        width: parent.width - 100
+        previewImage: form.previewImage.source
+
+        onEffectSelected:
+        {
+            console.log("Current effect: " + effect)
+            shaderName = effect
+            state = "idle"
+        }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

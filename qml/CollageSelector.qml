@@ -10,12 +10,12 @@ CollageSelectorForm {
 
     upButton.onClicked:
     {
-        scrollIndicator.increase()
+        scrollIndicator.decrease()
     }
 
     downButton.onClicked:
     {
-        scrollIndicator.decrease()
+        scrollIndicator.increase()
     }
 
     iconListView.delegate: iconDelegate

@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE void deleteAllImages();
     Q_INVOKABLE bool layoutFilesOnRemovableDrive();
     Q_INVOKABLE void copyLayoutFiles();
+    Q_INVOKABLE QSize getImageSize(QString filename);
 protected:
     QString getRemovableDrivePath();
     QFuture<void> m_copyFuture;

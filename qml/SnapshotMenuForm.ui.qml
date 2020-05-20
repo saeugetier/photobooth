@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.13
-import QtQuick.Controls.Material 2.0
 import QtGraphicalEffects 1.0
 import "content"
 
@@ -44,7 +43,7 @@ Item {
 
     NavigationButton {
         id: exitButton
-        text: "Abort"
+        text: qsTr("Abort")
         visible: false
         anchors.left: parent.left
         anchors.leftMargin: 30
@@ -55,7 +54,8 @@ Item {
 
     SnapshotSettings {
         id: snapshotSettings
-        visible: false
+        opacity: 0.0
+        visible: opacity == 0.0 ? false : true
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.right: parent.right
@@ -72,7 +72,7 @@ Item {
 
             PropertyChanges {
                 target: snapshotSettings
-                visible: true
+                opacity: 1.0
             }
 
             PropertyChanges {

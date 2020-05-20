@@ -7,6 +7,7 @@ Item {
     property CollageImageModel imageModel
     property rect backgroundRect : Qt.rect(0, 0, renderer.width, renderer.height) // initial value
     property bool saving: false
+    property string savedFilename : ""
 
     signal collageFull(bool full)
 
@@ -109,6 +110,7 @@ Item {
         // TODO clip the image and bringing everything into right format...
         renderer.grabToImage(function(result) {
             result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
+            savedFilename = filename;
             saving = false;
         }, size);
     }

@@ -29,7 +29,7 @@ Flickable {
             text: "\uE819"
             flat: true
             font.family: "fontello"
-            font.pointSize: 54
+            font.pixelSize: 54
             Layout.fillWidth: true
             autoRepeat: true
             z: 1
@@ -63,7 +63,7 @@ Flickable {
             text: "\uE81C"
             flat: true
             font.family: "fontello"
-            font.pointSize: 54
+            font.pixelSize: 54
             Layout.fillWidth: true
             autoRepeat: true
             z: 1

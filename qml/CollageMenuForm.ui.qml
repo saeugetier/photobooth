@@ -81,7 +81,7 @@ Item {
             id: printButton
             text: "\uE802" // icon-print
             font.family: "fontello"
-            font.pointSize: 82
+            font.pixelSize: 64
             enabled: true
 
             scale: hovered ? 1.1 : 1
@@ -104,7 +104,7 @@ Item {
     NavigationButton {
         id: nextButton
         y: 524
-        text: "Next Photo"
+        text: qsTr("Next Photo")
         anchors.left: parent.left
         anchors.leftMargin: 20
         anchors.bottom: parent.bottom
@@ -115,7 +115,7 @@ Item {
     NavigationButton {
         id: exitButton
         y: 515
-        text: "Exit"
+        text: qsTr("Exit")
         visible: false
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 20

@@ -20,6 +20,7 @@ class CollageModelFactory : public QObject, public ModelParser
 
 public:
     explicit CollageModelFactory(QObject *parent = nullptr);
+    virtual ~CollageModelFactory();
 
     enum Status { Null, Ready, Loading, Error };
     Q_ENUM(Status)

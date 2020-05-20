@@ -99,6 +99,19 @@
     </message>
 </context>
 <context>
+    <name>ImagePreviewForm.ui</name>
+    <message>
+        <location filename="qml/ImagePreviewForm.ui.qml" line="84"/>
+        <source>Accept</source>
+        <translation>Weiter</translation>
+    </message>
+    <message>
+        <location filename="qml/ImagePreviewForm.ui.qml" line="93"/>
+        <source>Retry</source>
+        <translation>Wiederholen</translation>
+    </message>
+</context>
+<context>
     <name>MainMenuForm.ui</name>
     <message>
         <location filename="qml/MainMenuForm.ui.qml" line="167"/>

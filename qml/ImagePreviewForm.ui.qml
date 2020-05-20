@@ -81,7 +81,7 @@ Item {
         id: saveButton
         x: 122
         y: 453
-        text: "Accept"
+        text: qsTr("Accept")
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 40
         anchors.right: parent.right
@@ -90,7 +90,7 @@ Item {
 
     NavigationButton {
         id: deleteButton
-        text: "Retry"
+        text: qsTr("Retry")
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.top: parent.top

@@ -19,7 +19,7 @@ SnapshotMenuForm {
     GPIO
     {
         id: ledEnablePin
-        pin:  4
+        pin:  23
         value: 0.0
     }
 
@@ -40,7 +40,7 @@ SnapshotMenuForm {
     GPIO
     {
         id: ledBrightnessPin
-        pin:  1
+        pin:  18
         value: snapshotSettings.viewFinderBrightness
     }
 

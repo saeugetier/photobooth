@@ -28,7 +28,7 @@ GPIO::~GPIO()
     if(pinNumber >= 0)
     {
         QFile io(IO_DEVICE);
-        if(io.open(QFile::WriteOnly))
+        if(io.open(QFile::WriteOnly | QIODevice::Text))
         {
             QString io_string = QString("release ") + QString::number(pinNumber);
             io.write(io_string.toLatin1());
@@ -73,10 +73,14 @@ void GPIO::setValue(float value)
     if(pinNumber >= 0)
     {
         QFile io(IO_DEVICE);
-        if(io.open(QFile::WriteOnly))
+        if(io.open(QFile::WriteOnly | QIODevice::Text))
         {
             QString io_string = QString::number(pinNumber) + QString("=") + QString::number(pinValue);
             io.write(io_string.toLatin1());
+        }
+        else
+        {
+            qDebug() << "Could not access pi-blaster";
         }
 
         qDebug() << "Pin: " << pinNumber << " is set to " << pinValue;

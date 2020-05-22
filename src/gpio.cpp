@@ -32,6 +32,8 @@ GPIO::~GPIO()
         {
             QString io_string = QString("release ") + QString::number(pinNumber);
             io.write(io_string.toLatin1());
+            io.flush();
+            io.close();
         }
     }
 }
@@ -77,6 +79,8 @@ void GPIO::setValue(float value)
         {
             QString io_string = QString::number(pinNumber) + QString("=") + QString::number(pinValue);
             io.write(io_string.toLatin1());
+            io.flush();
+            io.close();
         }
         else
         {

@@ -48,11 +48,11 @@ SnapshotMenuForm {
     {
         if(cameraRenderer.state == "snapshot" && snapshotSettings.flashEnabled)
         {
-            ledBrightnessPin.value = snapshotSettings.flashBrightness
+            ledBrightnessPin.value = 1.0 - snapshotSettings.flashBrightness
         }
         else
         {
-            ledBrightnessPin.value = snapshotSettings.viewFinderBrightness
+            ledBrightnessPin.value = 1.0 - snapshotSettings.viewFinderBrightness
         }
     }
 

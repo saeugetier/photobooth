@@ -30,7 +30,7 @@ GPIO::~GPIO()
         QFile io(IO_DEVICE);
         if(io.open(QFile::WriteOnly | QIODevice::Text))
         {
-            QString io_string = QString("release ") + QString::number(pinNumber);
+            QString io_string = QString("release ") + QString::number(pinNumber) + "\n";
             io.write(io_string.toLatin1());
             io.flush();
             io.close();
@@ -77,7 +77,7 @@ void GPIO::setValue(float value)
         QFile io(IO_DEVICE);
         if(io.open(QFile::WriteOnly | QIODevice::Text))
         {
-            QString io_string = QString::number(pinNumber) + QString("=") + QString::number(pinValue);
+            QString io_string = QString::number(pinNumber) + QString("=") + QString::number(pinValue) + "\n";
             io.write(io_string.toLatin1());
             io.flush();
             io.close();

@@ -41,7 +41,7 @@ SnapshotMenuForm {
     {
         id: ledBrightnessPin
         pin:  18
-        value: snapshotSettings.viewFinderBrightness
+        value: 1.0 - snapshotSettings.viewFinderBrightness
     }
 
     cameraRenderer.onStateChanged:

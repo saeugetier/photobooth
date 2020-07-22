@@ -29,7 +29,6 @@ CollageMenuForm {
         var filename = cleanPath + "/collage/Coll_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg"
         collageRenderer.saveImage(filename, printer.getPrintSize())
         console.log("Collage rendered")
-        exit()
     }
 
     collageRenderer.onSavingChanged:
@@ -39,6 +38,7 @@ CollageMenuForm {
             if(collageRenderer.savedFilename.length > 0)
             {
                 printer.printImage(collageRenderer.savedFilename)
+                exit()
             }
         }
     }

@@ -107,6 +107,22 @@ Item {
     function saveImage(filename, size)
     {
         saving = true;
+
+        var aspectRatio = size.height / size.width;
+        if(size.height > 2048 || size.width > 2048)
+        {
+            if(size.width > size.height)
+            {
+                size.width = 2048
+                size.height = 2048 * aspectRatio
+            }
+            else
+            {
+                size.width = 2048 / aspectRatio
+                size.height = 2048
+            }
+        }
+
         // TODO clip the image and bringing everything into right format...
         renderer.grabToImage(function(result) {
             result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));

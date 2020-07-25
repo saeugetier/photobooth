@@ -6,6 +6,7 @@ Item {
     property url imageFileName : ""
     property string effectName: ""
     property int number : 0
+    property alias loading: fileLoadIndicator.running
 
     id: photoProxy
 

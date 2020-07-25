@@ -43,6 +43,19 @@ CollageMenuForm {
         }
     }
 
+    collageRenderer.onImagesLoadingChanged:
+    {
+        console.log("loading " + Number(collageRenderer.imagesLoading).toString() + " images in Collage Renderer")
+        if(collageRenderer.imagesLoading > 0)
+        {
+            printButton.enabled = false
+        }
+        else
+        {
+            printButton.enabled = true
+        }
+    }
+
     exitButton.onClicked:
     {
         exit()

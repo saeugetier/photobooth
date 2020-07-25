@@ -84,7 +84,7 @@ int SelphyPrinter::printImage(const QString &filename)
     {
         QStringList convertParameters;
         convertParameters << filename;
-        convertParameters << "c" + filename; //take image and save it with filename prefix "c"
+        convertParameters << filename + ".converted.jpg"; //take image and save it with filename postfix
         QProcess convertProcess;
         // sanitize image --> selphy process is a bit picky
         convertProcess.start("convert", convertParameters);
@@ -92,7 +92,7 @@ int SelphyPrinter::printImage(const QString &filename)
 
         QStringList parameters;
         parameters << "-printer_ip=" + ip;
-        parameters << "c" + filename;
+        parameters << filename + ".converted.jpg";
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {

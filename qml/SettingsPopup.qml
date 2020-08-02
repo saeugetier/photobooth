@@ -65,6 +65,11 @@ SettingsPopupForm {
         Qt.quit()
     }
 
+    buttonDeletePhotos.onClicked:
+    {
+        filesystem.deleteAllImages()
+    }
+
     Timer
     {
         interval: 1000

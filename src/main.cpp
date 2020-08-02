@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 
-    qmlRegisterType<System>("Syetem", 1, 0, "System");
+    qmlRegisterType<System>("System", 1, 0, "System");
 
     qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");

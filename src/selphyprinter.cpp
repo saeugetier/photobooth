@@ -82,27 +82,19 @@ int SelphyPrinter::printImage(const QString &filename)
     QString ip = getPrinterIp();
     if(ip.length() > 0)
     {
-        QStringList convertParameters;
-        convertParameters << filename;
-        convertParameters << "-quality";
-        convertParameters << "100%";
-        convertParameters << filename + ".jpg"; //printer takes only jpg (png) has higher image quality
-        QProcess convertProcess;
-        // sanitize image --> selphy process is a bit picky
-        convertProcess.start("convert", convertParameters);
-        convertProcess.waitForFinished(5000); //maximum 5 seconds to convert
-
-        QStringList parameters;
-        parameters << "-printer_ip=" + ip;
-        parameters << filename + ".jpg";
+        QString imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg";
+        QString selphyCommand = "selphy -printer_ip=" + ip + " " + filename + ".jpg";
+        QStringList shParameters;
+        shParameters << "-c";
+        shParameters << imageMagickCommand + " && " + selphyCommand;
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {
             if(printerOnline())
             {
                 emit busyChanged(true);
-                mPrinterProcess.start("selphy", parameters);
-                qDebug() << parameters;
+                mPrinterProcess.start("sh", shParameters);
+                qDebug() << shParameters;
                 return 0;
             }
             else

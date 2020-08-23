@@ -26,10 +26,9 @@ CollageMenuForm {
         path = path.replace(/^(file:\/{2})/,"");
         var cleanPath = decodeURIComponent(path);
         console.log(cleanPath)
-        var filename = cleanPath + "/collage/Coll_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg"
+        var filename = cleanPath + "/collage/Coll_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".png"
         collageRenderer.saveImage(filename, printer.getPrintSize())
         console.log("Collage rendered")
-        exit()
     }
 
     collageRenderer.onSavingChanged:
@@ -39,7 +38,21 @@ CollageMenuForm {
             if(collageRenderer.savedFilename.length > 0)
             {
                 printer.printImage(collageRenderer.savedFilename)
+                exit()
             }
+        }
+    }
+
+    collageRenderer.onImagesLoadingChanged:
+    {
+        console.log("loading " + Number(collageRenderer.imagesLoading).toString() + " images in Collage Renderer")
+        if(collageRenderer.imagesLoading > 0)
+        {
+            printButton.enabled = false
+        }
+        else
+        {
+            printButton.enabled = true
         }
     }
 

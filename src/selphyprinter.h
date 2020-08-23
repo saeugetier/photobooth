@@ -10,7 +10,6 @@ class SelphyPrinter : public AbstractPrinter, public PrinterList<SelphyPrinter>
     Q_OBJECT
     Q_INTERFACES(AbstractPrinter)
 public:
-    QString getPrinterIp();
     Q_INVOKABLE QSize getPrintSize();
     Q_INVOKABLE bool printerOnline();
     bool busy();
@@ -19,7 +18,8 @@ public slots:
 protected slots:
     void finished(int code, QProcess::ExitStatus status);
 protected:
-    explicit SelphyPrinter(QObject *parent = nullptr);
+    explicit SelphyPrinter(const QString &name, QObject *parent = nullptr);
+    QString mIp;
     QProcess mPrinterProcess;
     static QStringList getAvailablePrintersInternal();
     static SelphyPrinter* createInternal(const QString &name);

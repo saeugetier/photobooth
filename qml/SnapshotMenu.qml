@@ -19,7 +19,7 @@ SnapshotMenuForm {
     GPIO
     {
         id: ledEnablePin
-        pin:  4
+        pin:  23
         value: 0.0
     }
 
@@ -40,19 +40,19 @@ SnapshotMenuForm {
     GPIO
     {
         id: ledBrightnessPin
-        pin:  1
-        value: snapshotSettings.viewFinderBrightness
+        pin:  18
+        value: 1.0 - snapshotSettings.viewFinderBrightness
     }
 
     cameraRenderer.onStateChanged:
     {
         if(cameraRenderer.state == "snapshot" && snapshotSettings.flashEnabled)
         {
-            ledBrightnessPin.value = snapshotSettings.flashBrightness
+            ledBrightnessPin.value = 1.0 - snapshotSettings.flashBrightness
         }
         else
         {
-            ledBrightnessPin.value = snapshotSettings.viewFinderBrightness
+            ledBrightnessPin.value = 1.0 - snapshotSettings.viewFinderBrightness
         }
     }
 

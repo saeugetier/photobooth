@@ -60,4 +60,13 @@ SnapshotSettingsForm {
     {
         settings.countdown = spinBoxCountdownTime.value
     }
+
+    Behavior on width
+    {
+        PropertyAnimation
+        {
+            duration: 200
+            easing.type: Easing.InOutQuad
+        }
+    }
 }

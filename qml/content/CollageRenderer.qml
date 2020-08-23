@@ -8,6 +8,7 @@ Item {
     property rect backgroundRect : Qt.rect(0, 0, renderer.width, renderer.height) // initial value
     property bool saving: false
     property string savedFilename : ""
+    property int imagesLoading : 0
 
     signal collageFull(bool full)
 
@@ -72,6 +73,23 @@ Item {
                     console.log("Delete photo: " + Number(number).toString())
                     imageModel.clearImagePath(number)
                 }
+
+                proxy.onLoadingChanged:
+                {
+                    if(proxy.loading == true)
+                    {
+                        imagesLoading = imagesLoading + 1
+                    }
+                    else
+                    {
+                        imagesLoading = imagesLoading - 1
+
+                        if(imagesLoading < 0)
+                        {
+                            imagesLoading = 0
+                        }
+                    }
+                }
             }
         }
 
@@ -85,6 +103,7 @@ Item {
 
     onImageModelChanged:
     {
+        imagesLoading = 0
         background.source = filesystem.findFile(imageModel.backgroundImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
         console.log("model chnaged. Size: " + Number(imageModel.rowCount()).toString())
     }
@@ -107,6 +126,22 @@ Item {
     function saveImage(filename, size)
     {
         saving = true;
+
+        var aspectRatio = size.height / size.width;
+        if(size.height > 2048 || size.width > 2048)
+        {
+            if(size.width > size.height)
+            {
+                size.width = 2048
+                size.height = 2048 * aspectRatio
+            }
+            else
+            {
+                size.width = 2048 / aspectRatio
+                size.height = 2048
+            }
+        }
+
         // TODO clip the image and bringing everything into right format...
         renderer.grabToImage(function(result) {
             result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));

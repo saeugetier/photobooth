@@ -25,8 +25,6 @@
         <file>qml/ImagePreviewForm.ui.qml</file>
         <file>qml/MainMenu.qml</file>
         <file>qml/MainMenuForm.ui.qml</file>
-        <file>qml/PrinterBusyPopup.qml</file>
-        <file>qml/PrinterBusyPopupForm.ui.qml</file>
         <file>qml/SettingsPassword.qml</file>
         <file>qml/SettingsPasswordForm.ui.qml</file>
         <file>qml/SettingsPopup.qml</file>
@@ -73,5 +71,6 @@
         <file>shaders/posterize.fsh</file>
         <file>qml/EffectSelectionPopup.qml</file>
         <file>qml/EffectSelectionPopupForm.ui.qml</file>
+        <file>qml/content/PrinterPopup.qml</file>
     </qresource>
 </RCC>

@@ -110,6 +110,8 @@ ApplicationWindow {
         {
             applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
         }
+
+        mainMenu.printerBusy: printer.busy
     }
 
     Settings

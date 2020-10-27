@@ -11,7 +11,7 @@ Item {
     property alias nextButton: nextButton
     property alias exitButton: exitButton
     property real printerRatio: 3 / 4
-    property alias printerBusyPopup: printerBusyPopup
+    property alias printerPopup: printerPopup
 
     Rectangle {
         color: "white"
@@ -124,9 +124,10 @@ Item {
         forward: false
     }
 
-    PrinterBusyPopup {
-        id: printerBusyPopup
+    PrinterPopup {
+        id: printerPopup
         anchors.centerIn: parent
+        visible: false
     }
 
     states: [

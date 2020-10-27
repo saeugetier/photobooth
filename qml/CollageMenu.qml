@@ -52,7 +52,7 @@ CollageMenuForm {
         }
         else
         {
-            printButton.enabled = true
+            printButton.enabled = !printer.busy
         }
     }
 
@@ -67,8 +67,7 @@ CollageMenuForm {
         {
             if(printer.busy)
             {
-                printerBusyPopup.modal = 1
-                printerBusyPopup.open()
+                printerPopup.visible = true
             }
         }
     }
@@ -87,9 +86,13 @@ CollageMenuForm {
         target: printer
         onBusyChanged:
         {
-            if(!printer.busy && printerBusyPopup.opened)
+            if(!printer.busy)
             {
-                printerBusyPopup.close()
+                printerPopup.visible = false
+                if(collageRenderer.imagesLoading == 0)
+                {
+                    printButton.enabled = true
+                }
             }
         }
     }

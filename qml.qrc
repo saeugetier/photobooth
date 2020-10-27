@@ -73,5 +73,6 @@
         <file>shaders/posterize.fsh</file>
         <file>qml/EffectSelectionPopup.qml</file>
         <file>qml/EffectSelectionPopupForm.ui.qml</file>
+        <file>qml/content/PrinterPopup.qml</file>
     </qresource>
 </RCC>

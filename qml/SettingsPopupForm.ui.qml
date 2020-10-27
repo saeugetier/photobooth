@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias switchMultiplePrints: switchMultiplePrints
     property alias buttonCloseProgram: buttonCloseProgram
     property alias comboWindowMode: comboWindowMode
     property alias labelTime: labelTime
@@ -178,6 +179,22 @@ Popup {
                     ComboBox {
                         id: comboBoxPrinter
                         width: 280
+                    }
+                }
+
+                Row {
+                    id: rowMultiplePrints
+                    spacing: 5
+                    Label {
+                        id: labelMultiplePrints
+                        text: qsTr("Allow multiple prints")
+                        anchors.verticalCenter: switchPrinter.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchMultiplePrints
+                        text: qsTr("enabled")
                     }
                 }
             }

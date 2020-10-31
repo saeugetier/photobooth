@@ -68,7 +68,7 @@ Light/Flash:
 - LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Backlight-Constant-Current-Board-Driver-Boost-Structure-Step-Up/32834942970.html
 - 20W LED: https://www.aliexpress.com/item/1Pcs-High-Power-10W-20W-30W-50W-100W-COB-Integrated-LED-Lamp-Chip-SMD-Bead-DC/32822371892.html
 
-Display: A touchscreen is highly recommended
+Display: A touchscreen connected via HDMI is highly recommended.
 
 I2C RTC: If using a Raspberry Pi, it is recommended to use a realtime clock.
 
@@ -86,15 +86,15 @@ Prebuild images will be available soon. For more information how to create an ow
 
 ### Raspbian an a Raspberry Pi
 
-Minimum Raspbian Buster must be used, which provides QT 5.11 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin must be installed.
+Minimum Raspbian Buster must be used, which provides QT 5.11 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
-For now there is no further support for deployment on Raspbian.
+For now there is no further support for deployment on Raspbian. Please compile the program yourself from sources.
 
 ### Local PC
 
-At least QT 5.11 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin must be installed.
+At least QT 5.11 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
-For now there is no further support for deployment on local pc.
+For now there is no further support for deployment on local pc. Please compile the program yourself from sources.
 
 ## Configuration
 

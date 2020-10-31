@@ -7,7 +7,7 @@ The goal of the project is to provide a configurable photobooth software for Ras
 Main features are:
 - User Interface with touchscreen input (input via mouse is not recommended). Control via buttons may be added in future.
 - Photo preview and capture via V4L2 (Raspberry Pi Camera or Webcam) or via GPhoto2 supported cameras.
-- Printout with Canon Selphy photo printer.
+- Printout with Canon Selphy photo printer or standard printer via CUPS.
 - Configurable image collages with own templates. User can select current template in application.
 - Password protected settings menu:
 	- Copy all photos to USB storage.
@@ -62,7 +62,7 @@ Platform: Tested on PC plattform, Raspberry Pi 3B and Raspbarry Pi 4 (Raspberry 
 
 Camera: Tested with Canon EOS 450D and Raspberry Pi camera. Every camera compatible with gPhoto2 or v4l2 will do.
 
-Printer: Tested Canon Selphy Photo Printer CP910 over wifi via https://github.com/saeugetier/go-selphy-cp
+Printer: Tested Canon Selphy Photo Printer CP910 over wifi via https://github.com/saeugetier/go-selphy-cp. Tested with standard inkjet printer via CUPS.
 
 Light/Flash: 
 - LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Backlight-Constant-Current-Board-Driver-Boost-Structure-Step-Up/32834942970.html

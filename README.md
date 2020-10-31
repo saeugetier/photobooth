@@ -20,7 +20,7 @@ Main features are:
                                  '------------'         '---------'
                                     ^
                                     |
-                                 PWM|          .-----------------------.
+                          ENABLE/PWM|          .-----------------------.
                                     |          |     DSLR Camera       |
                                     |          | connected via GPhoto2 |
                     .------------------.       |     or raspi cam      |
@@ -31,7 +31,7 @@ Main features are:
                     |     QT/Quick     |                                         (_      -'   
                     |                  |           .-------------.                ]      |    
                     |                  |           | Touchscreen |                |    _,')   
-                    |                  |  USB/VGA  |             |                [_,-'_-'(   
+                    |                  |  USB/HDMI |             |                [_,-'_-'(   
                     |                  |---------->|             |               (_).-'    \  
                     |                  |           |             |               / /        \ 
                     '------------------'           |             |

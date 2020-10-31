@@ -62,7 +62,7 @@ Platform: Tested on PC plattform, Raspberry Pi 3B and Raspbarry Pi 4 (Raspberry 
 
 Camera: Tested with Canon EOS 450D and Raspberry Pi camera. Every camera compatible with gPhoto2 or v4l2 will do.
 
-Printer: Tested Canon Selphy Photo Printer CP910
+Printer: Tested Canon Selphy Photo Printer CP910 over wifi via https://github.com/saeugetier/go-selphy-cp
 
 Light/Flash: 
 - LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Backlight-Constant-Current-Board-Driver-Boost-Structure-Step-Up/32834942970.html
@@ -70,7 +70,7 @@ Light/Flash:
 
 Display: A touchscreen is highly recommended
 
-RTC: If using a Raspberry Pi, it is recommended to use a realtime clock.
+I2C RTC: If using a Raspberry Pi, it is recommended to use a realtime clock.
 
 ### Housing / Electronics
 My own housing is documented in a seperate git repository: https://github.com/saeugetier/photobooth_hardware

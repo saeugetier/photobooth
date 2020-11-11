@@ -75,7 +75,7 @@ ApplicationWindow {
             applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
         }
 
-        mainMenu.settingsPopup.switchMultiplePrints.onCheckableChanged:
+        mainMenu.settingsPopup.switchMultiplePrints.onCheckedChanged:
         {
             applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
         }

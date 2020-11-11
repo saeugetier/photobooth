@@ -7,7 +7,7 @@ The goal of the project is to provide a configurable photobooth software for Ras
 Main features are:
 - User Interface with touchscreen input (input via mouse is not recommended). Control via buttons may be added in future.
 - Photo preview and capture via V4L2 (Raspberry Pi Camera or Webcam) or via GPhoto2 supported cameras.
-- Printout with Canon Selphy photo printer.
+- Printout with Canon Selphy photo printer or standard printer via CUPS.
 - Configurable image collages with own templates. User can select current template in application.
 - Password protected settings menu:
 	- Copy all photos to USB storage.
@@ -20,7 +20,7 @@ Main features are:
                                  '------------'         '---------'
                                     ^
                                     |
-                                 PWM|          .-----------------------.
+                          ENABLE/PWM|          .-----------------------.
                                     |          |     DSLR Camera       |
                                     |          | connected via GPhoto2 |
                     .------------------.       |     or raspi cam      |
@@ -31,7 +31,7 @@ Main features are:
                     |     QT/Quick     |                                         (_      -'   
                     |                  |           .-------------.                ]      |    
                     |                  |           | Touchscreen |                |    _,')   
-                    |                  |  USB/VGA  |             |                [_,-'_-'(   
+                    |                  |  USB/HDMI |             |                [_,-'_-'(   
                     |                  |---------->|             |               (_).-'    \  
                     |                  |           |             |               / /        \ 
                     '------------------'           |             |
@@ -62,15 +62,15 @@ Platform: Tested on PC plattform, Raspberry Pi 3B and Raspbarry Pi 4 (Raspberry 
 
 Camera: Tested with Canon EOS 450D and Raspberry Pi camera. Every camera compatible with gPhoto2 or v4l2 will do.
 
-Printer: Tested Canon Selphy Photo Printer CP910
+Printer: Tested Canon Selphy Photo Printer CP910 over wifi via https://github.com/saeugetier/go-selphy-cp. Tested with standard inkjet printer via CUPS.
 
 Light/Flash: 
 - LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Backlight-Constant-Current-Board-Driver-Boost-Structure-Step-Up/32834942970.html
 - 20W LED: https://www.aliexpress.com/item/1Pcs-High-Power-10W-20W-30W-50W-100W-COB-Integrated-LED-Lamp-Chip-SMD-Bead-DC/32822371892.html
 
-Display: A touchscreen is highly recommended
+Display: A touchscreen connected via HDMI is highly recommended.
 
-RTC: If using a Raspberry Pi, it is recommended to use a realtime clock.
+I2C RTC: If using a Raspberry Pi, it is recommended to use a realtime clock.
 
 ### Housing / Electronics
 My own housing is documented in a seperate git repository: https://github.com/saeugetier/photobooth_hardware
@@ -86,15 +86,15 @@ Prebuild images will be available soon. For more information how to create an ow
 
 ### Raspbian an a Raspberry Pi
 
-Minimum Raspbian Buster must be used, which provides QT 5.11 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin must be installed.
+Minimum Raspbian Buster must be used, which provides QT 5.11 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
-For now there is no further support for deployment on Raspbian.
+For now there is no further support for deployment on Raspbian. Please compile the program yourself from sources.
 
 ### Local PC
 
-At least QT 5.11 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin must be installed.
+At least QT 5.11 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
-For now there is no further support for deployment on local pc.
+For now there is no further support for deployment on local pc. Please compile the program yourself from sources.
 
 ## Configuration
 

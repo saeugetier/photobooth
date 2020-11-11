@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias switchHideSnapshotSettings: switchHideSnapshotSettings
     property alias switchMultiplePrints: switchMultiplePrints
     property alias buttonCloseProgram: buttonCloseProgram
     property alias comboWindowMode: comboWindowMode
@@ -141,6 +142,22 @@ Popup {
                     Switch {
                         id: switchMirrorCamera
                         text: qsTr("mirror")
+                    }
+                }
+
+                Row {
+                    id: rowHideSnapshotSettings
+                    spacing: 5
+                    Label {
+                        id: labelHideSnapshotSettings
+                        text: qsTr("Snapshot Settings")
+                        anchors.verticalCenter: switchHideSnapshotSettings.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchHideSnapshotSettings
+                        text: qsTr("hide")
                     }
                 }
             }

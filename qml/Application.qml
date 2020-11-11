@@ -80,6 +80,11 @@ ApplicationWindow {
             applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
         }
 
+        mainMenu.settingsPopup.switchHideSnapshotSettings.onCheckedChanged:
+        {
+            applicationSettings.disableSnapshotSettingsPane = mainMenu.settingsPopup.switchHideSnapshotSettings.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
         {
             applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
@@ -131,6 +136,7 @@ ApplicationWindow {
         property string printerName: "No Printer"
         property int windowMode: Window.Maximized
         property bool multiplePrints: false
+        property bool disableSnapshotSettingsPane: false
 
         Component.onCompleted:
         {
@@ -138,8 +144,10 @@ ApplicationWindow {
             flow.mainMenu.settingsPopup.switchMultiplePrints.checked = multiplePrints
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+            flow.mainMenu.settingsPopup.switchHideSnapshotSettings = disableSnapshotSettingsPane
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
+            flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
         }
 
         onPrinterNameChanged:
@@ -155,6 +163,11 @@ ApplicationWindow {
         onMultiplePrintsChanged:
         {
             flow.collageMenu.multiplePrints = multiplePrints
+        }
+
+        onDisableSnapshotSettingsPaneChanged:
+        {
+            flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
         }
     }
 }

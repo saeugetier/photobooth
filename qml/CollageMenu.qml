@@ -38,7 +38,14 @@ CollageMenuForm {
         {
             if(collageRenderer.savedFilename.length > 0)
             {
-                printer.printImage(collageRenderer.savedFilename)
+                if(!multiplePrints)
+                {
+                    printer.printImage(collageRenderer.savedFilename, 1)
+                }
+                else
+                {
+                    printer.printImage(collageRenderer.savedFilename, printCountTumbler.currentIndex + 1)
+                }
                 exit()
             }
         }

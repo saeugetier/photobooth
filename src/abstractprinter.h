@@ -28,7 +28,7 @@ signals:
     void failed();
 
 public slots:
-    Q_INVOKABLE virtual int printImage(const QString &filename) = 0;
+    Q_INVOKABLE virtual int printImage(const QString &filename, int copyCount) = 0;
 };
 
 Q_DECLARE_INTERFACE(AbstractPrinter, "AbstractPrinter")

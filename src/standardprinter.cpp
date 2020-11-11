@@ -27,7 +27,7 @@ bool StandardPrinter::busy()
     }
 }
 
-int StandardPrinter::printImage(const QString &filename)
+int StandardPrinter::printImage(const QString &filename, int copyCount)
 {
     mPrinter.setColorMode(QPrinter::Color);
     mPrinter.setFullPage(true);

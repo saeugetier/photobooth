@@ -15,7 +15,7 @@ bool NoPrinter::busy()
     return false;
 }
 
-int NoPrinter::printImage(const QString &filename)
+int NoPrinter::printImage(const QString &filename, int copyCount)
 {
     Q_UNUSED(filename);
 }

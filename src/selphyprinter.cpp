@@ -53,9 +53,14 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
     {
         QString imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg";
         QString selphyCommand = "selphy -printer_ip=" + mIp + " " + filename + ".jpg";
+        QString printCommand = imageMagickCommand;
+        for(int i = 0; i < copyCount; i++)
+        {
+            printCommand = printCommand + " && " + selphyCommand;
+        }
         QStringList shParameters;
         shParameters << "-c";
-        shParameters << imageMagickCommand + " && " + selphyCommand;
+        shParameters << printCommand;
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {

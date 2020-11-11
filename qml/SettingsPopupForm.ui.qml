@@ -188,7 +188,7 @@ Popup {
                     Label {
                         id: labelMultiplePrints
                         text: qsTr("Allow multiple prints")
-                        anchors.verticalCenter: switchPrinter.verticalCenter
+                        anchors.verticalCenter: switchMultiplePrints.verticalCenter
                         horizontalAlignment: Text.AlignLeft
                     }
 

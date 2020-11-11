@@ -32,6 +32,7 @@ int StandardPrinter::printImage(const QString &filename, int copyCount)
     mPrinter.setColorMode(QPrinter::Color);
     mPrinter.setFullPage(true);
     mPrinter.setOrientation(QPrinter::Landscape);
+    mPrinter.setCopyCount(copyCount);
     QImage img;
     if(img.load(filename))
     {

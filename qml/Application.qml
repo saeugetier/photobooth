@@ -139,6 +139,7 @@ ApplicationWindow {
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
             flow.mainMenuModel.setShowPrintable(printEnable)
+            flow.collageMenu.multiplePrints = multiplePrints
         }
 
         onPrinterNameChanged:
@@ -149,6 +150,11 @@ ApplicationWindow {
         onPrintEnableChanged:
         {
             flow.mainMenuModel.setShowPrintable(printEnable)
+        }
+
+        onMultiplePrintsChanged:
+        {
+            flow.collageMenu.multiplePrints = multiplePrints
         }
     }
 }

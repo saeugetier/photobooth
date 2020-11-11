@@ -5,6 +5,7 @@ CollageMenuForm {
     id: form
     property alias collageImage: form.collageRenderer
     property Printer printer
+    property bool multiplePrints: false
 
     signal next
     signal exit
@@ -37,7 +38,14 @@ CollageMenuForm {
         {
             if(collageRenderer.savedFilename.length > 0)
             {
-                printer.printImage(collageRenderer.savedFilename)
+                if(!multiplePrints)
+                {
+                    printer.printImage(collageRenderer.savedFilename, 1)
+                }
+                else
+                {
+                    printer.printImage(collageRenderer.savedFilename, printCountTumbler.currentIndex + 1)
+                }
                 exit()
             }
         }
@@ -59,6 +67,26 @@ CollageMenuForm {
     exitButton.onClicked:
     {
         exit()
+    }
+
+    plusButton.visible: multiplePrints
+    minusButton.visible: multiplePrints
+    printCountTumbler.visible: multiplePrints
+
+    minusButton.onClicked:
+    {
+        if(printCountTumbler.currentIndex > 0)
+        {
+            printCountTumbler.currentIndex = printCountTumbler.currentIndex - 1
+        }
+    }
+
+    plusButton.onClicked:
+    {
+        if(printCountTumbler.currentIndex < (printCountTumbler.count - 1))
+        {
+            printCountTumbler.currentIndex = printCountTumbler.currentIndex + 1
+        }
     }
 
     onStateChanged:

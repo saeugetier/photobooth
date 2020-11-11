@@ -14,7 +14,7 @@ public:
     Q_INVOKABLE bool printerOnline();
     bool busy();
 public slots:
-    Q_INVOKABLE int printImage(const QString &filename);
+    Q_INVOKABLE int printImage(const QString &filename, int copyCount);
 protected slots:
     void finished(int code, QProcess::ExitStatus status);
 protected:

@@ -21,9 +21,9 @@ bool FakePrinter::busy()
     return mBusyTimer.isActive();
 }
 
-int FakePrinter::printImage(const QString &filename)
+int FakePrinter::printImage(const QString &filename, int copyCount)
 {
-    qDebug() << "Fake printer starts printing " << filename;
+    qDebug() << "Fake printer starts printing " << copyCount << " copies." << filename;
     mBusyTimer.start(1000 * 30); // 30 seconds;
     emit busyChanged(true);
     return 0;

@@ -75,6 +75,11 @@ ApplicationWindow {
             applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
         }
 
+        mainMenu.settingsPopup.switchMultiplePrints.onCheckedChanged:
+        {
+            applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
         {
             applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
@@ -125,13 +130,16 @@ ApplicationWindow {
         property bool cameraMirrored: true
         property string printerName: "No Printer"
         property int windowMode: Window.Maximized
+        property bool multiplePrints: false
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
+            flow.mainMenu.settingsPopup.switchMultiplePrints.checked = multiplePrints
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
             flow.mainMenuModel.setShowPrintable(printEnable)
+            flow.collageMenu.multiplePrints = multiplePrints
         }
 
         onPrinterNameChanged:
@@ -142,6 +150,11 @@ ApplicationWindow {
         onPrintEnableChanged:
         {
             flow.mainMenuModel.setShowPrintable(printEnable)
+        }
+
+        onMultiplePrintsChanged:
+        {
+            flow.collageMenu.multiplePrints = multiplePrints
         }
     }
 }

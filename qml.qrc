@@ -72,5 +72,7 @@
         <file>qml/EffectSelectionPopup.qml</file>
         <file>qml/EffectSelectionPopupForm.ui.qml</file>
         <file>qml/content/PrinterPopup.qml</file>
+        <file>qml/CollageReprint.qml</file>
+        <file>qml/CollageReprintForm.ui.qml</file>
     </qresource>
 </RCC>

@@ -95,6 +95,22 @@ SettingsPopupForm {
         timeSettings.open()
     }
 
+    buttonReprint.onClicked:
+    {
+        collageReprint.open()
+    }
+
+    CollageReprint
+    {
+        id: collageReprint
+        modal: true
+        focus: true
+        x: 20 - form.x
+        y: 20 - form.y
+        width: mainWindow.width - 60
+        height: mainWindow.height - 60
+    }
+
 
     TimeSettings
     {

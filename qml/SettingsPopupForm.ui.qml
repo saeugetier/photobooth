@@ -6,6 +6,7 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias buttonReprint: buttonReprint
     property alias switchHideSnapshotSettings: switchHideSnapshotSettings
     property alias switchMultiplePrints: switchMultiplePrints
     property alias buttonCloseProgram: buttonCloseProgram
@@ -212,6 +213,15 @@ Popup {
                     Switch {
                         id: switchMultiplePrints
                         text: qsTr("enabled")
+                    }
+                }
+
+                Row {
+                    id: rowReprint
+                    spacing: 5
+                    Button {
+                        id: buttonReprint
+                        text: qsTr("Reprint Collages")
                     }
                 }
             }

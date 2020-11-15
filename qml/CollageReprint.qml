@@ -15,9 +15,14 @@ CollageReprintForm {
 
     gridViewCollages.model: folderModel
 
-    buttonClose.clicked:
+    buttonClose.onClicked:
     {
         close()
+    }
+
+    buttonPrint.onClicked:
+    {
+
     }
 
     closePolicy: "NoAutoClose"

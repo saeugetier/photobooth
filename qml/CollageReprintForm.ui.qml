@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.10
+import QtGraphicalEffects 1.0
 
 Popup {
     id: popup
@@ -30,10 +31,12 @@ Popup {
         cellWidth: 450
         cellHeight: 450
 
+        interactive: true
+
         clip: true
 
         delegate: Image {
-            id: randomImage
+            id: collageImage
             property double rightMargin: 50
             property double bottomMargin: 150
             property double leftMargin: 50
@@ -64,19 +67,26 @@ Popup {
             asynchronous: true
 
             BorderImage {
-                anchors.horizontalCenter: randomImage.horizontalCenter
-                anchors.verticalCenter: randomImage.verticalCenter
+                anchors.horizontalCenter: collageImage.horizontalCenter
+                anchors.verticalCenter: collageImage.verticalCenter
                 id: borderImage
                 border.bottom: 65
                 border.top: 25
                 border.right: 25
                 border.left: 25
-                width: randomImage.paintedWidth + 40
-                height: randomImage.paintedHeight + 60
+                width: collageImage.paintedWidth + 40
+                height: collageImage.paintedHeight + 60
                 anchors.verticalCenterOffset: 10
                 horizontalTileMode: BorderImage.Stretch
                 verticalTileMode: BorderImage.Stretch
                 source: "../images/polaroid.svg.png"
+            }
+
+            BrightnessContrast {
+                anchors.fill: borderImage
+                source: borderImage
+                brightness: collageImage.GridView.isCurrentItem ? 1.0 : 0.5
+                contrast: 1.0
             }
         }
     }

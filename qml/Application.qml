@@ -85,6 +85,11 @@ ApplicationWindow {
             applicationSettings.disableSnapshotSettingsPane = mainMenu.settingsPopup.switchHideSnapshotSettings.checked
         }
 
+        mainMenu.settingsPopup.switchHideEffectPopup.onCheckedChanged:
+        {
+            applicationSettings.disableEffectPopup = mainMenu.settingsPopup.switchHideEffectPopup.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
         {
             applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
@@ -137,6 +142,7 @@ ApplicationWindow {
         property int windowMode: Window.Maximized
         property bool multiplePrints: false
         property bool disableSnapshotSettingsPane: false
+        property bool disableEffectPopup: false
 
         Component.onCompleted:
         {
@@ -145,9 +151,11 @@ ApplicationWindow {
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
             flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
+            flow.mainMenu.settingsPopup.switchHideEffectPopup = disableEffectPopup
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
+            flow.imagePreview.effectButton.visible = !disableEffectPopup
         }
 
         onPrinterNameChanged:
@@ -168,6 +176,11 @@ ApplicationWindow {
         onDisableSnapshotSettingsPaneChanged:
         {
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
+        }
+
+        onDisableEffectPopupChanged:
+        {
+            flow.imagePreview.effectButton.visible = !disableEffectPopup
         }
     }
 }

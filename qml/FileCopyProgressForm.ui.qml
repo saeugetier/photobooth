@@ -6,6 +6,7 @@ Dialog {
     width: 600
     height: 200
     property alias copyProgressBar: copyProgressBar
+    standardButtons: Dialog.Cancel
 
     title: "Copying files..."
 

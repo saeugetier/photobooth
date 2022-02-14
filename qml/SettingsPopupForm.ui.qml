@@ -8,6 +8,7 @@ Popup {
     height: 500
     property alias buttonReprint: buttonReprint
     property alias switchHideSnapshotSettings: switchHideSnapshotSettings
+    property alias switchHideEffectPopup: switchHideEffectPopup
     property alias switchMultiplePrints: switchMultiplePrints
     property alias buttonCloseProgram: buttonCloseProgram
     property alias comboWindowMode: comboWindowMode
@@ -159,6 +160,22 @@ Popup {
                     Switch {
                         id: switchHideSnapshotSettings
                         text: qsTr("hide")
+                    }
+                }
+
+                Row {
+                    id: rowHideEffectPopup
+                    spacing: 5
+                    Label {
+                        id: labelHideEffectPopup
+                        text: qsTr("Effect Popup")
+                        anchors.verticalCenter: switchHideSnapshotSettings.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchHideEffectPopup
+                        text: qsTr("disable")
                     }
                 }
             }

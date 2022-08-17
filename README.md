@@ -160,3 +160,6 @@ Example for "Collages.xml":
     </collage>
 </catalog>
 ```
+
+## Issue reporting
+Please use the [issue tracker](https://github.com/saeugetier/photobooth/issues) for bug reporting and feature request. If there are specific bugs or feature request belonging to the Yocto image,  please use [the issue tracker for poky-photobooth](https://github.com/saeugetier/poky-photobooth).

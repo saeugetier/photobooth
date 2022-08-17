@@ -169,7 +169,7 @@ Popup {
                     Label {
                         id: labelHideEffectPopup
                         text: qsTr("Effect Popup")
-                        anchors.verticalCenter: switchHideSnapshotSettings.verticalCenter
+                        anchors.verticalCenter: rowHideEffectPopup.verticalCenter
                         horizontalAlignment: Text.AlignLeft
                     }
 

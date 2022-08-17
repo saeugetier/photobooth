@@ -151,7 +151,7 @@ ApplicationWindow {
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
             flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
-            flow.mainMenu.settingsPopup.switchHideEffectPopup = disableEffectPopup
+            flow.mainMenu.settingsPopup.switchHideEffectPopup.checked = disableEffectPopup
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane

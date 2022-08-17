@@ -103,7 +103,7 @@ The local configuration file is stored in /home/<user>/.config/saeugetier/qtboot
 The file contains all application settings and the pin code for the settings menu password protection (only numbers are supported). Default pin code is: 0815
 
 ### Template files
-The local template files for your collage images are stored in /home/<user>/.local/share/saeugetier/qtbooth
+The local template files for your collage images are stored in /home/user/.local/share/saeugetier/qtbooth
 
 It contains:
 - Background images for the image collages
@@ -111,3 +111,52 @@ It contains:
 - Border images
 
 The templates can be imported from USB storage. All files with extension "xml,jpg,png,svg" in the folder "layout" will be copied to local template folder.
+
+### How to create own templates
+Create your own "Collages.xml" file. You can use the file "XmlData.xml" to customize.
+
+The root node of the XML is named "catalog". It contains nodes for the templates for collages named "collage". The collage must contain at least one "image", a "name", an "background" and an "icon". You can use builtin backgrounds like "WhiteBackground.png". 
+
+Images will need information about the position and size. The range of the values for position and size is between 0.0 and 1.0. It is possible to define a image boarder for each image.
+
+There are optional properties like "printable", which generates a none printable collage (just a single image). So you can use the photobox as an simple camera without printing capabilities.
+
+Example for "Collages.xml":
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog version="1.0">
+    <collage>
+        <name>Single Image</name>
+        <printable>false</printable>
+        <icon>Single.svg</icon>
+        <background>WhiteBackground.png</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
+        </images>
+    </collage>
+    <collage>
+        <name>Four Images Border</name>
+        <icon>FourBorder.svg</icon>
+        <background>StarsBackground.jpg</background>
+        <images>
+            <image>
+                <position x="0.0" y="0.0"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="10" left="10" right="10" bottom="10"/></border>
+            </image>
+            <image>
+                <position x="0.5" y="0.0"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="30" left="30" right="30" bottom="30"/></border>
+            </image>
+            <image>
+                <position x="0.0" y="0.5"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="20" left="20" right="20" bottom="20"/></border>
+            </image>
+            <image>
+                <position x="0.5" y="0.5"/><size width="0.5" height="0.5"/>
+                <border><file>RedBorder.png</file><margin top="50" left="50" right="50" bottom="50"/></border>
+            </image>
+        </images>
+    </collage>
+</catalog>
+```

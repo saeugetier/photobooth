@@ -89,6 +89,8 @@ void FileSystem::unmountRemoveableDrive()
     QProcess unmountProcess;
     unmountProcess.setProgram("umount");
     unmountProcess.setArguments(QStringList() << this->getRemovableDrivePath());
+    unmountProcess.start();
+    unmountProcess.waitForFinished();
 }
 
 void FileSystem::startCopyFilesToRemovableDrive()

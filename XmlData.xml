@@ -5,6 +5,7 @@
         <printable>false</printable>
         <icon>Single.svg</icon>
         <background>WhiteBackground.png</background>
+        <foreground>ExampleForeground.png</foreground>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>

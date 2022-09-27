@@ -38,6 +38,18 @@ bool CollageImageModel::parseXml(const QDomNode& node)
         return false;
     }
 
+    QDomNodeList foregroundNode = element.elementsByTagName("foreground");
+    if(foregroundNode.count() == 1)
+    {
+        mForegroundImage = foregroundNode.item(0).toElement().text();
+    }
+    else if(foregroundNode.count() > 1)
+    {
+        mErrorMsg = "multiple foreground nodes";
+        mLine = element.lineNumber();
+        return false;
+    }
+
     QDomNodeList imagesNode = element.elementsByTagName("images");
     if(imagesNode.length() != 1)
     {
@@ -119,6 +131,11 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
 QUrl CollageImageModel::backgroundImage() const
 {
     return mBackgroundImage;
+}
+
+QUrl CollageImageModel::foregroundImage() const
+{
+    return mForegroundImage;
 }
 
 bool CollageImageModel::addImagePath(QUrl source, QString effect)

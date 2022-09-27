@@ -304,6 +304,11 @@ Popup {
                         id: buttonRestart
                         text: qsTr("Restart")
                     }
+
+                }
+                Row
+                {
+                    spacing: 10
                     Button {
                         id: buttonCloseProgram
                         text: qsTr("Exit Photobooth")

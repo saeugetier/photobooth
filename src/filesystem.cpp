@@ -89,6 +89,8 @@ void FileSystem::unmountRemoveableDrive()
     QProcess unmountProcess;
     unmountProcess.setProgram("umount");
     unmountProcess.setArguments(QStringList() << this->getRemovableDrivePath());
+    unmountProcess.start();
+    unmountProcess.waitForFinished();
 }
 
 void FileSystem::startCopyFilesToRemovableDrive()
@@ -113,6 +115,9 @@ void FileSystem::startCopyFilesToRemovableDrive()
                 QStringList filters;
                 filters << "*.jpg" << "*.JPG";
                 QStringList files = imageDir.entryList(filters, QDir::Files);
+                filters << "*.png";
+                QDir collageDir(imagePath + "/collage");
+                files.append(collageDir.entryList(filters, QDir::Files));
 
                 int i;
                 for(i = 0; i < files.count() && !this->m_copyFuture.isCanceled(); i++)
@@ -123,7 +128,12 @@ void FileSystem::startCopyFilesToRemovableDrive()
                             QFile::remove(removableDrivePath + "/" + files[i]);
 
                     if(!QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]))
-                        qDebug() << "Copying file: " << files[i] << " was not successfull";
+                    {
+                        if(!QFile::copy(imagePath + "/collage/" + files[i], removableDrivePath + "/" + files[i]))
+                        {
+                            qDebug() << "Copying file: " << files[i] << " was not successfull";
+                        }
+                    }
 
                     emit this->copyProgress(progress);
                 }

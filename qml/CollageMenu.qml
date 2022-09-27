@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import Printer 1.0
+import "content"
 
 CollageMenuForm {
     id: form
@@ -22,6 +23,7 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        printerPopup.visible = true
         console.log("Print button pressed")
         var path = applicationSettings.foldername.toString()
         path = path.replace(/^(file:\/{2})/,"");
@@ -36,6 +38,7 @@ CollageMenuForm {
     {
         if(collageRenderer.saving === false)
         {
+            printerPopup.visible = false
             if(collageRenderer.savedFilename.length > 0)
             {
                 if(!multiplePrints)
@@ -98,6 +101,12 @@ CollageMenuForm {
                 printerPopup.visible = true
             }
         }
+    }
+
+    PrinterPopup {
+        id: printerPopup
+        anchors.centerIn: parent
+        visible: false
     }
 
     Connections

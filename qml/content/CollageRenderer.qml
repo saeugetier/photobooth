@@ -101,10 +101,21 @@ Item {
         }
     }
 
+    Image
+    {
+        id: foreground
+        sourceSize.height: 2048
+        sourceSize.width: 2048
+
+        anchors.fill: background
+        fillMode: Image.PreserveAspectFit
+    }
+
     onImageModelChanged:
     {
         imagesLoading = 0
         background.source = filesystem.findFile(imageModel.backgroundImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
+        foreground.source = filesystem.findFile(imageModel.foregroundImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
         console.log("model chnaged. Size: " + Number(imageModel.rowCount()).toString())
     }
 

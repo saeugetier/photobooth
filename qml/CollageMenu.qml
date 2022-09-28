@@ -103,12 +103,6 @@ CollageMenuForm {
         }
     }
 
-    PrinterPopup {
-        id: printerPopup
-        anchors.centerIn: parent
-        visible: false
-    }
-
     Connections
     {
         target: collageImage

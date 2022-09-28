@@ -74,5 +74,6 @@
         <file>qml/content/PrinterPopup.qml</file>
         <file>qml/CollageReprint.qml</file>
         <file>qml/CollageReprintForm.ui.qml</file>
+        <file>images/ExampleForeground.png</file>
     </qresource>
 </RCC>

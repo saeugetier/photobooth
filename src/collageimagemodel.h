@@ -53,6 +53,7 @@ class CollageImageModel : public QAbstractListModel, public ModelParser
 {
     Q_OBJECT
     Q_PROPERTY(QUrl backgroundImage READ backgroundImage NOTIFY backgroundImageChanged)
+    Q_PROPERTY(QUrl foregroundImage READ foregroundImage NOTIFY foregroundImageChanged)
     Q_PROPERTY(int countImagePathSet READ countImagePathSet NOTIFY countImagePatchSetChanged)
     Q_PROPERTY(bool collageFull READ collageFull NOTIFY collageFullChanged)
 public:
@@ -73,6 +74,7 @@ public:
     QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
     QUrl backgroundImage() const;
+    QUrl foregroundImage() const;
     Q_INVOKABLE bool addImagePath(QUrl source, QString effect = "");
     Q_INVOKABLE void clearImagePathes();
     Q_INVOKABLE bool clearImagePath(int index);
@@ -82,11 +84,13 @@ public:
     int countImagePathSet() const;
 signals:
     void backgroundImageChanged(const QUrl &image);
+    void foregroundImageChanged(const QUrl &image);
     void countImagePatchSetChanged(const int &count);
     void collageFullChanged(bool full);
 protected:
     QList<CollageImage*> mImages;
     QUrl mBackgroundImage;
+    QUrl mForegroundImage;
 };
 
 #endif // COLLAGEIMAGEMODEL_H

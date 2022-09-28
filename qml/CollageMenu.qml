@@ -73,9 +73,10 @@ CollageMenuForm {
         exit()
     }
 
-    plusButton.visible: multiplePrints
-    minusButton.visible: multiplePrints
-    printCountTumbler.visible: multiplePrints
+    // selector for multiple prints should only show if multiple prints are enabled in settings menu and collage is finished
+    plusButton.visible: multiplePrints && (form.state == "CollageFull")
+    minusButton.visible: multiplePrints && (form.state == "CollageFull")
+    printCountTumbler.visible: multiplePrints && (form.state == "CollageFull")
 
     minusButton.onClicked:
     {

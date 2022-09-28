@@ -352,7 +352,7 @@
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="212"/>
         <source>Countdown</source>
-        <translation>Coundown</translation>
+        <translation>Verzögerung</translation>
     </message>
 </context>
 <context>

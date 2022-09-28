@@ -23,6 +23,7 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        printButton.enabled = false
         printerPopup.visible = true
         console.log("Print button pressed")
         var path = applicationSettings.foldername.toString()

@@ -41,3 +41,8 @@ bool System::setTime(QDateTime date)
 #endif
     return (result == 0);
 }
+
+QString System::getGitHash() const
+{
+    return QString(QT_STRINGIFY(GIT_CURRENT_SHA1));
+}

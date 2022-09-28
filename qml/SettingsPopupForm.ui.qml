@@ -23,6 +23,7 @@ Popup {
     property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
+    property alias versionText:  labelVersionText.text
 
     Button {
         id: buttonClose
@@ -312,6 +313,14 @@ Popup {
                     Button {
                         id: buttonCloseProgram
                         text: qsTr("Exit Photobooth")
+                    }
+                }
+                Row
+                {
+                    Label
+                    {
+                        id: labelVersionText
+                        text: "Version"
                     }
                 }
             }

@@ -5,6 +5,11 @@ SettingsPopupForm {
     property alias printerEnabled: form.switchPrinter
     property alias mirrorCamera: form.switchMirrorCamera
 
+    Component.onCompleted:
+    {
+        versionText = "Version: " + system.getGitHash()
+    }
+
     onOpened:
     {
         if(filesystem.layoutFilesOnRemovableDrive())

@@ -67,8 +67,8 @@ Item {
                 x: leftMargin + horzitontalSpacing
 
                 source: fileURL
-                sourceSize.height: 1024
-                sourceSize.width: 1024
+                sourceSize.height: 512
+                sourceSize.width: 512
                 fillMode: Image.PreserveAspectFit
                 transform: Rotation {
                     origin.x: imageSlider.width / 4

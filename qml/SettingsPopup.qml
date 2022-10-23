@@ -59,6 +59,10 @@ SettingsPopupForm {
             buttonCopyPhotos.enabled = false
         }
 
+        comboBoxCamera.model = makeCameraList();
+        var indexCamera = comboBoxCamera.find(applicationSettings.cameraName)
+        comboBoxCamera.currentIndex = indexCamera
+
         var index = comboBoxPrinter.find(applicationSettings.printerName)
         comboBoxPrinter.currentIndex = index
         console.log("index: " + Number(index).toString())

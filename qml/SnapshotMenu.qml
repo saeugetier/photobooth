@@ -56,6 +56,11 @@ SnapshotMenuForm {
         }
     }
 
+    snapshotSettings.onViewFinderBrightnessChanged:
+    {
+        ledBrightnessPin.value = 1.0 - snapshotSettings.viewFinderBrightness
+    }
+
     shutterButton.onTriggerSnapshot:
     {
         cameraRenderer.takePhoto()

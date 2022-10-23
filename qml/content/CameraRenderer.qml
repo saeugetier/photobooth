@@ -11,6 +11,7 @@ Item {
 
     property bool photoProcessing: (state == "snapshot")
     property bool mirrored: true
+    property string deviceId: camera.deviceId
 
     function printDevicesToConsole(devices)
     {

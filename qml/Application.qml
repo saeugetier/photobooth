@@ -126,6 +126,11 @@ ApplicationWindow {
             applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
         }
 
+        mainMenu.settingsPopup.comboBoxCamera.onCurrentIndexChanged:
+        {
+            applicationSettings.cameraName = mainMenu.settingsPopup.comboBoxCamera.currentText
+        }
+
         mainMenu.printerBusy: printer.busy
     }
 
@@ -143,6 +148,7 @@ ApplicationWindow {
         property bool multiplePrints: false
         property bool disableSnapshotSettingsPane: false
         property bool disableEffectPopup: false
+        property string cameraName: ""
 
         Component.onCompleted:
         {
@@ -181,6 +187,14 @@ ApplicationWindow {
         onDisableEffectPopupChanged:
         {
             flow.imagePreview.effectButton.visible = !disableEffectPopup
+        }
+
+        onCameraNameChanged:
+        {
+            print("Camera changed to " + cameraName)
+            var id = flow.mainMenu.settingsPopup.findDeviceId(cameraName)
+            print("Found ID: " + id)
+            flow.snapshotMenu.cameraRenderer.deviceId = id
         }
     }
 }

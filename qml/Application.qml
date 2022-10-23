@@ -18,6 +18,11 @@ ApplicationWindow {
 
     property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
+    Component.onCompleted:
+    {
+        filesystem.checkImageFolders()
+    }
+
 /*  FontLoader
     {
         name: "fontello"

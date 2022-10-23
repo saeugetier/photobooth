@@ -23,6 +23,7 @@ Popup {
     property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
+    property alias comboBoxCamera: comboBoxCamera
     property alias versionText:  labelVersionText.text
 
     Button {
@@ -118,8 +119,6 @@ Popup {
             Column {
                 spacing: 5
 
-
-                /*
                 Row {
                     spacing: 5
                     Label {
@@ -129,8 +128,9 @@ Popup {
                     }
                     ComboBox {
                         id: comboBoxCamera
+                        width: 280
                     }
-                }*/
+                }
                 Row {
                     id: rowMirrorCamera
                     spacing: 5

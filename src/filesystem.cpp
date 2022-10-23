@@ -75,6 +75,21 @@ QString FileSystem::getImagePath()
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
 
+void FileSystem::checkImageFolders()
+{
+    QString imagePath = getImagePath();
+    imagePath = imagePath.right(imagePath.length() - QString("file://").length());
+    if(!QDir(imagePath).exists())
+    {
+        QDir().mkdir(imagePath);
+    }
+    QString collagePath = imagePath + "/collage";
+    if(!QDir(collagePath).exists())
+    {
+        QDir().mkdir(collagePath);
+    }
+}
+
 bool FileSystem::removableDriveMounted()
 {
     if(getRemovableDrivePath().length() > 0)

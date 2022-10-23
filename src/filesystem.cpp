@@ -68,7 +68,7 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
 
 QString FileSystem::getImagePath()
 {
-    QSettings settings("Timmedia", "QML Photo Booth");
+    QSettings settings("saeugetier", "qtbooth");
     if(settings.contains("Application/foldername"))
         return settings.value("Application/foldername").value<QString>();
     else

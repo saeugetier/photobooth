@@ -22,17 +22,31 @@ void System::restart()
 bool System::setTime(QDateTime date)
 {
     int result = -1;
-    QDateTime time(date);
-    struct timespec stime;
-    time_t t = time.toTime_t();
-    stime.tv_sec = t;
 
-    qDebug() << "Set Time " << date << " -- "  << t;
+    qDebug() << "Set Time " << date.toString("yyyy-MM-dd hh::mm::ss");
 #ifdef __linux__
-    result = clock_settime(CLOCK_REALTIME, &stime); //return zero on success
+    QProcess process;
+    QStringList arguments;
+    arguments.append("-s");
+    arguments.append(date.toString("yyyy-MM-dd hh:mm:ss"));
+    process.start("date", arguments);
+    process.waitForFinished();
+    result = process.exitCode();
     if(result != 0)
     {
-        qDebug() << "Setting time failed with error code: " << strerror(errno) << " (" << errno << ")";
+        qDebug() << "Setting time failed. Exit code: " << result;
+        qDebug() << process.readAllStandardOutput() << "\n" << process.readAllStandardError() << "\n" << process.errorString();
+    }
+    else
+    {
+        process.start("hwclock -w");
+        process.waitForFinished();
+        result = process.exitCode();
+        if(result != 0)
+        {
+            qDebug() << "Writing clock to hwclock failed with exit code:" << result;
+            qDebug() << process.readAllStandardOutput() << "\n" << process.readAllStandardError() << "\n" << process.errorString();
+        }
     }
 #elif __APPLE__
     #pragma message ( "setting the time is not implemented for MacOS" )
@@ -40,4 +54,9 @@ bool System::setTime(QDateTime date)
     #pragma message ( "setting the time is not implemented for Windows" )
 #endif
     return (result == 0);
+}
+
+QString System::getGitHash() const
+{
+    return QString(QT_STRINGIFY(GIT_CURRENT_SHA1));
 }

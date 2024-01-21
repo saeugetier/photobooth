@@ -68,11 +68,26 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
 
 QString FileSystem::getImagePath()
 {
-    QSettings settings("Timmedia", "QML Photo Booth");
+    QSettings settings("saeugetier", "qtbooth");
     if(settings.contains("Application/foldername"))
         return settings.value("Application/foldername").value<QString>();
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+}
+
+void FileSystem::checkImageFolders()
+{
+    QString imagePath = getImagePath();
+    imagePath = imagePath.right(imagePath.length() - QString("file://").length());
+    if(!QDir(imagePath).exists())
+    {
+        QDir().mkdir(imagePath);
+    }
+    QString collagePath = imagePath + "/collage";
+    if(!QDir(collagePath).exists())
+    {
+        QDir().mkdir(collagePath);
+    }
 }
 
 bool FileSystem::removableDriveMounted()

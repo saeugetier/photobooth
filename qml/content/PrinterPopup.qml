@@ -4,6 +4,7 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: container
+    property bool isPrinting : true
 
     width: 300
     height: 300
@@ -28,7 +29,7 @@ Item {
         anchors.centerIn: parent
 
         color: "white"
-        text: "\uE802" // icon-print
+        text: isPrinting ? "\uE802" : "\uE803" // icon-print or icon-floppy
         font.family: "fontello"
         font.pixelSize: 80
 

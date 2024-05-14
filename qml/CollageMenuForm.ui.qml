@@ -15,6 +15,7 @@ Item {
     property alias plusButton: plusButton
     property alias minusButton: minusButton
     property alias printCountTumbler: printCountTumbler
+    property bool showPrintButton : true
 
     Rectangle {
         color: "white"
@@ -73,7 +74,7 @@ Item {
         Text {
             id: textLabel
             color: "#ffffff"
-            text: qsTr("Print")
+            text: showPrintButton ? qsTr("Print") : qsTr("Save")
             font.family: "DejaVu Serif"
             wrapMode: Text.WrapAnywhere
             font.pixelSize: 64
@@ -82,7 +83,7 @@ Item {
 
         ToolButton {
             id: printButton
-            text: "\uE802" // icon-print
+            text: showPrintButton ? "\uE802" : "\uE803" // icon-print or icon-floppy
             font.family: "fontello"
             font.pixelSize: 64
             enabled: true

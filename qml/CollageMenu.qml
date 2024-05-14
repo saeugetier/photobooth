@@ -7,6 +7,7 @@ CollageMenuForm {
     property alias collageImage: form.collageRenderer
     property Printer printer
     property bool multiplePrints: false
+    property alias collageIsPrintable: form.showPrintButton
 
     signal next
     signal exit
@@ -24,6 +25,7 @@ CollageMenuForm {
     printButton.onClicked:
     {
         printButton.enabled = false
+        printerPopup.isPrinting = collageIsPrintable
         printerPopup.visible = true
         console.log("Print button pressed")
         var path = applicationSettings.foldername.toString()
@@ -42,13 +44,17 @@ CollageMenuForm {
             printerPopup.visible = false
             if(collageRenderer.savedFilename.length > 0)
             {
-                if(!multiplePrints)
+                if(collageIsPrintable)
                 {
-                    printer.printImage(collageRenderer.savedFilename, 1)
-                }
-                else
-                {
-                    printer.printImage(collageRenderer.savedFilename, printCountTumbler.currentIndex + 1)
+                    if(!multiplePrints)
+                    {
+                        printer.printImage(collageRenderer.savedFilename, 1)
+                    }
+                    else
+                    {
+                        printer.printImage(collageRenderer.savedFilename, printCountTumbler.currentIndex + 1)
+                        printCountTumbler.currentIndex = 0
+                    }
                 }
                 exit()
             }
@@ -64,7 +70,7 @@ CollageMenuForm {
         }
         else
         {
-            printButton.enabled = !printer.busy
+            printButton.enabled = !printer.busy || !collageIsPrintable
         }
     }
 
@@ -76,7 +82,7 @@ CollageMenuForm {
     // selector for multiple prints should only show if multiple prints are enabled in settings menu and collage is finished
     plusButton.visible: multiplePrints && (form.state == "CollageFull")
     minusButton.visible: multiplePrints && (form.state == "CollageFull")
-    printCountTumbler.visible: multiplePrints && (form.state == "CollageFull")
+    printCountTumbler.visible: multiplePrints && collageIsPrintable && (form.state == "CollageFull")
 
     minusButton.onClicked:
     {

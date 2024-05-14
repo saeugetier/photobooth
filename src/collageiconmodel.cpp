@@ -117,6 +117,8 @@ QVariant CollageIconModel::data(const QModelIndex &index, int role) const
         return icon.name();
     else if (role == IconRole)
         return icon.icon();
+    else if (role == PrintableRole)
+        return icon.printable();
     return QVariant();
 }
 
@@ -125,6 +127,7 @@ QHash<int, QByteArray> CollageIconModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[IconRole] = "icon";
+    roles[PrintableRole] = "printable";
     return roles;
 }
 

@@ -103,7 +103,7 @@ SettingsPopupForm {
         Qt.quit()
     }
 
-    buttonDeletePhotos.onClicked:
+    buttonDeletePhotos.onActivated:
     {
         filesystem.deleteAllImages()
     }

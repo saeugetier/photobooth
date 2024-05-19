@@ -208,7 +208,7 @@ void FileSystem::deleteAllImages()
     imagePath = imagePath.right(imagePath.length() - QString("file://").length());
     QDir imageDir(imagePath);
     QStringList filters;
-    filters << "*.jpg" << "*.JPG";
+    filters << "*.jpg" << "*.JPG" << "*.png" << "*.PNG";
     imageDir.setFilter(QDir::Files);
     imageDir.setNameFilters(filters);
     if(!imageDir.isEmpty() && imageDir.exists())
@@ -224,6 +224,8 @@ void FileSystem::deleteAllImages()
     }
 
     imageDir.setPath(imagePath + "/collage");
+    imageDir.setFilter(QDir::Files);
+    imageDir.setNameFilters(filters);
     if(!imageDir.isEmpty() && imageDir.exists())
     {
         QStringList files = imageDir.entryList(filters, QDir::Files);
@@ -232,7 +234,7 @@ void FileSystem::deleteAllImages()
         for(i = 0; i < files.count(); i++)
         {
             qDebug() << "removing file: " << files[i];
-            QFile::remove(imagePath + "/" + files[i]);
+            QFile::remove(imagePath + "/collage/" + files[i]);
         }
     }
 

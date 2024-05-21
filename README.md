@@ -115,7 +115,7 @@ The templates can be imported from USB storage. All files with extension "xml,jp
 ### How to create own templates
 Create your own "Collages.xml" file. You can use the file "XmlData.xml" to customize.
 
-The root node of the XML is named "catalog". It contains nodes for the templates for collages named "collage". The collage must contain at least one "image", a "name", an "background" and an "icon". You can use builtin backgrounds like "WhiteBackground.png". 
+The root node of the XML is named "catalog". It contains nodes for the templates for collages named "collage". The collage must contain at least one "image", a "name", a "background", a "foreground" and an "icon". You can use builtin backgrounds like "WhiteBackground.png" or create your custom one. Forground will be painted in the front layer. So it is highly recommended to have an alpha channel and some cutouts for your photos.
 
 Images will need information about the position and size. The range of the values for position and size is between 0.0 and 1.0. It is possible to define a image boarder for each image.
 
@@ -131,6 +131,7 @@ Example for "Collages.xml":
         <printable>false</printable>
         <icon>Single.svg</icon>
         <background>WhiteBackground.png</background>
+        <foreground>ExampleForeground.png</foreground>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>

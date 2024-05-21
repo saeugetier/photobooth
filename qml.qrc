@@ -73,5 +73,6 @@
         <file>qml/EffectSelectionPopupForm.ui.qml</file>
         <file>qml/content/PrinterPopup.qml</file>
         <file>images/ExampleForeground.png</file>
+        <file>images/icon/SingleNoPrint.svg</file>
     </qresource>
 </RCC>

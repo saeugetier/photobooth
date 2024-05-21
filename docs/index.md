@@ -1,14 +1,15 @@
 # Overview
 
-This project contains yet another [Photobooth](https://github.com/saeugetier/photobooth). The software is intended to run on a Raspberry Pi 2/3, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed as 2 by 2 collage image. All saved images are shown in the gallery page.
+This project contains yet another [Photobooth](https://github.com/saeugetier/photobooth). The software is intended to run on a Raspberry Pi 2 and upwards, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed  collage image with multiple photos. All saved images are shown on front page when the photobox is idle.
 
 As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or webcam) can be used.
 
-The application can be either compiled and deployed on an existing Raspbian installation, or a ready to go image can be build by Yocto build system: [https://github.com/saeugetier/poky-photobooth/](https://github.com/saeugetier/poky-photobooth/)
+The application can be either compiled and deployed on an existing Raspberry Pi OS installation, or a ready to go image can be build by Yocto build system: [https://github.com/saeugetier/poky-photobooth/](https://github.com/saeugetier/poky-photobooth/)
 
 ## Video
 
-[![Video](https://img.youtube.com/vi/Z9pVK-X5Wz4/0.jpg)](https://youtu.be/Z9pVK-X5Wz4)
+[![](https://markdown-videos-api.jorgenkh.no/youtube/fB2aQGPT-wg?width=640&height=360)](https://youtu.be/fB2aQGPT-wg)
+(Link to Youtube)
 
 # Technology
 ## Software

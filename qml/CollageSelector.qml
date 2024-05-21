@@ -6,6 +6,7 @@ CollageSelectorForm {
     id: form
     property alias iconModel: form.iconModel
     property string iconName: ""
+    property bool isPrintable: true
     signal selected
 
     upButton.onClicked:
@@ -39,6 +40,7 @@ CollageSelectorForm {
                 iconListView.currentIndex = index
                 console.log("Selected index: " + Number(index).toString())
                 iconName = name
+                isPrintable = printable
                 selected()
             }
         }

@@ -47,15 +47,20 @@ QSize SelphyPrinter::getPrintSize()
     return QSize(3570,2380); //hard coded pixel size
 }
 
-int SelphyPrinter::printImage(const QString &filename)
+int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
     if(mIp.length() > 0)
     {
         QString imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg";
         QString selphyCommand = "selphy -printer_ip=" + mIp + " " + filename + ".jpg";
+        QString printCommand = imageMagickCommand;
+        for(int i = 0; i < copyCount; i++)
+        {
+            printCommand = printCommand + " && " + selphyCommand;
+        }
         QStringList shParameters;
         shParameters << "-c";
-        shParameters << imageMagickCommand + " && " + selphyCommand;
+        shParameters << printCommand;
 
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {

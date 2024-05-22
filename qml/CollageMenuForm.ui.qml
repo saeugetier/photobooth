@@ -11,7 +11,11 @@ Item {
     property alias nextButton: nextButton
     property alias exitButton: exitButton
     property real printerRatio: 3 / 4
-    property alias printerBusyPopup: printerBusyPopup
+    property alias printerPopup: printerPopup
+    property alias plusButton: plusButton
+    property alias minusButton: minusButton
+    property alias printCountTumbler: printCountTumbler
+    property bool showPrintButton : true
 
     Rectangle {
         color: "white"
@@ -70,7 +74,7 @@ Item {
         Text {
             id: textLabel
             color: "#ffffff"
-            text: qsTr("Print")
+            text: showPrintButton ? qsTr("Print") : qsTr("Save")
             font.family: "DejaVu Serif"
             wrapMode: Text.WrapAnywhere
             font.pixelSize: 64
@@ -79,7 +83,7 @@ Item {
 
         ToolButton {
             id: printButton
-            text: "\uE802" // icon-print
+            text: showPrintButton ? "\uE802" : "\uE803" // icon-print or icon-floppy
             font.family: "fontello"
             font.pixelSize: 64
             enabled: true
@@ -124,9 +128,71 @@ Item {
         forward: false
     }
 
-    PrinterBusyPopup {
-        id: printerBusyPopup
+    ToolButton {
+        id: minusButton
+        text: "\uE814" // icon-minus
+        font.family: "fontello"
+        font.pixelSize: 48
+        enabled: true
+
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 25
+        anchors.rightMargin: 15
+        anchors.right: printCountTumbler.left
+
+        scale: hovered ? 1.1 : 1
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
+    }
+
+    Tumbler {
+        height: 80
+        id: printCountTumbler
+        model: ["1", "2", "3", "4"]
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
+        anchors.horizontalCenter: parent.horizontalCenter
+        wrap: false
+        visibleItemCount: 1
+        delegate: Text {
+            text: modelData
+            font.pixelSize: 64
+            color: "#ffffff"
+            font.family: "DejaVu Serif"
+            opacity: 0.4 + Math.max(0, 1 - Math.abs(Tumbler.displacement)) * 0.6
+        }
+    }
+
+    ToolButton {
+        id: plusButton
+        text: "\uE813" // icon-plus
+        font.family: "fontello"
+        font.pixelSize: 48
+        enabled: true
+
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 25
+        anchors.left: printCountTumbler.right
+
+        scale: hovered ? 1.1 : 1
+
+        layer.enabled: true
+        layer.effect: Glow {
+            color: "black"
+            samples: 20
+            spread: 0.3
+        }
+    }
+
+    PrinterPopup {
+        id: printerPopup
         anchors.centerIn: parent
+        visible: false
     }
 
     states: [

@@ -25,6 +25,7 @@ ApplicationFlowForm {
         state = "snapshot"
         collageMenu.collageImage.imageModel = modelFactory.getCollageImageModel(mainMenu.selectedCollageName)
         collageMenu.collageImage.imageModel.clearImagePathes()
+        collageMenu.collageIsPrintable = mainMenu.collageIsPrintable
         mainMenu.selectedCollageName = ""
     }
 

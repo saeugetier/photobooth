@@ -68,11 +68,26 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
 
 QString FileSystem::getImagePath()
 {
-    QSettings settings("Timmedia", "QML Photo Booth");
+    QSettings settings("saeugetier", "qtbooth");
     if(settings.contains("Application/foldername"))
         return settings.value("Application/foldername").value<QString>();
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+}
+
+void FileSystem::checkImageFolders()
+{
+    QString imagePath = getImagePath();
+    imagePath = imagePath.right(imagePath.length() - QString("file://").length());
+    if(!QDir(imagePath).exists())
+    {
+        QDir().mkdir(imagePath);
+    }
+    QString collagePath = imagePath + "/collage";
+    if(!QDir(collagePath).exists())
+    {
+        QDir().mkdir(collagePath);
+    }
 }
 
 bool FileSystem::removableDriveMounted()
@@ -89,6 +104,8 @@ void FileSystem::unmountRemoveableDrive()
     QProcess unmountProcess;
     unmountProcess.setProgram("umount");
     unmountProcess.setArguments(QStringList() << this->getRemovableDrivePath());
+    unmountProcess.start();
+    unmountProcess.waitForFinished();
 }
 
 void FileSystem::startCopyFilesToRemovableDrive()
@@ -113,6 +130,9 @@ void FileSystem::startCopyFilesToRemovableDrive()
                 QStringList filters;
                 filters << "*.jpg" << "*.JPG";
                 QStringList files = imageDir.entryList(filters, QDir::Files);
+                filters << "*.png";
+                QDir collageDir(imagePath + "/collage");
+                files.append(collageDir.entryList(filters, QDir::Files));
 
                 int i;
                 for(i = 0; i < files.count() && !this->m_copyFuture.isCanceled(); i++)
@@ -123,7 +143,12 @@ void FileSystem::startCopyFilesToRemovableDrive()
                             QFile::remove(removableDrivePath + "/" + files[i]);
 
                     if(!QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]))
-                        qDebug() << "Copying file: " << files[i] << " was not successfull";
+                    {
+                        if(!QFile::copy(imagePath + "/collage/" + files[i], removableDrivePath + "/" + files[i]))
+                        {
+                            qDebug() << "Copying file: " << files[i] << " was not successfull";
+                        }
+                    }
 
                     emit this->copyProgress(progress);
                 }
@@ -183,7 +208,7 @@ void FileSystem::deleteAllImages()
     imagePath = imagePath.right(imagePath.length() - QString("file://").length());
     QDir imageDir(imagePath);
     QStringList filters;
-    filters << "*.jpg" << "*.JPG";
+    filters << "*.jpg" << "*.JPG" << "*.png" << "*.PNG";
     imageDir.setFilter(QDir::Files);
     imageDir.setNameFilters(filters);
     if(!imageDir.isEmpty() && imageDir.exists())
@@ -199,6 +224,8 @@ void FileSystem::deleteAllImages()
     }
 
     imageDir.setPath(imagePath + "/collage");
+    imageDir.setFilter(QDir::Files);
+    imageDir.setNameFilters(filters);
     if(!imageDir.isEmpty() && imageDir.exists())
     {
         QStringList files = imageDir.entryList(filters, QDir::Files);
@@ -207,7 +234,7 @@ void FileSystem::deleteAllImages()
         for(i = 0; i < files.count(); i++)
         {
             qDebug() << "removing file: " << files[i];
-            QFile::remove(imagePath + "/" + files[i]);
+            QFile::remove(imagePath + "/collage/" + files[i]);
         }
     }
 

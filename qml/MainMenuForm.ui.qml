@@ -7,6 +7,7 @@ Item {
     id: element
     width: 640
     height: 480
+    property alias printerBusy: printerPopup.visible
     property alias settingsButton: settingsButton
     property alias collageRenderer: collageRenderer
     property alias backButton: backButton
@@ -66,8 +67,8 @@ Item {
                 x: leftMargin + horzitontalSpacing
 
                 source: fileURL
-                sourceSize.height: 1024
-                sourceSize.width: 1024
+                sourceSize.height: 512
+                sourceSize.width: 512
                 fillMode: Image.PreserveAspectFit
                 transform: Rotation {
                     origin.x: imageSlider.width / 4
@@ -183,6 +184,11 @@ Item {
         visible: false
     }
 
+    PrinterPopup {
+        id: printerPopup
+        anchors.centerIn: parent
+    }
+
     states: [
         State {
             name: "NoIconSelected"
@@ -229,8 +235,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:640}D{i:14;anchors_x:139;anchors_y:394}D{i:13;anchors_x:139;anchors_y:394}
-D{i:7;anchors_height:360;anchors_width:480;anchors_x:57;anchors_y:150}
+    D{i:0;height:480;width:640}D{i:15}D{i:14}D{i:7}
 }
 ##^##*/
 

@@ -6,6 +6,9 @@ Popup {
     id: popup
     width: 400
     height: 500
+    property alias switchHideSnapshotSettings: switchHideSnapshotSettings
+    property alias switchHideEffectPopup: switchHideEffectPopup
+    property alias switchMultiplePrints: switchMultiplePrints
     property alias buttonCloseProgram: buttonCloseProgram
     property alias comboWindowMode: comboWindowMode
     property alias labelTime: labelTime
@@ -20,6 +23,8 @@ Popup {
     property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
+    property alias comboBoxCamera: comboBoxCamera
+    property alias versionText:  labelVersionText.text
 
     Button {
         id: buttonClose
@@ -114,8 +119,6 @@ Popup {
             Column {
                 spacing: 5
 
-
-                /*
                 Row {
                     spacing: 5
                     Label {
@@ -125,8 +128,9 @@ Popup {
                     }
                     ComboBox {
                         id: comboBoxCamera
+                        width: 280
                     }
-                }*/
+                }
                 Row {
                     id: rowMirrorCamera
                     spacing: 5
@@ -140,6 +144,38 @@ Popup {
                     Switch {
                         id: switchMirrorCamera
                         text: qsTr("mirror")
+                    }
+                }
+
+                Row {
+                    id: rowHideSnapshotSettings
+                    spacing: 5
+                    Label {
+                        id: labelHideSnapshotSettings
+                        text: qsTr("Snapshot Settings")
+                        anchors.verticalCenter: switchHideSnapshotSettings.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchHideSnapshotSettings
+                        text: qsTr("hide")
+                    }
+                }
+
+                Row {
+                    id: rowHideEffectPopup
+                    spacing: 5
+                    Label {
+                        id: labelHideEffectPopup
+                        text: qsTr("Effect Popup")
+                        anchors.verticalCenter: rowHideEffectPopup.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchHideEffectPopup
+                        text: qsTr("disable")
                     }
                 }
             }
@@ -178,6 +214,22 @@ Popup {
                     ComboBox {
                         id: comboBoxPrinter
                         width: 280
+                    }
+                }
+
+                Row {
+                    id: rowMultiplePrints
+                    spacing: 5
+                    Label {
+                        id: labelMultiplePrints
+                        text: qsTr("Allow multiple prints")
+                        anchors.verticalCenter: switchMultiplePrints.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchMultiplePrints
+                        text: qsTr("enabled")
                     }
                 }
             }
@@ -253,9 +305,22 @@ Popup {
                         id: buttonRestart
                         text: qsTr("Restart")
                     }
+
+                }
+                Row
+                {
+                    spacing: 10
                     Button {
                         id: buttonCloseProgram
                         text: qsTr("Exit Photobooth")
+                    }
+                }
+                Row
+                {
+                    Label
+                    {
+                        id: labelVersionText
+                        text: "Version"
                     }
                 }
             }

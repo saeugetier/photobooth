@@ -1,10 +1,13 @@
 import QtQuick 2.4
 import Printer 1.0
+import "content"
 
 CollageMenuForm {
     id: form
     property alias collageImage: form.collageRenderer
     property Printer printer
+    property bool multiplePrints: false
+    property alias collageIsPrintable: form.showPrintButton
 
     signal next
     signal exit
@@ -21,6 +24,9 @@ CollageMenuForm {
 
     printButton.onClicked:
     {
+        printButton.enabled = false
+        printerPopup.isPrinting = collageIsPrintable
+        printerPopup.visible = true
         console.log("Print button pressed")
         var path = applicationSettings.foldername.toString()
         path = path.replace(/^(file:\/{2})/,"");
@@ -35,9 +41,21 @@ CollageMenuForm {
     {
         if(collageRenderer.saving === false)
         {
+            printerPopup.visible = false
             if(collageRenderer.savedFilename.length > 0)
             {
-                printer.printImage(collageRenderer.savedFilename)
+                if(collageIsPrintable)
+                {
+                    if(!multiplePrints)
+                    {
+                        printer.printImage(collageRenderer.savedFilename, 1)
+                    }
+                    else
+                    {
+                        printer.printImage(collageRenderer.savedFilename, printCountTumbler.currentIndex + 1)
+                        printCountTumbler.currentIndex = 0
+                    }
+                }
                 exit()
             }
         }
@@ -52,7 +70,7 @@ CollageMenuForm {
         }
         else
         {
-            printButton.enabled = true
+            printButton.enabled = !printer.busy || !collageIsPrintable
         }
     }
 
@@ -61,14 +79,34 @@ CollageMenuForm {
         exit()
     }
 
+    // selector for multiple prints should only show if multiple prints are enabled in settings menu and collage is finished
+    plusButton.visible: multiplePrints && (form.state == "CollageFull")
+    minusButton.visible: multiplePrints && (form.state == "CollageFull")
+    printCountTumbler.visible: multiplePrints && collageIsPrintable && (form.state == "CollageFull")
+
+    minusButton.onClicked:
+    {
+        if(printCountTumbler.currentIndex > 0)
+        {
+            printCountTumbler.currentIndex = printCountTumbler.currentIndex - 1
+        }
+    }
+
+    plusButton.onClicked:
+    {
+        if(printCountTumbler.currentIndex < (printCountTumbler.count - 1))
+        {
+            printCountTumbler.currentIndex = printCountTumbler.currentIndex + 1
+        }
+    }
+
     onStateChanged:
     {
         if(state == "CollageFull")
         {
             if(printer.busy)
             {
-                printerBusyPopup.modal = 1
-                printerBusyPopup.open()
+                printerPopup.visible = true
             }
         }
     }
@@ -87,9 +125,13 @@ CollageMenuForm {
         target: printer
         onBusyChanged:
         {
-            if(!printer.busy && printerBusyPopup.opened)
+            if(!printer.busy)
             {
-                printerBusyPopup.close()
+                printerPopup.visible = false
+                if(collageRenderer.imagesLoading == 0)
+                {
+                    printButton.enabled = true
+                }
             }
         }
     }

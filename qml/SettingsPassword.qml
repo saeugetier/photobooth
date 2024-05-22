@@ -43,13 +43,15 @@ SettingsPasswordForm {
         if(passwordInput.text == password)
         {
             unlocked = true
+            console.log("Password accepted: " + passwordInput.text)
             passwordAccepted()
         }
         else
         {
+            console.log("Password wrong: " + passwordInput.text)
             unlocked = false
         }
-        console.log("Password accepted: " + unlocked)
+
     }
 
 }

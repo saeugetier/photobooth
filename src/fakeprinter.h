@@ -13,7 +13,7 @@ public:
     QSize getPrintSize() override;
     bool printerOnline() override;
     bool busy() override;
-    int printImage(const QString &filename) override;
+    int printImage(const QString &filename, int copyCount) override;
 protected slots:
     void busyTimeout();
 protected:

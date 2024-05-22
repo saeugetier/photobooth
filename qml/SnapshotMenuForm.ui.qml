@@ -13,6 +13,7 @@ Item {
     property alias cameraRenderer: cameraRenderer
     property alias shutterButton: shutterButton
     property alias countdown: shutterButton.countDownTime
+    property bool hideSnapshotSettingsPane: false
 
     CameraRenderer {
         id: cameraRenderer
@@ -72,7 +73,7 @@ Item {
 
             PropertyChanges {
                 target: snapshotSettings
-                opacity: 1.0
+                opacity: hideSnapshotSettingsPane ? 0.0 : 1.0
             }
 
             PropertyChanges {

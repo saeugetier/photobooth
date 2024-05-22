@@ -18,6 +18,11 @@ ApplicationWindow {
 
     property Printer printer : printerFactory.getPrinter(applicationSettings.printerName)
 
+    Component.onCompleted:
+    {
+        filesystem.checkImageFolders()
+    }
+
 /*  FontLoader
     {
         name: "fontello"
@@ -75,6 +80,21 @@ ApplicationWindow {
             applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
         }
 
+        mainMenu.settingsPopup.switchMultiplePrints.onCheckedChanged:
+        {
+            applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
+        }
+
+        mainMenu.settingsPopup.switchHideSnapshotSettings.onCheckedChanged:
+        {
+            applicationSettings.disableSnapshotSettingsPane = mainMenu.settingsPopup.switchHideSnapshotSettings.checked
+        }
+
+        mainMenu.settingsPopup.switchHideEffectPopup.onCheckedChanged:
+        {
+            applicationSettings.disableEffectPopup = mainMenu.settingsPopup.switchHideEffectPopup.checked
+        }
+
         mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
         {
             applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
@@ -110,6 +130,13 @@ ApplicationWindow {
         {
             applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
         }
+
+        mainMenu.settingsPopup.comboBoxCamera.onCurrentIndexChanged:
+        {
+            applicationSettings.cameraName = mainMenu.settingsPopup.comboBoxCamera.currentText
+        }
+
+        mainMenu.printerBusy: printer.busy
     }
 
     Settings
@@ -123,13 +150,23 @@ ApplicationWindow {
         property bool cameraMirrored: true
         property string printerName: "No Printer"
         property int windowMode: Window.Maximized
+        property bool multiplePrints: false
+        property bool disableSnapshotSettingsPane: false
+        property bool disableEffectPopup: false
+        property string cameraName: ""
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
+            flow.mainMenu.settingsPopup.switchMultiplePrints.checked = multiplePrints
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
+            flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
+            flow.mainMenu.settingsPopup.switchHideEffectPopup.checked = disableEffectPopup
             flow.mainMenuModel.setShowPrintable(printEnable)
+            flow.collageMenu.multiplePrints = multiplePrints
+            flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
+            flow.imagePreview.effectButton.visible = !disableEffectPopup
         }
 
         onPrinterNameChanged:
@@ -140,6 +177,29 @@ ApplicationWindow {
         onPrintEnableChanged:
         {
             flow.mainMenuModel.setShowPrintable(printEnable)
+        }
+
+        onMultiplePrintsChanged:
+        {
+            flow.collageMenu.multiplePrints = multiplePrints
+        }
+
+        onDisableSnapshotSettingsPaneChanged:
+        {
+            flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
+        }
+
+        onDisableEffectPopupChanged:
+        {
+            flow.imagePreview.effectButton.visible = !disableEffectPopup
+        }
+
+        onCameraNameChanged:
+        {
+            print("Camera changed to " + cameraName)
+            var id = flow.mainMenu.settingsPopup.findDeviceId(cameraName)
+            print("Found ID: " + id)
+            flow.snapshotMenu.cameraRenderer.deviceId = id
         }
     }
 }

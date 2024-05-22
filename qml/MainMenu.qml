@@ -11,6 +11,7 @@ MainMenuForm {
     property alias settingsPopup: settingsPopup
     property alias settingsPinCode: settingsPassword.password
     property string selectedCollageName : ""
+    property bool collageIsPrintable: true
     state: "IconNotSelected"
     signal collageSelected
 
@@ -30,6 +31,7 @@ MainMenuForm {
     {
         state = "IconSelected"
         selectedCollageName = collageSelector.iconName
+        collageIsPrintable = collageSelector.isPrintable
     }
 
     continueButton.onClicked:

@@ -370,6 +370,25 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    QDomNodeList rotationNode = element.elementsByTagName("rotation");
+    if(rotationNode.count() == 1)
+    {
+        bool ok;
+        mAngle = rotationNode.item(0).toElement().text().toFloat();
+        if(!ok)
+        {
+            mErrorMsg = "rotation must be defined as float";
+            mLine = rotationNode.item(0).lineNumber();
+            return false;
+        }
+    }
+    else if(rotationNode.count() > 1)
+    {
+        mErrorMsg = "multiple rotations are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
     QDomNodeList borderImageNode = element.elementsByTagName("border");
     if(borderImageNode.count() == 1)
     {

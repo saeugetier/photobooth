@@ -15,6 +15,72 @@
 #include "fileio.h"
 #include "filesystem.h"
 #include "system.h"
+#include <iostream>
+
+//some constants to parameterize.
+const qint64 LOG_FILE_LIMIT = 3000000;
+const QString LOG_PATH = "/logs/";
+const QString LOG_FILENAME = "qtbooth.log";
+
+//thread safety
+QMutex mutex;
+
+void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, const QString & str)
+{
+    //thread safety
+    mutex.lock();
+    QString txt;
+
+    //prepend timestamp to every message
+    QString datetime = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
+    //prepend a log level label to every message
+    switch (type) {
+    case QtDebugMsg:
+        txt = QString("[Debug*] ");
+        break;
+    case QtWarningMsg:
+        txt = QString("[Warning] ");
+        break;
+    case QtInfoMsg:
+        txt = QString("[Info] ");
+        break;
+    case QtCriticalMsg:
+        txt = QString("[Critical] ");
+        break;
+    case QtFatalMsg:
+        txt = QString("[Fatal] ");
+    }
+
+    QDir dir;
+
+    QString filePath = QStandardPaths::writableLocation(QStandardPaths::StandardLocation) + LOG_PATH;
+
+    if (!dir.exists(filePath))
+        dir.mkpath(filePath); // You can check the success if needed
+
+    filePath = filePath + LOG_FILENAME;
+
+    QFile outFile(filePath);
+
+    //if file reached the limit, rotate to filename.1
+    if(outFile.size() > LOG_FILE_LIMIT){
+        //roll the log file.
+        QFile::remove(filePath + ".1");
+        QFile::rename(filePath, filePath + ".1");
+        QFile::resize(filePath, 0);
+    }
+
+    //write message
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream ts(&outFile);
+    ts << datetime << txt << context.file << str << endl;
+
+    std::cout << datetime.toStdString() <<  " - " << txt.toStdString() << " - " << context.file << "(" << context.line << ") - " << str.toStdString() << std::endl;
+
+    //close fd
+    outFile.close();
+    mutex.unlock();
+}
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +92,8 @@ int main(int argc, char *argv[])
     QGuiApplication::setOrganizationName("saeugetier");
     QGuiApplication::setOrganizationDomain("github.com");
     QGuiApplication::setApplicationName("qtbooth");
+
+    qInstallMessageHandler(redirectDebugMessages);
 
     QFontDatabase fontDatabase;
     if (fontDatabase.addApplicationFont(":/font/fontello/fontello.ttf") == -1)

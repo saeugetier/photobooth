@@ -46,6 +46,17 @@
         </images>
     </collage>
     <collage>
+        <name>Four Images Rotation</name>
+        <icon>Four.svg</icon>
+        <background>WhiteBackground.png</background>
+        <images>
+            <image><position x="0.0" y="0.0"/><size width="0.5" height="0.5"/><rotation>0.0</rotation></image>
+            <image><position x="0.5" y="0.0"/><size width="0.5" height="0.5"/><rotation>10.0</rotation></image>
+            <image><position x="0.0" y="0.5"/><size width="0.5" height="0.5"/><rotation>20.0</rotation></image>
+            <image><position x="0.5" y="0.5"/><size width="0.5" height="0.5"/><rotation>30.0</rotation></image>
+        </images>
+    </collage>
+    <collage>
         <name>Four Images with Background</name>
         <icon>FourStars.svg</icon>
         <background>StarsBackground.jpg</background>

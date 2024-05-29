@@ -53,7 +53,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
 
     QDir dir;
 
-    QString filePath = QStandardPaths::writableLocation(QStandardPaths::StandardLocation) + LOG_PATH;
+    QString filePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + LOG_PATH;
 
     if (!dir.exists(filePath))
         dir.mkpath(filePath); // You can check the success if needed

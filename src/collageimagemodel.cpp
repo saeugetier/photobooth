@@ -119,7 +119,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[ImageRectRole] = "imageRect";
-    roles[RotationRole] = "rotation";
+    roles[RotationRole] = "imageRotation";
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
@@ -374,7 +374,7 @@ bool CollageImage::parseXml(const QDomNode &node)
     if(rotationNode.count() == 1)
     {
         bool ok;
-        mAngle = rotationNode.item(0).toElement().text().toFloat();
+        mAngle = rotationNode.item(0).toElement().text().toFloat(&ok);
         if(!ok)
         {
             mErrorMsg = "rotation must be defined as float";

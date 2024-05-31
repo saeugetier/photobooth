@@ -231,6 +231,11 @@ bool CollageImageModel::collageFull()
         return false;
 }
 
+QSize CollageImageModel::collagePixelSize() const
+{
+    return mPixelSize;
+}
+
 bool CollageImageModel::nextImageIsEffectSelectable()
 {
     if(!collageFull())

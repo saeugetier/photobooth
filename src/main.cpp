@@ -75,7 +75,14 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
     QTextStream ts(&outFile);
     ts << datetime << txt << context.file << str << endl;
 
-    std::cout << datetime.toStdString() <<  " - " << txt.toStdString() << " - " << context.file << "(" << context.line << ") - " << str.toStdString() << std::endl;
+    if(context.file != nullptr && context.line != 0)
+    {
+        std::cout << datetime.toStdString() <<  " - " << txt.toStdString() << " - " << context.file << "(" << context.line << ") - " << str.toStdString() << std::endl;
+    }
+    else
+    {
+        std::cout << datetime.toStdString() <<  " - " << txt.toStdString() << " - " << str.toStdString() << std::endl;
+    }
 
     //close fd
     outFile.close();

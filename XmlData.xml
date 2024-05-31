@@ -53,6 +53,7 @@
         <name>Four Images Rotation</name>
         <icon>Four.svg</icon>
         <background>WhiteBackground.png</background>
+        <size width="3570" height="2380"/>
         <images>
             <image><position x="0.02" y="0.02"/><size width="0.46" height="0.46"/><rotation>0.0</rotation></image>
             <image><position x="0.5" y="0.06"/><size width="0.45" height="0.45"/><rotation>10.0</rotation></image>

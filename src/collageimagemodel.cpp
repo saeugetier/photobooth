@@ -1,5 +1,7 @@
 #include "collageimagemodel.h"
 #include "collagemodelfactory.h"
+#include <QTransform>
+#include <QDebug>
 
 CollageImageModel::CollageImageModel(QObject *parent) : QAbstractListModel(parent)
 {
@@ -559,25 +561,34 @@ bool CollageImage::validateBoundary()
 {
     //test position and size parameter
     bool result = true;
-    if(mImageRect.x() < 0 || mImageRect.x() > 1.0)
+
+    QPointF center = mImageRect.center();
+    QRectF imageRect = mImageRect;
+    QTransform transform;
+    transform.translate(center.x(), center.y());
+    transform.rotate(mAngle);
+    transform.translate(-center.x(), -center.y());
+    imageRect = transform.mapRect(imageRect);
+    qDebug() << "Bounding box of image: " << imageRect;
+
+    if(imageRect.x() < 0 || imageRect.x() > 1.0)
     {
         result = false;
     }
-    if(mImageRect.y() < 0 || mImageRect.x() > 1.0)
+    if(imageRect.y() < 0 || imageRect.x() > 1.0)
     {
         result = false;
     }
-    if((mImageRect.x() + mImageRect.width()) > 1.0 || mImageRect.width() < 0)
+    if((imageRect.x() + imageRect.width()) > 1.0 || imageRect.width() < 0)
     {
         result = false;
     }
-    if((mImageRect.y() + mImageRect.height()) > 1.0 || mImageRect.height() < 0)
+    if((imageRect.y() + imageRect.height()) > 1.0 || imageRect.height() < 0)
     {
         result = false;
     }
 
-    //TODO: Validate Border
-    //TODO: Validate with rotation
+    //@TODO: Validate Border
 
     return result;
 }

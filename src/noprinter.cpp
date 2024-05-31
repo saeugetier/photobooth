@@ -1,10 +1,5 @@
 #include "noprinter.h"
 
-QSize NoPrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size
-}
-
 bool NoPrinter::printerOnline()
 {
     return false;

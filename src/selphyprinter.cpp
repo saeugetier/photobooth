@@ -41,12 +41,6 @@ bool SelphyPrinter::printerOnline()
     }
 }
 
-
-QSize SelphyPrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size
-}
-
 int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
     if(mIp.length() > 0)

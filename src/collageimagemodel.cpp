@@ -37,6 +37,12 @@ bool CollageImageModel::parseXml(const QDomNode& node)
         mLine = element.lineNumber();
         return false;
     }
+    else
+    {
+        mErrorMsg = "at least one background nodes required";
+        mLine = element.lineNumber();
+        return false;
+    }
 
     QDomNodeList foregroundNode = element.elementsByTagName("foreground");
     if(foregroundNode.count() == 1)
@@ -46,6 +52,50 @@ bool CollageImageModel::parseXml(const QDomNode& node)
     else if(foregroundNode.count() > 1)
     {
         mErrorMsg = "multiple foreground nodes";
+        mLine = element.lineNumber();
+        return false;
+    }
+
+    QDomNodeList sizeNode = element.elementsByTagName("size");
+    if(sizeNode.count() == 1)
+    {
+        if(sizeNode.item(0).hasAttributes() && sizeNode.item(0).toElement().hasAttribute("width") && sizeNode.item(0).toElement().hasAttribute("height"))
+        {
+            bool ok;
+            QString x = sizeNode.item(0).toElement().attribute("width");
+            mPixelSize.setWidth(x.toDouble(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'width' must be defined as float";
+                mLine = sizeNode.item(0).lineNumber();
+                return false;
+            }
+
+            QString y = sizeNode.item(0).toElement().attribute("height");
+            mPixelSize.setHeight(y.toDouble(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'height' must be defined as float";
+                mLine = sizeNode.item(0).lineNumber();
+                return false;
+            }
+        }
+        else
+        {
+            mErrorMsg = "size must be defined be 'width' and 'height' attributes";
+            mLine = sizeNode.item(0).lineNumber();
+            return false;
+        }
+    }
+    else if(sizeNode.count() > 1)
+    {
+        mErrorMsg = "multiple size nodes";
+        mLine = element.lineNumber();
+        return false;
+    }
+    else
+    {
+        mErrorMsg = "at least one size nodes required";
         mLine = element.lineNumber();
         return false;
     }

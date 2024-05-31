@@ -6,6 +6,7 @@
         <icon>SingleNoPrint.svg</icon>
         <background>WhiteBackground.png</background>
         <foreground>ExampleForeground.png</foreground>
+        <size width="3570" height="2380"/>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>
@@ -14,6 +15,7 @@
         <name>Single Image</name>
         <icon>Single.svg</icon>
         <background>WhiteBackground.png</background>
+        <size width="3570" height="2380"/>
         <images>
             <image><position x="0.0" y="0.0"/><size width="1.0" height="1.0"/></image>
         </images>
@@ -22,6 +24,7 @@
         <name>Two Images</name>
         <icon>Double.svg</icon>
         <background>WhiteBackground.png</background>
+        <size width="3570" height="2380"/>
         <images>
             <image>
                 <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
@@ -38,6 +41,7 @@
         <name>Four Images</name>
         <icon>Four.svg</icon>
         <background>WhiteBackground.png</background>
+        <size width="3570" height="2380"/>
         <images>
             <image><position x="0.0" y="0.0"/><size width="0.5" height="0.5"/></image>
             <image><position x="0.5" y="0.0"/><size width="0.5" height="0.5"/></image>
@@ -60,6 +64,7 @@
         <name>Four Images with Background</name>
         <icon>FourStars.svg</icon>
         <background>StarsBackground.jpg</background>
+        <size width="3570" height="2380"/>
         <images>
             <image><position x="0.05" y="0.05"/><size width="0.4" height="0.4"/></image>
             <image><position x="0.55" y="0.05"/><size width="0.4" height="0.4"/></image>
@@ -71,6 +76,7 @@
         <name>Four Images Border</name>
         <icon>FourBorder.svg</icon>
         <background>WhiteBackground.png</background>
+        <size width="3570" height="2380"/>
         <images>
             <image>
                 <position x="0.0" y="0.0"/><size width="0.5" height="0.5"/>

@@ -3,11 +3,6 @@
 #include <QDebug>
 #include <QPainter>
 
-QSize StandardPrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size @TODO
-}
-
 bool StandardPrinter::printerOnline()
 {
     return true; //cannot determine online state @TODO

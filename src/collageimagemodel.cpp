@@ -39,6 +39,12 @@ bool CollageImageModel::parseXml(const QDomNode& node)
         mLine = element.lineNumber();
         return false;
     }
+    else
+    {
+        mErrorMsg = "at least one background nodes required";
+        mLine = element.lineNumber();
+        return false;
+    }
 
     QDomNodeList foregroundNode = element.elementsByTagName("foreground");
     if(foregroundNode.count() == 1)
@@ -48,6 +54,44 @@ bool CollageImageModel::parseXml(const QDomNode& node)
     else if(foregroundNode.count() > 1)
     {
         mErrorMsg = "multiple foreground nodes";
+        mLine = element.lineNumber();
+        return false;
+    }
+
+    QDomElement sizeElement = element.firstChildElement("size");
+    if(sizeElement.isElement())
+    {
+        if(sizeElement.hasAttributes() && sizeElement.toElement().hasAttribute("width") && sizeElement.toElement().hasAttribute("height"))
+        {
+            bool ok;
+            QString x = sizeElement.toElement().attribute("width");
+            mPixelSize.setWidth(x.toInt(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'width' must be defined as float";
+                mLine = sizeElement.lineNumber();
+                return false;
+            }
+
+            QString y = sizeElement.toElement().attribute("height");
+            mPixelSize.setHeight(y.toInt(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'height' must be defined as float";
+                mLine = sizeElement.lineNumber();
+                return false;
+            }
+        }
+        else
+        {
+            mErrorMsg = "size must be defined be 'width' and 'height' attributes";
+            mLine = sizeElement.lineNumber();
+            return false;
+        }
+    }
+    else
+    {
+        mErrorMsg = "at least one size nodes required";
         mLine = element.lineNumber();
         return false;
     }
@@ -231,6 +275,11 @@ bool CollageImageModel::collageFull()
         return true;
     else
         return false;
+}
+
+QSize CollageImageModel::collagePixelSize() const
+{
+    return mPixelSize;
 }
 
 bool CollageImageModel::nextImageIsEffectSelectable()

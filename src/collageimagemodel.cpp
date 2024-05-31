@@ -56,42 +56,36 @@ bool CollageImageModel::parseXml(const QDomNode& node)
         return false;
     }
 
-    QDomNodeList sizeNode = element.elementsByTagName("size");
-    if(sizeNode.count() == 1)
+    QDomElement sizeElement = element.firstChildElement("size");
+    if(sizeElement.isElement())
     {
-        if(sizeNode.item(0).hasAttributes() && sizeNode.item(0).toElement().hasAttribute("width") && sizeNode.item(0).toElement().hasAttribute("height"))
+        if(sizeElement.hasAttributes() && sizeElement.toElement().hasAttribute("width") && sizeElement.toElement().hasAttribute("height"))
         {
             bool ok;
-            QString x = sizeNode.item(0).toElement().attribute("width");
-            mPixelSize.setWidth(x.toDouble(&ok));
+            QString x = sizeElement.toElement().attribute("width");
+            mPixelSize.setWidth(x.toInt(&ok));
             if(!ok)
             {
                 mErrorMsg = "size 'width' must be defined as float";
-                mLine = sizeNode.item(0).lineNumber();
+                mLine = sizeElement.lineNumber();
                 return false;
             }
 
-            QString y = sizeNode.item(0).toElement().attribute("height");
-            mPixelSize.setHeight(y.toDouble(&ok));
+            QString y = sizeElement.toElement().attribute("height");
+            mPixelSize.setHeight(y.toInt(&ok));
             if(!ok)
             {
                 mErrorMsg = "size 'height' must be defined as float";
-                mLine = sizeNode.item(0).lineNumber();
+                mLine = sizeElement.lineNumber();
                 return false;
             }
         }
         else
         {
             mErrorMsg = "size must be defined be 'width' and 'height' attributes";
-            mLine = sizeNode.item(0).lineNumber();
+            mLine = sizeElement.lineNumber();
             return false;
         }
-    }
-    else if(sizeNode.count() > 1)
-    {
-        mErrorMsg = "multiple size nodes";
-        mLine = element.lineNumber();
-        return false;
     }
     else
     {

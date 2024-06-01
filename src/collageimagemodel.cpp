@@ -118,7 +118,7 @@ bool CollageImageModel::parseXml(const QDomNode& node)
     for(int i = 0; i < imageNodes.length(); i++)
     {
         bool result;
-        CollageImage* image = new CollageImage();
+        CollageImage* image = new CollageImage(mPixelSize);
         result = image->parseXml(imageNodes.item(i));
         if(!result)
         {
@@ -325,7 +325,7 @@ int CollageImageModel::countImagePathSet() const
     return currentCount;
 }
 
-CollageImage::CollageImage(QObject *parent) : QObject(parent), mEffect("")
+CollageImage::CollageImage(QSize collagePixelSize, QObject *parent) : QObject(parent), mEffect(""), mCollagePixelSize(collagePixelSize)
 {
 
 }
@@ -611,8 +611,11 @@ bool CollageImage::validateBoundary()
     //test position and size parameter
     bool result = true;
 
-    QPointF center = mImageRect.center();
-    QRectF imageRect = mImageRect;
+    // scale image rect to pixels
+    QRectF imageRect(mImageRect.x()*mCollagePixelSize.width(), mImageRect.y()*mCollagePixelSize.height(), mImageRect.width()*mCollagePixelSize.width(), mImageRect.height()*mCollagePixelSize.height());
+    // get center of rect
+    QPointF center = imageRect.center();
+    // rotate around center
     QTransform transform;
     transform.translate(center.x(), center.y());
     transform.rotate(mAngle);
@@ -620,19 +623,20 @@ bool CollageImage::validateBoundary()
     imageRect = transform.mapRect(imageRect);
     qDebug() << "Bounding box of image: " << imageRect;
 
-    if(imageRect.x() < 0 || imageRect.x() > 1.0)
+    // now check if image will fit into collage
+    if(imageRect.x() < -std::numeric_limits<qreal>::epsilon()|| imageRect.x() > mCollagePixelSize.width())
     {
         result = false;
     }
-    if(imageRect.y() < 0 || imageRect.x() > 1.0)
+    if(imageRect.y() < -std::numeric_limits<qreal>::epsilon() || imageRect.y() > mCollagePixelSize.height())
     {
         result = false;
     }
-    if((imageRect.x() + imageRect.width()) > 1.0 || imageRect.width() < 0)
+    if((imageRect.x() + imageRect.width()) > (mCollagePixelSize.width() + std::numeric_limits<qreal>::epsilon() )|| imageRect.width() < 0)
     {
         result = false;
     }
-    if((imageRect.y() + imageRect.height()) > 1.0 || imageRect.height() < 0)
+    if((imageRect.y() + imageRect.height()) > (mCollagePixelSize.height() + std::numeric_limits<qreal>::epsilon()) || imageRect.height() < 0)
     {
         result = false;
     }

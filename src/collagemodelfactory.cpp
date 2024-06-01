@@ -99,6 +99,7 @@ void CollageModelFactory::loadModels()
             {
                 clearModels();
                 mStatus = Error;
+                qCritical(QString("Parser Error: " + errorLineMsg()).toStdString().c_str());
                 errorMsgChanged(errorLineMsg());
                 statusChanged(mStatus);
             }else

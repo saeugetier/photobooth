@@ -21,7 +21,7 @@ class CollageImage : public QObject, public ModelParser
     Q_PROPERTY(QString effectPreset READ effectPreset CONSTANT)
     Q_PROPERTY(QString effect READ effect NOTIFY effectChanged)
 public:
-    CollageImage(QObject* parent = nullptr);
+    CollageImage(QSize collagePixelSize, QObject* parent = nullptr);
     bool parseXml(const QDomNode& node) override;
     QUrl imagePath() const;
     QRectF imageRect() const;
@@ -47,6 +47,7 @@ protected:
     bool mEffectSelectable = true;
     QString mEffectPreset = "";
     QString mEffect = "";
+    const QSize mCollagePixelSize;
 };
 
 class CollageImageModel : public QAbstractListModel, public ModelParser

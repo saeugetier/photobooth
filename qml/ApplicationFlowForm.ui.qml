@@ -134,11 +134,6 @@ Item {
             }
 
             PropertyChanges {
-                target: mainMenu
-                visible: false
-            }
-
-            PropertyChanges {
                 target: snapshotMenu
                 visible: false
             }

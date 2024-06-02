@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.1
 import QtQuick.Window 2.0
 import QtQml.Models 2.2
+import Printer 1.0
 import "content"
 
 Item {
@@ -15,6 +16,7 @@ Item {
     property alias photoView: photosListView
     property alias viewState: root.state
     property alias exitButton: exitButton
+    property Printer printer
 
     Image {
         id: root
@@ -37,6 +39,12 @@ Item {
         DelegateModel {
             id: visualModel
             delegate: DelegateGalleryItem {
+                onPrintImage:
+                {
+                    printerPopup.visible = true
+                    printer.printImage(filename, 1)
+                    printerPopup.visible = false
+                }
             }
             model: folderModel
         }
@@ -123,6 +131,13 @@ Item {
             forward: false
         }
 
+        PrinterPopup {
+            id: printerPopup
+            anchors.centerIn: parent
+            visible: false
+            isPrinting: true
+        }
+
         state: 'inGrid'
         states: [
             State {
@@ -152,13 +167,13 @@ Item {
             }
         ]
 
-        MouseArea {
-            anchors.fill: root
-            z: root.state == 'inGrid' ? -1 : 0
-            onClicked: {
-                root.state = 'inGrid'
-            }
-        }
+        //MouseArea {
+        //    anchors.fill: root
+        //    z: root.state == 'inGrid' ? -1 : 0
+        //    onClicked: {
+        //        root.state = 'inGrid'
+        //    }
+        //}
     }
 
     Item {

@@ -1,10 +1,14 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQml 2.14
+import QtGraphicalEffects 1.0
+import QtQuick.Controls.Material 2.0
 import "../scripts/utils.js" as Script
 import "../styles" as Style
 
 Package {
+
+    signal printImage(string filename)
 
     Item { Package.name: 'grid'
         id: gridDelegate
@@ -108,6 +112,80 @@ Package {
                 onSourceChanged: {
                     console.log("hqImage source:", source)
                 }
+
+                Row {
+                    id: printButtonRow
+                    anchors.right: parent.right
+                    anchors.rightMargin: 20
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 20
+
+                    spacing: 10
+
+                    layer.enabled: true
+                    layer.effect: Glow {
+                        color: "black"
+                        samples: 20
+                        spread: 0.3
+                    }
+
+                    Text {
+                        id: textLabel
+                        color: "#ffffff"
+                        text: !galleryForm.printer.busy ? qsTr("Print") : qsTr("Printer busy")
+                        font.family: "DejaVu Serif"
+                        wrapMode: Text.WrapAnywhere
+                        font.pixelSize: 64
+                        font.capitalization: Font.AllUppercase
+                    }
+
+                    ToolButton {
+                        id: printButton
+                        text: "\uE802" // icon-print
+                        font.family: "fontello"
+                        font.pixelSize: 64
+                        enabled: !galleryForm.printer.busy
+
+                        scale: hovered ? 1.1 : 1
+
+                        layer.enabled: true
+                        layer.effect: Glow {
+                            color: "black"
+                            samples: 20
+                            spread: 0.3
+                        }
+
+                        onClicked:
+                        {
+                            console.log("Print image: " + hqImage.source)
+                            printImage(hqImage.source)
+                            root.state = 'inGrid'
+                        }
+                    }
+                }
+
+                ToolButton {
+                    id: closeButton
+                    anchors.right: hqImage.right
+                    anchors.top: hqImage.top
+                    anchors.rightMargin: 20
+                    anchors.topMargin: 20
+                    text: "\uE81F"  // cancel button
+                    font.family: "fontello"
+                    font.pixelSize: 64
+                    enabled: true
+
+                    Material.foreground: Material.Red
+
+                    opacity: 0.7
+
+                    onClicked:
+                    {
+
+                        root.state = 'inGrid'
+                    }
+                }
+
             }
 
             Binding {
@@ -126,12 +204,11 @@ Package {
             }
             MouseArea {
                 anchors.fill: photoWrapper
+                z: root.state == 'inGrid' ? 0 : -1
                 onClicked: {
                     gridDelegate.GridView.view.currentIndex = index;
                     if (root.state == 'inGrid') {
                         root.state = 'fullscreen'
-                    } else {
-                        root.state = 'inGrid'
                     }
                 }
             }

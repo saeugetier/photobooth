@@ -1,8 +1,10 @@
 import QtQuick 2.5
+import Printer 1.0
 
 GalleryMenuForm {
     property alias foldermodel: galleryForm.foldermodel
     signal exitGallery
+    property alias printer: galleryForm.printer
 
     id: galleryForm
 

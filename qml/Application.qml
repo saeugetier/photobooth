@@ -66,6 +66,7 @@ ApplicationWindow {
     onPrinterChanged:
     {
         flow.collageMenu.printer = printer
+        flow.galleryMenu.printer = printer
     }
 
     ApplicationFlow

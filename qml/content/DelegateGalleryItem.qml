@@ -160,6 +160,7 @@ Package {
                             console.log("Print image: " + hqImage.source)
                             printImage(hqImage.source)
                             root.state = 'inGrid'
+                            galleryForm.exitGallery()
                         }
                     }
                 }

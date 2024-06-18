@@ -40,13 +40,11 @@ GalleryMenuForm {
     photoButton.onClicked:
     {
         foldermodel.folder = applicationSettings.foldername
-        console.log(applicationSettings.foldername)
     }
 
     collageButton.onClicked:
     {
         foldermodel.folder = applicationSettings.foldername + "/collage"
-        console.log(applicationSettings.foldername + "/collage")
     }
 }
 

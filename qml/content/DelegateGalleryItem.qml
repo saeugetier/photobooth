@@ -85,7 +85,7 @@ Package {
                 cache: true
                 anchors.fill: photoWrapper
                 antialiasing: true
-                source: applicationSettings.foldername + "/" + fileName
+                source: foldermodel.folder + "/" + fileName
 
                 fillMode: Image.PreserveAspectFit
             }
@@ -186,15 +186,13 @@ Package {
                     }
                 }
 
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    running: hqImage.status != Image.Ready
+                }
+
             }
 
-            Binding {
-                target: root
-                property: "downloadProgress"
-                value: hqImage.progress
-                when: fullDelegate.ListView.isCurrentItem
-                restoreMode: Binding.RestoreBinding
-            }
             Binding {
                 target: root
                 property: "imageLoading"
@@ -202,6 +200,7 @@ Package {
                 when: fullDelegate.ListView.isCurrentItem
                 restoreMode: Binding.RestoreBinding
             }
+
             MouseArea {
                 anchors.fill: photoWrapper
                 z: root.state == 'inGrid' ? 0 : -1
@@ -233,7 +232,7 @@ Package {
                     PropertyChanges {
                         target: hqImage
                         source: gridDelegate.GridView.isCurrentItem
-                                ? applicationSettings.foldername + "/" + fileName
+                                ? foldermodel.folder + "/" + fileName
                                 : ""
                         visible: true
                     }

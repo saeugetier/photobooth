@@ -16,6 +16,8 @@ Item {
     property alias photoView: photosListView
     property alias viewState: root.state
     property alias exitButton: exitButton
+    property alias photoButton: photoButton
+    property alias collageButton: collageButton
     property Printer printer
 
     Image {
@@ -25,13 +27,80 @@ Item {
         source: "../images/cardboard.png"
         fillMode: Image.Tile
 
-        property real downloadProgress: 0
         property bool imageLoading: false
+
+        Rectangle
+        {
+            id: sidebar
+            width: 150
+            height: parent.height
+            color: "#4d60ea"
+
+            ColumnLayout
+            {
+                anchors.fill: parent
+                anchors.verticalCenter: parent.verticalCenter
+
+                Button
+                {
+                    id: photoButton
+
+                    Layout.alignment: Qt.AlignLeft
+                    flat: true
+                    implicitWidth: parent.width
+                    implicitHeight: parent.height / 2
+
+                    contentItem: Item {
+                        anchors.fill: parent
+
+                        Text {
+                            text: qsTr("Photos")
+
+                            color: "white"
+                            font.family: "DejaVu Serif"
+                            font.pixelSize: 50
+                            anchors.centerIn: parent
+                            font.capitalization: Font.AllUppercase
+
+                            rotation: 270
+                        }
+                    }
+
+
+                }
+
+                Button
+                {
+                    id: collageButton
+
+                    Layout.alignment: Qt.AlignLeft
+                    flat: true
+                    implicitWidth: parent.width
+                    implicitHeight: parent.height / 2
+
+                    contentItem: Item {
+                        anchors.fill: parent
+
+                        Text {
+                            text: qsTr("Collages")
+
+                            color: "white"
+                            font.family: "DejaVu Serif"
+                            font.pixelSize: 50
+                            anchors.centerIn: parent
+                            font.capitalization: Font.AllUppercase
+
+                            rotation: 270
+                        }
+                    }
+                }
+            }
+        }
 
         FolderListModel {
             id: folderModel
             folder: applicationSettings.foldername
-            nameFilters: ["*.jpg", "*.JPG"]
+            nameFilters: ["*.jpg", "*.JPG", "*.png", "*.PNG"]
             showDirs: false
             sortReversed: true //show newest photo first
         }
@@ -56,12 +125,14 @@ Item {
             y: 0
             cellWidth: 320
             cellHeight: 306
-            width: root.width
-            height: root.height - progressBar.height
+            anchors.left: sidebar.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
             model: visualModel.parts.grid
             interactive: true
-            displayMarginBeginning: 10000
-            displayMarginEnd: 10000
+            //displayMarginBeginning: 10000
+            //displayMarginEnd: 10000
 
             //rightMargin: 100
 
@@ -103,7 +174,7 @@ Item {
             id: photosListView
 
             width: root.width
-            height: root.height - progressBar.height
+            height: root.height
             orientation: Qt.Horizontal
             model: visualModel.parts.list
             interactive: false
@@ -126,7 +197,7 @@ Item {
             text: qsTr("Exit")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 20
-            anchors.left: parent.left
+            anchors.left: sidebar.right
             anchors.leftMargin: 20
             forward: false
         }
@@ -179,17 +250,6 @@ Item {
     Item {
         id: foreground
         anchors.fill: parent
-    }
-
-    ProgressBar {
-        id: progressBar
-
-        width: parent.width
-        height: 15
-        anchors.bottom: parent.bottom
-        opacity: root.imageLoading
-
-        value: root.downloadProgress
     }
 }
 

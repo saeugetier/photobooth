@@ -221,6 +221,10 @@ Package {
                         parent: gridDelegate;
                         x: 10; y: 0
                     }
+                    PropertyChanges {
+                        target: exitButton
+                        visible: true
+                    }
                 },
                 State {
                     name: 'fullscreen'; when: root.state == 'fullscreen'
@@ -236,6 +240,10 @@ Package {
                                 ? foldermodel.folder + "/" + fileName
                                 : ""
                         visible: true
+                    }
+                    PropertyChanges {
+                        target: exitButton
+                        visible: false
                     }
                 }
             ]

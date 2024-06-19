@@ -11,6 +11,18 @@ SnapshotMenuForm {
 
     countdown: snapshotSettings.countdown
 
+    Timer
+    {
+        id: snapshotTimeoutTimer
+        interval: 1000 * 60 * 10  //going inactive after 10 minutes
+        onTriggered:
+        {
+            console.log("Snapshot timeout return to main menu")
+            snapshotTimeoutTimer.stop()
+            abort()
+        }
+    }
+
     cameraRenderer.onPhotoProcessingChanged:
     {
         console.log("photo processing: " + Boolean(cameraRenderer.photoProcessing).toString())
@@ -25,6 +37,19 @@ SnapshotMenuForm {
         value: 0.0
     }
 
+    onSnapshotTimeoutEnableChanged:
+    {
+        if(state == "activated" && snapshotTimeoutEnable == true)
+        {
+            snapshotTimeoutTimer.start()
+            console.log("Snapshot timeout timer started")
+        }
+        else
+        {
+            snapshotTimeoutTimer.stop()
+        }
+    }
+
     onStateChanged:
     {
         console.log("Snapshot menu state changed: " + state)
@@ -34,6 +59,16 @@ SnapshotMenuForm {
         }
         else
         {
+            if(state == "activated" && snapshotTimeoutEnable == true)
+            {
+                snapshotTimeoutTimer.start()
+                console.log("Snapshot timeout timer started")
+            }
+            else
+            {
+                snapshotTimeoutTimer.stop()
+            }
+
             shutterButton.reset()
             ledEnablePin.value = 1.0
         }

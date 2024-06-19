@@ -84,6 +84,11 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
+    collageMenu.collageImage.onCollageImagesChanged:
+    {
+        snapshotMenu.snapshotTimeoutEnable = (count == 0)
+    }
+
     galleryMenu.onExitGallery:
     {
         state = "collageSelection"

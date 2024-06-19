@@ -204,6 +204,7 @@ bool CollageImageModel::addImagePath(QUrl source, QString effect)
         }
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
+        emit countImagePathSetChanged(countImagePathSet());
         if(collageFull())
         {
             emit collageFullChanged(true);
@@ -223,6 +224,7 @@ void CollageImageModel::clearImagePathes()
     }
 
     emit collageFullChanged(false);
+    emit countImagePathSetChanged(0);
 
     emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
 }
@@ -258,6 +260,7 @@ bool CollageImageModel::clearImagePath(int index)
             }
 #endif
             emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
+            emit countImagePathSetChanged(countImagePathSet());
             return true;
         }
         else {

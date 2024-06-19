@@ -11,6 +11,7 @@ Item {
     property int imagesLoading : 0
 
     signal collageFull(bool full)
+    signal collageImagesChanged(int count)
 
     Rectangle
     {
@@ -132,6 +133,12 @@ Item {
         onCollageFullChanged: {
             collageFull(full)
             console.log("Collage Full Changed to " + Boolean(full).toString());
+        }
+
+        onCountImagePathSetChanged:
+        {
+            collageImagesChanged(count)
+            console.log("Images in model set: " + Number(count).toString());
         }
     }
 

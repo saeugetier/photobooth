@@ -18,7 +18,6 @@ class AbstractPrinter : public QObject
     Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
 public:
     explicit AbstractPrinter(QObject *parent = nullptr) : QObject(parent) {};
-    Q_INVOKABLE virtual QSize getPrintSize() = 0;
     Q_INVOKABLE virtual bool printerOnline() = 0;
     virtual bool busy() = 0;
 signals:

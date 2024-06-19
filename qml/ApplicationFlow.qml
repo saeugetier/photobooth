@@ -29,6 +29,11 @@ ApplicationFlowForm {
         mainMenu.selectedCollageName = ""
     }
 
+    mainMenu.onGalleryEnter:
+    {
+        state = "gallery"
+    }
+
     snapshotMenu.onCaptured:
     {
         state = "imagePreview"
@@ -79,6 +84,11 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
+    galleryMenu.onExitGallery:
+    {
+        state = "collageSelection"
+    }
+
     Behavior on slideValueCollageSelection {
         PropertyAnimation {
             duration: flow.animationDuration
@@ -101,6 +111,13 @@ ApplicationFlowForm {
     }
 
     Behavior on slideValueCollageMenu {
+        PropertyAnimation {
+            duration: flow.animationDuration
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    Behavior on slideValueGalleryMenu {
         PropertyAnimation {
             duration: flow.animationDuration
             easing.type: Easing.InOutQuad

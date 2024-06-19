@@ -92,7 +92,7 @@ MainMenuForm {
 
     settingsButton.onClicked:
     {
-        if(applicationSettings.password.length == 0)
+        if(applicationSettings.password.length == 0 || applicationSettings.enableSettingsPassword == false)
         {
             settingsPopup.open()
         }

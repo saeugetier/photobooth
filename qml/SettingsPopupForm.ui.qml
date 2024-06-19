@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.10
 Popup {
     id: popup
     width: 400
-    height: 500
+    height: 600
     property alias switchHideSnapshotSettings: switchHideSnapshotSettings
     property alias switchHideEffectPopup: switchHideEffectPopup
     property alias switchMultiplePrints: switchMultiplePrints
@@ -25,6 +25,7 @@ Popup {
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
     property alias comboBoxCamera: comboBoxCamera
+    property alias switchEnableSettingsPassword: switchEnableSettingsPassword
     property alias versionText:  labelVersionText.text
 
     Button {
@@ -257,6 +258,23 @@ Popup {
 
             Column {
                 spacing: 5
+
+                Row
+                {
+                    spacing: 5
+
+                    Label {
+                        id: labelEnableSettingsPassword
+                        text: qsTr("Enable Settings Password:")
+                        anchors.verticalCenter: switchEnableSettingsPassword.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchEnableSettingsPassword
+                        text: qsTr("enabled")
+                    }
+                }
 
                 Row {
                     spacing: 5

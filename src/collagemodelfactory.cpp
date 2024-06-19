@@ -126,9 +126,9 @@ bool CollageModelFactory::parseXml(const QDomNode &node)
 
     if(rootElement.tagName() != "catalog")
     {
-       mErrorMsg = "Excepted 'catalog' root node";
-       mLine = rootElement.lineNumber();
-       return false;
+        mErrorMsg = "Excepted 'catalog' root node";
+        mLine = rootElement.lineNumber();
+        return false;
     }
 
     if(!rootElement.hasAttribute("version") || rootElement.attribute("version") != "1.0")

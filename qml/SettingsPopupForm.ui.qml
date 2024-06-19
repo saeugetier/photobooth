@@ -19,6 +19,7 @@ Popup {
     property alias buttonDeletePhotos: buttonDeletePhotos
     property alias buttonClose: buttonClose
     property alias switchPrinter: switchPrinter
+    property alias switchPrintFromGallery: switchPrintFromGallery
     property alias buttonCopyPhotos: buttonCopyPhotos
     property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
@@ -229,6 +230,22 @@ Popup {
 
                     Switch {
                         id: switchMultiplePrints
+                        text: qsTr("enabled")
+                    }
+                }
+
+                Row {
+                    id: printFromGallery
+                    spacing: 5
+                    Label {
+                        id: labelPrintFromGallery
+                        text: qsTr("Allow prints from Gallery")
+                        anchors.verticalCenter: switchPrintFromGallery.verticalCenter
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    Switch {
+                        id: switchPrintFromGallery
                         text: qsTr("enabled")
                     }
                 }

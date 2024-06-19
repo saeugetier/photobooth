@@ -1,5 +1,7 @@
 #include "fakeprinter.h"
 #include <QDebug>
+#include <QTime>
+#include <QCoreApplication>
 
 FakePrinter::FakePrinter(QObject *parent) : AbstractPrinter(parent)
 {
@@ -19,6 +21,11 @@ bool FakePrinter::busy()
 int FakePrinter::printImage(const QString &filename, int copyCount)
 {
     qDebug() << "Fake printer starts printing " << copyCount << " copies." << filename;
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while (QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
     mBusyTimer.start(1000 * 30); // 30 seconds;
     emit busyChanged(true);
     return 0;

@@ -4,7 +4,7 @@
 <context>
     <name>Application</name>
     <message>
-        <location filename="qml/Application.qml" line="33"/>
+        <location filename="qml/Application.qml" line="38"/>
         <source>QML Photo Booth</source>
         <translation>QML Photo Booth</translation>
     </message>
@@ -12,17 +12,22 @@
 <context>
     <name>CollageMenuForm.ui</name>
     <message>
-        <location filename="qml/CollageMenuForm.ui.qml" line="76"/>
+        <location filename="qml/CollageMenuForm.ui.qml" line="77"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
     <message>
-        <location filename="qml/CollageMenuForm.ui.qml" line="110"/>
+        <location filename="qml/CollageMenuForm.ui.qml" line="77"/>
+        <source>Save</source>
+        <translation>Speichern</translation>
+    </message>
+    <message>
+        <location filename="qml/CollageMenuForm.ui.qml" line="111"/>
         <source>Next Photo</source>
         <translation>Nächstes Foto</translation>
     </message>
     <message>
-        <location filename="qml/CollageMenuForm.ui.qml" line="121"/>
+        <location filename="qml/CollageMenuForm.ui.qml" line="122"/>
         <source>Exit</source>
         <translation>Zurück</translation>
     </message>
@@ -33,6 +38,24 @@
         <location filename="qml/content/Countdown.qml" line="16"/>
         <source>Smile</source>
         <translation>Lächeln</translation>
+    </message>
+</context>
+<context>
+    <name>DelegateGalleryItem</name>
+    <message>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="136"/>
+        <source>Print</source>
+        <translation>Drucken</translation>
+    </message>
+    <message>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="136"/>
+        <source>Printer busy</source>
+        <translation>Drucker beschâftigt</translation>
+    </message>
+    <message>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="178"/>
+        <source>Overview</source>
+        <translation>Übersicht</translation>
     </message>
 </context>
 <context>
@@ -99,6 +122,24 @@
     </message>
 </context>
 <context>
+    <name>GalleryMenuForm.ui</name>
+    <message>
+        <location filename="qml/GalleryMenuForm.ui.qml" line="57"/>
+        <source>Photos</source>
+        <translation>Fotos</translation>
+    </message>
+    <message>
+        <location filename="qml/GalleryMenuForm.ui.qml" line="85"/>
+        <source>Collages</source>
+        <translation>Collagen</translation>
+    </message>
+    <message>
+        <location filename="qml/GalleryMenuForm.ui.qml" line="197"/>
+        <source>Exit</source>
+        <translation>Zurück</translation>
+    </message>
+</context>
+<context>
     <name>ImagePreviewForm.ui</name>
     <message>
         <location filename="qml/ImagePreviewForm.ui.qml" line="84"/>
@@ -114,12 +155,17 @@
 <context>
     <name>MainMenuForm.ui</name>
     <message>
-        <location filename="qml/MainMenuForm.ui.qml" line="168"/>
+        <location filename="qml/MainMenuForm.ui.qml" line="169"/>
         <source>Continue</source>
         <translation>Weiter</translation>
     </message>
     <message>
-        <location filename="qml/MainMenuForm.ui.qml" line="178"/>
+        <location filename="qml/MainMenuForm.ui.qml" line="179"/>
+        <source>Gallery</source>
+        <translation>Gallerie</translation>
+    </message>
+    <message>
+        <location filename="qml/MainMenuForm.ui.qml" line="188"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
@@ -159,8 +205,8 @@
 <context>
     <name>SettingsPopup</name>
     <message>
-        <location filename="qml/SettingsPopup.qml" line="87"/>
-        <location filename="qml/SettingsPopup.qml" line="94"/>
+        <location filename="qml/SettingsPopup.qml" line="120"/>
+        <location filename="qml/SettingsPopup.qml" line="127"/>
         <source>Time: </source>
         <translation>Zeit: </translation>
     </message>
@@ -168,44 +214,49 @@
 <context>
     <name>SettingsPopupForm.ui</name>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="34"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="35"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="44"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="45"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="69"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="70"/>
         <source>Photos</source>
         <translation>Fotos</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="74"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="75"/>
         <source>Camera</source>
         <translation>Kamera</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="79"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="80"/>
         <source>Printer</source>
         <translation>Drucker</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="84"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="85"/>
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="105"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="106"/>
         <source>Copy photos to removable disk</source>
         <translation>Kopiere Fotos auf USB Stick</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="110"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="111"/>
         <source>Delete all photos</source>
         <translation>Alls Fotos löschen</translation>
+    </message>
+    <message>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="126"/>
+        <source>Camera:</source>
+        <translation>Kamera:</translation>
     </message>
     <message>
         <location filename="qml/SettingsPopupForm.ui.qml" line="139"/>

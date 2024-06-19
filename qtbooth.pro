@@ -13,6 +13,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/modelparser.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
+    src/replacebackgroundvideofilter.cpp \
     src/selphyprinter.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     src/modelparser.h \
     src/noprinter.h \
     src/printerfactory.h \
+    src/replacebackgroundvideofilter.h \
     src/selphyprinter.h \
     src/standardprinter.h \
     src/system.h \

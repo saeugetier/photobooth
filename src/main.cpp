@@ -11,6 +11,7 @@
 #include "selphyprinter.h"
 #include "printerfactory.h"
 #include "collagemodelfactory.h"
+#include "replacebackgroundvideofilter.h"
 #include "gpio.h"
 #include "fileio.h"
 #include "filesystem.h"
@@ -121,6 +122,8 @@ int main(int argc, char *argv[])
     qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");
     qmlRegisterType<PrinterFactory>("Printer", 1, 0, "PrinterFactory");
+
+    qmlRegisterType<ReplaceBackgroundVideoFilter>("BackgroundFilter", 1, 0, "ReplaceBackgroundVideoFilter");
 
     FileSystem fileSystem;
     TranslationHelper translationHelper;

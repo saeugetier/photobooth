@@ -55,9 +55,9 @@ class CollageImageModel : public QAbstractListModel, public ModelParser
     Q_OBJECT
     Q_PROPERTY(QUrl backgroundImage READ backgroundImage)
     Q_PROPERTY(QUrl foregroundImage READ foregroundImage)
-    Q_PROPERTY(int countImagePathSet READ countImagePathSet)
+    Q_PROPERTY(int countImagePathSet READ countImagePathSet NOTIFY countImagePathSet)
     Q_PROPERTY(bool collageFull READ collageFull NOTIFY collageFullChanged)
-    Q_PROPERTY(QSize collagePixelSize READ collagePixelSize)
+    Q_PROPERTY(QSize collagePixelSize READ collagePixelSize NOTIFY collagePixelSizeChanged)
 public:
     enum ImageRoles {
         ImagePathRole = Qt::UserRole + 1,
@@ -87,6 +87,8 @@ public:
     int countImagePathSet() const;
 signals:
     void collageFullChanged(bool full);
+    void countImagePathSetChanged(int count);
+    void collagePixelSizeChanged(QSize size);
 protected:
     QList<CollageImage*> mImages;
     QUrl mBackgroundImage;

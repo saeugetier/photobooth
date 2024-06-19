@@ -4,6 +4,8 @@ import GPIO 1.0
 SnapshotMenuForm {
     id: form
 
+    property bool snapshotTimeoutEnable : false
+
     signal captured(string filename)
     signal abort
 

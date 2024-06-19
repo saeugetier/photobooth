@@ -43,17 +43,17 @@
 <context>
     <name>DelegateGalleryItem</name>
     <message>
-        <location filename="qml/content/DelegateGalleryItem.qml" line="136"/>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="138"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
     <message>
-        <location filename="qml/content/DelegateGalleryItem.qml" line="136"/>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="138"/>
         <source>Printer busy</source>
         <translation>Drucker beschâftigt</translation>
     </message>
     <message>
-        <location filename="qml/content/DelegateGalleryItem.qml" line="178"/>
+        <location filename="qml/content/DelegateGalleryItem.qml" line="180"/>
         <source>Overview</source>
         <translation>Übersicht</translation>
     </message>
@@ -214,148 +214,160 @@
 <context>
     <name>SettingsPopupForm.ui</name>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="35"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="37"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="45"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="47"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="70"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="72"/>
         <source>Photos</source>
         <translation>Fotos</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="75"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="77"/>
         <source>Camera</source>
         <translation>Kamera</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="80"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="82"/>
         <source>Printer</source>
         <translation>Drucker</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="85"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="87"/>
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="106"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="108"/>
         <source>Copy photos to removable disk</source>
         <translation>Kopiere Fotos auf USB Stick</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="111"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="113"/>
         <source>Delete all photos</source>
         <translation>Alls Fotos löschen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="126"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="128"/>
         <source>Camera:</source>
         <translation>Kamera:</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="139"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="141"/>
         <source>Mirror Camera</source>
         <translation>Kamera spiegeln</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="146"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="148"/>
         <source>mirror</source>
         <translation>spiegeln</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="155"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="157"/>
         <source>Snapshot Settings</source>
         <translation>Schnappschusseinstellungen</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="162"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="164"/>
         <source>hide</source>
         <translation>verstecken</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="171"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="173"/>
         <source>Effect Popup</source>
         <translation>Effekte Popuo</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="178"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="180"/>
         <source>disable</source>
         <translation>deaktivieren</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="193"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="195"/>
         <source>Enable Printing</source>
         <translation>Druck aktivieren</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="200"/>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="232"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="202"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="234"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="250"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="275"/>
         <source>enabled</source>
         <translation>aktiviert</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="209"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="211"/>
         <source>Printer: </source>
         <translation>Drucker: </translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="225"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="227"/>
         <source>Allow multiple prints</source>
         <translation>Erlaube mehrere Ausdrucke</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="249"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="243"/>
+        <source>Allow prints from Gallery</source>
+        <translation>Erlaube Drucken aus Gallery</translation>
+    </message>
+    <message>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="268"/>
+        <source>Enable Settings Password:</source>
+        <translation>Aktiviere Einstellungspasswort:</translation>
+    </message>
+    <message>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="284"/>
         <source>Current time</source>
         <translation>Eingestellte Zeit</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="255"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="290"/>
         <source>Set time</source>
         <translation>Setze Zeit</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="263"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="298"/>
         <source>Language:</source>
         <translation>Sprache:</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="276"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="311"/>
         <source>Window Mode:</source>
         <translation>Fenster Modus:</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="283"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="318"/>
         <source>Window</source>
         <translation>Fenster</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="286"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="321"/>
         <source>Fullscreen</source>
         <translation>Vollbildschirm</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="294"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="329"/>
         <source>Copy layout templates from removable disk</source>
         <translation>Kopiere Vorlage von USB Stick</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="301"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="336"/>
         <source>Shutdown</source>
         <translation>Herunterfahren</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="306"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="341"/>
         <source>Restart</source>
         <translation>Neustart</translation>
     </message>
     <message>
-        <location filename="qml/SettingsPopupForm.ui.qml" line="315"/>
+        <location filename="qml/SettingsPopupForm.ui.qml" line="350"/>
         <source>Exit Photobooth</source>
         <translation>Photobooth schließen</translation>
     </message>

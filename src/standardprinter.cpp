@@ -63,11 +63,11 @@ StandardPrinter *StandardPrinter::createInternal(const QString &name)
     auto printers = QPrinterInfo::availablePrinters();
     for(auto printer: printers)
     {
-       if(printer.printerName() == name)
-       {
+        if(printer.printerName() == name)
+        {
             ptr = new StandardPrinter(printer);
             break;
-       }
+        }
     }
     return ptr;
 }

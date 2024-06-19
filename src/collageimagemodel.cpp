@@ -459,10 +459,10 @@ bool CollageImage::parseXml(const QDomNode &node)
         if(borderMarginNode.count() == 1)
         {
             if(borderMarginNode.item(0).hasAttributes() &&
-                    borderMarginNode.item(0).toElement().hasAttribute("top") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("left") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("right") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("bottom"))
+                borderMarginNode.item(0).toElement().hasAttribute("top") &&
+                borderMarginNode.item(0).toElement().hasAttribute("left") &&
+                borderMarginNode.item(0).toElement().hasAttribute("right") &&
+                borderMarginNode.item(0).toElement().hasAttribute("bottom"))
             {
                 bool ok;
                 QString top = borderMarginNode.item(0).toElement().attribute("top");

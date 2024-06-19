@@ -142,6 +142,11 @@ ApplicationWindow {
             applicationSettings.cameraName = mainMenu.settingsPopup.comboBoxCamera.currentText
         }
 
+        mainMenu.settingsPopup.switchEnableSettingsPassword.onCheckedChanged:
+        {
+            applicationSettings.enableSettingsPassword = mainMenu.settingsPopup.switchEnableSettingsPassword.checked
+        }
+
         mainMenu.printerBusy: printer.busy
     }
 
@@ -161,6 +166,7 @@ ApplicationWindow {
         property bool disableEffectPopup: false
         property string cameraName: ""
         property bool printFromGallery: true
+        property bool enableSettingsPassword: true
 
         Component.onCompleted:
         {
@@ -171,6 +177,7 @@ ApplicationWindow {
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
             flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
             flow.mainMenu.settingsPopup.switchHideEffectPopup.checked = disableEffectPopup
+            flow.mainMenu.settingsPopup.switchEnableSettingsPassword.checked = enableSettingsPassword
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane

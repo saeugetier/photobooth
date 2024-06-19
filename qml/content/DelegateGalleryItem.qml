@@ -30,7 +30,7 @@ Package {
             x: 0; y: 0
             width: 280; height: 266
 
-            BorderImage {
+            /*BorderImage {
                 anchors.fill: placeHolder
                 anchors {
                     leftMargin: -15
@@ -45,7 +45,8 @@ Package {
                     right: 25
                     bottom: 65
                 }
-            }
+            }*/
+
             Rectangle {
                 id: placeHolder
 
@@ -122,6 +123,8 @@ Package {
 
                     spacing: 10
 
+                    visible: applicationSettings.printFromGallery
+
                     layer.enabled: true
                     layer.effect: Glow {
                         color: "black"
@@ -165,20 +168,16 @@ Package {
                     }
                 }
 
-                ToolButton {
+                NavigationButton
+                {
                     id: closeButton
+
                     anchors.right: hqImage.right
                     anchors.top: hqImage.top
                     anchors.rightMargin: 20
                     anchors.topMargin: 20
-                    text: "\uE81F"  // cancel button
-                    font.family: "fontello"
-                    font.pixelSize: 64
-                    enabled: true
 
-                    Material.foreground: Material.Red
-
-                    opacity: 0.7
+                    text: qsTr("Overview")
 
                     onClicked:
                     {

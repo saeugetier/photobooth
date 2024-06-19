@@ -86,6 +86,11 @@ ApplicationWindow {
             applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
         }
 
+        mainMenu.settingsPopup.switchPrintFromGallery.onCheckedChanged:
+        {
+            applicationSettings.printFromGallery = mainMenu.settingsPopup.switchPrintFromGallery.checked
+        }
+
         mainMenu.settingsPopup.switchHideSnapshotSettings.onCheckedChanged:
         {
             applicationSettings.disableSnapshotSettingsPane = mainMenu.settingsPopup.switchHideSnapshotSettings.checked
@@ -155,10 +160,12 @@ ApplicationWindow {
         property bool disableSnapshotSettingsPane: false
         property bool disableEffectPopup: false
         property string cameraName: ""
+        property bool printFromGallery: true
 
         Component.onCompleted:
         {
             flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
+            flow.mainMenu.settingsPopup.switchPrintFromGallery.checked = printFromGallery
             flow.mainMenu.settingsPopup.switchMultiplePrints.checked = multiplePrints
             flow.mainMenu.settingsPinCode = password
             flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored

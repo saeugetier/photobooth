@@ -3,6 +3,7 @@ import QtMultimedia 5.5
 import QtQuick.Controls 2.0
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.2
+import BackgroundFilter 1.0
 
 Item {
     id: renderer
@@ -98,10 +99,17 @@ Item {
         }
     }
 
+    ReplaceBackgroundVideoFilter
+    {
+        id: backgroundFilter
+    }
+
     VideoOutput {
         id: output
         source: camera
         anchors.fill: parent
+
+        filters: [ backgroundFilter ]
 
         layer.enabled: true
         layer.effect: ImageEffect {

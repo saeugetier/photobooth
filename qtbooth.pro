@@ -1,6 +1,13 @@
-QT += qml quick multimedia concurrent xml svg printsupport
+QT += qml quick multimedia concurrent xml svg printsupport multimedia-private
 
 CONFIG += c++17 qml_debug
+
+!contains(QT_CONFIG, no-pkg-config) {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += opencv4
+} else {
+    LIBS += -lopencv_core -lopencv_imgproc
+}
 
 SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \

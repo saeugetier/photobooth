@@ -6,10 +6,12 @@
 
 class ReplaceBackgroundVideoFilter : public QAbstractVideoFilter
 {
+    Q_OBJECT
     Q_PROPERTY(QString method READ getMethod WRITE setMethod CONSTANT)
     Q_PROPERTY(float chromaA1 READ getChromaA1 WRITE setChromaA1 CONSTANT)
     Q_PROPERTY(float chromaA2 READ getChromaA2 WRITE setChromaA2 CONSTANT)
 public:
+    ReplaceBackgroundVideoFilter(QObject *parent = nullptr) : QAbstractVideoFilter(parent) {}
     QVideoFilterRunnable *createFilterRunnable() override;
     void setMethod(QString method);
     void setChromaA1(float a1);

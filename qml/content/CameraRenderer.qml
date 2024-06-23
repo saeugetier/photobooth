@@ -13,6 +13,7 @@ Item {
     property bool photoProcessing: (state == "snapshot")
     property bool mirrored: true
     property string deviceId: camera.deviceId
+    property alias backgroundFilter: backgroundFilter
 
     function printDevicesToConsole(devices)
     {

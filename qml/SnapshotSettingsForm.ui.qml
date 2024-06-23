@@ -12,6 +12,9 @@ Pane {
     property alias sliderViewfinderBrightness: sliderViewfinderBrightness
     property alias sliderFlashBrightness: sliderFlashBrightness
     property alias switchFlashEnable: switchFlashEnable
+    property alias switchChromaKeyEnable: switchChromaKeyEnable
+    property alias sliderChromaKeyFilterStrength: sliderChromaKeyFilterStrength
+    property alias sliderChromaKeyFilterColor: sliderChromaKeyFilterColor
     opacity: 0.5
     spacing: 5
 
@@ -225,6 +228,100 @@ Pane {
                     width: 200
                     font.pixelSize: 32
                     font.family: "DejaVu Serif"
+                }
+            }
+
+            RowLayout
+            {
+                id: chromaKey
+
+                spacing: 15
+
+                Label {
+                    id: labelBackgrounddFilterIcon
+                    font.pixelSize: 32
+                    text: "\uF0D0"
+                    font.family: "fontello"
+                }
+
+                Label {
+                    id: labelChromaKey
+                    font.pixelSize: 32
+                    text: qsTr("Chroma Key")
+                    font.family: "DejaVu Serif"
+                }
+            }
+
+            RowLayout
+            {
+                Label {
+                    id: labelChromaKeyFilterEnable
+                    font.pixelSize: 32
+                    text: "Filter: "
+                }
+
+                Switch {
+                    id: switchChromaKeyEnable
+                    text: checked ? qsTr("enabled") : qsTr("disabled")
+                    font.pixelSize: 32
+                    font.family: "DejaVu Serif"
+                    width: 250
+                }
+
+            }
+
+
+            RowLayout {
+                id: rowChromaKeyFilterStrength
+                spacing: 20
+
+                Label {
+                    id: labelChromaKeyFilterStrengthLow
+                    font.pixelSize: 32
+                    text: "\uE814"
+                    font.family: "fontello"
+                }
+
+                Slider {
+                    id: sliderChromaKeyFilterStrength
+                    value: 0.5
+                    from: 0.5
+                    to: 10.0
+                    width: 250
+                }
+
+                Label {
+                    id: labelChromaKeyFilterStrengthHigh
+                    font.pixelSize: 32
+                    text: "\uE813"
+                    font.family: "fontello"
+                }
+            }
+
+            RowLayout {
+                id: rowChromaKeyFilterColor
+                spacing: 20
+
+                Rectangle
+                {
+                    color: "Green"
+                    width: 32
+                    height: 32
+                }
+
+                Slider {
+                    id: sliderChromaKeyFilterColor
+                    value: 0.5
+                    from: 0.5
+                    to: 1.5
+                    width: 250
+                }
+
+                Rectangle
+                {
+                    color: "Blue"
+                    width: 32
+                    height: 32
                 }
             }
         }

@@ -12,6 +12,21 @@ QVideoFilterRunnable* ReplaceBackgroundVideoFilter::createFilterRunnable()
     return new ReplaceBackgroundFilterRunable(this);
 }
 
+void ReplaceBackgroundVideoFilter::setChromaA1(float a1)
+{
+    mChromaA1 = a1;
+}
+
+void ReplaceBackgroundVideoFilter::setChromaA2(float a2)
+{
+    mChromaA2 = a2;
+}
+
+void ReplaceBackgroundVideoFilter::setMethod(QString method)
+{
+    // @todo currently selection is not implemented. Will be used when new filter types are added.
+}
+
 float ReplaceBackgroundVideoFilter::getChromaA1() const
 {
     return mChromaA1;

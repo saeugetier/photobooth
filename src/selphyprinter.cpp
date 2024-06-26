@@ -62,7 +62,7 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
             {
                 emit busyChanged(true);
                 mPrinterProcess.start("sh", shParameters);
-                qDebug() << shParameters;
+                qDebug() << "Runnings sh with parameters: " << shParameters;
                 return 0;
             }
             else

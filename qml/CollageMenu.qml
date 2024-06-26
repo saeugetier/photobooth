@@ -12,7 +12,7 @@ CollageMenuForm {
     signal next
     signal exit
 
-    printButton.enabled: !printer.busy
+    printButton.enabled: printer ? !printer.busy : false
     property real printerHeight : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.height : 0
     property real printerWidth : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.width : 0
     printerRatio:  printerHeight / printerWidth

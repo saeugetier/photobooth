@@ -147,7 +147,7 @@ ApplicationWindow {
             applicationSettings.enableSettingsPassword = mainMenu.settingsPopup.switchEnableSettingsPassword.checked
         }
 
-        mainMenu.printerBusy: printer.busy
+        mainMenu.printerBusy: printer ? printer.busy : false
     }
 
     Settings

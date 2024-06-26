@@ -13,8 +13,8 @@ CollageMenuForm {
     signal exit
 
     printButton.enabled: printer ? !printer.busy : false
-    property real printerHeight : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.height : 0
-    property real printerWidth : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.width : 0
+    property real printerHeight : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.height : 3
+    property real printerWidth : form.collageImage.imageModel ? form.collageImage.imageModel.collagePixelSize.width : 4
     printerRatio:  printerHeight / printerWidth
 
     nextButton.onClicked:
@@ -31,8 +31,8 @@ CollageMenuForm {
         var path = applicationSettings.foldername.toString()
         path = path.replace(/^(file:\/{2})/,"");
         var cleanPath = decodeURIComponent(path);
-        console.log(cleanPath)
         var filename = cleanPath + "/collage/Coll_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".png"
+        console.log("Save files to: " + filename)
         collageRenderer.saveImage(filename, form.collageImage.imageModel.collagePixelSize)
         console.log("Collage rendered width: " + Number(form.collageImage.imageModel.collagePixelSize.width).toString()
                     + " height: " + form.collageImage.imageModel.collagePixelSize.height)

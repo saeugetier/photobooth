@@ -14,6 +14,7 @@ MainMenuForm {
     property bool collageIsPrintable: true
     state: "IconNotSelected"
     signal collageSelected
+    signal galleryEnter
 
     property real scrollPosition: 0.0
     property real scrollDuration: 50000.0
@@ -37,6 +38,11 @@ MainMenuForm {
     continueButton.onClicked:
     {
         collageSelected()
+    }
+
+    galleryButton.onClicked:
+    {
+        galleryEnter()
     }
 
     backButton.onClicked:
@@ -86,7 +92,7 @@ MainMenuForm {
 
     settingsButton.onClicked:
     {
-        if(applicationSettings.password.length == 0)
+        if(applicationSettings.password.length == 0 || applicationSettings.enableSettingsPassword == false)
         {
             settingsPopup.open()
         }

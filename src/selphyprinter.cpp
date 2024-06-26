@@ -41,12 +41,6 @@ bool SelphyPrinter::printerOnline()
     }
 }
 
-
-QSize SelphyPrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size
-}
-
 int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
     if(mIp.length() > 0)
@@ -68,7 +62,7 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
             {
                 emit busyChanged(true);
                 mPrinterProcess.start("sh", shParameters);
-                qDebug() << shParameters;
+                qDebug() << "Runnings sh with parameters: " << shParameters;
                 return 0;
             }
             else

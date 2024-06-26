@@ -1,15 +1,12 @@
 #include "fakeprinter.h"
 #include <QDebug>
+#include <QTime>
+#include <QCoreApplication>
 
 FakePrinter::FakePrinter(QObject *parent) : AbstractPrinter(parent)
 {
     QObject::connect(&mBusyTimer, SIGNAL(timeout()), this, SLOT(busyTimeout()));
 };
-
-QSize FakePrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size
-}
 
 bool FakePrinter::printerOnline()
 {
@@ -24,6 +21,11 @@ bool FakePrinter::busy()
 int FakePrinter::printImage(const QString &filename, int copyCount)
 {
     qDebug() << "Fake printer starts printing " << copyCount << " copies." << filename;
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while (QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
     mBusyTimer.start(1000 * 30); // 30 seconds;
     emit busyChanged(true);
     return 0;

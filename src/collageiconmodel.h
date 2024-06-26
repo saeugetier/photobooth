@@ -30,9 +30,9 @@ class CollageIconModel : public QAbstractListModel
     Q_PROPERTY(bool showPrintable READ showPrintable WRITE setShowPrintable NOTIFY showPrintableChanged)
 public:
     enum IconRoles {
-       NameRole = Qt::UserRole + 1,
-       IconRole,
-       PrintableRole
+        NameRole = Qt::UserRole + 1,
+        IconRole,
+        PrintableRole
     };
 
     CollageIconModel(QObject *parent = 0);

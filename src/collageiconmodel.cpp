@@ -138,11 +138,11 @@ void CollageIconModel::clear()
 
 QString CollageIconModel::getIconName(int index)
 {
-     if (index < 0 || index >= mIcons.count())
-         return QString();
+    if (index < 0 || index >= mIcons.count())
+        return QString();
 
-     const CollageIcon &icon = mIcons[index];
-     return icon.name();
+    const CollageIcon &icon = mIcons[index];
+    return icon.name();
 }
 
 bool CollageIconModel::showPrintable() const

@@ -49,9 +49,9 @@ bool System::setTime(QDateTime date)
         }
     }
 #elif __APPLE__
-    #pragma message ( "setting the time is not implemented for MacOS" )
+#pragma message ( "setting the time is not implemented for MacOS" )
 #elif _WIN32
-    #pragma message ( "setting the time is not implemented for Windows" )
+#pragma message ( "setting the time is not implemented for Windows" )
 #endif
     return (result == 0);
 }

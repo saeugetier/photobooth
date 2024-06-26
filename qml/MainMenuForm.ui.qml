@@ -15,6 +15,7 @@ Item {
     property alias imageSlider: imageSlider
     property alias collageSelector: collageSelector
     property alias iconModel: collageSelector.iconModel
+    property alias galleryButton: galleryButton
 
     CollageSelector {
         id: collageSelector
@@ -174,6 +175,15 @@ Item {
     }
 
     NavigationButton {
+        id: galleryButton
+        text: qsTr("Gallery")
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 10
+        anchors.right: parent.right
+        anchors.rightMargin: 30
+    }
+
+    NavigationButton {
         id: backButton
         text: qsTr("Back")
         forward: false
@@ -199,6 +209,11 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
+                visible: true
+            }
+
+            PropertyChanges {
+                target: galleryButton
                 visible: true
             }
         },
@@ -227,6 +242,11 @@ Item {
 
             PropertyChanges {
                 target: settingsButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: galleryButton
                 visible: false
             }
         }

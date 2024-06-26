@@ -10,7 +10,6 @@ class SelphyPrinter : public AbstractPrinter, public PrinterList<SelphyPrinter>
     Q_OBJECT
     Q_INTERFACES(AbstractPrinter)
 public:
-    Q_INVOKABLE QSize getPrintSize();
     Q_INVOKABLE bool printerOnline();
     bool busy();
 public slots:

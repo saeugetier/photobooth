@@ -140,7 +140,7 @@ void FileSystem::startCopyFilesToRemovableDrive()
                     int progress = (100 * i + 1) / files.count();
                     qDebug() << "Copy file: " << imagePath + "/" + files[i] << " to: " << removableDrivePath + "/" + files[i] << " Progress: " << progress;
                     if(QFile::exists(removableDrivePath + "/" + files[i]))
-                            QFile::remove(removableDrivePath + "/" + files[i]);
+                        QFile::remove(removableDrivePath + "/" + files[i]);
 
                     if(!QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]))
                     {

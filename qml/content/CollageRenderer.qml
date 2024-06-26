@@ -11,6 +11,7 @@ Item {
     property int imagesLoading : 0
 
     signal collageFull(bool full)
+    signal collageImagesChanged(int count)
 
     Rectangle
     {
@@ -57,10 +58,11 @@ Item {
                 y: imageRect.y * backgroundRect.height + (renderer.height - backgroundRect.height) / 2
                 width: imageRect.width * backgroundRect.width
                 height: imageRect.height * backgroundRect.height
+                transform: Rotation { origin.x: width/2; origin.y: height/2; axis { x: 0; y: 0; z: 1 } angle: imageRotation }
 
                 Component.onCompleted:
                 {
-                    console.log("Picture placed at: " + Number(x).toString() + " " + Number(y).toString())
+                    console.log("Picture placed at: " + Number(x).toString() + " " + Number(y).toString() + " Rotation: " + Number(rotation).toString())
                 }
 
                 onImageSourceChanged:
@@ -131,6 +133,12 @@ Item {
         onCollageFullChanged: {
             collageFull(full)
             console.log("Collage Full Changed to " + Boolean(full).toString());
+        }
+
+        onCountImagePathSetChanged:
+        {
+            collageImagesChanged(count)
+            console.log("Images in model set: " + Number(count).toString());
         }
     }
 

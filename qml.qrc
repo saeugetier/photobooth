@@ -74,5 +74,9 @@
         <file>qml/content/PrinterPopup.qml</file>
         <file>images/ExampleForeground.png</file>
         <file>images/icon/SingleNoPrint.svg</file>
+        <file>qml/GalleryMenu.qml</file>
+        <file>qml/GalleryMenuForm.ui.qml</file>
+        <file>qml/content/DelegateGalleryItem.qml</file>
+        <file>qml/styles/RoundProgressBarStyle.qml</file>
     </qresource>
 </RCC>

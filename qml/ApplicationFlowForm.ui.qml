@@ -9,11 +9,13 @@ Item {
     property alias snapshotMenu: snapshotMenu
     property alias imagePreview: imagePreview
     property alias collageMenu: collageMenu
+    property alias galleryMenu: galleryMenu
 
     property real slideValueCollageSelection: 0.0
     property real slideValueSnapshotMenu: 1.0
     property real slideValuePreviewMenu: 1.0
     property real slideValueCollageMenu: 1.0
+    property real slideValueGalleryMenu: 1.0
 
     MainMenu {
         id: mainMenu
@@ -47,6 +49,16 @@ Item {
         width: root.width
         height: root.height
     }
+
+    GalleryMenu
+    {
+        id: galleryMenu
+        x: root.width * slideValueGalleryMenu
+        y: 0
+        width: root.width
+        height: root.height
+    }
+
     states: [
         State {
             name: "collageSelection"
@@ -106,6 +118,33 @@ Item {
 
             PropertyChanges {
                 target: snapshotMenu
+                visible: false
+            }
+        },
+        State {
+            name: "gallery"
+
+            PropertyChanges {
+                target: root
+                slideValueCollageSelection: -1.0
+                slideValueSnapshotMenu: -1.0
+                slideValuePreviewMenu: -1.0
+                slideValueCollageMenu: -1.0
+                slideValueGalleryMenu: 0.0
+            }
+
+            PropertyChanges {
+                target: snapshotMenu
+                visible: false
+            }
+
+            PropertyChanges {
+                target: imagePreview
+                visible: false
+            }
+
+            PropertyChanges {
+                target: collageMenu
                 visible: false
             }
         }

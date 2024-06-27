@@ -35,8 +35,11 @@ Item {
         property double aimedRatio: printerRatio
 
         // SIZING
-        property double availableWidth: parent.width - rightMargin - leftMargin
-        property double availableHeight: parent.height - bottomMargin - topMargin
+        property double calculatedWidth: parent.width - rightMargin - leftMargin
+        property double calculatedHeight: parent.height - bottomMargin - topMargin
+
+        property double availableWidth: calculatedWidth > 10 ? calculatedWidth : 10
+        property double availableHeight: calculatedHeight > 10 ? calculatedHeight : 10
 
         property bool parentIsLarge: parentRatio > aimedRatio
 

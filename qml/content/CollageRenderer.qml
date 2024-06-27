@@ -163,8 +163,18 @@ Item {
 
         // TODO clip the image and bringing everything into right format...
         renderer.grabToImage(function(result) {
-            result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
-            savedFilename = filename;
+            if (result) {
+                console.log("Image grabbed successfully");
+                var success = result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
+                if (success) {
+                    console.log("Image saved successfully to " + filename);
+                    savedFilename = filename;
+                } else {
+                    console.log("Failed to save image to " + filename);
+                }
+            } else {
+                console.log("Failed to grab image");
+            }
             saving = false;
         }, size);
     }

@@ -167,7 +167,7 @@ Item {
                 console.log("Image grabbed successfully");
                 var success = result.saveToFile(filename, Qt.size(backgroundRect.width, backgroundRect.height));
                 if (success) {
-                    console.log("Image saved successfully to " + filename);
+                    console.log("Image saved successfully to " + filename + " with width: " + Number(background.width).toString() + " - height: " + Number(background.height).toString());
                     savedFilename = filename;
                 } else {
                     console.log("Failed to save image to " + filename);

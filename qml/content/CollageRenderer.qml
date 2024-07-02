@@ -164,7 +164,7 @@ Item {
         // TODO clip the image and bringing everything into right format...
         renderer.grabToImage(function(result) {
             if (result) {
-                console.log("Image grabbed successfully");
+                console.log("Image grabbed with size " + result.image.width + "x" + result.image.height + " successfully");
                 var success = result.saveToFile(filename);
                 if (success) {
                     console.log("Image saved successfully to " + filename);

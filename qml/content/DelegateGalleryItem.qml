@@ -123,7 +123,7 @@ Package {
 
                     spacing: 10
 
-                    visible: applicationSettings.printFromGallery
+                    visible: applicationSettings.printFromGallery && applicationSettings.printEnable
 
                     layer.enabled: true
                     layer.effect: Glow {
@@ -135,7 +135,7 @@ Package {
                     Text {
                         id: textLabel
                         color: "#ffffff"
-                        text: !galleryForm.printer.busy ? qsTr("Print") : qsTr("Printer busy")
+                        text: galleryForm.printer ? (!galleryForm.printer.busy ? qsTr("Print") : qsTr("Printer busy")) : qsTr("Printer busy")
                         font.family: "DejaVu Serif"
                         wrapMode: Text.WrapAnywhere
                         font.pixelSize: 64
@@ -147,7 +147,7 @@ Package {
                         text: "\uE802" // icon-print
                         font.family: "fontello"
                         font.pixelSize: 64
-                        enabled: !galleryForm.printer.busy
+                        enabled: galleryForm.printer ? !galleryForm.printer.busy : false
 
                         scale: hovered ? 1.1 : 1
 

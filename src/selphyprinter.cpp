@@ -45,7 +45,17 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
     if(mIp.length() > 0)
     {
-        QString imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg";
+        QString imageMagickCommand;
+        if(filename.endsWith(".jpg") || filename.endsWith(".jpg"))
+        {
+            imageMagickCommand = ":"; // file is already a JPG. No conversion to be done
+        }
+        else
+        {
+            // file is not a JPG. First convert to JPG.
+            imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg && rm " + filename;
+        }
+
         QString selphyCommand = "selphy -printer_ip=" + mIp + " " + filename + ".jpg";
         QString printCommand = imageMagickCommand;
         for(int i = 0; i < copyCount; i++)
@@ -62,7 +72,7 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
             {
                 emit busyChanged(true);
                 mPrinterProcess.start("sh", shParameters);
-                qDebug() << shParameters;
+                qDebug() << "Runnings sh with parameters: " << shParameters;
                 return 0;
             }
             else

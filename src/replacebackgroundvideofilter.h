@@ -4,18 +4,24 @@
 #include <QAbstractVideoFilter>
 #include <opencv2/core/core.hpp>
 
+class ReplaceBackgroundFilterRunable;
+
 class ReplaceBackgroundVideoFilter : public QAbstractVideoFilter
 {
+    friend ReplaceBackgroundFilterRunable;
     Q_OBJECT
     Q_PROPERTY(QString method READ getMethod WRITE setMethod CONSTANT)
     Q_PROPERTY(float chromaA1 READ getChromaA1 WRITE setChromaA1 CONSTANT)
     Q_PROPERTY(float chromaA2 READ getChromaA2 WRITE setChromaA2 CONSTANT)
+    Q_PROPERTY(QImage background WRITE setBackground)
 public:
-    ReplaceBackgroundVideoFilter(QObject *parent = nullptr) : QAbstractVideoFilter(parent) {}
+    ReplaceBackgroundVideoFilter(QObject *parent = nullptr) : QAbstractVideoFilter(parent),
+        mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)) {}
     QVideoFilterRunnable *createFilterRunnable() override;
     void setMethod(QString method);
     void setChromaA1(float a1);
     void setChromaA2(float a2);
+    void setBackground(QImage const& image);
     QString getMethod() const;
     float getChromaA1() const;
     float getChromaA2() const;
@@ -30,6 +36,8 @@ protected:
     float mChromaA1 = 5.5;
     float mChromaA2 = 1.0;
 
+    cv::Mat mBackgroundImage;
+
     FilterMethod mFilterMethod = FilterMethod::CHROMA;
 };
 
@@ -39,6 +47,10 @@ public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
     QVideoFrame run(QVideoFrame *input, const QVideoSurfaceFormat &surfaceFormat, QVideoFilterRunnable::RunFlags flags) override;
 protected:
+    cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
+
+    void prepareBackground(cv::Mat &bg, cv::Size size);
+
     /**
      * @brief QImage -> CV_8UC4
      */

@@ -24,7 +24,25 @@ void ReplaceBackgroundVideoFilter::setChromaA2(float a2)
 
 void ReplaceBackgroundVideoFilter::setMethod(QString method)
 {
-    // @todo currently selection is not implemented. Will be used when new filter types are added.
+    if(method.contains("Chroma"))
+    {
+        mFilterMethod = FilterMethod::CHROMA;
+    }
+    else if(method.contains("Neural Net"))
+    {
+        mFilterMethod = FilterMethod::NEURAL;
+    }
+    else
+    {
+        mFilterMethod = FilterMethod::NONE;
+    }
+}
+
+void ReplaceBackgroundVideoFilter::setBackground(QImage const& image)
+{
+    QImage img = image.convertToFormat(QImage::Format_RGB32).rgbSwapped();
+    cv::Mat tmp(img.height(), img.width(), CV_8UC4, (void *) img.bits(), img.bytesPerLine());
+    mBackgroundImage = tmp.clone();
 }
 
 float ReplaceBackgroundVideoFilter::getChromaA1() const
@@ -87,34 +105,85 @@ QVideoFrame ReplaceBackgroundFilterRunable::run(QVideoFrame *input, const QVideo
     if (input->handleType() == QAbstractVideoBuffer::NoHandle)
         input->unmap();
 
-    cv::Mat res_front, res_back, res;
+    prepareBackground(mFilter->mBackgroundImage, cv::Size(input->width(), input->height()));
 
-    std::vector<cv::Mat> channels, img_channels;
+    switch(mFilter->mFilterMethod)
+    {
+    case ReplaceBackgroundVideoFilter::FilterMethod::CHROMA:
+        {
+            cv::Scalar lower_green(0, 80, 80);
+            cv::Scalar upper_green(255, 255, 255);
+            mMat = grabcutChromaKey(mMat, mFilter->mBackgroundImage, lower_green, upper_green);
+        }
+        break;
 
-    cv::Mat alpha = cv::Mat::zeros(cv::Size(input->width(), input->height()), CV_32F);
-
-    mMat.convertTo(mMat, CV_32F, 1.0/255);
-
-    split(mMat, channels);
-
-    // use algorithm: https://smirnov-am.github.io/chromakeying/
-    const float a1 = mFilter->getChromaA1();
-    const float a2 = mFilter->getChromaA2();
-    alpha = cv::Scalar::all(1.0) - a1*(channels[1] - a2*channels[0]);
-    // keep alpha in [0, 1] range
-    threshold(alpha, alpha, 1, 1, cv::THRESH_TRUNC);
-    threshold(-1*alpha, alpha, 0, 0, cv::THRESH_TRUNC);
-    alpha = -1 * alpha;
-
-    for (int i=0; i < 3; ++i) {
-        multiply(alpha, channels[i], channels[i]);
+    case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
+        break;
     }
-
-    merge(channels, res_front);
-    res_front.convertTo(mMat, CV_8UC3, 255);
 
     // Output is an RGB video frame.
     return QVideoFrame(mat8ToImage(mMat));
+}
+
+void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)
+{
+    cv::resize(bg, bg, size);
+}
+
+cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
+    // Convert the image from BGR to YUV
+    cv::Mat yuv_img;
+    cv::Mat result;
+    cvtColor(img, yuv_img, cv::COLOR_BGR2YUV);
+
+    // Define the mask based on the color range
+    cv::Mat mask;
+    inRange(yuv_img, lower_color, upper_color, mask);
+
+    int num_foreground_pixels = countNonZero(mask);
+    int num_background_pixels = mask.total() - num_foreground_pixels;
+
+    if(num_background_pixels != 0)
+    {
+        // Initialize GrabCut mask
+        cv::Mat grabcut_mask = cv::Mat::zeros(img.size(), CV_8UC1);
+
+        // Set probable foreground and background areas
+        grabcut_mask.setTo(cv::Scalar::all(cv::GC_PR_BGD), mask == 0);
+        grabcut_mask.setTo(cv::Scalar::all(cv::GC_PR_FGD), mask == 255);
+
+        // Run GrabCut algorithm
+        cv::Mat bgd_model, fgd_model;
+        cv::Rect rect(1, 1, img.cols - 2, img.rows - 2);
+        //cv::Rect rect(0, 0, img.cols, img.rows); // Use entire image
+        cv::grabCut(img, grabcut_mask, rect, bgd_model, fgd_model, 1, cv::GC_INIT_WITH_MASK);
+
+        // Create final mask
+        cv::Mat final_mask;
+        compare(grabcut_mask, cv::GC_PR_FGD, final_mask, cv::CMP_EQ);
+        final_mask = final_mask | (grabcut_mask == cv::GC_FGD);
+
+        // Extract the foreground
+        cv::Mat fg, bg;
+        img.copyTo(fg, final_mask);
+        bg_img.copyTo(bg, 1 - final_mask);
+
+        // Combine the foreground and background
+        add(fg, bg, result);
+    }
+    else
+    {
+        img.copyTo(result);
+    }
+
+    //cv::Mat fg, bg;
+    //img.copyTo(fg, mask);
+    //bg_img.copyTo(bg, ~mask);
+
+    // Combine the foreground and background
+    //add(fg, bg, result);
+
+    return result;
 }
 
 cv::Mat ReplaceBackgroundFilterRunable::imageToMat8(const QImage &image)

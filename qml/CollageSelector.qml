@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import Qt.labs.platform 1.0
 
 CollageSelectorForm {

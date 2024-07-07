@@ -1,7 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQml 2.14
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import QtQuick.Controls.Material 2.0
 import "../scripts/utils.js" as Script
 import "../styles" as Style

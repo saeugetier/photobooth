@@ -1,16 +1,16 @@
 #include "selphyprinter.h"
 #include <QFile>
-#include <QRegExp>
+#include <QRegularExpression>>
 #include <QTextStream>
 #include <QDebug>
 
 SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent) : AbstractPrinter(parent), mIp("")
 {
-    QRegExp regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    /*QRegularExpression regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
     if(regex.indexIn(name) != -1)
     {
         mIp = regex.capturedTexts().first();
-    }
+    }*/
 
     QObject::connect(&mPrinterProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finished(int,QProcess::ExitStatus)));
     QObject::connect(&mPrinterProcess, SIGNAL(errorOccurred(QProcess::ProcessError)), this, SIGNAL(failed()));
@@ -116,14 +116,14 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
             if(line.toUpper().contains("SELPHY"))
             {
                 qDebug() << "Dnsleases - Found match: " << line;
-                QRegExp regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+                /*QRegExp regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
                 if(regex.indexIn(line) != -1)
                 {
                     QString ip = regex.capturedTexts().first();
                     qDebug() << "Selphy Printer - Found IP: " << ip;
 
                     list.append("Selphy " + ip);
-                }
+                }*/
                 break;
             }
         }

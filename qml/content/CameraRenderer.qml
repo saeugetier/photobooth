@@ -1,7 +1,7 @@
 import QtQuick 2.5
-import QtMultimedia 5.5
+import QtMultimedia
 import QtQuick.Controls 2.0
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts 1.2
 
 Item {
@@ -22,18 +22,18 @@ Item {
         }
     }
 
-    Camera {
+    CaptureSession {
         id: camera
 
-        position: Camera.UnspecifiedPosition
+        //position: Camera.UnspecifiedPosition
 
         //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
-        exposure {
+        /*exposure {
             exposureCompensation: -1.0
             exposureMode: Camera.ExposurePortrait
-        }
+        }*/
 
-        flash.mode: Camera.FlashRedEyeReduction
+        //flash.mode: Camera.FlashRedEyeReduction
 
         Component.onCompleted:
         {
@@ -43,7 +43,11 @@ Item {
             }
         }
 
-        imageCapture {
+        imageCapture : ImageCapture {
+            id: imageCapture
+
+            //videoOutput: output
+
             onImageSaved:
             {
                 renderer.state = "preview"
@@ -56,23 +60,23 @@ Item {
                 renderer.state = "store"
                 console.log("Captured")
             }
-            onCaptureFailed:
+            /*onCaptureFailed:
             {
                 renderer.state = "preview"
                 failed()
-            }
+            }*/
             onErrorStringChanged:
             {
                 console.log("Camera error: " + errorString)
             }
         }
 
-        onError:
+        /*onError:
         {
             console.log("Camera Error: " + errorString)
-        }
+        }*/
 
-        onCameraStateChanged:
+        /*onCameraStateChanged:
         {
             if(camera.cameraState == Camera.UnloadedState)
             {
@@ -95,12 +99,14 @@ Item {
             {
                 console.log("Camera State Changed: Unknown");
             }
-        }
+        }*/
+
+        videoOutput: output
     }
 
     VideoOutput {
         id: output
-        source: camera
+        //source: camera
         anchors.fill: parent
 
         layer.enabled: true

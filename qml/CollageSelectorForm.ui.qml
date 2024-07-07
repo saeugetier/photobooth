@@ -1,6 +1,6 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.3
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import QtQuick.Controls 2.13
 import CollageModel 1.0
 

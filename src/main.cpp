@@ -73,7 +73,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
     //write message
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
-    ts << datetime << txt << context.file << str << endl;
+    ts << datetime << txt << context.file << str << "\n";
 
     if(context.file != nullptr && context.line != 0)
     {
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("System", 1, 0, "System");
 
-    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
+    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter", 1);
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");
     qmlRegisterType<PrinterFactory>("Printer", 1, 0, "PrinterFactory");
 

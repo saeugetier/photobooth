@@ -64,12 +64,12 @@ TimeSettingsForm {
         currentTime = new Date(time.getTime())
     }
 
-    calendar.onSelectedDateChanged:
+    /*calendar.onSelectedDateChanged:
     {
         let newDate = calendar.selectedDate
         newDate.setSeconds(tumblerSecond.currentIndex)
         newDate.setMinutes(tumblerMinute.currentIndex)
         newDate.setHours(tumblerHour.currentIndex)
         currentTime = new Date(newDate)
-    }
+    }*/
 }

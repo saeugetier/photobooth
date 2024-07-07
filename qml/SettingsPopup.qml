@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtMultimedia 5.5
+import QtMultimedia
 import QtQuick.Controls 2.4
 
 SettingsPopupForm {

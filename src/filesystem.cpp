@@ -174,8 +174,8 @@ void FileSystem::startCopyFilesToRemovableDrive()
 
 QString FileSystem::getRemovableDrivePath()
 {
-    QRegExp regexDrive("\\/dev\\/sd*");
-    QRegExp regexBoot("\\/boot");
+    /*QRegularExpression regexDrive("\\/dev\\/sd*");
+    QRegularExpression regexBoot("\\/boot");
     QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
     for(int i = 0; i < drives.count(); i++)
     {
@@ -189,7 +189,7 @@ QString FileSystem::getRemovableDrivePath()
                 }
             }
         }
-    }
+    }*/
     return QString();
 }
 

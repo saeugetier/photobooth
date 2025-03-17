@@ -80,6 +80,11 @@ Item {
                 target: exitButton
                 visible: true
             }
+
+            PropertyChanges {
+                target: cameraRenderer
+                state: "preview"
+            }
         },
         State {
             name: "snapshot"

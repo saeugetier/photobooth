@@ -9,7 +9,7 @@ Item {
     signal savedPhoto(string filename)
     signal failed
 
-    property bool photoProcessing: (state == "snapshot")
+    property bool photoProcessing: (state === "snapshot")
     property bool mirrored: true
     property string deviceId: camera.deviceId
 
@@ -22,8 +22,22 @@ Item {
         }
     }
 
+    MediaDevices
+    {
+        id: mediaDevices
+    }
+
     CaptureSession {
-        id: camera
+
+        camera:  Camera
+        {
+            id: camera
+            //cameraDevice: mediaDevices.defaultVideoInput
+        }
+
+        id: cameraSession
+
+        videoOutput: output
 
         //position: Camera.UnspecifiedPosition
 
@@ -37,10 +51,10 @@ Item {
 
         Component.onCompleted:
         {
-            for(var filterType in imageProcessing.supportedColorFilters)
-            {
-                console.log("Filter: " + Number(filterType).toString())
-            }
+            //for(var filterType in imageProcessing.supportedColorFilters)
+            //{
+            //    console.log("Filter: " + Number(filterType).toString())
+            //}
         }
 
         imageCapture : ImageCapture {
@@ -51,8 +65,8 @@ Item {
             onImageSaved:
             {
                 renderer.state = "preview"
-                savedPhoto("file:" + camera.imageCapture.capturedImagePath)
-                console.log("Saved: " + camera.imageCapture.capturedImagePath)
+                savedPhoto("file:" + imageCapture.capturedImagePath)
+                console.log("Saved: " + imageCapture.capturedImagePath)
             }
             onImageCaptured:
             {
@@ -101,7 +115,6 @@ Item {
             }
         }*/
 
-        videoOutput: output
     }
 
     VideoOutput {
@@ -109,11 +122,11 @@ Item {
         //source: camera
         anchors.fill: parent
 
-        layer.enabled: true
-        layer.effect: ImageEffect {
+        //layer.enabled: true
+        /*layer.effect: ImageEffect {
             source: output
             fragmentShaderFilename: mirrored ? "vmirror.fsh" : "passthrough.fsh"
-        }
+        }*/
 
         //focus: visible // to receive focus and capture key events when visible
     }
@@ -127,7 +140,7 @@ Item {
         height: output.height
     }
 
-    Timer
+   /* Timer
     {
         id: cameraDiscoveryTimer
 
@@ -147,11 +160,11 @@ Item {
             }
 
         }
-    }
+    }*/
 
     function takePhoto()
     {
-        if(camera.imageCapture.ready)
+        if(cameraSession.imageCapture.ready)
         {
             state  = "snapshot"
             console.log(applicationSettings.foldername.toString())
@@ -159,7 +172,7 @@ Item {
             path = path.replace(/^(file:\/{2})/,"");
             var cleanPath = decodeURIComponent(path);
             console.log(cleanPath)
-            camera.imageCapture.captureToLocation(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+            cameraSession.imageCapture.captureToLocation(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
         }
         else
         {
@@ -179,6 +192,12 @@ Item {
                 target: shutterButton
                 state: "idle"
             }
+            StateChangeScript
+            {
+                script: {
+                    camera.start()
+                }
+            }
         },
         State {
             name: "snapshot"
@@ -192,6 +211,12 @@ Item {
             PropertyChanges {
                 target: whiteOverlay
                 state: "released"
+            }
+            StateChangeScript
+            {
+                script: {
+                    camera.stop()
+                }
             }
         }
     ]

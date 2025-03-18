@@ -62,11 +62,11 @@ Item {
 
             //videoOutput: output
 
-            onImageSaved:
+            onImageSaved: (_, fileName) =>
             {
                 renderer.state = "preview"
-                savedPhoto("file:" + imageCapture.capturedImagePath)
-                console.log("Saved: " + imageCapture.capturedImagePath)
+                savedPhoto("file:" + fileName)
+                console.log("Saved: " + fileName)
             }
             onImageCaptured:
             {
@@ -74,11 +74,11 @@ Item {
                 renderer.state = "store"
                 console.log("Captured")
             }
-            /*onCaptureFailed:
+            onErrorOccurred:
             {
                 renderer.state = "preview"
                 failed()
-            }*/
+            }
             onErrorStringChanged:
             {
                 console.log("Camera error: " + errorString)
@@ -164,7 +164,7 @@ Item {
 
     function takePhoto()
     {
-        if(cameraSession.imageCapture.ready)
+        if(cameraSession.imageCapture.readyForCapture)
         {
             state  = "snapshot"
             console.log(applicationSettings.foldername.toString())
@@ -172,7 +172,7 @@ Item {
             path = path.replace(/^(file:\/{2})/,"");
             var cleanPath = decodeURIComponent(path);
             console.log(cleanPath)
-            cameraSession.imageCapture.captureToLocation(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+            cameraSession.imageCapture.captureToFile(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
         }
         else
         {
@@ -182,6 +182,15 @@ Item {
     }
 
     states: [
+        State {
+            name: "idle"
+            StateChangeScript
+            {
+                script: {
+                    //camera.stop()
+                }
+            }
+        },
         State {
             name: "preview"
             PropertyChanges {
@@ -211,12 +220,6 @@ Item {
             PropertyChanges {
                 target: whiteOverlay
                 state: "released"
-            }
-            StateChangeScript
-            {
-                script: {
-                    camera.stop()
-                }
             }
         }
     ]

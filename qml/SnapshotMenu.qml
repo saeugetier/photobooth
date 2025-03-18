@@ -39,7 +39,7 @@ SnapshotMenuForm {
 
     onSnapshotTimeoutEnableChanged:
     {
-        if(state == "activated" && snapshotTimeoutEnable == true)
+        if(state === "activated" && snapshotTimeoutEnable == true)
         {
             snapshotTimeoutTimer.start()
             console.log("Snapshot timeout timer started")
@@ -53,13 +53,13 @@ SnapshotMenuForm {
     onStateChanged:
     {
         console.log("Snapshot menu state changed: " + state)
-        if(state == "deactivated")
+        if(state === "deactivated")
         {
             ledEnablePin.value = 0.0
         }
         else
         {
-            if(state == "activated" && snapshotTimeoutEnable == true)
+            if(state === "activated" && snapshotTimeoutEnable == true)
             {
                 snapshotTimeoutTimer.start()
                 console.log("Snapshot timeout timer started")
@@ -106,13 +106,13 @@ SnapshotMenuForm {
     shutterButton.onStateChanged:
     {
         //while shutter button is triggered
-        if(shutterButton.state != "idle")
+        if(shutterButton.state !== "idle")
         {
             form.state = "snapshot"
         }
     }
 
-    cameraRenderer.onSavedPhoto:
+    cameraRenderer.onSavedPhoto: filename =>
     {
         captured(filename)
     }

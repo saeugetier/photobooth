@@ -34,7 +34,7 @@ ApplicationFlowForm {
         state = "gallery"
     }
 
-    snapshotMenu.onCaptured:
+    snapshotMenu.onCaptured: filename =>
     {
         state = "imagePreview"
         imagePreview.effectSelectable = applicationSettings.printEnable && collageMenu.collageImage.imageModel.nextImageIsEffectSelectable()
@@ -84,9 +84,9 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    collageMenu.collageImage.onCollageImagesChanged:
+    collageMenu.collageImage.onCollageImagesChanged: count =>
     {
-        snapshotMenu.snapshotTimeoutEnable = (count == 0)
+        snapshotMenu.snapshotTimeoutEnable = (count === 0)
     }
 
     galleryMenu.onExitGallery:

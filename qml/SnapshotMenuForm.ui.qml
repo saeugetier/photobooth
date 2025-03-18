@@ -67,6 +67,11 @@ Item {
     states: [
         State {
             name: "deactivated"
+
+            PropertyChanges {
+                target: cameraRenderer
+                state: "idle"
+            }
         },
         State {
             name: "activated"

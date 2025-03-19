@@ -3,11 +3,6 @@
 #include <QDebug>
 #include <QPainter>
 
-QSize StandardPrinter::getPrintSize()
-{
-    return QSize(3570,2380); //hard coded pixel size @TODO
-}
-
 bool StandardPrinter::printerOnline()
 {
     return true; //cannot determine online state @TODO
@@ -68,11 +63,11 @@ StandardPrinter *StandardPrinter::createInternal(const QString &name)
     auto printers = QPrinterInfo::availablePrinters();
     for(auto printer: printers)
     {
-       if(printer.printerName() == name)
-       {
+        if(printer.printerName() == name)
+        {
             ptr = new StandardPrinter(printer);
             break;
-       }
+        }
     }
     return ptr;
 }

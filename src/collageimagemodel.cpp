@@ -1,5 +1,7 @@
 #include "collageimagemodel.h"
 #include "collagemodelfactory.h"
+#include <QTransform>
+#include <QDebug>
 
 CollageImageModel::CollageImageModel(QObject *parent) : QAbstractListModel(parent)
 {
@@ -37,6 +39,12 @@ bool CollageImageModel::parseXml(const QDomNode& node)
         mLine = element.lineNumber();
         return false;
     }
+    else
+    {
+        mErrorMsg = "at least one background nodes required";
+        mLine = element.lineNumber();
+        return false;
+    }
 
     QDomNodeList foregroundNode = element.elementsByTagName("foreground");
     if(foregroundNode.count() == 1)
@@ -46,6 +54,44 @@ bool CollageImageModel::parseXml(const QDomNode& node)
     else if(foregroundNode.count() > 1)
     {
         mErrorMsg = "multiple foreground nodes";
+        mLine = element.lineNumber();
+        return false;
+    }
+
+    QDomElement sizeElement = element.firstChildElement("size");
+    if(sizeElement.isElement())
+    {
+        if(sizeElement.hasAttributes() && sizeElement.toElement().hasAttribute("width") && sizeElement.toElement().hasAttribute("height"))
+        {
+            bool ok;
+            QString x = sizeElement.toElement().attribute("width");
+            mPixelSize.setWidth(x.toInt(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'width' must be defined as float";
+                mLine = sizeElement.lineNumber();
+                return false;
+            }
+
+            QString y = sizeElement.toElement().attribute("height");
+            mPixelSize.setHeight(y.toInt(&ok));
+            if(!ok)
+            {
+                mErrorMsg = "size 'height' must be defined as float";
+                mLine = sizeElement.lineNumber();
+                return false;
+            }
+        }
+        else
+        {
+            mErrorMsg = "size must be defined be 'width' and 'height' attributes";
+            mLine = sizeElement.lineNumber();
+            return false;
+        }
+    }
+    else
+    {
+        mErrorMsg = "at least one size nodes required";
         mLine = element.lineNumber();
         return false;
     }
@@ -72,7 +118,7 @@ bool CollageImageModel::parseXml(const QDomNode& node)
     for(int i = 0; i < imageNodes.length(); i++)
     {
         bool result;
-        CollageImage* image = new CollageImage();
+        CollageImage* image = new CollageImage(mPixelSize);
         result = image->parseXml(imageNodes.item(i));
         if(!result)
         {
@@ -119,7 +165,7 @@ QHash<int, QByteArray> CollageImageModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[ImageRectRole] = "imageRect";
-    roles[RotationRole] = "rotation";
+    roles[RotationRole] = "imageRotation";
     roles[ImagePathRole] = "imagePath";
     roles[BorderImageRole] = "borderImage";
     roles[BorderRectRole] = "borderRect";
@@ -158,6 +204,7 @@ bool CollageImageModel::addImagePath(QUrl source, QString effect)
         }
         QModelIndex ii = index(i,0);
         emit dataChanged(ii, ii);
+        emit countImagePathSetChanged(countImagePathSet());
         if(collageFull())
         {
             emit collageFullChanged(true);
@@ -177,6 +224,7 @@ void CollageImageModel::clearImagePathes()
     }
 
     emit collageFullChanged(false);
+    emit countImagePathSetChanged(0);
 
     emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
 }
@@ -212,6 +260,7 @@ bool CollageImageModel::clearImagePath(int index)
             }
 #endif
             emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
+            emit countImagePathSetChanged(countImagePathSet());
             return true;
         }
         else {
@@ -229,6 +278,11 @@ bool CollageImageModel::collageFull()
         return true;
     else
         return false;
+}
+
+QSize CollageImageModel::collagePixelSize() const
+{
+    return mPixelSize;
 }
 
 bool CollageImageModel::nextImageIsEffectSelectable()
@@ -274,7 +328,7 @@ int CollageImageModel::countImagePathSet() const
     return currentCount;
 }
 
-CollageImage::CollageImage(QObject *parent) : QObject(parent), mEffect("")
+CollageImage::CollageImage(QSize collagePixelSize, QObject *parent) : QObject(parent), mEffect(""), mCollagePixelSize(collagePixelSize)
 {
 
 }
@@ -370,6 +424,25 @@ bool CollageImage::parseXml(const QDomNode &node)
         return false;
     }
 
+    QDomNodeList rotationNode = element.elementsByTagName("rotation");
+    if(rotationNode.count() == 1)
+    {
+        bool ok;
+        mAngle = rotationNode.item(0).toElement().text().toFloat(&ok);
+        if(!ok)
+        {
+            mErrorMsg = "rotation must be defined as float";
+            mLine = rotationNode.item(0).lineNumber();
+            return false;
+        }
+    }
+    else if(rotationNode.count() > 1)
+    {
+        mErrorMsg = "multiple rotations are defined";
+        mLine = element.lineNumber();
+        return false;
+    }
+
     QDomNodeList borderImageNode = element.elementsByTagName("border");
     if(borderImageNode.count() == 1)
     {
@@ -389,10 +462,10 @@ bool CollageImage::parseXml(const QDomNode &node)
         if(borderMarginNode.count() == 1)
         {
             if(borderMarginNode.item(0).hasAttributes() &&
-                    borderMarginNode.item(0).toElement().hasAttribute("top") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("left") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("right") &&
-                    borderMarginNode.item(0).toElement().hasAttribute("bottom"))
+                borderMarginNode.item(0).toElement().hasAttribute("top") &&
+                borderMarginNode.item(0).toElement().hasAttribute("left") &&
+                borderMarginNode.item(0).toElement().hasAttribute("right") &&
+                borderMarginNode.item(0).toElement().hasAttribute("bottom"))
             {
                 bool ok;
                 QString top = borderMarginNode.item(0).toElement().attribute("top");
@@ -540,25 +613,38 @@ bool CollageImage::validateBoundary()
 {
     //test position and size parameter
     bool result = true;
-    if(mImageRect.x() < 0 || mImageRect.x() > 1.0)
+
+    // scale image rect to pixels
+    QRectF imageRect(mImageRect.x()*mCollagePixelSize.width(), mImageRect.y()*mCollagePixelSize.height(), mImageRect.width()*mCollagePixelSize.width(), mImageRect.height()*mCollagePixelSize.height());
+    // get center of rect
+    QPointF center = imageRect.center();
+    // rotate around center
+    QTransform transform;
+    transform.translate(center.x(), center.y());
+    transform.rotate(mAngle);
+    transform.translate(-center.x(), -center.y());
+    imageRect = transform.mapRect(imageRect);
+    qDebug() << "Bounding box of image: " << imageRect;
+
+    // now check if image will fit into collage
+    if(imageRect.x() < -std::numeric_limits<qreal>::epsilon()|| imageRect.x() > mCollagePixelSize.width())
     {
         result = false;
     }
-    if(mImageRect.y() < 0 || mImageRect.x() > 1.0)
+    if(imageRect.y() < -std::numeric_limits<qreal>::epsilon() || imageRect.y() > mCollagePixelSize.height())
     {
         result = false;
     }
-    if((mImageRect.x() + mImageRect.width()) > 1.0 || mImageRect.width() < 0)
+    if((imageRect.x() + imageRect.width()) > (mCollagePixelSize.width() + std::numeric_limits<qreal>::epsilon() )|| imageRect.width() < 0)
     {
         result = false;
     }
-    if((mImageRect.y() + mImageRect.height()) > 1.0 || mImageRect.height() < 0)
+    if((imageRect.y() + imageRect.height()) > (mCollagePixelSize.height() + std::numeric_limits<qreal>::epsilon()) || imageRect.height() < 0)
     {
         result = false;
     }
 
-    //TODO: Validate Border
-    //TODO: Validate with rotation
+    //@TODO: Validate Border
 
     return result;
 }

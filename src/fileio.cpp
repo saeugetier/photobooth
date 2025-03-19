@@ -13,7 +13,7 @@ QByteArray FileIO::read()
     }
     else
     {
-         file.setFileName(mSource.toLocalFile());
+        file.setFileName(mSource.toLocalFile());
     }
 
     if (!file.open(QIODevice::ReadOnly))

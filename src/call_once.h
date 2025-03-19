@@ -9,13 +9,13 @@
 #include <QThread>
 
 namespace CallOnce {
-    enum ECallOnce {
-        CO_Request,
-        CO_InProgress,
-        CO_Finished
-    };
+enum ECallOnce {
+    CO_Request,
+    CO_InProgress,
+    CO_Finished
+};
 
-    Q_GLOBAL_STATIC(QThreadStorage<QAtomicInt*>, once_flag)
+Q_GLOBAL_STATIC(QThreadStorage<QAtomicInt*>, once_flag)
 }
 
 template <class Function>
@@ -32,7 +32,7 @@ inline static void qCallOnce(Function func, QBasicAtomicInt& flag)
     if (protectFlag == CO_Finished)
         return;
     if (protectFlag == CO_Request && flag.testAndSetRelaxed(protectFlag,
-                                                           CO_InProgress)) {
+                                                            CO_InProgress)) {
         func();
         flag.fetchAndStoreRelease(CO_Finished);
     }

@@ -119,14 +119,20 @@ Item {
 
     VideoOutput {
         id: output
-        //source: camera
+
         anchors.fill: parent
 
-        //layer.enabled: true
-        /*layer.effect: ImageEffect {
-            source: output
-            fragmentShaderFilename: mirrored ? "vmirror.fsh" : "passthrough.fsh"
-        }*/
+        layer.enabled: true
+        layer.effect: ShaderEffect
+        {
+            id: mirrorEffect
+            property variant source: ShaderEffectSource {
+                sourceItem: output
+                hideSource: true
+            }
+            anchors.fill: output
+            fragmentShader: mirrored ? "qrc:/shaders/vmirror.frag.qsb" : "qrc:/shaders/passthrough.frag.qsb"
+        }
 
         //focus: visible // to receive focus and capture key events when visible
     }

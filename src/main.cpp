@@ -92,6 +92,9 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
 int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    //qputenv("QSG_VISUALIZE", QByteArray("overdraw"));
+    //qputenv("QSG_INFO", "1");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.general=true");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);

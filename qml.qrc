@@ -56,8 +56,8 @@
         <file>qml/TimeSettingsForm.ui.qml</file>
         <file>shaders/sepia.fsh</file>
         <file>shaders/vignette.fsh</file>
-        <file>shaders/blueseeker.fsh</file>
-        <file>shaders/bw.fsh</file>
+        <file>shaders/blueseeker.frag</file>
+        <file>shaders/bw.frag</file>
         <file>shaders/greenseeker.fsh</file>
         <file>shaders/redseeker.fsh</file>
         <file>shaders/warhol.fsh</file>
@@ -80,5 +80,7 @@
         <file>qml/styles/RoundProgressBarStyle.qml</file>
         <file>shaders/vmirror.frag.qsb</file>
         <file>shaders/passthrough.frag.qsb</file>
+        <file>shaders/bw.frag.qsb</file>
+        <file>shaders/blueseeker.frag.qsb</file>
     </qresource>
 </RCC>

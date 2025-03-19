@@ -78,5 +78,6 @@
         <file>qml/GalleryMenuForm.ui.qml</file>
         <file>qml/content/DelegateGalleryItem.qml</file>
         <file>qml/styles/RoundProgressBarStyle.qml</file>
+        <file>images/backgrounds/pexels-pixabay-259915.jpg</file>
     </qresource>
 </RCC>

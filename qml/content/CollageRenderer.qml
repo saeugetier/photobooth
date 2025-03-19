@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import CollageModel 1.0
-import Qt.labs.platform 1.0
+import QtQuick
+import CollageModel
+import Qt.labs.platform
 
 Item {
     id: renderer
@@ -31,7 +31,7 @@ Item {
 
         onStatusChanged:
         {
-            if(background.paintedHeight != 0 && background.paintedWidth != 0)
+            if(background.paintedHeight !== 0 && background.paintedWidth !== 0)
             {
                 backgroundRect.x = background.x
                 backgroundRect.y = background.y
@@ -78,7 +78,7 @@ Item {
 
                 proxy.onLoadingChanged:
                 {
-                    if(proxy.loading == true)
+                    if(proxy.loading === true)
                     {
                         imagesLoading = imagesLoading + 1
                     }

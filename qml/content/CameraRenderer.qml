@@ -1,8 +1,8 @@
-import QtQuick 2.5
+import QtQuick
 import QtMultimedia
-import QtQuick.Controls 2.0
+import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
-import QtQuick.Layouts 1.2
+import QtQuick.Layouts
 
 Item {
     id: renderer

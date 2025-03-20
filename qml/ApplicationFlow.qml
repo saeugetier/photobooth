@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import CollageModel 1.0
-import QtQuick.Controls 2.5
+import QtQuick
+import CollageModel
+import QtQuick.Controls
 
 ApplicationFlowForm {
     id: flow

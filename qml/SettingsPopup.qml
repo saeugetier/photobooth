@@ -1,6 +1,6 @@
-import QtQuick 2.4
+import QtQuick
 import QtMultimedia
-import QtQuick.Controls 2.4
+import QtQuick.Controls
 
 SettingsPopupForm {
     id: form

@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import FileIO 1.0
+import QtQuick
+import FileIO
 import "content"
 
 ImagePreviewForm {

@@ -1,7 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.10
+import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Popup {
     property alias buttonApply: buttonApply

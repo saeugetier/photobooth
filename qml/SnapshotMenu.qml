@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import GPIO 1.0
+import QtQuick
+import GPIO
 
 SnapshotMenuForm {
     id: form

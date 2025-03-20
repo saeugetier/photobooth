@@ -46,7 +46,7 @@ Item {
             CollageImageDelegate
             {
                 id: collageImage
-                borderImageSource: filesystem.findFile(borderImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation, true))
+                borderImageSource: filesystem.findFile(borderImage, StandardPaths.standardLocations(StandardPaths.AppDataLocation), true)
                 imageSource: imagePath
                 effectSource: effect
                 borderSizeLeft: borderRect.left
@@ -130,12 +130,12 @@ Item {
     Connections
     {
         target: imageModel
-        onCollageFullChanged: {
+        function onCollageFullChanged(full) {
             collageFull(full)
             console.log("Collage Full Changed to " + Boolean(full).toString());
         }
 
-        onCountImagePathSetChanged:
+        function onCountImagePathSetChanged(count)
         {
             collageImagesChanged(count)
             console.log("Images in model set: " + Number(count).toString());

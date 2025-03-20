@@ -56,7 +56,7 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    imagePreview.onAccept:
+    imagePreview.onAccept: (filename, effect) =>
     {
         if(applicationSettings.printEnable)
         {

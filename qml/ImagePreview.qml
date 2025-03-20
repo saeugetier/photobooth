@@ -30,7 +30,7 @@ ImagePreviewForm {
                    Connections
                    {
                        target: form
-                       function onShaderNameChanged(name) { fragmentShader = name }
+                       function onShaderNameChanged(name) { fragmentShader = form.shaderName }
                    }
                 }
 
@@ -83,7 +83,7 @@ ImagePreviewForm {
         width: parent.width - 100
         previewImage: form.previewImage.source
 
-        onEffectSelected:
+        onEffectSelected: effect =>
         {
             console.log("Current effect: " + effect)
             shaderName = effect

@@ -28,7 +28,7 @@ Item {
                 sourceItem: image
                 hideSource: true
             }
-            anchors.fill: output
+
             fragmentShader: effectName
         }
         onStatusChanged:

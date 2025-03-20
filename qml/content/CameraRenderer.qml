@@ -5,92 +5,78 @@ import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
 
 Item {
-    id: renderer
-    signal savedPhoto(string filename)
-    signal failed
+   id: renderer
+   signal savedPhoto(string filename)
+   signal failed
 
-    property bool photoProcessing: (state === "snapshot")
-    property bool mirrored: true
-    property string deviceId: camera.deviceId
+   property bool photoProcessing: (state === "snapshot")
+   property bool mirrored: true
+   property string deviceId: camera.deviceId
 
-    function printDevicesToConsole(devices)
-    {
-        console.log("Found " + devices.length + " camera devices!")
-        for(var i = 0; i < devices.length; i++)
-        {
-            console.log("Found device: " + devices[i].deviceId + " with number " + i);
-        }
-    }
+   function printDevicesToConsole(devices) {
+      console.log("Found " + devices.length + " camera devices!")
+      for (var i = 0; i < devices.length; i++) {
+         console.log(
+                  "Found device: " + devices[i].deviceId + " with number " + i)
+      }
+   }
 
-    MediaDevices
-    {
-        id: mediaDevices
-    }
+   MediaDevices {
+      id: mediaDevices
+   }
 
-    CaptureSession {
+   onDeviceIdChanged: id => {
+                         // get the camera device with id from mediaDevices
+                         console.log("Selected camera: " + id)
+                         var availableCameras = mediaDevices.videoInputs
+                         for (var i = 0; i < availableCameras.length; i++) {
+                            if (availableCameras[i].deviceId === id) {
+                               camera.cameraDevice = availableCameras[i]
+                               break
+                            }
+                         }
+                      }
 
-        camera:  Camera
-        {
-            id: camera
-            //cameraDevice: mediaDevices.defaultVideoInput
-        }
+   CaptureSession {
 
-        id: cameraSession
+      camera: Camera {
+         id: camera
+         cameraDevice: mediaDevices.defaultVideoInput
+         exposureMode: Camera.ExposurePortrait
+         exposureCompensation: -1.0
+         whiteBalanceMode: Camera.WhiteBalanceAuto
+         flashMode: Camera.FlashAuto
+         torchMode: Camera.TorchAuto
+      }
 
-        videoOutput: output
+      id: cameraSession
 
-        //position: Camera.UnspecifiedPosition
+      videoOutput: output
 
-        //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
-        /*exposure {
-            exposureCompensation: -1.0
-            exposureMode: Camera.ExposurePortrait
-        }*/
+      imageCapture: ImageCapture {
+         id: imageCapture
 
-        //flash.mode: Camera.FlashRedEyeReduction
+         onImageSaved: (_, fileName) => {
+                          renderer.state = "preview"
+                          savedPhoto("file:" + fileName)
+                          console.log("Saved: " + fileName)
+                       }
+         onImageCaptured: {
+            whiteOverlay.state = "released"
+            renderer.state = "store"
+            console.log("Captured")
+         }
+         onErrorOccurred: {
+            renderer.state = "preview"
+            failed()
+         }
+         onErrorStringChanged: {
+            console.log("Camera error: " + errorString)
+         }
+      }
 
-        Component.onCompleted:
-        {
-            //for(var filterType in imageProcessing.supportedColorFilters)
-            //{
-            //    console.log("Filter: " + Number(filterType).toString())
-            //}
-        }
 
-        imageCapture : ImageCapture {
-            id: imageCapture
-
-            //videoOutput: output
-
-            onImageSaved: (_, fileName) =>
-            {
-                renderer.state = "preview"
-                savedPhoto("file:" + fileName)
-                console.log("Saved: " + fileName)
-            }
-            onImageCaptured:
-            {
-                whiteOverlay.state = "released"
-                renderer.state = "store"
-                console.log("Captured")
-            }
-            onErrorOccurred:
-            {
-                renderer.state = "preview"
-                failed()
-            }
-            onErrorStringChanged:
-            {
-                console.log("Camera error: " + errorString)
-            }
-        }
-
-        /*onError:
-        {
-            console.log("Camera Error: " + errorString)
-        }*/
-
-        /*onCameraStateChanged:
+      /*onCameraStateChanged:
         {
             if(camera.cameraState == Camera.UnloadedState)
             {
@@ -114,37 +100,43 @@ Item {
                 console.log("Camera State Changed: Unknown");
             }
         }*/
+   }
 
-    }
+   Connections {
+      id: cameraErrorListener
+      target: camera
+      function errorOccured(_, errorString) {
+         console.log("Camera Error: " + errorString)
+      }
+   }
 
-    VideoOutput {
-        id: output
+   VideoOutput {
+      id: output
 
-        anchors.fill: parent
+      anchors.fill: parent
 
-        layer.enabled: true
-        layer.effect: ShaderEffect
-        {
-            id: mirrorEffect
-            property variant source: ShaderEffectSource {
-                sourceItem: output
-                hideSource: true
-            }
-            anchors.fill: output
-            fragmentShader: mirrored ? "qrc:/shaders/vmirror.frag.qsb" : "qrc:/shaders/passthrough.frag.qsb"
-        }
+      layer.enabled: true
+      layer.effect: ShaderEffect {
+         id: mirrorEffect
+         property variant source: ShaderEffectSource {
+            sourceItem: output
+            hideSource: true
+         }
+         anchors.fill: output
+         fragmentShader: mirrored ? "qrc:/shaders/vmirror.frag.qsb" : "qrc:/shaders/passthrough.frag.qsb"
+      }
 
-        //focus: visible // to receive focus and capture key events when visible
-    }
+      //focus: visible // to receive focus and capture key events when visible
+   }
 
-    WhiteOverlay
-    {
-        id: whiteOverlay
-        x: output.x
-        y: output.y
-        width: output.width
-        height: output.height
-    }
+   WhiteOverlay {
+      id: whiteOverlay
+      x: output.x
+      y: output.y
+      width: output.width
+      height: output.height
+   }
+
 
    /* Timer
     {
@@ -167,72 +159,69 @@ Item {
 
         }
     }*/
+   function takePhoto() {
+      if (cameraSession.imageCapture.readyForCapture) {
+         state = "snapshot"
+         console.log(applicationSettings.foldername.toString())
+         var path = applicationSettings.foldername.toString()
+         path = path.replace(/^(file:\/{2})/, "")
+         var cleanPath = decodeURIComponent(path)
+         console.log(cleanPath)
+         cameraSession.imageCapture.captureToFile(
+                  cleanPath + "/Pict_" + new Date().toLocaleString(
+                     locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+      } else {
+         renderer.state = "preview"
+         failed()
+      }
+   }
 
-    function takePhoto()
-    {
-        if(cameraSession.imageCapture.readyForCapture)
-        {
-            state  = "snapshot"
-            console.log(applicationSettings.foldername.toString())
-            var path = applicationSettings.foldername.toString()
-            path = path.replace(/^(file:\/{2})/,"");
-            var cleanPath = decodeURIComponent(path);
-            console.log(cleanPath)
-            cameraSession.imageCapture.captureToFile(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
-        }
-        else
-        {
-            renderer.state = "preview"
-            failed()
-        }
-    }
-
-    states: [
-        State {
-            name: "idle"
-        },
-        State {
-            name: "preview"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "released"
+   states: [
+      State {
+         name: "idle"
+      },
+      State {
+         name: "preview"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "released"
+         }
+         PropertyChanges {
+            target: shutterButton
+            state: "idle"
+         }
+         StateChangeScript {
+            script: {
+               camera.start()
             }
-            PropertyChanges {
-                target: shutterButton
-                state: "idle"
+         }
+      },
+      State {
+         name: "snapshot"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "triggered"
+         }
+      },
+      State {
+         name: "store"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "released"
+         }
+      }
+   ]
+   transitions: Transition {
+      to: "idle"
+      SequentialAnimation {
+         NumberAnimation {
+            duration: 2000
+         }
+         ScriptAction {
+            script: {
+               camera.stop()
             }
-            StateChangeScript
-            {
-                script: {
-                    camera.start()
-                }
-            }
-        },
-        State {
-            name: "snapshot"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "triggered"
-            }
-        },
-        State {
-            name: "store"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "released"
-            }
-        }
-
-    ]
-    transitions: Transition {
-        to: "idle"
-        SequentialAnimation {
-            NumberAnimation { duration: 2000 }
-            ScriptAction {
-               script: {
-                  camera.stop()
-              }
-            }
-        }
-    }
+         }
+      }
+   }
 }

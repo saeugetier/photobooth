@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
 
 Item {
     property url imageFileName : ""
@@ -21,10 +21,15 @@ Item {
         visible: false
         fillMode: Image.PreserveAspectCrop
         layer.enabled: true
-        layer.effect: ImageEffect
+        layer.effect: ShaderEffect
         {
-            source: image
-            fragmentShaderFilename: effectName
+            id: mirrorEffect
+            property variant source: ShaderEffectSource {
+                sourceItem: image
+                hideSource: true
+            }
+            anchors.fill: output
+            fragmentShader: effectName
         }
         onStatusChanged:
         {

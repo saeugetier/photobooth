@@ -7,7 +7,7 @@ ImagePreviewForm {
     signal abort
     signal accept(string filename, string effect)
 
-    property var shaderName: ""
+    property string shaderName: ""
     property string effectPreset: ""
 
     function setPreviewImage(filename)
@@ -19,15 +19,18 @@ ImagePreviewForm {
     Component
     {
         id: effectComponent
-        ImageEffect {
+        ShaderEffect {
                    id: effectPreview
-                   source: previewImage
-                   fragmentShaderFilename: shaderName
+                   property variant source: ShaderEffectSource {
+                       sourceItem: previewImage
+                       hideSource: true
+                   }
+                   fragmentShader: shaderName
 
                    Connections
                    {
                        target: form
-                       onShaderNameChanged: fragmentShaderFilename = form.shaderName
+                       onShaderNameChanged: fragmentShader = form.shaderName
                    }
                 }
 

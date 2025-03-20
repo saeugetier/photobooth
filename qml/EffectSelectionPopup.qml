@@ -87,11 +87,14 @@ EffectSelectionPopupForm {
                 anchors.leftMargin: leftMargin + horzitontalSpacing
 
                 layer.enabled: true
-                layer.effect: ImageEffect
+                layer.effect: ShaderEffect
                 {
                     clip: true
-                    source: image
-                    fragmentShaderFilename: effectSource
+                    property variant source: ShaderEffectSource {
+                        sourceItem: image
+                        hideSource: true
+                    }
+                    fragmentShader: effectSource
                 }
 
                 property int duration: 250

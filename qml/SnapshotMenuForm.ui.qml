@@ -56,7 +56,7 @@ Item {
     SnapshotSettings {
         id: snapshotSettings
         opacity: 0.0
-        visible: opacity == 0.0 ? false : true
+        visible: opacity === 0.0 ? false : true
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.right: parent.right

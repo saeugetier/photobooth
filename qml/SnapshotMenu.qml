@@ -83,7 +83,7 @@ SnapshotMenuForm {
 
     cameraRenderer.onStateChanged:
     {
-        if(cameraRenderer.state == "snapshot" && snapshotSettings.flashEnabled)
+        if(cameraRenderer.state === "snapshot" && snapshotSettings.flashEnabled)
         {
             ledBrightnessPin.value = 1.0 - snapshotSettings.flashBrightness
         }

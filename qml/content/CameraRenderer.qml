@@ -190,12 +190,6 @@ Item {
     states: [
         State {
             name: "idle"
-            StateChangeScript
-            {
-                script: {
-                    //camera.stop()
-                }
-            }
         },
         State {
             name: "preview"
@@ -228,5 +222,17 @@ Item {
                 state: "released"
             }
         }
+
     ]
+    transitions: Transition {
+        to: "idle"
+        SequentialAnimation {
+            NumberAnimation { duration: 2000 }
+            ScriptAction {
+               script: {
+                  camera.stop()
+              }
+            }
+        }
+    }
 }

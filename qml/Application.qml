@@ -51,7 +51,7 @@ ApplicationWindow {
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
         console.log(StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation))
         console.log("Path: " + path)
-        if(path !== "")
+        if(path.len > 0)
             return path
         else
             return "qrc:/XmlData.xml"

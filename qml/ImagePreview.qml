@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import FileIO 1.0
+import QtQuick
+import FileIO
 import "content"
 
 ImagePreviewForm {
@@ -7,7 +7,7 @@ ImagePreviewForm {
     signal abort
     signal accept(string filename, string effect)
 
-    property var shaderName: ""
+    property string shaderName: ""
     property string effectPreset: ""
 
     function setPreviewImage(filename)
@@ -19,15 +19,18 @@ ImagePreviewForm {
     Component
     {
         id: effectComponent
-        ImageEffect {
+        ShaderEffect {
                    id: effectPreview
-                   source: previewImage
-                   fragmentShaderFilename: shaderName
+                   property variant source: ShaderEffectSource {
+                       sourceItem: previewImage
+                       hideSource: true
+                   }
+                   fragmentShader: shaderName
 
                    Connections
                    {
                        target: form
-                       onShaderNameChanged: fragmentShaderFilename = form.shaderName
+                       function onShaderNameChanged(name) { fragmentShader = form.shaderName }
                    }
                 }
 
@@ -80,7 +83,7 @@ ImagePreviewForm {
         width: parent.width - 100
         previewImage: form.previewImage.source
 
-        onEffectSelected:
+        onEffectSelected: effect =>
         {
             console.log("Current effect: " + effect)
             shaderName = effect

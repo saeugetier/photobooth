@@ -1,7 +1,7 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.2
-import QtQml.Models 2.11
-import Qt.labs.folderlistmodel 2.1
+import QtQuick
+import QtQuick.Controls
+import QtQml.Models
+import Qt.labs.folderlistmodel
 import "scripts/utils.js" as Utils
 
 MainMenuForm {

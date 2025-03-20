@@ -1,5 +1,6 @@
 #include "filesystem.h"
 #include <QImageReader>
+#include <QRegularExpression>
 
 FileSystem::FileSystem(QObject *parent) : QObject(parent)
 {
@@ -174,16 +175,16 @@ void FileSystem::startCopyFilesToRemovableDrive()
 
 QString FileSystem::getRemovableDrivePath()
 {
-    QRegExp regexDrive("\\/dev\\/sd*");
-    QRegExp regexBoot("\\/boot");
+    static QRegularExpression regexDrive("\\/dev\\/sd*");
+    static QRegularExpression regexBoot("\\/boot");
     QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
     for(int i = 0; i < drives.count(); i++)
     {
         if(!drives[i].isRoot() && !drives[i].isReadOnly())
         {
-            if(-1 != regexDrive.indexIn(drives[i].device()))
+            if(regexDrive.match(drives[i].device()).hasMatch())
             {
-                if(-1 == regexBoot.indexIn(drives[i].rootPath()))
+                if(!regexBoot.match(drives[i].rootPath()).hasMatch())
                 {
                     return drives[i].rootPath();
                 }

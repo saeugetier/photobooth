@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import Qt.labs.settings 1.0
+import QtQuick
+import QtCore
 
 SnapshotSettingsForm {
     property alias flashEnabled: settings.flashEnabled

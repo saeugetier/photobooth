@@ -28,11 +28,11 @@
         <images>
             <image>
                 <position x="0.0" y="0.0"/><size width="0.5" height="1.0"/>
-                <effectPreset>posterize.fsh</effectPreset>
+                <effectPreset>qrc:/shaders/posterize.qsb</effectPreset>
             </image>
             <image>
                 <position x="0.5" y="0.0"/><size width="0.5" height="1.0"/>
-                <effectPreset>sepia.fsh</effectPreset>
+                <effectPreset>qrc:/shaders/sepia.qsb</effectPreset>
                 <effectSelectable>false</effectSelectable>
             </image>
         </images>

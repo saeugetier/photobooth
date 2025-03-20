@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import GPIO 1.0
+import QtQuick
+import GPIO
 
 SnapshotMenuForm {
     id: form
@@ -39,7 +39,7 @@ SnapshotMenuForm {
 
     onSnapshotTimeoutEnableChanged:
     {
-        if(state == "activated" && snapshotTimeoutEnable == true)
+        if(state === "activated" && snapshotTimeoutEnable == true)
         {
             snapshotTimeoutTimer.start()
             console.log("Snapshot timeout timer started")
@@ -53,13 +53,13 @@ SnapshotMenuForm {
     onStateChanged:
     {
         console.log("Snapshot menu state changed: " + state)
-        if(state == "deactivated")
+        if(state === "deactivated")
         {
             ledEnablePin.value = 0.0
         }
         else
         {
-            if(state == "activated" && snapshotTimeoutEnable == true)
+            if(state === "activated" && snapshotTimeoutEnable == true)
             {
                 snapshotTimeoutTimer.start()
                 console.log("Snapshot timeout timer started")
@@ -83,7 +83,7 @@ SnapshotMenuForm {
 
     cameraRenderer.onStateChanged:
     {
-        if(cameraRenderer.state == "snapshot" && snapshotSettings.flashEnabled)
+        if(cameraRenderer.state === "snapshot" && snapshotSettings.flashEnabled)
         {
             ledBrightnessPin.value = 1.0 - snapshotSettings.flashBrightness
         }
@@ -106,13 +106,13 @@ SnapshotMenuForm {
     shutterButton.onStateChanged:
     {
         //while shutter button is triggered
-        if(shutterButton.state != "idle")
+        if(shutterButton.state !== "idle")
         {
             form.state = "snapshot"
         }
     }
 
-    cameraRenderer.onSavedPhoto:
+    cameraRenderer.onSavedPhoto: filename =>
     {
         captured(filename)
     }

@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import FileIO 1.0
+import QtQuick
+import FileIO
 
 ShaderEffect {
     property variant source
@@ -32,7 +32,7 @@ ShaderEffect {
     {
         if(fragmentShaderFilename.length == 0)
         {
-            fragmentShaderFilename = "passthrough.fsh"
+            fragmentShaderFilename = "qrc:/shaders/passthrough.qsb"
         }
 
         let filename = "qrc:/shaders/" + fragmentShaderFilename

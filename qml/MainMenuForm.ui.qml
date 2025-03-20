@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.13
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import "content"
 
 Item {
@@ -116,8 +116,8 @@ Item {
 
             property double parentRatio: availableHeight / availableWidth
 
-            height: parentIsLarge ? width * aimedRatio : availableHeight
-            width: parentIsLarge ? availableWidth : height / aimedRatio
+            height: parentIsLarge ? availableWidth * aimedRatio : availableHeight
+            width: parentIsLarge ? availableWidth : availableHeight / aimedRatio
 
             property double verticalSpacing: (availableHeight - height) / 2
             property double horzitontalSpacing: (availableWidth - width) / 2

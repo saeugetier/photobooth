@@ -54,21 +54,21 @@
         <file>images/icon/FourBorder.svg</file>
         <file>qml/TimeSettings.qml</file>
         <file>qml/TimeSettingsForm.ui.qml</file>
-        <file>shaders/sepia.fsh</file>
-        <file>shaders/vignette.fsh</file>
-        <file>shaders/blueseeker.fsh</file>
-        <file>shaders/bw.fsh</file>
-        <file>shaders/greenseeker.fsh</file>
-        <file>shaders/redseeker.fsh</file>
-        <file>shaders/warhol.fsh</file>
-        <file>shaders/yellowseeker.fsh</file>
+        <file>shaders/sepia.frag</file>
+        <file>shaders/vignette.frag</file>
+        <file>shaders/blueseeker.frag</file>
+        <file>shaders/bw.frag</file>
+        <file>shaders/greenseeker.frag</file>
+        <file>shaders/redseeker.frag</file>
+        <file>shaders/warhol.frag</file>
+        <file>shaders/yellowseeker.frag</file>
         <file>qml/content/ImageEffect.qml</file>
-        <file>shaders/fisheye.fsh</file>
+        <file>shaders/fisheye.frag</file>
         <file>qml/content/EffectList.qml</file>
-        <file>shaders/passthrough.fsh</file>
-        <file>shaders/greyscale.fsh</file>
-        <file>shaders/vmirror.fsh</file>
-        <file>shaders/posterize.fsh</file>
+        <file>shaders/passthrough.frag</file>
+        <file>shaders/greyscale.frag</file>
+        <file>shaders/vmirror.frag</file>
+        <file>shaders/posterize.frag</file>
         <file>qml/EffectSelectionPopup.qml</file>
         <file>qml/EffectSelectionPopupForm.ui.qml</file>
         <file>qml/content/PrinterPopup.qml</file>
@@ -79,5 +79,18 @@
         <file>qml/content/DelegateGalleryItem.qml</file>
         <file>qml/styles/RoundProgressBarStyle.qml</file>
         <file>images/backgrounds/pexels-pixabay-259915.jpg</file>
+        <file>shaders/vmirror.frag.qsb</file>
+        <file>shaders/passthrough.frag.qsb</file>
+        <file>shaders/bw.frag.qsb</file>
+        <file>shaders/blueseeker.frag.qsb</file>
+        <file>shaders/yellowseeker.frag.qsb</file>
+        <file>shaders/warhol.frag.qsb</file>
+        <file>shaders/vignette.frag.qsb</file>
+        <file>shaders/sepia.frag.qsb</file>
+        <file>shaders/redseeker.frag.qsb</file>
+        <file>shaders/posterize.frag.qsb</file>
+        <file>shaders/greyscale.frag.qsb</file>
+        <file>shaders/greenseeker.frag.qsb</file>
+        <file>shaders/fisheye.frag.qsb</file>
     </qresource>
 </RCC>

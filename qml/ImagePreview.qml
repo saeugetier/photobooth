@@ -30,7 +30,7 @@ ImagePreviewForm {
                    Connections
                    {
                        target: form
-                       onShaderNameChanged: fragmentShader = form.shaderName
+                       function onShaderNameChanged(name) { fragmentShader = name }
                    }
                 }
 

@@ -115,7 +115,7 @@ CollageMenuForm {
     Connections
     {
         target: collageImage
-        onCollageFull: full => {
+        function onCollageFull(full) {
             if(full) form.state = "CollageFull";
             else form.state = "CollageNotFull";
         }
@@ -124,7 +124,7 @@ CollageMenuForm {
     Connections
     {
         target: printer
-        onBusyChanged:
+        function onBusyChanged()
         {
             if(!printer.busy)
             {

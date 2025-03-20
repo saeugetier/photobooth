@@ -11,10 +11,10 @@ FileCopyProgressForm {
     Connections
     {
         target: filesystem
-        onCopyProgress:  {
+        function onCopyProgress(progress)  {
             updateProgress(progress)
         }
-        onCopyFinished:
+        function onCopyFinished()
         {
             copyFileDialog.close()
         }

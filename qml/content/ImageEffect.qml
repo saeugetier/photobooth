@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import FileIO 1.0
+import QtQuick
+import FileIO
 
 ShaderEffect {
     property variant source

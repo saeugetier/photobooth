@@ -116,8 +116,8 @@ Item {
 
             property double parentRatio: availableHeight / availableWidth
 
-            height: parentIsLarge ? width * aimedRatio : availableHeight
-            width: parentIsLarge ? availableWidth : height / aimedRatio
+            height: parentIsLarge ? availableWidth * aimedRatio : availableHeight
+            width: parentIsLarge ? availableWidth : availableHeight / aimedRatio
 
             property double verticalSpacing: (availableHeight - height) / 2
             property double horzitontalSpacing: (availableWidth - width) / 2

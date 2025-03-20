@@ -105,10 +105,9 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(redirectDebugMessages);
 
-    QFontDatabase fontDatabase;
-    if (fontDatabase.addApplicationFont(":/font/fontello/fontello.ttf") == -1)
+    if (QFontDatabase::addApplicationFont(":/font/fontello/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
-    if (fontDatabase.addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
+    if (QFontDatabase::addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
         qWarning() << "Failed to load DejaVuSerif.ttf";
 
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");

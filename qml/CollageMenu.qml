@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import Printer 1.0
+import QtQuick
+import Printer
 import "content"
 
 CollageMenuForm {
@@ -103,7 +103,7 @@ CollageMenuForm {
 
     onStateChanged:
     {
-        if(state == "CollageFull")
+        if(state === "CollageFull")
         {
             if(printer.busy)
             {
@@ -115,7 +115,7 @@ CollageMenuForm {
     Connections
     {
         target: collageImage
-        onCollageFull: {
+        function onCollageFull(full) {
             if(full) form.state = "CollageFull";
             else form.state = "CollageNotFull";
         }
@@ -124,7 +124,7 @@ CollageMenuForm {
     Connections
     {
         target: printer
-        onBusyChanged:
+        function onBusyChanged()
         {
             if(!printer.busy)
             {

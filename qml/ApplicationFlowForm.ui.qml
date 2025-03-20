@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import CollageModel 1.0
+import QtQuick
+import CollageModel
 import "content"
 
 Item {

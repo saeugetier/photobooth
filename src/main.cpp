@@ -73,7 +73,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
     //write message
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
-    ts << datetime << txt << context.file << str << endl;
+    ts << datetime << txt << context.file << str << "\n";
 
     if(context.file != nullptr && context.line != 0)
     {
@@ -92,6 +92,9 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext & context, c
 int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    //qputenv("QSG_VISUALIZE", QByteArray("overdraw"));
+    //qputenv("QSG_INFO", "1");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.general=true");
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
@@ -102,10 +105,9 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(redirectDebugMessages);
 
-    QFontDatabase fontDatabase;
-    if (fontDatabase.addApplicationFont(":/font/fontello/fontello.ttf") == -1)
+    if (QFontDatabase::addApplicationFont(":/font/fontello/fontello.ttf") == -1)
         qWarning() << "Failed to load fontello.ttf";
-    if (fontDatabase.addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
+    if (QFontDatabase::addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
         qWarning() << "Failed to load DejaVuSerif.ttf";
 
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
@@ -118,7 +120,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<System>("System", 1, 0, "System");
 
-    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter");
+    qmlRegisterInterface<AbstractPrinter>("AbstractPrinter", 1);
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");
     qmlRegisterType<PrinterFactory>("Printer", 1, 0, "PrinterFactory");
 

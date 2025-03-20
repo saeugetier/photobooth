@@ -1,8 +1,8 @@
-import QtQuick 2.5
-import QtQuick.Controls 2.0
-import QtQml 2.14
-import QtGraphicalEffects 1.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQml
+import Qt5Compat.GraphicalEffects
+import QtQuick.Controls.Material
 import "../scripts/utils.js" as Script
 import "../styles" as Style
 
@@ -203,10 +203,10 @@ Package {
 
             MouseArea {
                 anchors.fill: photoWrapper
-                z: root.state == 'inGrid' ? 0 : -1
+                z: root.state === 'inGrid' ? 0 : -1
                 onClicked: {
                     gridDelegate.GridView.view.currentIndex = index;
-                    if (root.state == 'inGrid') {
+                    if (root.state === 'inGrid') {
                         root.state = 'fullscreen'
                     }
                 }
@@ -214,7 +214,7 @@ Package {
 
             states: [
                 State {
-                    name: 'inGrid'; when: root.state == 'inGrid' || root.state == ''
+                    name: 'inGrid'; when: root.state === 'inGrid' || root.state === ''
                     ParentChange {
                         target: photoWrapper
                         parent: gridDelegate;
@@ -226,7 +226,7 @@ Package {
                     }
                 },
                 State {
-                    name: 'fullscreen'; when: root.state == 'fullscreen'
+                    name: 'fullscreen'; when: root.state === 'fullscreen'
                     ParentChange {
                         target: photoWrapper
                         parent: fullDelegate
@@ -248,7 +248,7 @@ Package {
             ]
 
             onStateChanged: {
-                if(state == 'fullscreen' && gridDelegate.GridView.isCurrentItem)
+                if(state === 'fullscreen' && gridDelegate.GridView.isCurrentItem)
                     console.log("State changed to 'fullscreen' for '"+fileName+"' record")
             }
 

@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtMultimedia 5.5
-import QtQuick.Controls 2.4
+import QtQuick
+import QtMultimedia
+import QtQuick.Controls
 
 SettingsPopupForm {
     id: form
@@ -16,27 +16,32 @@ SettingsPopupForm {
     {
         var listModel = [];
         var i;
-        var availableCameras = QtMultimedia.availableCameras;
+        var availableCameras = mediaDevices.videoInputs;
         console.log("Available Camera Count: " + Number(availableCameras.length).toString())
         for(i = 0; i < availableCameras.length; i++)
         {
-            listModel.push(availableCameras[i].displayName)
+            listModel.push(availableCameras[i].description)
         }
         return listModel;
+    }
+
+    MediaDevices
+    {
+        id: mediaDevices
     }
 
     function findDeviceId(cameraName)
     {
         var i;
-        var availableCameras = QtMultimedia.availableCameras;
+        var availableCameras = mediaDevices.videoInputs;
         for(i = 0; i < availableCameras.length; i++)
         {
-            if(availableCameras[i].displayName === cameraName)
+            if(availableCameras[i].description === cameraName)
             {
-                return availableCameras[i].deviceId;
+                return availableCameras[i].id;
             }
         }
-        return QtMultimedia.defaultCamera.deviceId
+        return mediaDevices.defaultVideoInput.id
     }
 
     onOpened:

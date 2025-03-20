@@ -1,6 +1,12 @@
-uniform sampler2D source;
-uniform lowp float qt_Opacity;
-varying vec2 qt_TexCoord0;
+#version 440
+layout(location = 0) in vec2 qt_TexCoord0;
+layout(location = 0) out vec4 fragColor;
+layout(std140, binding = 0) uniform buf {
+    mat4 qt_Matrix;
+    float qt_Opacity;
+} ubuf;
+layout(binding = 1) uniform sampler2D source;
+
 const float PI = 3.1415926535;
 
 void main()
@@ -26,6 +32,6 @@ void main()
   {
     uv = qt_TexCoord0.xy;
   }
-  vec4 c = texture2D(source, uv);
-  gl_FragColor = qt_Opacity * c;
+  vec4 c = texture(source, uv);
+  fragColor = ubuf.qt_Opacity * c;
 }

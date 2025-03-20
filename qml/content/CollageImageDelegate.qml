@@ -1,6 +1,6 @@
-import QtQuick 2.0
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
 
 Item {
     property alias imageSource: proxy.imageFileName
@@ -32,7 +32,7 @@ Item {
         anchors.horizontalCenter: proxy.horizontalCenter
         anchors.verticalCenter: proxy.verticalCenter
         width: proxy.width; height: proxy.height
-        visible: source != "" ? true : false
+        visible: source !== "" ? true : false
         horizontalTileMode: BorderImage.Stretch
         verticalTileMode: BorderImage.Stretch
         z: 1
@@ -49,7 +49,7 @@ Item {
         font.pixelSize: 32
         enabled: true
         z: 1 // on top
-        visible: imageArea.containsMouse && (proxy.state == "image")
+        visible: imageArea.containsMouse && (proxy.state === "image")
 
         Material.foreground: Material.Red
 

@@ -1,13 +1,13 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.0
-import QtQuick.Controls.Material 2.2
-import Qt.labs.folderlistmodel 1.0
-import Qt.labs.settings 1.0
-import Qt.labs.platform 1.0
-import CollageModel 1.0
-import Printer 1.0
-import QtQuick.Window 2.2
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Controls.Material
+import Qt.labs.folderlistmodel
+import QtCore
+import Qt.labs.platform
+import CollageModel
+import Printer
+import QtQuick.Window
 
 ApplicationWindow {
     id: mainWindow
@@ -51,7 +51,7 @@ ApplicationWindow {
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
         console.log(StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation))
         console.log("Path: " + path)
-        if(path != "")
+        if(path.len > 0)
             return path
         else
             return "qrc:/XmlData.xml"
@@ -115,7 +115,7 @@ ApplicationWindow {
 
         mainMenu.settingsPopup.comboBoxLanguages.onCountChanged:
         {
-            if(mainMenu.settingsPopup.comboBoxLanguages.count != 0)
+            if(mainMenu.settingsPopup.comboBoxLanguages.count !== 0)
             {
                 var indexOfLanguage = mainMenu.settingsPopup.comboBoxLanguages.find(applicationSettings.language)
                 mainMenu.settingsPopup.comboBoxLanguages.currentIndex = indexOfLanguage
@@ -134,7 +134,7 @@ ApplicationWindow {
 
         mainMenu.settingsPopup.comboWindowMode.onCurrentIndexChanged:
         {
-            applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex == 0 ? Window.Maximized : Window.FullScreen
+            applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex === 0 ? Window.Maximized : Window.FullScreen
         }
 
         mainMenu.settingsPopup.comboBoxCamera.onCurrentIndexChanged:

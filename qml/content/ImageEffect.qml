@@ -32,7 +32,7 @@ ShaderEffect {
     {
         if(fragmentShaderFilename.length == 0)
         {
-            fragmentShaderFilename = "passthrough.fsh"
+            fragmentShaderFilename = "qrc:/shaders/passthrough.qsb"
         }
 
         let filename = "qrc:/shaders/" + fragmentShaderFilename

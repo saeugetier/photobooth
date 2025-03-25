@@ -106,6 +106,7 @@ Item {
 
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
+      videoSink: output.videoSink
    }
 
    Connections {
@@ -121,7 +122,7 @@ Item {
 
       anchors.fill: parent
 
-      filters: [backgroundFilter]
+      //filters: [backgroundFilter]
 
       layer.enabled: true
       layer.effect: ShaderEffect {
@@ -145,6 +146,22 @@ Item {
       height: output.height
    }
 
+   CaptureSession
+   {
+      id: maskSession
+      videoFrameInput: backgroundFilter
+      videoOutput: maskOutput
+   }
+
+
+   VideoOutput {
+      id: maskOutput
+
+      x: output.x
+      y: output.y
+      width: output.width / 2
+      height: output.height / 2
+   }
 
    /* Timer
     {

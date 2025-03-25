@@ -1,15 +1,33 @@
-#include "replacebackgroundvideofilter.h"
+    #include "replacebackgroundvideofilter.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <QImage>
 #include <QAbstractVideoBuffer>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QOpenGLFramebufferObject>
-#include "private/qvideoframe_p.h"
+#include <QtConcurrent>
 
-QVideoFilterRunnable* ReplaceBackgroundVideoFilter::createFilterRunnable()
+//QVideoFilterRunnable* ReplaceBackgroundVideoFilter::createFilterRunnable()
+//{
+//    return new ReplaceBackgroundFilterRunable(this);
+//}
+
+ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QVideoFrameInput(parent),
+    mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)), mRunable(new ReplaceBackgroundFilterRunable(this))
 {
-    return new ReplaceBackgroundFilterRunable(this);
+    mRunable->moveToThread(&mWorkerThread);
+
+    connect(&mWorkerThread, &QThread::finished, mRunable, &QObject::deleteLater);
+    connect(this, &ReplaceBackgroundVideoFilter::asyncProcessFrame, mRunable, &ReplaceBackgroundFilterRunable::run);
+    connect(mRunable, &ReplaceBackgroundFilterRunable::processingFinished, this, &ReplaceBackgroundVideoFilter::onProcessingFinished);
+
+    mWorkerThread.start();
+}
+
+ReplaceBackgroundVideoFilter::~ReplaceBackgroundVideoFilter()
+{
+    mWorkerThread.quit();
+    mWorkerThread.wait();
 }
 
 void ReplaceBackgroundVideoFilter::setChromaA1(float a1)
@@ -71,63 +89,98 @@ QString ReplaceBackgroundVideoFilter::getMethod() const
     }
 }
 
+void ReplaceBackgroundVideoFilter::setVideoSink(QObject *videoSink)
+{
+    mVideoSink = qobject_cast<QVideoSink*>(videoSink);
+
+    connect(mVideoSink, &QVideoSink::videoFrameChanged, this, &ReplaceBackgroundVideoFilter::processFrame);
+}
+
+void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
+{
+    if(!mProcessing)
+    {
+        mProcessing = true;
+        emit asyncProcessFrame(frame);
+    }
+}
+
+void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
+{
+    if(!maskImage.isNull())
+    {
+        sendVideoFrame(QVideoFrame(maskImage));
+    }
+
+    mProcessing = false;
+}
+
 ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter)
 {
 }
 
-QVideoFrame ReplaceBackgroundFilterRunable::run(QVideoFrame *input, const QVideoSurfaceFormat &surfaceFormat, QVideoFilterRunnable::RunFlags flags)
+void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
 {
-    Q_UNUSED(surfaceFormat);
-    Q_UNUSED(flags);
-
     // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
-    if (!input->isValid()
-        || (input->handleType() != QAbstractVideoBuffer::NoHandle && input->handleType() != QAbstractVideoBuffer::GLTextureHandle)) {
+    if (!input.isValid()
+        || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
         qWarning("Invalid input format");
-        return QVideoFrame();
+        emit processingFinished(QImage());
     }
 
-    input->map(QAbstractVideoBuffer::ReadOnly);
-    if (input->pixelFormat() == QVideoFrame::Format_YUV420P || input->pixelFormat() == QVideoFrame::Format_NV12) {
-        mYuv = true;
-        mMat = yuvFrameToMat8(*input);
-    } else {
-        mYuv = false;
-        QImage wrapper = imageWrapper(*input);
-        if (wrapper.isNull()) {
-            if (input->handleType() == QAbstractVideoBuffer::NoHandle)
-                input->unmap();
-            return *input;
-        }
-        mMat = imageToMat8(wrapper);
+    QVideoFrame frame = input;
+
+    if (!frame.map(QVideoFrame::ReadOnly)) {
+        qWarning() << "Failed to map QVideoFrame";
+        emit processingFinished(QImage());
+        return;
     }
+
+    QImage image = frame.toImage();
+    mMat = imageToMat8(image);
+
+    frame.unmap();
     ensureC3(&mMat);
-    if (input->handleType() == QAbstractVideoBuffer::NoHandle)
-        input->unmap();
 
-    prepareBackground(mFilter->mBackgroundImage, cv::Size(input->width(), input->height()));
+    prepareBackground(mFilter->mBackgroundImage, cv::Size(frame.width(), frame.height()));
 
     switch(mFilter->mFilterMethod)
     {
     case ReplaceBackgroundVideoFilter::FilterMethod::CHROMA:
-        {
-            cv::Scalar lower_green(0, 80, 80);
-            cv::Scalar upper_green(255, 255, 255);
-            mMat = grabcutChromaKey(mMat, mFilter->mBackgroundImage, lower_green, upper_green);
-        }
-        break;
+    {
+        cv::Scalar lower_green(0, 80, 80);
+        cv::Scalar upper_green(255, 255, 255);
+        mMat = chromaKeyMask(mMat, lower_green, upper_green);
+    }
+    break;
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
+        break;
+
+    case ReplaceBackgroundVideoFilter::FilterMethod::NONE:
         break;
     }
 
     // Output is an RGB video frame.
-    return QVideoFrame(mat8ToImage(mMat));
+    emit processingFinished(mat8ToImage(mMat));
 }
 
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)
 {
     cv::resize(bg, bg, size);
+}
+
+cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color)
+{
+    // Convert the image from BGR to YUV
+    cv::Mat yuv_img;
+    cv::Mat mask;
+    cvtColor(img, yuv_img, cv::COLOR_BGR2YUV);
+
+    // Define the mask based on the color range
+    inRange(yuv_img, lower_color, upper_color, mask);
+
+    return mask;
 }
 
 cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
@@ -234,38 +287,41 @@ QImage ReplaceBackgroundFilterRunable::mat8ToImage(const cv::Mat &mat)
 
 cv::Mat ReplaceBackgroundFilterRunable::yuvFrameToMat8(const QVideoFrame &frame)
 {
-    Q_ASSERT(frame.handleType() == QAbstractVideoBuffer::NoHandle && frame.isReadable());
-    Q_ASSERT(frame.pixelFormat() == QVideoFrame::Format_YUV420P || frame.pixelFormat() == QVideoFrame::Format_NV12);
+    Q_ASSERT(frame.handleType() == QVideoFrame::HandleType::NoHandle && frame.isReadable());
+    Q_ASSERT(frame.pixelFormat() == QVideoFrameFormat::Format_YUV420P || frame.pixelFormat() == QVideoFrameFormat::Format_NV12);
 
-    cv::Mat tmp(frame.height() + frame.height() / 2, frame.width(), CV_8UC1, (uchar *) frame.bits());
+    cv::Mat tmp(frame.height() + frame.height() / 2, frame.width(), CV_8UC1, (uchar *) frame.bits(0));
     cv::Mat result(frame.height(), frame.width(), CV_8UC3);
-    cvtColor(tmp, result, frame.pixelFormat() == QVideoFrame::Format_YUV420P ? cv::COLOR_YUV2BGR_YV12 : cv::COLOR_YUV2BGR_NV12);
+    cvtColor(tmp, result, frame.pixelFormat() == QVideoFrameFormat::Format_YUV420P ? cv::COLOR_YUV2BGR_YV12 : cv::COLOR_YUV2BGR_NV12);
     return result;
 }
 
 class YUVBuffer : public QAbstractVideoBuffer
 {
 public:
-    YUVBuffer(cv::Mat *mat) : QAbstractVideoBuffer(NoHandle), m_mode(NotMapped) {
+    YUVBuffer(cv::Mat *mat) : m_mode(QVideoFrame::NotMapped) {
         m_yuvMat.reset(mat);
     }
-    MapMode mapMode() const Q_DECL_OVERRIDE { return m_mode; }
-    uchar *map(MapMode mode, int *numBytes, int *bytesPerLine) Q_DECL_OVERRIDE {
-        if (mode != NotMapped && m_mode == NotMapped) {
-            if (numBytes)
-                *numBytes = m_yuvMat->rows * m_yuvMat->cols;
-            if (bytesPerLine)
-                *bytesPerLine = m_yuvMat->cols;
-            m_mode = mode;
-            return m_yuvMat->data;
-        }
-        return 0;
-    }
-    void unmap() Q_DECL_OVERRIDE { m_mode = NotMapped; }
-    QVariant handle() const Q_DECL_OVERRIDE { return 0; }
+    QVideoFrameFormat format() const Q_DECL_OVERRIDE { return QVideoFrameFormat(QSize(m_yuvMat->cols, m_yuvMat->rows), QVideoFrameFormat::Format_YUV420P); }
+    QAbstractVideoBuffer::MapData map(QVideoFrame::MapMode mode) Q_DECL_OVERRIDE {
+        QAbstractVideoBuffer::MapData data;
 
+        if (mode != QVideoFrame::NotMapped && m_mode == QVideoFrame::NotMapped) {
+
+            data.planeCount = 1;
+            data.dataSize[0] = m_yuvMat->rows * m_yuvMat->cols;
+
+            data.bytesPerLine[0] = m_yuvMat->cols;
+            m_mode = mode;
+
+            data.data[0] = m_yuvMat->data;
+            return data;
+        }
+        return data;
+    }
+    void unmap() Q_DECL_OVERRIDE { m_mode = QVideoFrame::NotMapped; }
 private:
-    MapMode m_mode;
+    QVideoFrame::MapMode m_mode;
     QScopedPointer<cv::Mat> m_yuvMat;
 };
 
@@ -275,7 +331,7 @@ QVideoFrame ReplaceBackgroundFilterRunable::mat8ToYuvFrame(const cv::Mat &mat)
 
     cv::Mat *m = new cv::Mat;
     cvtColor(mat, *m, mat.type() == CV_8UC4 ? cv::COLOR_BGRA2YUV_YV12 : cv::COLOR_BGR2YUV_YV12);
-    return QVideoFrame(new YUVBuffer(m), QSize(mat.cols, mat.rows), QVideoFrame::Format_YUV420P);
+    return QVideoFrame(std::unique_ptr<QAbstractVideoBuffer>(new YUVBuffer(m)));
 }
 
 void ReplaceBackgroundFilterRunable::mat8ToYuvFrame(const cv::Mat &mat, uchar *dst)
@@ -301,20 +357,20 @@ void ReplaceBackgroundFilterRunable::mat8ToYuvFrame(const cv::Mat &mat, uchar *d
 QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
 {
 #ifndef QT_NO_OPENGL
-    if (frame.handleType() == QAbstractVideoBuffer::GLTextureHandle) {
+    if (frame.handleType() == QVideoFrame::RhiTextureHandle) {
         // Slow and inefficient path. Ideally what's on the GPU should remain on the GPU, instead of readbacks like this.
         QImage img(frame.width(), frame.height(), QImage::Format_RGBA8888);
-        GLuint textureId = frame.handle().toUInt();
-        QOpenGLContext *ctx = QOpenGLContext::currentContext();
-        QOpenGLFunctions *f = ctx->functions();
-        GLuint fbo;
-        f->glGenFramebuffers(1, &fbo);
-        GLuint prevFbo;
-        f->glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint *) &prevFbo);
-        f->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        f->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
-        f->glReadPixels(0, 0, frame.width(), frame.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
-        f->glBindFramebuffer(GL_FRAMEBUFFER, prevFbo);
+        // GLuint textureId = frame.handle().toUInt();
+        // QOpenGLContext *ctx = QOpenGLContext::currentContext();
+        // QOpenGLFunctions *f = ctx->functions();
+        // GLuint fbo;
+        // f->glGenFramebuffers(1, &fbo);
+        // GLuint prevFbo;
+        // f->glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint *) &prevFbo);
+        // f->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        // f->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+        // f->glReadPixels(0, 0, frame.width(), frame.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
+        // f->glBindFramebuffer(GL_FRAMEBUFFER, prevFbo);
         return img;
     } else
 #endif // QT_NO_OPENGL
@@ -324,11 +380,7 @@ QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
             return QImage();
         }
 
-        QImage::Format fmt = QVideoFrame::imageFormatFromPixelFormat(frame.pixelFormat());
-        if (fmt != QImage::Format_Invalid)
-            return QImage(frame.bits(), frame.width(), frame.height(), fmt);
-        else
-            return qt_imageFromVideoFrame(frame);
+        return frame.toImage();
 
         qWarning("imageWrapper: No matching QImage format");
     }
@@ -340,11 +392,12 @@ QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
 class TextureBuffer : public QAbstractVideoBuffer
 {
 public:
-    TextureBuffer(uint id) : QAbstractVideoBuffer(GLTextureHandle), m_id(id) { }
-    MapMode mapMode() const { return NotMapped; }
-    uchar *map(MapMode, int *, int *) { return 0; }
-    void unmap() { }
+    TextureBuffer(uint id) : QAbstractVideoBuffer(), m_id(id) { }
+    QVideoFrame::MapMode mapMode() const { return QVideoFrame::NotMapped; }
+    QAbstractVideoBuffer::MapData map(QVideoFrame::MapMode) override { return QAbstractVideoBuffer::MapData(); }
+    void unmap() override { }
     QVariant handle() const { return QVariant::fromValue<uint>(m_id); }
+    QVideoFrameFormat format() const override {return QVideoFrameFormat(); }
 
 private:
     GLuint m_id;
@@ -358,10 +411,10 @@ private:
   QVideoFrame::imageFormatFromPixelFormat() to get a suitable format. Ownership is not
   altered, the new QVideoFrame will not destroy the texture.
 */
-QVideoFrame frameFromTexture(uint textureId, const QSize &size, QVideoFrame::PixelFormat format)
+QVideoFrame frameFromTexture(uint textureId, const QSize &size, QVideoFrameFormat::PixelFormat format)
 {
 #ifndef QT_NO_OPENGL
-    return QVideoFrame(new TextureBuffer(textureId), size, format);
+    return QVideoFrame(std::unique_ptr<QAbstractVideoBuffer>(new TextureBuffer(textureId)));
 #else
     return QVideoFrame();
 #endif // QT_NO_OPENGL

@@ -1,23 +1,35 @@
 #ifndef REPLACEBACKGROUNDVIDEOFILTER_H
 #define REPLACEBACKGROUNDVIDEOFILTER_H
 
-#include <QAbstractVideoFilter>
+#include <QImage>
+#include <QVideoSink>
+#include <QVideoFrame>
+#include <QVideoFrameInput>
+#include <QThread>
 #include <opencv2/core/core.hpp>
 
 class ReplaceBackgroundFilterRunable;
 
-class ReplaceBackgroundVideoFilter : public QAbstractVideoFilter
+class ReplaceBackgroundVideoFilter : public QVideoFrameInput
 {
     friend ReplaceBackgroundFilterRunable;
     Q_OBJECT
-    Q_PROPERTY(QString method READ getMethod WRITE setMethod CONSTANT)
-    Q_PROPERTY(float chromaA1 READ getChromaA1 WRITE setChromaA1 CONSTANT)
-    Q_PROPERTY(float chromaA2 READ getChromaA2 WRITE setChromaA2 CONSTANT)
+    /* input parameters */
+    Q_PROPERTY(QString method READ getMethod WRITE setMethod)
+    Q_PROPERTY(float chromaA1 READ getChromaA1 WRITE setChromaA1)
+    Q_PROPERTY(float chromaA2 READ getChromaA2 WRITE setChromaA2)
     Q_PROPERTY(QImage background WRITE setBackground)
+    /* video frame input */
+    Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
+    /**
+     * the resultng mask image for background removal. This mask shall be applied via alpha blending shader
+     */
+    //Q_PROPERTY(QImage maskImage READ maskImage NOTIFY maskImageChanged)
+
 public:
-    ReplaceBackgroundVideoFilter(QObject *parent = nullptr) : QAbstractVideoFilter(parent),
-        mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)) {}
-    QVideoFilterRunnable *createFilterRunnable() override;
+    ReplaceBackgroundVideoFilter(QObject *parent = nullptr);
+    ~ReplaceBackgroundVideoFilter();
+    //QObject *createFilterRunnable();
     void setMethod(QString method);
     void setChromaA1(float a1);
     void setChromaA2(float a2);
@@ -25,6 +37,11 @@ public:
     QString getMethod() const;
     float getChromaA1() const;
     float getChromaA2() const;
+
+    void setVideoSink(QObject *videoSink);
+
+    //QImage maskImage() const { return mMaskImage; }
+
 protected:
     enum class FilterMethod
     {
@@ -39,14 +56,38 @@ protected:
     cv::Mat mBackgroundImage;
 
     FilterMethod mFilterMethod = FilterMethod::CHROMA;
+
+    QVideoSink *mVideoSink;
+
+    //QFuture<void> processThread;
+
+    QThread mWorkerThread;
+
+    //QImage mMaskImage;
+
+    ReplaceBackgroundFilterRunable* mRunable = nullptr;
+
+    bool mProcessing = false;
+protected slots:
+    void processFrame(const QVideoFrame &frame);
+    void onProcessingFinished(const QImage& maskImage);
+
+signals:
+    void asyncProcessFrame(const QVideoFrame& frame);
+    //void maskImageChanged();
 };
 
-class ReplaceBackgroundFilterRunable : public QVideoFilterRunnable
+
+class ReplaceBackgroundFilterRunable : public QObject
 {
+    Q_OBJECT
 public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
-    QVideoFrame run(QVideoFrame *input, const QVideoSurfaceFormat &surfaceFormat, QVideoFilterRunnable::RunFlags flags) override;
+public slots:
+    void run(const QVideoFrame &input);
 protected:
+    cv::Mat chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
+
     cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
     void prepareBackground(cv::Mat &bg, cv::Size size);
@@ -91,6 +132,9 @@ protected:
     cv::Mat mMat;
     bool mYuv;
     ReplaceBackgroundVideoFilter* mFilter;
+
+signals:
+    void processingFinished(const QImage& maskImage);
 };
 
 #endif // REPLACEBACKGROUNDVIDEOFILTER_H

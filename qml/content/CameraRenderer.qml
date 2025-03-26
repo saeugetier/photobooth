@@ -131,8 +131,21 @@ Item {
             sourceItem: output
             hideSource: true
          }
+
+         property variant maskSource: ShaderEffectSource {
+            sourceItem: maskOutput
+            hideSource: true
+         }
+
+         property variant bgSource : Image {
+            id: bgImage
+            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+         }
+
+         property bool mirrored: renderer.mirrored
+         property bool enableMask: true
          anchors.fill: output
-         fragmentShader: mirrored ? "qrc:/shaders/vmirror.frag.qsb" : "qrc:/shaders/passthrough.frag.qsb"
+         fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
       }
 
       //focus: visible // to receive focus and capture key events when visible
@@ -162,6 +175,7 @@ Item {
       width: output.width / 2
       height: output.height / 2
    }
+
 
    /* Timer
     {

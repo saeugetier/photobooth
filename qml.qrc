@@ -92,5 +92,7 @@
         <file>shaders/greyscale.frag.qsb</file>
         <file>shaders/greenseeker.frag.qsb</file>
         <file>shaders/fisheye.frag.qsb</file>
+        <file>shaders/previewshader.frag</file>
+        <file>shaders/previewshader.frag.qsb</file>
     </qresource>
 </RCC>

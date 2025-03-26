@@ -122,41 +122,11 @@ Item {
 
       anchors.fill: parent
 
+      visible: false
+
       //filters: [backgroundFilter]
 
-      layer.enabled: true
-      layer.effect: ShaderEffect {
-         id: mirrorEffect
-         property variant source: ShaderEffectSource {
-            sourceItem: output
-            hideSource: true
-         }
-
-         property variant maskSource: ShaderEffectSource {
-            sourceItem: maskOutput
-            hideSource: true
-         }
-
-         property variant bgSource : Image {
-            id: bgImage
-            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
-         }
-
-         property bool mirrored: renderer.mirrored
-         property bool enableMask: true
-         anchors.fill: output
-         fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
-      }
-
       //focus: visible // to receive focus and capture key events when visible
-   }
-
-   WhiteOverlay {
-      id: whiteOverlay
-      x: output.x
-      y: output.y
-      width: output.width
-      height: output.height
    }
 
    CaptureSession
@@ -170,12 +140,40 @@ Item {
    VideoOutput {
       id: maskOutput
 
-      x: output.x
-      y: output.y
-      width: output.width / 2
-      height: output.height / 2
+      anchors.fill: parent
+
+      onContentRectChanged: {
+         console.log("Content rect changed: " + Qt.rect(contentRect.x / width, contentRect.y /height, contentRect.width / width, contentRect.height / height))
+      }
+
+      layer.enabled: true
+      layer.effect: ShaderEffect {
+         id: mirrorEffect
+         property variant source: ShaderEffectSource {
+            sourceItem: maskOutput
+            hideSource: true
+         }
+
+         property variant bgSource : Image {
+            id: bgImage
+            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+            fillMode: Image.PreserveAspectCrop
+         }
+
+         property bool mirrored: renderer.mirrored
+         property bool enableMask: true
+         anchors.fill: maskSession
+         fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
+      }
    }
 
+   WhiteOverlay {
+      id: whiteOverlay
+      x: output.x
+      y: output.y
+      width: output.width
+      height: output.height
+   }
 
    /* Timer
     {

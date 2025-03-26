@@ -9,8 +9,7 @@ layout(std140, binding = 0) uniform buf {
 } ubuf;
 
 layout(binding = 1) uniform sampler2D source;
-layout(binding = 2) uniform sampler2D alphaSource;
-layout(binding = 3) uniform sampler2D bgSource;
+layout(binding = 2) uniform sampler2D bgSource;
 
 void main() {
     vec2 uv = vec2(0.0, 0.0);
@@ -23,13 +22,12 @@ void main() {
         uv.x = qt_TexCoord0.x;
     }
     uv.y = qt_TexCoord0.y;
-    vec3 col = texture(source, uv).rgb;
+    vec4 col = texture(source, uv);
     if(ubuf.enableMask != 0)
     {
-        vec4 mask = texture(alphaSource, uv);
         vec3 bg = texture(bgSource, uv).rgb;
-        col = mix(col, bg, mask.r); // use the red channel as mask
+        col = vec4(mix(bg, col.rgb, col.a), 1.9); // use the red channel as mask
     }
     fragColor.a = ubuf.qt_Opacity * 1.0;
-    fragColor.rgb = ubuf.qt_Opacity * col;
+    fragColor.rgb = ubuf.qt_Opacity * col.rgb;
 }

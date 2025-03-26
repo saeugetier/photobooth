@@ -137,6 +137,15 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
     }
 
     QImage image = frame.toImage();
+
+    if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+    {
+        // do not go any further. no filter selected!
+        emit processingFinished(image);
+        return;
+    }
+
+    // filter active. So we need some computation.
     mMat = imageToMat8(image);
 
     frame.unmap();
@@ -180,7 +189,14 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     // Define the mask based on the color range
     inRange(yuv_img, lower_color, upper_color, mask);
 
-    return mask;
+    // add mask as alpha channel to img
+    cv::Mat result;
+    std::vector<cv::Mat> channels;
+    split(img, channels);
+    channels.push_back(mask);
+    cv::merge(channels, result);
+
+    return result;
 }
 
 cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {

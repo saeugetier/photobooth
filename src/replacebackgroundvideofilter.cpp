@@ -189,6 +189,15 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     // Define the mask based on the color range
     inRange(yuv_img, lower_color, upper_color, mask);
 
+    int dilation_elem = 5;
+    int dilation_size = 5;
+
+    cv::Mat element = getStructuringElement( cv::MORPH_DILATE,
+                                            cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                            cv::Point( dilation_size, dilation_size ) );
+
+    cv::dilate(mask, mask, element);
+
     // add mask as alpha channel to img
     cv::Mat result;
     std::vector<cv::Mat> channels;

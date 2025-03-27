@@ -14,6 +14,7 @@ Item {
    property bool mirrored: true
    property string deviceId: camera.deviceId
    property alias backgroundFilter: backgroundFilter
+   property bool backgroundFilterEnabled: false
 
    function printDevicesToConsole(devices) {
       console.log("Found " + devices.length + " camera devices!")
@@ -163,7 +164,7 @@ Item {
          property bool mirrored: renderer.mirrored
          property bool enableMask: true
          property rect contentRect: Qt.rect(maskOutput.contentRect.x / maskOutput.width, maskOutput.contentRect.y / maskOutput.height, maskOutput.contentRect.width / maskOutput.width, maskOutput.contentRect.height / maskOutput.height)
-         anchors.fill: maskSession
+         anchors.fill: maskOutput
          fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
       }
    }

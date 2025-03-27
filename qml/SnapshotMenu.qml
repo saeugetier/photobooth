@@ -123,9 +123,9 @@ SnapshotMenuForm {
         failureAnimation.start()
     }
 
-    //cameraRenderer.backgroundFilter.active: snapshotSettings.chromaKeyEnabled
-    cameraRenderer.backgroundFilter.chromaA1: snapshotSettings.chromaKeyStrength
-    cameraRenderer.backgroundFilter.chromaA2: snapshotSettings.chromaKeyColor
+    cameraRenderer.backgroundFilter.method: snapshotSettings.chromaKeyEnabled ? "Chroma" : "None"
+    cameraRenderer.backgroundFilterEnabled: snapshotSettings.chromaKeyEnabled
+    cameraRenderer.backgroundFilter.keyColor: snapshotSettings.chromaKeyColor
 
     SequentialAnimation
     {

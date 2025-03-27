@@ -30,14 +30,9 @@ ReplaceBackgroundVideoFilter::~ReplaceBackgroundVideoFilter()
     mWorkerThread.wait();
 }
 
-void ReplaceBackgroundVideoFilter::setChromaA1(float a1)
+void ReplaceBackgroundVideoFilter::setKeyColor(float color)
 {
-    mChromaA1 = a1;
-}
-
-void ReplaceBackgroundVideoFilter::setChromaA2(float a2)
-{
-    mChromaA2 = a2;
+    mKeyColor = color;
 }
 
 void ReplaceBackgroundVideoFilter::setMethod(QString method)
@@ -63,14 +58,9 @@ void ReplaceBackgroundVideoFilter::setBackground(QImage const& image)
     mBackgroundImage = tmp.clone();
 }
 
-float ReplaceBackgroundVideoFilter::getChromaA1() const
+float ReplaceBackgroundVideoFilter::getKeyColor() const
 {
-    return mChromaA1;
-}
-
-float ReplaceBackgroundVideoFilter::getChromaA2() const
-{
-    return mChromaA2;
+    return mKeyColor;;
 }
 
 QString ReplaceBackgroundVideoFilter::getMethod() const
@@ -159,7 +149,14 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
     {
         cv::Scalar lower_green(0, 80, 80);
         cv::Scalar upper_green(255, 255, 255);
-        mMat = chromaKeyMask(mMat, lower_green, upper_green);
+
+        cv::Scalar lower_blue(0, 100, 80);
+        cv::Scalar upper_blue(255, 255, 128);
+
+        cv::Scalar lower_color = (lower_green * (1.0 - mFilter->mKeyColor)) + (lower_blue * mFilter->mKeyColor);
+        cv::Scalar upper_color = (upper_green * (1.0 - mFilter->mKeyColor)) + (upper_blue * mFilter->mKeyColor);
+
+        mMat = chromaKeyMask(mMat, lower_color, upper_color);
     }
     break;
 

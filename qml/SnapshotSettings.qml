@@ -7,7 +7,7 @@ SnapshotSettingsForm {
     property alias flashBrightness: settings.flashBrightness
     property alias countdown: settings.countdown
     property alias chromaKeyEnabled: settings.chromaKeyEnabled
-    property alias chromaKeyStrength: settings.chromaKeyEnabled
+    //property alias chromaKeyStrength: settings.chromaKeyEnabled
     property alias chromaKeyColor: settings.chromaKeyColor
 
     Settings
@@ -19,7 +19,7 @@ SnapshotSettingsForm {
         property real flashBrightness: 1.0
         property int countdown: 1
         property bool chromaKeyEnabled: false
-        property real chromaKeyStrength: 0.5
+        //property real chromaKeyStrength: 0.5
         property real chromaKeyColor: 0.5
     }
 
@@ -73,11 +73,11 @@ SnapshotSettingsForm {
         settings.chromaKeyEnabled = switchChromaKeyEnable.checked
     }
 
-    sliderChromaKeyFilterStrength.value: settings.chromaKeyStrength
+   /* sliderChromaKeyFilterStrength.value: settings.chromaKeyStrength
     sliderChromaKeyFilterStrength.onValueChanged:
     {
         settings.chromaKeyStrength = sliderChromaKeyFilterStrength.value
-    }
+    }*/
 
     sliderChromaKeyFilterColor.value: settings.chromaKeyColor
     sliderChromaKeyFilterColor.onValueChanged:

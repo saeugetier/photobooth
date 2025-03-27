@@ -16,8 +16,7 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     Q_OBJECT
     /* input parameters */
     Q_PROPERTY(QString method READ getMethod WRITE setMethod)
-    Q_PROPERTY(float chromaA1 READ getChromaA1 WRITE setChromaA1)
-    Q_PROPERTY(float chromaA2 READ getChromaA2 WRITE setChromaA2)
+    Q_PROPERTY(float keyColor READ getKeyColor WRITE setKeyColor)
     Q_PROPERTY(QImage background WRITE setBackground)
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
@@ -31,12 +30,10 @@ public:
     ~ReplaceBackgroundVideoFilter();
     //QObject *createFilterRunnable();
     void setMethod(QString method);
-    void setChromaA1(float a1);
-    void setChromaA2(float a2);
+    void setKeyColor(float color);
     void setBackground(QImage const& image);
     QString getMethod() const;
-    float getChromaA1() const;
-    float getChromaA2() const;
+    float getKeyColor() const;
 
     void setVideoSink(QObject *videoSink);
 
@@ -50,8 +47,7 @@ protected:
         NONE
     };
 
-    float mChromaA1 = 5.5;
-    float mChromaA2 = 1.0;
+    float mKeyColor = 1.0;
 
     cv::Mat mBackgroundImage;
 

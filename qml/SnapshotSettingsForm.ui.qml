@@ -13,7 +13,7 @@ Pane {
     property alias sliderFlashBrightness: sliderFlashBrightness
     property alias switchFlashEnable: switchFlashEnable
     property alias switchChromaKeyEnable: switchChromaKeyEnable
-    property alias sliderChromaKeyFilterStrength: sliderChromaKeyFilterStrength
+    //property alias sliderChromaKeyFilterStrength: sliderChromaKeyFilterStrength
     property alias sliderChromaKeyFilterColor: sliderChromaKeyFilterColor
     opacity: 0.5
     spacing: 5
@@ -271,7 +271,7 @@ Pane {
             }
 
 
-            RowLayout {
+           /* RowLayout {
                 id: rowChromaKeyFilterStrength
                 spacing: 20
 
@@ -296,7 +296,7 @@ Pane {
                     text: "\uE813"
                     font.family: "fontello"
                 }
-            }
+            } */
 
             RowLayout {
                 id: rowChromaKeyFilterColor
@@ -311,9 +311,9 @@ Pane {
 
                 Slider {
                     id: sliderChromaKeyFilterColor
-                    value: 0.5
-                    from: 0.5
-                    to: 1.5
+                    value: 0.0
+                    from: 0.0
+                    to: 1.0
                     width: 250
                 }
 

@@ -1,4 +1,4 @@
-    #include "replacebackgroundvideofilter.h"
+#include "replacebackgroundvideofilter.h"
 #include <opencv2/imgproc/imgproc.hpp>
 #include <QImage>
 #include <QAbstractVideoBuffer>
@@ -6,11 +6,6 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLFramebufferObject>
 #include <QtConcurrent>
-
-//QVideoFilterRunnable* ReplaceBackgroundVideoFilter::createFilterRunnable()
-//{
-//    return new ReplaceBackgroundFilterRunable(this);
-//}
 
 ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QVideoFrameInput(parent),
     mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)), mRunable(new ReplaceBackgroundFilterRunable(this))
@@ -60,7 +55,7 @@ void ReplaceBackgroundVideoFilter::setBackground(QImage const& image)
 
 float ReplaceBackgroundVideoFilter::getKeyColor() const
 {
-    return mKeyColor;;
+    return mKeyColor;
 }
 
 QString ReplaceBackgroundVideoFilter::getMethod() const
@@ -147,11 +142,11 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
     {
     case ReplaceBackgroundVideoFilter::FilterMethod::CHROMA:
     {
-        cv::Scalar lower_green(0, 80, 80);
-        cv::Scalar upper_green(255, 255, 255);
+        cv::Scalar lower_green(30, 200, 120);
+        cv::Scalar upper_green(80, 255, 255);
 
-        cv::Scalar lower_blue(0, 100, 80);
-        cv::Scalar upper_blue(255, 255, 128);
+        cv::Scalar lower_blue(110, 200, 120);
+        cv::Scalar upper_blue(130, 255, 255);
 
         cv::Scalar lower_color = (lower_green * (1.0 - mFilter->mKeyColor)) + (lower_blue * mFilter->mKeyColor);
         cv::Scalar upper_color = (upper_green * (1.0 - mFilter->mKeyColor)) + (upper_blue * mFilter->mKeyColor);
@@ -181,10 +176,12 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     // Convert the image from BGR to YUV
     cv::Mat yuv_img;
     cv::Mat mask;
-    cvtColor(img, yuv_img, cv::COLOR_BGR2YUV);
+    cvtColor(img, yuv_img, cv::COLOR_RGB2HSV);
 
     // Define the mask based on the color range
     inRange(yuv_img, lower_color, upper_color, mask);
+
+    cv::bitwise_not(mask, mask);
 
     int dilation_elem = 5;
     int dilation_size = 5;

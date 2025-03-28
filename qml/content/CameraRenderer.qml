@@ -3,6 +3,7 @@ import QtMultimedia
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
+import BackgroundFilter
 
 Item {
    id: renderer
@@ -12,6 +13,8 @@ Item {
    property bool photoProcessing: (state === "snapshot")
    property bool mirrored: true
    property string deviceId: camera.deviceId
+   property alias backgroundFilter: backgroundFilter
+   property bool backgroundFilterEnabled: false
 
    function printDevicesToConsole(devices) {
       console.log("Found " + devices.length + " camera devices!")
@@ -102,6 +105,11 @@ Item {
         }*/
    }
 
+   ReplaceBackgroundVideoFilter {
+      id: backgroundFilter
+      videoSink: output.videoSink
+   }
+
    Connections {
       id: cameraErrorListener
       target: camera
@@ -115,18 +123,50 @@ Item {
 
       anchors.fill: parent
 
+      visible: false
+
+      //filters: [backgroundFilter]
+
+      //focus: visible // to receive focus and capture key events when visible
+   }
+
+   CaptureSession
+   {
+      id: maskSession
+      videoFrameInput: backgroundFilter
+      videoOutput: maskOutput
+   }
+
+
+   VideoOutput {
+      id: maskOutput
+
+      anchors.fill: parent
+
+      onContentRectChanged: {
+         console.log("Content rect changed: " + Qt.rect(contentRect.x / width, contentRect.y /height, contentRect.width / width, contentRect.height / height))
+      }
+
       layer.enabled: true
       layer.effect: ShaderEffect {
          id: mirrorEffect
          property variant source: ShaderEffectSource {
-            sourceItem: output
+            sourceItem: maskOutput
             hideSource: true
          }
-         anchors.fill: output
-         fragmentShader: mirrored ? "qrc:/shaders/vmirror.frag.qsb" : "qrc:/shaders/passthrough.frag.qsb"
-      }
 
-      //focus: visible // to receive focus and capture key events when visible
+         property variant bgSource : Image {
+            id: bgImage
+            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+            fillMode: Image.PreserveAspectCrop
+         }
+
+         property bool mirrored: renderer.mirrored
+         property bool enableMask: true
+         property rect contentRect: Qt.rect(maskOutput.contentRect.x / maskOutput.width, maskOutput.contentRect.y / maskOutput.height, maskOutput.contentRect.width / maskOutput.width, maskOutput.contentRect.height / maskOutput.height)
+         anchors.fill: maskOutput
+         fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
+      }
    }
 
    WhiteOverlay {
@@ -136,7 +176,6 @@ Item {
       width: output.width
       height: output.height
    }
-
 
    /* Timer
     {

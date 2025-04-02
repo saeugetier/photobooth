@@ -6,8 +6,8 @@ SnapshotSettingsForm {
     property alias viewFinderBrightness: settings.viewFinderBrightness
     property alias flashBrightness: settings.flashBrightness
     property alias countdown: settings.countdown
+    property alias backgroundFilterEnabled: settings.backgroundFilterEnabled
     property alias chromaKeyEnabled: settings.chromaKeyEnabled
-    //property alias chromaKeyStrength: settings.chromaKeyEnabled
     property alias chromaKeyColor: settings.chromaKeyColor
 
     Settings
@@ -18,8 +18,8 @@ SnapshotSettingsForm {
         property real viewFinderBrightness: 0.1
         property real flashBrightness: 1.0
         property int countdown: 1
+        property bool backgroundFilterEnabled: false
         property bool chromaKeyEnabled: false
-        //property real chromaKeyStrength: 0.5
         property real chromaKeyColor: 0.5
     }
 
@@ -67,17 +67,17 @@ SnapshotSettingsForm {
         settings.countdown = spinBoxCountdownTime.value
     }
 
+    switchBackgroundFilterEnable.checked: settings.backgroundFilterEnabled
+    switchBackgroundFilterEnable.onCheckedChanged:
+    {
+        settings.backgroundFilterEnabled = switchBackgroundFilterEnable.checked
+    }
+
     switchChromaKeyEnable.checked: settings.chromaKeyEnabled
     switchChromaKeyEnable.onCheckedChanged:
     {
         settings.chromaKeyEnabled = switchChromaKeyEnable.checked
     }
-
-   /* sliderChromaKeyFilterStrength.value: settings.chromaKeyStrength
-    sliderChromaKeyFilterStrength.onValueChanged:
-    {
-        settings.chromaKeyStrength = sliderChromaKeyFilterStrength.value
-    }*/
 
     sliderChromaKeyFilterColor.value: settings.chromaKeyColor
     sliderChromaKeyFilterColor.onValueChanged:

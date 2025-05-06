@@ -100,7 +100,7 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
     mProcessing = false;
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentor("yolo11n-seg.onnx", "coco.names" , false)
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentor(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
 {
 }
 

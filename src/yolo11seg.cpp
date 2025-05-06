@@ -1,4 +1,5 @@
 #include "yolo11seg.h"
+#include <QFile>
 
 // Original Author: Abdalrahman M. Amer, www.linkedin.com/in/abdalrahman-m-amer
 // Date: 25.01.2025
@@ -16,13 +17,13 @@ T clamp(const T &val, const T &low, const T &high) {
 
 inline std::vector<std::string> getClassNames(const std::string &path) {
     std::vector<std::string> classNames;
-    std::ifstream f(path);
-    if (!f) {
-        std::cerr << "[ERROR] Could not open class names file: " << path << std::endl;
+    QFile f(path.c_str());
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "[ERROR] Could not open class names file: " << path.c_str();
         return classNames;
     }
     std::string line;
-    while (std::getline(f, line)) {
+    while (!(line = f.readLine()).empty()) {
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
@@ -208,16 +209,24 @@ YOLOv11SegDetector::YOLOv11SegDetector(const std::string &modelPath,
     if (useGPU && std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end()) {
         OrtCUDAProviderOptions cudaOptions;
         sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
-        std::cout << "[INFO] Using GPU (CUDA) for YOLOv11 Seg inference.\n";
+        qDebug() << "[INFO] Using GPU (CUDA) for YOLOv11 Seg inference.";
     } else {
-        std::cout << "[INFO] Using CPU for YOLOv11 Seg inference.\n";
+        qDebug() << "[INFO] Using CPU for YOLOv11 Seg inference.";
     }
+
+    QFile modelFile(modelPath.c_str());
+
+    if (!modelFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open the model file!";
+    }
+
+    QByteArray binaryData = modelFile.readAll();
 
 #ifdef _WIN32
     std::wstring w_modelPath(modelPath.begin(), modelPath.end());
     session = Ort::Session(env, w_modelPath.c_str(), sessionOptions);
 #else
-    session = Ort::Session(env, modelPath.c_str(), sessionOptions);
+    session = Ort::Session(env, binaryData.data(), binaryData.size(), sessionOptions);
 #endif
 
     numInputNodes  = session.GetInputCount();
@@ -260,11 +269,11 @@ YOLOv11SegDetector::YOLOv11SegDetector(const std::string &modelPath,
     classNames  = utils::getClassNames(labelsPath);
     classColors = utils::generateColors(classNames);
 
-    std::cout << "[INFO] YOLOv11Seg loaded: " << modelPath << std::endl
-              << "      Input shape: " << inputImageShape
-              << (isDynamicInputShape ? " (dynamic)" : "") << std::endl
-              << "      #Outputs   : " << numOutputNodes << std::endl
-              << "      #Classes   : " << classNames.size() << std::endl;
+    qDebug() << "[INFO] YOLOv11Seg loaded: " << modelPath;
+    qDebug() << "      Input shape: " << inputImageShape.height << "x" << inputImageShape.width
+             << (isDynamicInputShape ? " (dynamic)" : "");
+    qDebug() << "      #Outputs   : " << numOutputNodes;
+    qDebug() << "      #Classes   : " << classNames.size();
 }
 
 cv::Mat YOLOv11SegDetector::preprocess(const cv::Mat &image,

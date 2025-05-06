@@ -7,6 +7,7 @@
 #include <QVideoFrameInput>
 #include <QThread>
 #include <opencv2/core/core.hpp>
+#include "yolo11seg.h"
 
 class ReplaceBackgroundFilterRunable;
 
@@ -128,6 +129,8 @@ protected:
     cv::Mat mMat;
     bool mYuv;
     ReplaceBackgroundVideoFilter* mFilter;
+
+    YOLOv11SegDetector mYoloSegmentor;
 
 signals:
     void processingFinished(const QImage& maskImage);

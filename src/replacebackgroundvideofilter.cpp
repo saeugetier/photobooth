@@ -36,7 +36,7 @@ void ReplaceBackgroundVideoFilter::setMethod(QString method)
     {
         mFilterMethod = FilterMethod::CHROMA;
     }
-    else if(method.contains("Neural Net"))
+    else if(method.contains("Neural"))
     {
         mFilterMethod = FilterMethod::NEURAL;
     }
@@ -66,7 +66,7 @@ QString ReplaceBackgroundVideoFilter::getMethod() const
     }
     else if(mFilterMethod == FilterMethod::NEURAL)
     {
-        return QString("Neural Net");
+        return QString("Neural");
     }
     else
     {
@@ -100,7 +100,7 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
     mProcessing = false;
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter)
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentor(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
 {
 }
 
@@ -156,7 +156,22 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
     break;
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
-        break;
+    {
+        std::vector<Segmentation> results = mYoloSegmentor.segment(mMat, 0.2f, 0.45f);
+
+        cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
+
+        std::vector<int> objectFilter = {0};
+
+        mYoloSegmentor.drawSegmentationMask(mask, results, objectFilter);
+
+        std::vector<cv::Mat> channels;
+        split(mMat, channels);
+        channels.push_back(mask);
+        cv::merge(channels, mMat);
+    }
+
+    break;
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NONE:
         break;

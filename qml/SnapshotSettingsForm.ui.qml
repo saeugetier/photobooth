@@ -12,8 +12,8 @@ Pane {
     property alias sliderViewfinderBrightness: sliderViewfinderBrightness
     property alias sliderFlashBrightness: sliderFlashBrightness
     property alias switchFlashEnable: switchFlashEnable
+    property alias switchBackgroundFilterEnable: switchBackgroundFilterEnable
     property alias switchChromaKeyEnable: switchChromaKeyEnable
-    //property alias sliderChromaKeyFilterStrength: sliderChromaKeyFilterStrength
     property alias sliderChromaKeyFilterColor: sliderChromaKeyFilterColor
     opacity: 0.5
     spacing: 5
@@ -233,7 +233,7 @@ Pane {
 
             RowLayout
             {
-                id: chromaKey
+                id: backgroundFilterLabel
 
                 spacing: 15
 
@@ -245,9 +245,9 @@ Pane {
                 }
 
                 Label {
-                    id: labelChromaKey
+                    id: labelBackgroundFilter
                     font.pixelSize: 32
-                    text: qsTr("Chroma Key")
+                    text: qsTr("Background Filter")
                     font.family: "DejaVu Serif"
                 }
             }
@@ -255,14 +255,33 @@ Pane {
             RowLayout
             {
                 Label {
-                    id: labelChromaKeyFilterEnable
+                    id: labelBackgroundFilterEnable
                     font.pixelSize: 32
                     text: "Filter: "
                 }
 
                 Switch {
-                    id: switchChromaKeyEnable
+                    id: switchBackgroundFilterEnable
                     text: checked ? qsTr("enabled") : qsTr("disabled")
+                    font.pixelSize: 32
+                    font.family: "DejaVu Serif"
+                    width: 250
+                }
+            }
+
+            RowLayout
+            {
+                visible: switchBackgroundFilterEnable.checked
+
+                Label {
+                    id: labelChromaKeyFilterEnable
+                    font.pixelSize: 32
+                    text: "Type: "
+                }
+
+                Switch {
+                    id: switchChromaKeyEnable
+                    text: checked ? qsTr("chroma") : qsTr("neural")
                     font.pixelSize: 32
                     font.family: "DejaVu Serif"
                     width: 250
@@ -270,37 +289,11 @@ Pane {
 
             }
 
-
-           /* RowLayout {
-                id: rowChromaKeyFilterStrength
-                spacing: 20
-
-                Label {
-                    id: labelChromaKeyFilterStrengthLow
-                    font.pixelSize: 32
-                    text: "\uE814"
-                    font.family: "fontello"
-                }
-
-                Slider {
-                    id: sliderChromaKeyFilterStrength
-                    value: 0.5
-                    from: 0.5
-                    to: 10.0
-                    width: 250
-                }
-
-                Label {
-                    id: labelChromaKeyFilterStrengthHigh
-                    font.pixelSize: 32
-                    text: "\uE813"
-                    font.family: "fontello"
-                }
-            } */
-
             RowLayout {
                 id: rowChromaKeyFilterColor
                 spacing: 20
+
+                visible: switchChromaKeyEnable.checked & switchBackgroundFilterEnable.checked
 
                 Rectangle
                 {

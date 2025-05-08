@@ -17,19 +17,17 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     Q_OBJECT
     /* input parameters */
     Q_PROPERTY(QString method READ getMethod WRITE setMethod)
+    /* chroma key color 0 green to 1 blue */
     Q_PROPERTY(float keyColor READ getKeyColor WRITE setKeyColor)
+    /* background image (only needed for processing the captured photo) */
     Q_PROPERTY(QImage background WRITE setBackground)
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
-    /**
-     * the resultng mask image for background removal. This mask shall be applied via alpha blending shader
-     */
-    //Q_PROPERTY(QImage maskImage READ maskImage NOTIFY maskImageChanged)
 
 public:
     ReplaceBackgroundVideoFilter(QObject *parent = nullptr);
     ~ReplaceBackgroundVideoFilter();
-    //QObject *createFilterRunnable();
+
     void setMethod(QString method);
     void setKeyColor(float color);
     void setBackground(QImage const& image);
@@ -38,7 +36,7 @@ public:
 
     void setVideoSink(QObject *videoSink);
 
-    //QImage maskImage() const { return mMaskImage; }
+    void processCapture(const QString& capture);
 
 protected:
     enum class FilterMethod
@@ -56,11 +54,7 @@ protected:
 
     QVideoSink *mVideoSink;
 
-    //QFuture<void> processThread;
-
     QThread mWorkerThread;
-
-    //QImage mMaskImage;
 
     ReplaceBackgroundFilterRunable* mRunable = nullptr;
 
@@ -68,10 +62,12 @@ protected:
 protected slots:
     void processFrame(const QVideoFrame &frame);
     void onProcessingFinished(const QImage& maskImage);
+    void onImageSaved(const QString& fileName);
 
 signals:
-    void asyncProcessFrame(const QVideoFrame& frame);
-    //void maskImageChanged();
+    void asyncProcessFrame(const QVariant& frame, bool applyBackground);
+
+    void captureProcessingFinished(const QString& fileName);
 };
 
 
@@ -81,7 +77,7 @@ class ReplaceBackgroundFilterRunable : public QObject
 public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
 public slots:
-    void run(const QVideoFrame &input);
+    void run(const QVariant &input, bool highResStill);
 protected:
     cv::Mat chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
@@ -130,10 +126,12 @@ protected:
     bool mYuv;
     ReplaceBackgroundVideoFilter* mFilter;
 
-    YOLOv11SegDetector mYoloSegmentor;
+    YOLOv11SegDetector mYoloSegmentorFast;
 
 signals:
     void processingFinished(const QImage& maskImage);
+    void imageFileSaved(const QString& fileName);
+    void error();
 };
 
 #endif // REPLACEBACKGROUNDVIDEOFILTER_H

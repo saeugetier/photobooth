@@ -81,12 +81,23 @@ void ReplaceBackgroundVideoFilter::setVideoSink(QObject *videoSink)
     connect(mVideoSink, &QVideoSink::videoFrameChanged, this, &ReplaceBackgroundVideoFilter::processFrame);
 }
 
+void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
+{
+    if(!mProcessing)
+    {
+        mProcessing = true;
+        emit asyncProcessFrame(capture, true);
+    }
+}
+
 void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
 {
     if(!mProcessing)
     {
         mProcessing = true;
-        emit asyncProcessFrame(frame);
+        QVariant frameVariant;
+        frameVariant.setValue(frame);
+        emit asyncProcessFrame(frameVariant, false);
     }
 }
 
@@ -100,43 +111,65 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
     mProcessing = false;
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentor(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
+void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
+{
+    mProcessing = false;
+    emit captureProcessingFinished(fileName);
+}
+
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentorFast(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
 {
 }
 
-void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
+void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground)
 {
-    // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
-    if (!input.isValid()
-        || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
-        qWarning("Invalid input format");
-        emit processingFinished(QImage());
-    }
+    QImage image;
 
-    QVideoFrame frame = input;
-
-    if (!frame.map(QVideoFrame::ReadOnly)) {
-        qWarning() << "Failed to map QVideoFrame";
-        emit processingFinished(QImage());
-        return;
-    }
-
-    QImage image = frame.toImage();
-
-    if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+    if(variant.canConvert<QVideoFrame>())
     {
-        // do not go any further. no filter selected!
-        emit processingFinished(image);
-        return;
+        QVideoFrame input = variant.value<QVideoFrame>();
+        // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
+        if (!input.isValid()
+            || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
+            qWarning("Invalid input format");
+            emit processingFinished(QImage());
+        }
+
+        QVideoFrame frame = input;
+
+        if (!frame.map(QVideoFrame::ReadOnly)) {
+            qWarning() << "Failed to map QVideoFrame";
+            emit processingFinished(QImage());
+            return;
+        }
+
+        image = frame.toImage();
+
+
+        if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+        {
+            // do not go any further. no filter selected!
+            emit processingFinished(image);
+            return;
+        }
+
+        // filter active. So we need some computation.
+        mMat = imageToMat8(image);
+
+        frame.unmap();
+    }
+    else if(variant.canConvert<QString>())
+    {
+        mMat = cv::imread(variant.toString().toStdString());
+    }
+    else
+    {
+        emit error();
     }
 
-    // filter active. So we need some computation.
-    mMat = imageToMat8(image);
-
-    frame.unmap();
     ensureC3(&mMat);
 
-    prepareBackground(mFilter->mBackgroundImage, cv::Size(frame.width(), frame.height()));
+    //prepareBackground(mFilter->mBackgroundImage, cv::Size(frame.width(), frame.height()));
 
     switch(mFilter->mFilterMethod)
     {
@@ -157,13 +190,13 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
     {
-        std::vector<Segmentation> results = mYoloSegmentor.segment(mMat, 0.2f, 0.45f);
+        std::vector<Segmentation> results = mYoloSegmentorFast.segment(mMat, 0.2f, 0.45f);
 
         cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
 
         std::vector<int> objectFilter = {0};
 
-        mYoloSegmentor.drawSegmentationMask(mask, results, objectFilter);
+        mYoloSegmentorFast.drawSegmentationMask(mask, results, objectFilter);
 
         std::vector<cv::Mat> channels;
         split(mMat, channels);

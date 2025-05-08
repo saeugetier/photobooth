@@ -1,11 +1,14 @@
-import QtQuick 2.4
-import Qt.labs.settings 1.0
+import QtQuick
+import QtCore
 
 SnapshotSettingsForm {
     property alias flashEnabled: settings.flashEnabled
     property alias viewFinderBrightness: settings.viewFinderBrightness
     property alias flashBrightness: settings.flashBrightness
     property alias countdown: settings.countdown
+    property alias backgroundFilterEnabled: settings.backgroundFilterEnabled
+    property alias chromaKeyEnabled: settings.chromaKeyEnabled
+    property alias chromaKeyColor: settings.chromaKeyColor
 
     Settings
     {
@@ -15,6 +18,9 @@ SnapshotSettingsForm {
         property real viewFinderBrightness: 0.1
         property real flashBrightness: 1.0
         property int countdown: 1
+        property bool backgroundFilterEnabled: false
+        property bool chromaKeyEnabled: false
+        property real chromaKeyColor: 0.5
     }
 
     showButton.onClicked:
@@ -59,6 +65,24 @@ SnapshotSettingsForm {
     spinBoxCountdownTime.onValueChanged:
     {
         settings.countdown = spinBoxCountdownTime.value
+    }
+
+    switchBackgroundFilterEnable.checked: settings.backgroundFilterEnabled
+    switchBackgroundFilterEnable.onCheckedChanged:
+    {
+        settings.backgroundFilterEnabled = switchBackgroundFilterEnable.checked
+    }
+
+    switchChromaKeyEnable.checked: settings.chromaKeyEnabled
+    switchChromaKeyEnable.onCheckedChanged:
+    {
+        settings.chromaKeyEnabled = switchChromaKeyEnable.checked
+    }
+
+    sliderChromaKeyFilterColor.value: settings.chromaKeyColor
+    sliderChromaKeyFilterColor.onValueChanged:
+    {
+        settings.chromaKeyColor = sliderChromaKeyFilterColor.value
     }
 
     Behavior on width

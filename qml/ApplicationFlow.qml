@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import CollageModel 1.0
-import QtQuick.Controls 2.5
+import QtQuick
+import CollageModel
+import QtQuick.Controls
 
 ApplicationFlowForm {
     id: flow
@@ -34,7 +34,7 @@ ApplicationFlowForm {
         state = "gallery"
     }
 
-    snapshotMenu.onCaptured:
+    snapshotMenu.onCaptured: filename =>
     {
         state = "imagePreview"
         imagePreview.effectSelectable = applicationSettings.printEnable && collageMenu.collageImage.imageModel.nextImageIsEffectSelectable()
@@ -56,7 +56,7 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    imagePreview.onAccept:
+    imagePreview.onAccept: (filename, effect) =>
     {
         if(applicationSettings.printEnable)
         {
@@ -84,9 +84,9 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
-    collageMenu.collageImage.onCollageImagesChanged:
+    collageMenu.collageImage.onCollageImagesChanged: count =>
     {
-        snapshotMenu.snapshotTimeoutEnable = (count == 0)
+        snapshotMenu.snapshotTimeoutEnable = (count === 0)
     }
 
     galleryMenu.onExitGallery:

@@ -1,8 +1,8 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.2
-import QtGraphicalEffects 1.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import QtQuick.Controls.Material
 
 Pane {
     id: pane
@@ -12,6 +12,9 @@ Pane {
     property alias sliderViewfinderBrightness: sliderViewfinderBrightness
     property alias sliderFlashBrightness: sliderFlashBrightness
     property alias switchFlashEnable: switchFlashEnable
+    property alias switchBackgroundFilterEnable: switchBackgroundFilterEnable
+    property alias switchChromaKeyEnable: switchChromaKeyEnable
+    property alias sliderChromaKeyFilterColor: sliderChromaKeyFilterColor
     opacity: 0.5
     spacing: 5
 
@@ -225,6 +228,93 @@ Pane {
                     width: 200
                     font.pixelSize: 32
                     font.family: "DejaVu Serif"
+                }
+            }
+
+            RowLayout
+            {
+                id: backgroundFilterLabel
+
+                spacing: 15
+
+                Label {
+                    id: labelBackgrounddFilterIcon
+                    font.pixelSize: 32
+                    text: "\uF0D0"
+                    font.family: "fontello"
+                }
+
+                Label {
+                    id: labelBackgroundFilter
+                    font.pixelSize: 32
+                    text: qsTr("Background Filter")
+                    font.family: "DejaVu Serif"
+                }
+            }
+
+            RowLayout
+            {
+                Label {
+                    id: labelBackgroundFilterEnable
+                    font.pixelSize: 32
+                    text: "Filter: "
+                }
+
+                Switch {
+                    id: switchBackgroundFilterEnable
+                    text: checked ? qsTr("enabled") : qsTr("disabled")
+                    font.pixelSize: 32
+                    font.family: "DejaVu Serif"
+                    width: 250
+                }
+            }
+
+            RowLayout
+            {
+                visible: switchBackgroundFilterEnable.checked
+
+                Label {
+                    id: labelChromaKeyFilterEnable
+                    font.pixelSize: 32
+                    text: "Type: "
+                }
+
+                Switch {
+                    id: switchChromaKeyEnable
+                    text: checked ? qsTr("chroma") : qsTr("neural")
+                    font.pixelSize: 32
+                    font.family: "DejaVu Serif"
+                    width: 250
+                }
+
+            }
+
+            RowLayout {
+                id: rowChromaKeyFilterColor
+                spacing: 20
+
+                visible: switchChromaKeyEnable.checked & switchBackgroundFilterEnable.checked
+
+                Rectangle
+                {
+                    color: "Green"
+                    width: 32
+                    height: 32
+                }
+
+                Slider {
+                    id: sliderChromaKeyFilterColor
+                    value: 0.0
+                    from: 0.0
+                    to: 1.0
+                    width: 250
+                }
+
+                Rectangle
+                {
+                    color: "Blue"
+                    width: 32
+                    height: 32
                 }
             }
         }

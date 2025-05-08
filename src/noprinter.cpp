@@ -13,6 +13,8 @@ bool NoPrinter::busy()
 int NoPrinter::printImage(const QString &filename, int copyCount)
 {
     Q_UNUSED(filename);
+    Q_UNUSED(copyCount);
+    return 0;
 }
 
 NoPrinter::NoPrinter(QObject *parent) : AbstractPrinter(parent)

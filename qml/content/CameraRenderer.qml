@@ -1,78 +1,85 @@
-import QtQuick 2.5
-import QtMultimedia 5.5
-import QtQuick.Controls 2.0
-import QtGraphicalEffects 1.0
-import QtQuick.Layouts 1.2
+import QtQuick
+import QtMultimedia
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
+import QtQuick.Layouts
+import BackgroundFilter
 
 Item {
-    id: renderer
-    signal savedPhoto(string filename)
-    signal failed
+   id: renderer
+   signal savedPhoto(string filename)
+   signal failed
 
-    property bool photoProcessing: (state == "snapshot")
-    property bool mirrored: true
-    property string deviceId: camera.deviceId
+   property bool photoProcessing: (state === "snapshot")
+   property bool mirrored: true
+   property string deviceId: camera.deviceId
+   property alias backgroundFilter: backgroundFilter
+   property bool backgroundFilterEnabled: false
 
-    function printDevicesToConsole(devices)
-    {
-        console.log("Found " + devices.length + " camera devices!")
-        for(var i = 0; i < devices.length; i++)
-        {
-            console.log("Found device: " + devices[i].deviceId + " with number " + i);
-        }
-    }
+   function printDevicesToConsole(devices) {
+      console.log("Found " + devices.length + " camera devices!")
+      for (var i = 0; i < devices.length; i++) {
+         console.log(
+                  "Found device: " + devices[i].deviceId + " with number " + i)
+      }
+   }
 
-    Camera {
-        id: camera
+   MediaDevices {
+      id: mediaDevices
+   }
 
-        position: Camera.UnspecifiedPosition
+   onDeviceIdChanged: id => {
+                         // get the camera device with id from mediaDevices
+                         console.log("Selected camera: " + id)
+                         var availableCameras = mediaDevices.videoInputs
+                         for (var i = 0; i < availableCameras.length; i++) {
+                            if (availableCameras[i].deviceId === id) {
+                               camera.cameraDevice = availableCameras[i]
+                               break
+                            }
+                         }
+                      }
 
-        //imageProcessing.whiteBalanceMode: CameraImageProcessing.WhiteBalanceAuto
-        exposure {
-            exposureCompensation: -1.0
-            exposureMode: Camera.ExposurePortrait
-        }
+   CaptureSession {
 
-        flash.mode: Camera.FlashRedEyeReduction
+      camera: Camera {
+         id: camera
+         cameraDevice: mediaDevices.defaultVideoInput
+         exposureMode: Camera.ExposurePortrait
+         exposureCompensation: -1.0
+         whiteBalanceMode: Camera.WhiteBalanceAuto
+         flashMode: Camera.FlashAuto
+         torchMode: Camera.TorchAuto
+      }
 
-        Component.onCompleted:
-        {
-            for(var filterType in imageProcessing.supportedColorFilters)
-            {
-                console.log("Filter: " + Number(filterType).toString())
-            }
-        }
+      id: cameraSession
 
-        imageCapture {
-            onImageSaved:
-            {
-                renderer.state = "preview"
-                savedPhoto("file:" + camera.imageCapture.capturedImagePath)
-                console.log("Saved: " + camera.imageCapture.capturedImagePath)
-            }
-            onImageCaptured:
-            {
-                whiteOverlay.state = "released"
-                renderer.state = "store"
-                console.log("Captured")
-            }
-            onCaptureFailed:
-            {
-                renderer.state = "preview"
-                failed()
-            }
-            onErrorStringChanged:
-            {
-                console.log("Camera error: " + errorString)
-            }
-        }
+      videoOutput: output
 
-        onError:
-        {
-            console.log("Camera Error: " + errorString)
-        }
+      imageCapture: ImageCapture {
+         id: imageCapture
 
-        onCameraStateChanged:
+         onImageSaved: (_, fileName) => {
+                          renderer.state = "preview"
+                          savedPhoto("file:" + fileName)
+                          console.log("Saved: " + fileName)
+                       }
+         onImageCaptured: {
+            whiteOverlay.state = "released"
+            renderer.state = "store"
+            console.log("Captured")
+         }
+         onErrorOccurred: {
+            renderer.state = "preview"
+            failed()
+         }
+         onErrorStringChanged: {
+            console.log("Camera error: " + errorString)
+         }
+      }
+
+
+      /*onCameraStateChanged:
         {
             if(camera.cameraState == Camera.UnloadedState)
             {
@@ -95,33 +102,82 @@ Item {
             {
                 console.log("Camera State Changed: Unknown");
             }
-        }
-    }
+        }*/
+   }
 
-    VideoOutput {
-        id: output
-        source: camera
-        anchors.fill: parent
+   ReplaceBackgroundVideoFilter {
+      id: backgroundFilter
+      videoSink: output.videoSink
+   }
 
-        layer.enabled: true
-        layer.effect: ImageEffect {
-            source: output
-            fragmentShaderFilename: mirrored ? "vmirror.fsh" : "passthrough.fsh"
-        }
+   Connections {
+      id: cameraErrorListener
+      target: camera
+      function errorOccured(_, errorString) {
+         console.log("Camera Error: " + errorString)
+      }
+   }
 
-        //focus: visible // to receive focus and capture key events when visible
-    }
+   VideoOutput {
+      id: output
 
-    WhiteOverlay
-    {
-        id: whiteOverlay
-        x: output.x
-        y: output.y
-        width: output.width
-        height: output.height
-    }
+      anchors.fill: parent
 
-    Timer
+      visible: false
+
+      //filters: [backgroundFilter]
+
+      //focus: visible // to receive focus and capture key events when visible
+   }
+
+   CaptureSession
+   {
+      id: maskSession
+      videoFrameInput: backgroundFilter
+      videoOutput: maskOutput
+   }
+
+
+   VideoOutput {
+      id: maskOutput
+
+      anchors.fill: parent
+
+      onContentRectChanged: {
+         console.log("Content rect changed: " + Qt.rect(contentRect.x / width, contentRect.y /height, contentRect.width / width, contentRect.height / height))
+      }
+
+      layer.enabled: true
+      layer.effect: ShaderEffect {
+         id: mirrorEffect
+         property variant source: ShaderEffectSource {
+            sourceItem: maskOutput
+            hideSource: true
+         }
+
+         property variant bgSource : Image {
+            id: bgImage
+            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+            fillMode: Image.PreserveAspectCrop
+         }
+
+         property bool mirrored: renderer.mirrored
+         property bool enableMask: true
+         property rect contentRect: Qt.rect(maskOutput.contentRect.x / maskOutput.width, maskOutput.contentRect.y / maskOutput.height, maskOutput.contentRect.width / maskOutput.width, maskOutput.contentRect.height / maskOutput.height)
+         anchors.fill: maskOutput
+         fragmentShader: "qrc:/shaders/previewshader.frag.qsb"
+      }
+   }
+
+   WhiteOverlay {
+      id: whiteOverlay
+      x: output.x
+      y: output.y
+      width: output.width
+      height: output.height
+   }
+
+   /* Timer
     {
         id: cameraDiscoveryTimer
 
@@ -141,52 +197,70 @@ Item {
             }
 
         }
-    }
+    }*/
+   function takePhoto() {
+      if (cameraSession.imageCapture.readyForCapture) {
+         state = "snapshot"
+         console.log(applicationSettings.foldername.toString())
+         var path = applicationSettings.foldername.toString()
+         path = path.replace(/^(file:\/{2})/, "")
+         var cleanPath = decodeURIComponent(path)
+         console.log(cleanPath)
+         cameraSession.imageCapture.captureToFile(
+                  cleanPath + "/Pict_" + new Date().toLocaleString(
+                     locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+      } else {
+         renderer.state = "preview"
+         failed()
+      }
+   }
 
-    function takePhoto()
-    {
-        if(camera.imageCapture.ready)
-        {
-            state  = "snapshot"
-            console.log(applicationSettings.foldername.toString())
-            var path = applicationSettings.foldername.toString()
-            path = path.replace(/^(file:\/{2})/,"");
-            var cleanPath = decodeURIComponent(path);
-            console.log(cleanPath)
-            camera.imageCapture.captureToLocation(cleanPath + "/Pict_"+ new Date().toLocaleString(locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
-        }
-        else
-        {
-            renderer.state = "preview"
-            failed()
-        }
-    }
-
-    states: [
-        State {
-            name: "preview"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "released"
+   states: [
+      State {
+         name: "idle"
+      },
+      State {
+         name: "preview"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "released"
+         }
+         PropertyChanges {
+            target: shutterButton
+            state: "idle"
+         }
+         StateChangeScript {
+            script: {
+               camera.start()
             }
-            PropertyChanges {
-                target: shutterButton
-                state: "idle"
+         }
+      },
+      State {
+         name: "snapshot"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "triggered"
+         }
+      },
+      State {
+         name: "store"
+         PropertyChanges {
+            target: whiteOverlay
+            state: "released"
+         }
+      }
+   ]
+   transitions: Transition {
+      to: "idle"
+      SequentialAnimation {
+         NumberAnimation {
+            duration: 2000
+         }
+         ScriptAction {
+            script: {
+               camera.stop()
             }
-        },
-        State {
-            name: "snapshot"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "triggered"
-            }
-        },
-        State {
-            name: "store"
-            PropertyChanges {
-                target: whiteOverlay
-                state: "released"
-            }
-        }
-    ]
+         }
+      }
+   }
 }

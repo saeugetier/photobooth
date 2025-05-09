@@ -86,7 +86,7 @@ void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
     if(!mProcessing)
     {
         mProcessing = true;
-        emit asyncProcessFrame(capture, true);
+        emit asyncProcessFrame(capture, true, true);
     }
 }
 
@@ -97,7 +97,7 @@ void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
         mProcessing = true;
         QVariant frameVariant;
         frameVariant.setValue(frame);
-        emit asyncProcessFrame(frameVariant, false);
+        emit asyncProcessFrame(frameVariant, false, false);
     }
 }
 
@@ -121,12 +121,13 @@ ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackground
 {
 }
 
-void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground)
+void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground, bool highResFilter)
 {
-    QImage image;
 
     if(variant.canConvert<QVideoFrame>())
     {
+        QImage image;
+
         QVideoFrame input = variant.value<QVideoFrame>();
         // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
         if (!input.isValid()
@@ -144,7 +145,6 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         }
 
         image = frame.toImage();
-
 
         if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
         {
@@ -169,7 +169,10 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     ensureC3(&mMat);
 
-    //prepareBackground(mFilter->mBackgroundImage, cv::Size(frame.width(), frame.height()));
+    if(applyBackground)
+    {
+        prepareBackground(mFilter->mBackgroundImage, cv::Size(mMat.cols, mMat.rows));
+    }
 
     switch(mFilter->mFilterMethod)
     {
@@ -184,7 +187,14 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         cv::Scalar lower_color = (lower_green * (1.0 - mFilter->mKeyColor)) + (lower_blue * mFilter->mKeyColor);
         cv::Scalar upper_color = (upper_green * (1.0 - mFilter->mKeyColor)) + (upper_blue * mFilter->mKeyColor);
 
-        mMat = chromaKeyMask(mMat, lower_color, upper_color);
+        if(!highResFilter)
+        {
+            mMat = chromaKeyMask(mMat, lower_color, upper_color);
+        }
+        else
+        {
+            mMat = grabcutChromaKey(mMat, lower_color, upper_color);
+        }
     }
     break;
 
@@ -210,8 +220,41 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         break;
     }
 
+    if(applyBackground)
+    {
+        // use alpha channel to add bg image to mMat. The alpha channel is converted to float in order to multiply it with the color values.
+        cv::Mat alpha_channel;
+        cv::extractChannel(mMat, alpha_channel, 3);
+        cv::Mat alpha_float;
+        alpha_channel.convertTo(alpha_float, CV_32F, 1.0 / 255.0);
+        cv::Mat bg_float;
+        mFilter->mBackgroundImage.convertTo(bg_float, CV_32F, 1.0 / 255.0);
+        cv::Mat mMat_float;
+        mMat.convertTo(mMat_float, CV_32F, 1.0 / 255.0);
+        cv::Mat bg_float_alpha;
+        cv::multiply(bg_float, alpha_float, bg_float_alpha);
+        cv::Mat mMat_float_alpha;
+        cv::multiply(mMat_float, 1.0 - alpha_float, mMat_float_alpha);
+        cv::Mat result_float;
+        cv::add(bg_float_alpha, mMat_float_alpha, result_float);
+        cv::Mat result;
+        result_float.convertTo(result, CV_8UC4, 255.0);
+        cv::Mat tmp;
+        cvtColor(result, tmp, cv::COLOR_BGRA2BGR);
+        mMat = tmp.clone();
+    }
+
     // Output is an RGB video frame.
-    emit processingFinished(mat8ToImage(mMat));
+    if(variant.canConvert<QVideoFrame>())
+    {
+        emit processingFinished(mat8ToImage(mMat));
+    }
+    else if(variant.canConvert<QString>())
+    {
+        // Save the image to a file
+        cv::imwrite(variant.toString().toStdString(), mMat);
+        emit imageFileSaved(variant.toString());
+    }
 }
 
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)
@@ -222,12 +265,12 @@ void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size siz
 cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color)
 {
     // Convert the image from BGR to YUV
-    cv::Mat yuv_img;
+    cv::Mat hsv_img;
     cv::Mat mask;
-    cvtColor(img, yuv_img, cv::COLOR_RGB2HSV);
+    cvtColor(img, hsv_img, cv::COLOR_RGB2HSV);
 
     // Define the mask based on the color range
-    inRange(yuv_img, lower_color, upper_color, mask);
+    inRange(hsv_img, lower_color, upper_color, mask);
 
     cv::bitwise_not(mask, mask);
 
@@ -250,15 +293,15 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     return result;
 }
 
-cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
+cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
     // Convert the image from BGR to YUV
-    cv::Mat yuv_img;
+    cv::Mat hsv_img;
     cv::Mat result;
-    cvtColor(img, yuv_img, cv::COLOR_BGR2YUV);
+    cvtColor(img, hsv_img, cv::COLOR_BGR2HSV);
 
     // Define the mask based on the color range
     cv::Mat mask;
-    inRange(yuv_img, lower_color, upper_color, mask);
+    inRange(hsv_img, lower_color, upper_color, mask);
 
     int num_foreground_pixels = countNonZero(mask);
     int num_background_pixels = mask.total() - num_foreground_pixels;
@@ -285,23 +328,15 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
 
         // Extract the foreground
         cv::Mat fg, bg;
-        img.copyTo(fg, final_mask);
-        bg_img.copyTo(bg, 1 - final_mask);
-
-        // Combine the foreground and background
-        add(fg, bg, result);
+        std::vector<cv::Mat> channels;
+        split(img, channels);
+        channels.push_back(mask);
+        cv::merge(channels, result);
     }
     else
     {
         img.copyTo(result);
     }
-
-    //cv::Mat fg, bg;
-    //img.copyTo(fg, mask);
-    //bg_img.copyTo(bg, ~mask);
-
-    // Combine the foreground and background
-    //add(fg, bg, result);
 
     return result;
 }

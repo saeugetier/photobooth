@@ -65,7 +65,7 @@ protected slots:
     void onImageSaved(const QString& fileName);
 
 signals:
-    void asyncProcessFrame(const QVariant& frame, bool applyBackground);
+    void asyncProcessFrame(const QVariant& frame, bool applyBackground, bool highResFilter);
 
     void captureProcessingFinished(const QString& fileName);
 };
@@ -77,11 +77,11 @@ class ReplaceBackgroundFilterRunable : public QObject
 public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
 public slots:
-    void run(const QVariant &input, bool highResStill);
+    void run(const QVariant &input, bool highResStill, bool highResFilter);
 protected:
     cv::Mat chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
-    cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
+    cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
     void prepareBackground(cv::Mat &bg, cv::Size size);
 

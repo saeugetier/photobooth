@@ -117,7 +117,7 @@ void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
     emit captureProcessingFinished(fileName);
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentorFast(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentorFast(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false), mYoloSegmentorSlow(":/models/yolo11l-seg.onnx", ":/models/coco.names" , false)
 {
 }
 
@@ -169,11 +169,6 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     ensureC3(&mMat);
 
-    if(applyBackground)
-    {
-        prepareBackground(mFilter->mBackgroundImage, cv::Size(mMat.cols, mMat.rows));
-    }
-
     switch(mFilter->mFilterMethod)
     {
     case ReplaceBackgroundVideoFilter::FilterMethod::CHROMA:
@@ -222,26 +217,11 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     if(applyBackground)
     {
+        prepareBackground(mFilter->mBackgroundImage, cv::Size(mMat.cols, mMat.rows));
         // use alpha channel to add bg image to mMat. The alpha channel is converted to float in order to multiply it with the color values.
         cv::Mat alpha_channel;
         cv::extractChannel(mMat, alpha_channel, 3);
-        cv::Mat alpha_float;
-        alpha_channel.convertTo(alpha_float, CV_32F, 1.0 / 255.0);
-        cv::Mat bg_float;
-        mFilter->mBackgroundImage.convertTo(bg_float, CV_32F, 1.0 / 255.0);
-        cv::Mat mMat_float;
-        mMat.convertTo(mMat_float, CV_32F, 1.0 / 255.0);
-        cv::Mat bg_float_alpha;
-        cv::multiply(bg_float, alpha_float, bg_float_alpha);
-        cv::Mat mMat_float_alpha;
-        cv::multiply(mMat_float, 1.0 - alpha_float, mMat_float_alpha);
-        cv::Mat result_float;
-        cv::add(bg_float_alpha, mMat_float_alpha, result_float);
-        cv::Mat result;
-        result_float.convertTo(result, CV_8UC4, 255.0);
-        cv::Mat tmp;
-        cvtColor(result, tmp, cv::COLOR_BGRA2BGR);
-        mMat = tmp.clone();
+        alphaBlend(mMat, mFilter->mBackgroundImage, alpha_channel, mMat);
     }
 
     // Output is an RGB video frame.
@@ -260,6 +240,32 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)
 {
     cv::resize(bg, bg, size);
+}
+
+void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat& alpha, cv::Mat &dst)
+{
+    // Ensure the source and background images are the same size
+    if (src.size() != bg.size()) {
+        cv::resize(bg, bg, src.size());
+    }
+
+    // Convert the source image to float
+    src.convertTo(src, CV_32FC3, 1.0 / 255.0);
+
+    // Convert the background image to float
+    bg.convertTo(bg, CV_32FC3, 1.0 / 255.0);
+
+    // Convert the alpha channel to float
+    alpha.convertTo(alpha, CV_32F, 1.0 / 255.0);
+
+    // Blend the images
+    cv::Mat ouImage = cv::Mat::zeros(src.size(), src.type());
+    cv::multiply(alpha, src, src);
+    cv::multiply(cv::Scalar::all(1.0)-alpha, bg, bg);
+    cv::add(src, bg, ouImage);
+    // Convert the result back to 8-bit
+    ouImage.convertTo(ouImage, CV_8UC3, 255.0);
+    ouImage.copyTo(dst);
 }
 
 cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color)
@@ -326,11 +332,20 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
         compare(grabcut_mask, cv::GC_PR_FGD, final_mask, cv::CMP_EQ);
         final_mask = final_mask | (grabcut_mask == cv::GC_FGD);
 
+        int dilation_size = 5;
+
+        cv::Mat element = getStructuringElement( cv::MORPH_DILATE,
+                                                cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                                cv::Point( dilation_size, dilation_size ) );
+
+        cv::dilate(final_mask, final_mask, element);
+
+
         // Extract the foreground
         cv::Mat fg, bg;
         std::vector<cv::Mat> channels;
         split(img, channels);
-        channels.push_back(mask);
+        channels.push_back(final_mask);
         cv::merge(channels, result);
     }
     else

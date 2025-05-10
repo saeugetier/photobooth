@@ -85,6 +85,8 @@ protected:
 
     void prepareBackground(cv::Mat &bg, cv::Size size);
 
+    void alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat& alpha, cv::Mat &dst);
+
     /**
      * @brief QImage -> CV_8UC4
      */
@@ -127,6 +129,7 @@ protected:
     ReplaceBackgroundVideoFilter* mFilter;
 
     YOLOv11SegDetector mYoloSegmentorFast;
+    YOLOv11SegDetector mYoloSegmentorSlow;
 
 signals:
     void processingFinished(const QImage& maskImage);

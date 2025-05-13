@@ -94,7 +94,6 @@
         <file>shaders/fisheye.frag.qsb</file>
         <file>shaders/previewshader.frag</file>
         <file>shaders/previewshader.frag.qsb</file>
-        <file>models/yolo11n-seg.onnx</file>
         <file>models/coco.names</file>
     </qresource>
 </RCC>

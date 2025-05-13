@@ -195,13 +195,28 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
     {
-        std::vector<Segmentation> results = mYoloSegmentorFast.segment(mMat, 0.2f, 0.45f);
+        std::vector<Segmentation> results;
+        if(!highResFilter)
+        {
+            results = mYoloSegmentorFast.segment(mMat, 0.2f, 0.45f);
+        }
+        else
+        {
+            results = mYoloSegmentorSlow.segment(mMat, 0.2f, 0.45f);
+        }
 
         cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
 
         std::vector<int> objectFilter = {0};
 
-        mYoloSegmentorFast.drawSegmentationMask(mask, results, objectFilter);
+        if(!highResFilter)
+        {
+            mYoloSegmentorFast.drawSegmentationMask(mask, results, objectFilter);
+        }
+        else
+        {
+            mYoloSegmentorSlow.drawSegmentationMask(mask, results, objectFilter);
+        }
 
         std::vector<cv::Mat> channels;
         split(mMat, channels);

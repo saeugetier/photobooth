@@ -61,8 +61,15 @@ Item {
 
          onImageSaved: (_, fileName) => {
                           renderer.state = "preview"
-                          savedPhoto("file:" + fileName)
-                          console.log("Saved: " + fileName)
+                          if(backgroundFilterEnabled)
+                          {
+                           backgroundFilter.processCapture(fileName)
+                          }
+                          else
+                          {
+                           savedPhoto("file:" + fileName)
+                           console.log("Saved: " + fileName)
+                          }
                        }
          onImageCaptured: {
             whiteOverlay.state = "released"
@@ -108,6 +115,15 @@ Item {
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
       videoSink: output.videoSink
+      background: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+
+      onCaptureProcessingFinished: {
+         console.log("Capture processing finished")
+         if (backgroundFilterEnabled) {
+            savedPhoto("file:" + fileName)
+            console.log("Saved: " + fileName)
+         }
+      }
    }
 
    Connections {

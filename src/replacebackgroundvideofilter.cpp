@@ -83,9 +83,9 @@ void ReplaceBackgroundVideoFilter::setVideoSink(QObject *videoSink)
 
 void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
 {
-    if(!mProcessing)
+    if(!mCaptureProcessing)
     {
-        mProcessing = true;
+        mCaptureProcessing = true;
         emit asyncProcessFrame(capture, true, true);
     }
 }
@@ -113,7 +113,7 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
 
 void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
 {
-    mProcessing = false;
+    mCaptureProcessing = false;
     emit captureProcessingFinished(fileName);
 }
 
@@ -217,7 +217,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     if(applyBackground)
     {
-        prepareBackground(mFilter->mBackgroundImage, cv::Size(mMat.cols, mMat.rows));
+        prepareBackground(mFilter->mBackgroundImage, mMat.size());
         // use alpha channel to add bg image to mMat. The alpha channel is converted to float in order to multiply it with the color values.
         cv::Mat alpha_channel;
         cv::extractChannel(mMat, alpha_channel, 3);
@@ -250,19 +250,34 @@ void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Ma
     }
 
     // Convert the source image to float
-    src.convertTo(src, CV_32FC3, 1.0 / 255.0);
+    cv::Mat src_float;
+    cv::cvtColor(src, src_float, cv::COLOR_RGBA2RGB);
+    src_float.convertTo(src_float, CV_32FC3, 1.0 / 255.0);
 
     // Convert the background image to float
-    bg.convertTo(bg, CV_32FC3, 1.0 / 255.0);
+    cv::Mat bg_float;
+    cv::cvtColor(bg, bg_float, cv::COLOR_BGRA2RGB);
+    bg_float.convertTo(bg_float, CV_32FC3, 1.0 / 255.0);
+
+    int pre_conv_channels = alpha.channels();
 
     // Convert the alpha channel to float
-    alpha.convertTo(alpha, CV_32F, 1.0 / 255.0);
+    cv::Mat alpha_float(alpha.size(), CV_8UC3);
+    std::vector<cv::Mat> channels;
+    channels.push_back(alpha);                      // Kanal 1: Grauwert
+    channels.push_back(alpha);                      // Kanal 2: Grauwert (optional duplizieren)
+    channels.push_back(alpha);
+    cv::merge(channels, alpha_float);
+    alpha_float.convertTo(alpha_float, CV_32FC3, 1.0 / 255.0);
+
+    int alpha_channels = alpha_float.channels();
+    int rgb_channels = src_float.channels();
 
     // Blend the images
-    cv::Mat ouImage = cv::Mat::zeros(src.size(), src.type());
-    cv::multiply(alpha, src, src);
-    cv::multiply(cv::Scalar::all(1.0)-alpha, bg, bg);
-    cv::add(src, bg, ouImage);
+    cv::Mat ouImage(src_float.size(), src_float.type());
+    cv::multiply(alpha_float, src_float, src_float);
+    cv::multiply(cv::Scalar::all(1.0)-alpha_float, bg_float, bg_float);
+    cv::add(src_float, bg_float, ouImage);
     // Convert the result back to 8-bit
     ouImage.convertTo(ouImage, CV_8UC3, 255.0);
     ouImage.copyTo(dst);

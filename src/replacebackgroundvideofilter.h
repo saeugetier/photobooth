@@ -2,6 +2,7 @@
 #define REPLACEBACKGROUNDVIDEOFILTER_H
 
 #include <QImage>
+#include <QUrl>
 #include <QVideoSink>
 #include <QVideoFrame>
 #include <QVideoFrameInput>
@@ -20,7 +21,7 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     /* chroma key color 0 green to 1 blue */
     Q_PROPERTY(float keyColor READ getKeyColor WRITE setKeyColor)
     /* background image (only needed for processing the captured photo) */
-    Q_PROPERTY(QImage background WRITE setBackground)
+    Q_PROPERTY(QUrl background WRITE setBackground)
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
 
@@ -31,12 +32,37 @@ public:
     void setMethod(QString method);
     void setKeyColor(float color);
     void setBackground(QImage const& image);
+    Q_INVOKABLE void setBackground(QUrl& imagePath)
+    {
+        QImage img;
+        QString fileName;
+
+        if(imagePath.isLocalFile())
+        {
+            fileName = imagePath.toLocalFile();
+        }
+        else if(imagePath.toString().contains("qrc:"))
+        {
+            fileName = imagePath.toString().remove(0,3);
+        }
+        else
+        {
+            fileName = imagePath.toString();
+        }
+
+        if (img.load(fileName)) {
+            setBackground(img);
+        }
+        else {
+            qDebug() << "Failed to load image: " << imagePath;
+        }
+    }
     QString getMethod() const;
     float getKeyColor() const;
 
     void setVideoSink(QObject *videoSink);
 
-    void processCapture(const QString& capture);
+    Q_INVOKABLE void processCapture(const QString& capture);
 
 protected:
     enum class FilterMethod
@@ -59,6 +85,7 @@ protected:
     ReplaceBackgroundFilterRunable* mRunable = nullptr;
 
     bool mProcessing = false;
+    bool mCaptureProcessing = false;
 protected slots:
     void processFrame(const QVideoFrame &frame);
     void onProcessingFinished(const QImage& maskImage);

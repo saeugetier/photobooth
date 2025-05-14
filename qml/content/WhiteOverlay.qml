@@ -14,6 +14,13 @@ Rectangle {
             }
         },
         State {
+            name: "processing"
+            PropertyChanges {
+                target: rect
+                opacity: 0.5
+            }
+        },
+        State {
             name: "released"
             PropertyChanges {
                 target: rect

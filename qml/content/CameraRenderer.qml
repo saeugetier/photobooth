@@ -60,15 +60,16 @@ Item {
          id: imageCapture
 
          onImageSaved: (_, fileName) => {
-                          renderer.state = "preview"
+
                           if(backgroundFilterEnabled)
                           {
-                           backgroundFilter.processCapture(fileName)
+                             backgroundFilter.processCapture(fileName)
                           }
                           else
                           {
-                           savedPhoto("file:" + fileName)
-                           console.log("Saved: " + fileName)
+                             renderer.state = "preview"
+                             savedPhoto("file:" + fileName)
+                             console.log("Saved: " + fileName)
                           }
                        }
          onImageCaptured: {
@@ -120,6 +121,7 @@ Item {
       onCaptureProcessingFinished: {
          console.log("Capture processing finished")
          if (backgroundFilterEnabled) {
+            renderer.state = "preview"
             savedPhoto("file:" + fileName)
             console.log("Saved: " + fileName)
          }
@@ -231,6 +233,12 @@ Item {
       }
    }
 
+   BusyIndicator {
+       id: busyIndicator
+       anchors.centerIn: parent
+       visible: false
+   }
+
    states: [
       State {
          name: "idle"
@@ -244,6 +252,10 @@ Item {
          PropertyChanges {
             target: shutterButton
             state: "idle"
+         }
+         PropertyChanges {
+            target: busyIndicator
+            visible: false
          }
          StateChangeScript {
             script: {
@@ -262,7 +274,11 @@ Item {
          name: "store"
          PropertyChanges {
             target: whiteOverlay
-            state: "released"
+            state: "processing"
+         }
+         PropertyChanges {
+            target: busyIndicator
+            visible: true
          }
       }
    ]

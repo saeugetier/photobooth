@@ -15,6 +15,7 @@ ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QV
     connect(&mWorkerThread, &QThread::finished, mRunable, &QObject::deleteLater);
     connect(this, &ReplaceBackgroundVideoFilter::asyncProcessFrame, mRunable, &ReplaceBackgroundFilterRunable::run);
     connect(mRunable, &ReplaceBackgroundFilterRunable::processingFinished, this, &ReplaceBackgroundVideoFilter::onProcessingFinished);
+    connect(mRunable, &ReplaceBackgroundFilterRunable::imageFileSaved, this, &ReplaceBackgroundVideoFilter::onImageSaved);
 
     mWorkerThread.start();
 }

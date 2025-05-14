@@ -60,9 +60,18 @@ Item {
          id: imageCapture
 
          onImageSaved: (_, fileName) => {
-                          renderer.state = "preview"
-                          savedPhoto("file:" + fileName)
-                          console.log("Saved: " + fileName)
+
+                          if(backgroundFilterEnabled)
+                          {
+                             console.log("Process file: " + fileName)
+                             backgroundFilter.processCapture(fileName)
+                          }
+                          else
+                          {
+                             renderer.state = "preview"
+                             savedPhoto("file:" + fileName)
+                             console.log("Saved: " + fileName)
+                          }
                        }
          onImageCaptured: {
             whiteOverlay.state = "released"
@@ -108,6 +117,16 @@ Item {
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
       videoSink: output.videoSink
+      background: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+
+      onCaptureProcessingFinished: {
+         console.log("Capture processing finished")
+         if (backgroundFilterEnabled) {
+            renderer.state = "preview"
+            savedPhoto("file:" + fileName)
+            console.log("Saved: " + fileName)
+         }
+      }
    }
 
    Connections {
@@ -203,6 +222,10 @@ Item {
          state = "snapshot"
          console.log(applicationSettings.foldername.toString())
          var path = applicationSettings.foldername.toString()
+         if(backgroundFilterEnabled)
+         {
+            path = path + "/raw"
+         }
          path = path.replace(/^(file:\/{2})/, "")
          var cleanPath = decodeURIComponent(path)
          console.log(cleanPath)
@@ -213,6 +236,12 @@ Item {
          renderer.state = "preview"
          failed()
       }
+   }
+
+   BusyIndicator {
+       id: busyIndicator
+       anchors.centerIn: parent
+       visible: false
    }
 
    states: [
@@ -228,6 +257,10 @@ Item {
          PropertyChanges {
             target: shutterButton
             state: "idle"
+         }
+         PropertyChanges {
+            target: busyIndicator
+            visible: false
          }
          StateChangeScript {
             script: {
@@ -246,7 +279,11 @@ Item {
          name: "store"
          PropertyChanges {
             target: whiteOverlay
-            state: "released"
+            state: "processing"
+         }
+         PropertyChanges {
+            target: busyIndicator
+            visible: true
          }
       }
    ]

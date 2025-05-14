@@ -2,6 +2,7 @@
 #define REPLACEBACKGROUNDVIDEOFILTER_H
 
 #include <QImage>
+#include <QUrl>
 #include <QVideoSink>
 #include <QVideoFrame>
 #include <QVideoFrameInput>
@@ -17,28 +18,51 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     Q_OBJECT
     /* input parameters */
     Q_PROPERTY(QString method READ getMethod WRITE setMethod)
+    /* chroma key color 0 green to 1 blue */
     Q_PROPERTY(float keyColor READ getKeyColor WRITE setKeyColor)
-    Q_PROPERTY(QImage background WRITE setBackground)
+    /* background image (only needed for processing the captured photo) */
+    Q_PROPERTY(QUrl background WRITE setBackground)
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
-    /**
-     * the resultng mask image for background removal. This mask shall be applied via alpha blending shader
-     */
-    //Q_PROPERTY(QImage maskImage READ maskImage NOTIFY maskImageChanged)
 
 public:
     ReplaceBackgroundVideoFilter(QObject *parent = nullptr);
     ~ReplaceBackgroundVideoFilter();
-    //QObject *createFilterRunnable();
+
     void setMethod(QString method);
     void setKeyColor(float color);
     void setBackground(QImage const& image);
+    Q_INVOKABLE void setBackground(QUrl& imagePath)
+    {
+        QImage img;
+        QString fileName;
+
+        if(imagePath.isLocalFile())
+        {
+            fileName = imagePath.toLocalFile();
+        }
+        else if(imagePath.toString().contains("qrc:"))
+        {
+            fileName = imagePath.toString().remove(0,3);
+        }
+        else
+        {
+            fileName = imagePath.toString();
+        }
+
+        if (img.load(fileName)) {
+            setBackground(img);
+        }
+        else {
+            qDebug() << "Failed to load image: " << imagePath;
+        }
+    }
     QString getMethod() const;
     float getKeyColor() const;
 
     void setVideoSink(QObject *videoSink);
 
-    //QImage maskImage() const { return mMaskImage; }
+    Q_INVOKABLE void processCapture(const QString& capture);
 
 protected:
     enum class FilterMethod
@@ -56,22 +80,21 @@ protected:
 
     QVideoSink *mVideoSink;
 
-    //QFuture<void> processThread;
-
     QThread mWorkerThread;
-
-    //QImage mMaskImage;
 
     ReplaceBackgroundFilterRunable* mRunable = nullptr;
 
     bool mProcessing = false;
+    bool mCaptureProcessing = false;
 protected slots:
     void processFrame(const QVideoFrame &frame);
     void onProcessingFinished(const QImage& maskImage);
+    void onImageSaved(const QString& fileName);
 
 signals:
-    void asyncProcessFrame(const QVideoFrame& frame);
-    //void maskImageChanged();
+    void asyncProcessFrame(const QVariant& frame, bool applyBackground, bool highResFilter);
+
+    void captureProcessingFinished(const QString& fileName);
 };
 
 
@@ -81,13 +104,15 @@ class ReplaceBackgroundFilterRunable : public QObject
 public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
 public slots:
-    void run(const QVideoFrame &input);
+    void run(const QVariant &input, bool highResStill, bool highResFilter);
 protected:
     cv::Mat chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
-    cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
+    cv::Mat grabcutChromaKey(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
     void prepareBackground(cv::Mat &bg, cv::Size size);
+
+    void alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat& alpha, cv::Mat &dst);
 
     /**
      * @brief QImage -> CV_8UC4
@@ -130,10 +155,13 @@ protected:
     bool mYuv;
     ReplaceBackgroundVideoFilter* mFilter;
 
-    YOLOv11SegDetector mYoloSegmentor;
+    YOLOv11SegDetector mYoloSegmentorFast;
+    YOLOv11SegDetector mYoloSegmentorSlow;
 
 signals:
     void processingFinished(const QImage& maskImage);
+    void imageFileSaved(const QString& fileName);
+    void error();
 };
 
 #endif // REPLACEBACKGROUNDVIDEOFILTER_H

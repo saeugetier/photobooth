@@ -89,6 +89,11 @@ void FileSystem::checkImageFolders()
     {
         QDir().mkdir(collagePath);
     }
+    QString rawPath = imagePath + "/raw";
+    if(!QDir(rawPath).exists())
+    {
+        QDir().mkdir(rawPath);
+    }
 }
 
 bool FileSystem::removableDriveMounted()

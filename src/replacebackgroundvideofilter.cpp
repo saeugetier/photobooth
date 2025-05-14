@@ -15,6 +15,7 @@ ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QV
     connect(&mWorkerThread, &QThread::finished, mRunable, &QObject::deleteLater);
     connect(this, &ReplaceBackgroundVideoFilter::asyncProcessFrame, mRunable, &ReplaceBackgroundFilterRunable::run);
     connect(mRunable, &ReplaceBackgroundFilterRunable::processingFinished, this, &ReplaceBackgroundVideoFilter::onProcessingFinished);
+    connect(mRunable, &ReplaceBackgroundFilterRunable::imageFileSaved, this, &ReplaceBackgroundVideoFilter::onImageSaved);
 
     mWorkerThread.start();
 }
@@ -81,12 +82,23 @@ void ReplaceBackgroundVideoFilter::setVideoSink(QObject *videoSink)
     connect(mVideoSink, &QVideoSink::videoFrameChanged, this, &ReplaceBackgroundVideoFilter::processFrame);
 }
 
+void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
+{
+    if(!mCaptureProcessing)
+    {
+        mCaptureProcessing = true;
+        emit asyncProcessFrame(capture, true, true);
+    }
+}
+
 void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
 {
     if(!mProcessing)
     {
         mProcessing = true;
-        emit asyncProcessFrame(frame);
+        QVariant frameVariant;
+        frameVariant.setValue(frame);
+        emit asyncProcessFrame(frameVariant, false, false);
     }
 }
 
@@ -100,43 +112,63 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
     mProcessing = false;
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentor(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false)
+void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
+{
+    mCaptureProcessing = false;
+    emit captureProcessingFinished(fileName);
+}
+
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentorFast(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false), mYoloSegmentorSlow(":/models/yolo11l-seg.onnx", ":/models/coco.names" , false)
 {
 }
 
-void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
+void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground, bool highResFilter)
 {
-    // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
-    if (!input.isValid()
-        || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
-        qWarning("Invalid input format");
-        emit processingFinished(QImage());
-    }
 
-    QVideoFrame frame = input;
-
-    if (!frame.map(QVideoFrame::ReadOnly)) {
-        qWarning() << "Failed to map QVideoFrame";
-        emit processingFinished(QImage());
-        return;
-    }
-
-    QImage image = frame.toImage();
-
-    if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+    if(variant.canConvert<QVideoFrame>())
     {
-        // do not go any further. no filter selected!
-        emit processingFinished(image);
-        return;
+        QImage image;
+
+        QVideoFrame input = variant.value<QVideoFrame>();
+        // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
+        if (!input.isValid()
+            || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
+            qWarning("Invalid input format");
+            emit processingFinished(QImage());
+        }
+
+        QVideoFrame frame = input;
+
+        if (!frame.map(QVideoFrame::ReadOnly)) {
+            qWarning() << "Failed to map QVideoFrame";
+            emit processingFinished(QImage());
+            return;
+        }
+
+        image = frame.toImage();
+
+        if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+        {
+            // do not go any further. no filter selected!
+            emit processingFinished(image);
+            return;
+        }
+
+        // filter active. So we need some computation.
+        mMat = imageToMat8(image);
+
+        frame.unmap();
+    }
+    else if(variant.canConvert<QString>())
+    {
+        mMat = cv::imread(variant.toString().toStdString());
+    }
+    else
+    {
+        emit error();
     }
 
-    // filter active. So we need some computation.
-    mMat = imageToMat8(image);
-
-    frame.unmap();
     ensureC3(&mMat);
-
-    prepareBackground(mFilter->mBackgroundImage, cv::Size(frame.width(), frame.height()));
 
     switch(mFilter->mFilterMethod)
     {
@@ -151,19 +183,41 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
         cv::Scalar lower_color = (lower_green * (1.0 - mFilter->mKeyColor)) + (lower_blue * mFilter->mKeyColor);
         cv::Scalar upper_color = (upper_green * (1.0 - mFilter->mKeyColor)) + (upper_blue * mFilter->mKeyColor);
 
-        mMat = chromaKeyMask(mMat, lower_color, upper_color);
+        if(!highResFilter)
+        {
+            mMat = chromaKeyMask(mMat, lower_color, upper_color);
+        }
+        else
+        {
+            mMat = grabcutChromaKey(mMat, lower_color, upper_color);
+        }
     }
     break;
 
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
     {
-        std::vector<Segmentation> results = mYoloSegmentor.segment(mMat, 0.2f, 0.45f);
+        std::vector<Segmentation> results;
+        if(!highResFilter)
+        {
+            results = mYoloSegmentorFast.segment(mMat, 0.2f, 0.45f);
+        }
+        else
+        {
+            results = mYoloSegmentorSlow.segment(mMat, 0.2f, 0.45f);
+        }
 
         cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
 
         std::vector<int> objectFilter = {0};
 
-        mYoloSegmentor.drawSegmentationMask(mask, results, objectFilter);
+        if(!highResFilter)
+        {
+            mYoloSegmentorFast.drawSegmentationMask(mask, results, objectFilter);
+        }
+        else
+        {
+            mYoloSegmentorSlow.drawSegmentationMask(mask, results, objectFilter);
+        }
 
         std::vector<cv::Mat> channels;
         split(mMat, channels);
@@ -177,8 +231,28 @@ void ReplaceBackgroundFilterRunable::run(const QVideoFrame& input)
         break;
     }
 
+    if(applyBackground)
+    {
+        prepareBackground(mFilter->mBackgroundImage, mMat.size());
+        // use alpha channel to add bg image to mMat. The alpha channel is converted to float in order to multiply it with the color values.
+        cv::Mat alpha_channel;
+        cv::extractChannel(mMat, alpha_channel, 3);
+        alphaBlend(mMat, mFilter->mBackgroundImage, alpha_channel, mMat);
+    }
+
     // Output is an RGB video frame.
-    emit processingFinished(mat8ToImage(mMat));
+    if(variant.canConvert<QVideoFrame>())
+    {
+        emit processingFinished(mat8ToImage(mMat));
+    }
+    else if(variant.canConvert<QString>())
+    {
+        // Save the image to a file
+        QString fileName = variant.toString();
+        fileName.replace("/raw", ""); // remove path to raw image. Image shall be saved in the image directory.
+        cv::imwrite(fileName.toStdString(), mMat);
+        emit imageFileSaved(fileName);
+    }
 }
 
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)
@@ -186,15 +260,56 @@ void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size siz
     cv::resize(bg, bg, size);
 }
 
+void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat& alpha, cv::Mat &dst)
+{
+    // Ensure the source and background images are the same size
+    if (src.size() != bg.size()) {
+        cv::resize(bg, bg, src.size());
+    }
+
+    // Convert the source image to float
+    cv::Mat src_float;
+    cv::cvtColor(src, src_float, cv::COLOR_RGBA2RGB);
+    src_float.convertTo(src_float, CV_32FC3, 1.0 / 255.0);
+
+    // Convert the background image to float
+    cv::Mat bg_float;
+    cv::cvtColor(bg, bg_float, cv::COLOR_BGRA2RGB);
+    bg_float.convertTo(bg_float, CV_32FC3, 1.0 / 255.0);
+
+    int pre_conv_channels = alpha.channels();
+
+    // Convert the alpha channel to float
+    cv::Mat alpha_float(alpha.size(), CV_8UC3);
+    std::vector<cv::Mat> channels;
+    channels.push_back(alpha);                      // Kanal 1: Grauwert
+    channels.push_back(alpha);                      // Kanal 2: Grauwert (optional duplizieren)
+    channels.push_back(alpha);
+    cv::merge(channels, alpha_float);
+    alpha_float.convertTo(alpha_float, CV_32FC3, 1.0 / 255.0);
+
+    int alpha_channels = alpha_float.channels();
+    int rgb_channels = src_float.channels();
+
+    // Blend the images
+    cv::Mat ouImage(src_float.size(), src_float.type());
+    cv::multiply(alpha_float, src_float, src_float);
+    cv::multiply(cv::Scalar::all(1.0)-alpha_float, bg_float, bg_float);
+    cv::add(src_float, bg_float, ouImage);
+    // Convert the result back to 8-bit
+    ouImage.convertTo(ouImage, CV_8UC3, 255.0);
+    ouImage.copyTo(dst);
+}
+
 cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color)
 {
     // Convert the image from BGR to YUV
-    cv::Mat yuv_img;
+    cv::Mat hsv_img;
     cv::Mat mask;
-    cvtColor(img, yuv_img, cv::COLOR_RGB2HSV);
+    cvtColor(img, hsv_img, cv::COLOR_RGB2HSV);
 
     // Define the mask based on the color range
-    inRange(yuv_img, lower_color, upper_color, mask);
+    inRange(hsv_img, lower_color, upper_color, mask);
 
     cv::bitwise_not(mask, mask);
 
@@ -217,15 +332,15 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     return result;
 }
 
-cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Mat& bg_img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
+cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
     // Convert the image from BGR to YUV
-    cv::Mat yuv_img;
+    cv::Mat hsv_img;
     cv::Mat result;
-    cvtColor(img, yuv_img, cv::COLOR_BGR2YUV);
+    cvtColor(img, hsv_img, cv::COLOR_BGR2HSV);
 
     // Define the mask based on the color range
     cv::Mat mask;
-    inRange(yuv_img, lower_color, upper_color, mask);
+    inRange(hsv_img, lower_color, upper_color, mask);
 
     int num_foreground_pixels = countNonZero(mask);
     int num_background_pixels = mask.total() - num_foreground_pixels;
@@ -250,25 +365,26 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
         compare(grabcut_mask, cv::GC_PR_FGD, final_mask, cv::CMP_EQ);
         final_mask = final_mask | (grabcut_mask == cv::GC_FGD);
 
+        int dilation_size = 5;
+
+        cv::Mat element = getStructuringElement( cv::MORPH_DILATE,
+                                                cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                                cv::Point( dilation_size, dilation_size ) );
+
+        cv::dilate(final_mask, final_mask, element);
+
+
         // Extract the foreground
         cv::Mat fg, bg;
-        img.copyTo(fg, final_mask);
-        bg_img.copyTo(bg, 1 - final_mask);
-
-        // Combine the foreground and background
-        add(fg, bg, result);
+        std::vector<cv::Mat> channels;
+        split(img, channels);
+        channels.push_back(final_mask);
+        cv::merge(channels, result);
     }
     else
     {
         img.copyTo(result);
     }
-
-    //cv::Mat fg, bg;
-    //img.copyTo(fg, mask);
-    //bg_img.copyTo(bg, ~mask);
-
-    // Combine the foreground and background
-    //add(fg, bg, result);
 
     return result;
 }

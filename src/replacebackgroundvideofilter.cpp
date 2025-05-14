@@ -248,8 +248,10 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
     else if(variant.canConvert<QString>())
     {
         // Save the image to a file
-        cv::imwrite(variant.toString().toStdString(), mMat);
-        emit imageFileSaved(variant.toString());
+        QString fileName = variant.toString();
+        fileName.replace("/raw", ""); // remove path to raw image. Image shall be saved in the image directory.
+        cv::imwrite(fileName.toStdString(), mMat);
+        emit imageFileSaved(fileName);
     }
 }
 

@@ -63,6 +63,7 @@ Item {
 
                           if(backgroundFilterEnabled)
                           {
+                             console.log("Process file: " + fileName)
                              backgroundFilter.processCapture(fileName)
                           }
                           else
@@ -221,6 +222,10 @@ Item {
          state = "snapshot"
          console.log(applicationSettings.foldername.toString())
          var path = applicationSettings.foldername.toString()
+         if(backgroundFilterEnabled)
+         {
+            path = path + "/raw"
+         }
          path = path.replace(/^(file:\/{2})/, "")
          var cleanPath = decodeURIComponent(path)
          console.log(cleanPath)

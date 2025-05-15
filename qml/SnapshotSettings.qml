@@ -27,15 +27,20 @@ SnapshotSettingsForm {
 
     function findBackgroundFiles()
     {
+        // use default backgrounds if no user backgrounds are found
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "backgrounds", StandardPaths.LocateDirectory)
 
         if(path.len > 0)
         {
-            console.log("Path: " + path)
+            // check if the path is a valid directory and display this custom path in log
+            console.log("Background images path: " + path)
             return path
         }
         else
+        {
+            // use default backgrounds if no custom backgrounds are provided
             return "qrc:/images/backgrounds/"
+        }
     }
 
     FolderListModel

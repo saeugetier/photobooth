@@ -95,6 +95,6 @@
         <file>shaders/previewshader.frag</file>
         <file>shaders/previewshader.frag.qsb</file>
         <file>models/coco.names</file>
-        <file>images/backgrounds/Stribes.png</file>
+        <file>images/backgrounds/Stripes.png</file>
     </qresource>
 </RCC>

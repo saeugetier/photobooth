@@ -1,5 +1,6 @@
 import QtQuick
 import QtCore
+import Qt.labs.folderlistmodel
 
 SnapshotSettingsForm {
     property alias flashEnabled: settings.flashEnabled
@@ -21,7 +22,32 @@ SnapshotSettingsForm {
         property bool backgroundFilterEnabled: false
         property bool chromaKeyEnabled: false
         property real chromaKeyColor: 0.5
+        property url backgroundImage: "qrc:/images/backgrounds/Brickwall.jpg"
     }
+
+    function findBackgroundFiles()
+    {
+        var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "backgrounds", StandardPaths.LocateDirectory)
+
+        if(path.len > 0)
+        {
+            console.log("Path: " + path)
+            return path
+        }
+        else
+            return "qrc:/images/backgrounds/"
+    }
+
+    FolderListModel
+    {
+        id: backgroundImageModel
+        folder: findBackgroundFiles()
+        nameFilters: ["*.jpg", "*.png", "*.JPG", "*.PNG"]
+        showDirs: false
+        sortField: FolderListModel.Name
+    }
+
+    backgroundImageSelectorModel: backgroundImageModel
 
     showButton.onClicked:
     {

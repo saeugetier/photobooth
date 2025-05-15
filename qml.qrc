@@ -78,7 +78,7 @@
         <file>qml/GalleryMenuForm.ui.qml</file>
         <file>qml/content/DelegateGalleryItem.qml</file>
         <file>qml/styles/RoundProgressBarStyle.qml</file>
-        <file>images/backgrounds/pexels-pixabay-259915.jpg</file>
+        <file>images/backgrounds/Brickwall.jpg</file>
         <file>shaders/vmirror.frag.qsb</file>
         <file>shaders/passthrough.frag.qsb</file>
         <file>shaders/bw.frag.qsb</file>
@@ -95,5 +95,6 @@
         <file>shaders/previewshader.frag</file>
         <file>shaders/previewshader.frag.qsb</file>
         <file>models/coco.names</file>
+        <file>images/backgrounds/Stribes.png</file>
     </qresource>
 </RCC>

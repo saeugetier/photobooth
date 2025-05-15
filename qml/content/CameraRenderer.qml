@@ -117,7 +117,7 @@ Item {
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
       videoSink: output.videoSink
-      background: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+      background: "qrc:/images/backgrounds/Brickwall.jpg"
 
       onCaptureProcessingFinished: {
          console.log("Capture processing finished")
@@ -176,7 +176,7 @@ Item {
 
          property variant bgSource : Image {
             id: bgImage
-            source: "qrc:/images/backgrounds/pexels-pixabay-259915.jpg"
+            source: "qrc:/images/backgrounds/Brickwall.jpg"
             fillMode: Image.PreserveAspectCrop
          }
 

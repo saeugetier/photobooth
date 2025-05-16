@@ -21,7 +21,6 @@ Popup {
     property alias switchPrinter: switchPrinter
     property alias switchPrintFromGallery: switchPrintFromGallery
     property alias buttonCopyPhotos: buttonCopyPhotos
-    property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
     property alias comboBoxCamera: comboBoxCamera
@@ -282,12 +281,6 @@ Popup {
                     Label {
                         id: labelTime
                         text: qsTr("Current time")
-                        anchors.verticalCenter: buttonSetTime.verticalCenter
-                    }
-
-                    Button {
-                        id: buttonSetTime
-                        text: qsTr("Set time")
                     }
                 }
 

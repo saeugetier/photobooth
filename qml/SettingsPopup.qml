@@ -132,21 +132,4 @@ SettingsPopupForm {
             labelTime.text = qsTr("Time: ") + dateString;
         }
     }
-
-    buttonSetTime.onClicked:
-    {
-        timeSettings.open()
-    }
-
-
-    TimeSettings
-    {
-        id: timeSettings
-
-        onSetTime:
-        {
-            system.setTime(time)
-        }
-    }
-
 }

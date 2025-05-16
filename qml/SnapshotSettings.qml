@@ -10,6 +10,7 @@ SnapshotSettingsForm {
     property alias backgroundFilterEnabled: settings.backgroundFilterEnabled
     property alias chromaKeyEnabled: settings.chromaKeyEnabled
     property alias chromaKeyColor: settings.chromaKeyColor
+    property alias backgroundImage: settings.backgroundImage
 
     Settings
     {
@@ -114,6 +115,20 @@ SnapshotSettingsForm {
     sliderChromaKeyFilterColor.onValueChanged:
     {
         settings.chromaKeyColor = sliderChromaKeyFilterColor.value
+    }
+
+    backgroundImageSelector.currentIndex: backgroundImageSelectorModel.indexOf(settings.backgroundImage)
+    backgroundImageSelector.onCurrentIndexChanged:
+    {
+        if(backgroundImageSelectorModel.count > 0)
+        {
+            console.log("selected index " + backgroundImageSelector.currentIndex)
+            if (backgroundImageSelector.currentIndex >= 0)
+            {
+                settings.backgroundImage = backgroundImageSelectorModel.get(backgroundImageSelector.currentIndex, "fileUrl")
+                console.log("selected background " + settings.backgroundImage)
+            }
+        }
     }
 
     Behavior on width

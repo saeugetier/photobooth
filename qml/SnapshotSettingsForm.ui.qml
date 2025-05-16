@@ -356,34 +356,44 @@ Pane {
                 {
                     visible: switchBackgroundFilterEnable.checked
 
-
                     GridView
                     {
                         id: backgroundSelector
-
+                        cellWidth: 100
+                        cellHeight: 120
                         Layout.fillWidth: true
 
-                        delegate: Item {
-                            width: 250
-                            height: 80
+                        focus: true
+
+                        delegate: Column {
+                            spacing: 5
 
                             Rectangle {
-                                anchors.fill: parent
-                                border.color: "gray"
-                                color: "gray"
+                                width: backgroundSelector.cellWidth - 10
+                                height: backgroundSelector.cellHeight - 30
+                                border.color: GridView.isCurrentItem ? "blue" : "gray"
+                                border.width: 5
+                                radius: 8
 
                                 Image {
-                                    width: 80
-                                    height: 80
-
+                                    anchors.fill: parent
                                     source: model.fileUrl
-                                    fillMode: Image.PreserveAspectFit
+                                    fillMode: Image.PreserveAspectCrop
                                 }
 
-                                Text {
-                                    id: name
-                                    text: model.fileBaseName
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: backgroundSelector.currentIndex = index
                                 }
+                            }
+
+                            Label {
+                                width: backgroundSelector.cellWidth - 10
+                                text: model.fileBaseName
+                                font.pixelSize: 12
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
                             }
                         }
                     }

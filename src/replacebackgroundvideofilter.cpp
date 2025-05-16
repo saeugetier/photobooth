@@ -208,7 +208,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
         cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
 
-        std::vector<int> objectFilter = {0};
+        std::vector<int> objectFilter = {0, 27, 39, 40, 41, 67};
 
         if(!highResFilter)
         {
@@ -219,7 +219,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
             mYoloSegmentorSlow.drawSegmentationMask(mask, results, objectFilter);
             // use a gaussian blur for the mask in order to make it less sharp
             // kernel size of 30 is determined by experiment
-            cv::GaussianBlur(mask, mask, cv::Size(30,30), 0, 0);
+            cv::GaussianBlur(mask, mask, cv::Size(31,31), 0, 0);
         }
 
         std::vector<cv::Mat> channels;
@@ -377,7 +377,7 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
         cv::dilate(final_mask, final_mask, element);
 
         // use a gaussian blur for the mask in order to make it less sharp
-        cv::GaussianBlur(final_mask, final_mask, cv::Size(30,30), 0, 0);
+        cv::GaussianBlur(final_mask, final_mask, cv::Size(31,31), 0, 0);
 
         // Extract the foreground
         cv::Mat fg, bg;

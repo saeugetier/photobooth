@@ -15,6 +15,7 @@ Item {
    property string deviceId: camera.deviceId
    property alias backgroundFilter: backgroundFilter
    property bool backgroundFilterEnabled: false
+   property url backgroundImage: ""
 
    function printDevicesToConsole(devices) {
       console.log("Found " + devices.length + " camera devices!")
@@ -117,7 +118,7 @@ Item {
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
       videoSink: output.videoSink
-      background: "qrc:/images/backgrounds/Brickwall.jpg"
+      background: backgroundImage
 
       onCaptureProcessingFinished: {
          console.log("Capture processing finished")
@@ -176,7 +177,7 @@ Item {
 
          property variant bgSource : Image {
             id: bgImage
-            source: "qrc:/images/backgrounds/Brickwall.jpg"
+            source: backgroundImage
             fillMode: Image.PreserveAspectCrop
          }
 

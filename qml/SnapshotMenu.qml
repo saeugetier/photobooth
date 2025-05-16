@@ -126,6 +126,7 @@ SnapshotMenuForm {
     cameraRenderer.backgroundFilter.method: snapshotSettings.chromaKeyEnabled ? "Chroma" : "Neural"
     cameraRenderer.backgroundFilterEnabled: snapshotSettings.backgroundFilterEnabled
     cameraRenderer.backgroundFilter.keyColor: snapshotSettings.chromaKeyColor
+    cameraRenderer.backgroundImage: snapshotSettings.backgroundImage
 
     SequentialAnimation
     {

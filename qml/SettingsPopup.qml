@@ -6,6 +6,7 @@ SettingsPopupForm {
     id: form
     property alias printerEnabled: form.switchPrinter
     property alias mirrorCamera: form.switchMirrorCamera
+    property alias comboBoxCameraOrientation: form.comboBoxCameraOrientation
 
     Component.onCompleted:
     {

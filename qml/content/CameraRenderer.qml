@@ -161,6 +161,8 @@ Item {
    VideoOutput {
       id: maskOutput
 
+      rotation: applicationSettings.cameraOrientation
+
       anchors.fill: parent
 
       onContentRectChanged: {

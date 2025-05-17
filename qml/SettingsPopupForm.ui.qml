@@ -26,6 +26,7 @@ Popup {
     property alias comboBoxCamera: comboBoxCamera
     property alias switchEnableSettingsPassword: switchEnableSettingsPassword
     property alias versionText:  labelVersionText.text
+    property alias comboBoxCameraOrientation:  comboBoxCameraOrientation
 
     Button {
         id: buttonClose
@@ -177,6 +178,29 @@ Popup {
                     Switch {
                         id: switchHideEffectPopup
                         text: qsTr("disable")
+                    }
+                }
+
+                Row
+                {
+                    id: cameraOrientation
+                    spacing: 5
+                    Label {
+                        id: labelCameraOrientation
+                        text: qsTr("Camera Orientation:")
+                        anchors.verticalCenter: comboBoxCameraOrientation.verticalCenter
+                    }
+                    ComboBox {
+                        id: comboBoxCameraOrientation
+                        textRole: "text"
+                        valueRole: "value"
+                        width: 280
+                        model: [
+                             { value: 0, text: qsTr("Landscape 0°") },
+                             { value: 90,  text: qsTr("Portrait 90°") },
+                             { value: 180, text: qsTr("Landscape 180°") },
+                             { value: 270, text: qsTr("Portrait 270°") }
+                        ]
                     }
                 }
             }

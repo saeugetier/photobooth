@@ -147,6 +147,12 @@ ApplicationWindow {
             applicationSettings.enableSettingsPassword = mainMenu.settingsPopup.switchEnableSettingsPassword.checked
         }
 
+        mainMenu.settingsPopup.comboBoxCameraOrientation.onCurrentValueChanged:
+        {
+            applicationSettings.cameraOrientation = Number(mainMenu.settingsPopup.comboBoxCameraOrientation.currentValue)
+            console.log("Camera orientation changed to: " + applicationSettings.cameraOrientation)
+        }
+
         mainMenu.printerBusy: printer ? printer.busy : false
     }
 
@@ -167,6 +173,7 @@ ApplicationWindow {
         property string cameraName: ""
         property bool printFromGallery: true
         property bool enableSettingsPassword: true
+        property int cameraOrientation: 0
 
         Component.onCompleted:
         {
@@ -178,6 +185,7 @@ ApplicationWindow {
             flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
             flow.mainMenu.settingsPopup.switchHideEffectPopup.checked = disableEffectPopup
             flow.mainMenu.settingsPopup.switchEnableSettingsPassword.checked = enableSettingsPassword
+            flow.mainMenu.settingsPopup.comboBoxCameraOrientation.currentIndex = flow.mainMenu.settingsPopup.comboBoxCameraOrientation.indexOfValue(cameraOrientation)
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane

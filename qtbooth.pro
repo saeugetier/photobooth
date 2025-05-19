@@ -82,11 +82,11 @@ DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 
-defined(PREFIX) {
+!isEmpty(PREFIX) {
     INSTALLS += target
     target.path = $$PREFIX/bin
 }
-!defined(PREFIX){
+else {
     INSTALLS += target
        target.path = /usr/local/bin
 }

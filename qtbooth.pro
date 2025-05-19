@@ -6,7 +6,7 @@ CONFIG += c++17 qml_debug
     CONFIG += link_pkgconfig
     PKGCONFIG += opencv4
 } else {
-    LIBS += -lopencv_core -lopencv_imgproc
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
 }
 
 SOURCES += src/collageiconmodel.cpp \
@@ -81,3 +81,12 @@ contains(ANDROID_TARGET_ARCH,x86) {
 DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
+
+defined(PREFIX) {
+    INSTALLS += target
+    target.path = $$PREFIX/bin
+}
+!defined(PREFIX){
+    INSTALLS += target
+       target.path = /usr/local/bin
+}

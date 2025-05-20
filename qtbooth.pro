@@ -85,6 +85,7 @@ LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 !isEmpty(PREFIX) {
     INSTALLS += target
     target.path = $$PREFIX/bin
+    LIBS += -L$$PREFIX/lib #possibly local libs are also stored in that prefix
 }
 else {
     INSTALLS += target

@@ -36,9 +36,24 @@
   </screenshots>
 
   <releases>
-    <release version="0.7.0" date="2025-05-11">
+    <release version="0.7.0" date="2025-05-25">
       <description translate="no">
-        <p>Initial release with flatpak</p>
+        <p>Initial release with flatpak. New implementation of background removal filter. Port from Qt5 to Qt6.</p>
+      </description>
+    </release>
+    <release version="0.6.2" date="2025-03-19">
+      <description translate="no">
+        <p>Bugfix release. See full <a href="https://github.com/saeugetier/photobooth/releases/tag/v0.6.2">changelog</a></p>
+      </description>
+    </release>
+    <release version="0.6.1" date="2024-05-22">
+      <description translate="no">
+        <p>Bugfix release. Fix default layouts and printer busy indicator. See full <a href="https://github.com/saeugetier/photobooth/releases/tag/v0.6.1">changelog</a></p>
+      </description>
+    </release>
+    <release version="0.6.0" date="2024-05-21">
+      <description translate="no">
+        <p>Initial public release. Minimal viable feature set.</p>
       </description>
     </release>
   </releases>

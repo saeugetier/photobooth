@@ -123,7 +123,7 @@ SnapshotMenuForm {
         failureAnimation.start()
     }
 
-    cameraRenderer.backgroundFilter.method: snapshotSettings.chromaKeyEnabled ? "Chroma" : "Neural"
+    cameraRenderer.backgroundFilter.method: snapshotSettings.backgroundFilterEnabled ? (snapshotSettings.chromaKeyEnabled ? "Chroma" : "Neural") : "None"
     cameraRenderer.backgroundFilterEnabled: snapshotSettings.backgroundFilterEnabled
     cameraRenderer.backgroundFilter.keyColor: snapshotSettings.chromaKeyColor
     cameraRenderer.backgroundImage: snapshotSettings.backgroundImage

@@ -145,8 +145,6 @@ Item {
 
       visible: false
 
-      //filters: [backgroundFilter]
-
       //focus: visible // to receive focus and capture key events when visible
    }
 

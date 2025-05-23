@@ -6,12 +6,12 @@ The goal of the project is to provide a configurable photobooth software for Ras
 
 Main features are:
 - User Interface with touchscreen input (input via mouse is not recommended). Control via buttons may be added in future.
-- Photo preview and capture via V4L2 (Raspberry Pi Camera or Webcam) or via GPhoto2 supported cameras.
+- Photo preview and capture via V4L2 (Raspberry Pi Camera or Webcam) ~~or via GPhoto2 supported cameras.~~ (currently GPhoto2 is not supported. Will be backported later.)
 - Printout with Canon Selphy photo printer or standard printer via CUPS.
 - Configurable image collages with own templates. User can select current template in application.
 - Password protected settings menu:
-	- Copy all photos to USB storage.
-	- Copy collage templates form USB storage.
+	- Copy all photos to USB storage. (currently not supported via flatpak)
+	- Copy collage templates form USB storage. (currently not supported via flatpak)
 	- Disable printing.
 - Brightness of LED preview and flash lights can be adjusted.
 
@@ -21,9 +21,9 @@ Main features are:
                                     ^
                                     |
                           ENABLE/PWM|          .-----------------------.
-                                    |          |     DSLR Camera       |
-                                    |          | connected via GPhoto2 |
-                    .------------------.       |     or raspi cam      |
+                                    |          |                       |
+                                    |          |                       |
+                    .------------------.       |       USB webcam      |
                     |      Raspi       |<------|        via v4l2       |          -.-.-,~ .   
                     |    Application   |       |                       |          )     (     
                     |                  |       '-----------------------'          |_    |     
@@ -50,17 +50,17 @@ Main features are:
                           
 ## Technology
 ### Software
-Framework: Qt 5.11 or higher - https://qt.io
+Framework: Qt 6.5 or higher - https://qt.io
 
-Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
-Qt GPhoto2 plugin: https://github.com/dept2/qtmultimedia-gphoto
+~~Used camera: Photo camera connected via USB with GPhoto2 - See supported cameras: http://www.gphoto.org/proj/libgphoto2/support.php
+Qt GPhoto2 plugin: https://github.com/dept2/qtmultimedia-gphoto~~ (will be backported later)
 
-Yocto Linux: The main target of this software is the deployment with Yocto Linux. With Yocto Linux a ready to use image for the SD card can be built. The image is very small and contains only needed binaries to run the application.
+Flatpak: The main target of this software is the distribution via flatpak. Flatpak can be installed on most of the x86_64 and Aarch64 Linux distributions. It comes with all dependencies needed for execution.
 
 ### Tested Hardware
 Platform: Tested on PC plattform, Raspberry Pi 3B and Raspbarry Pi 4 (Raspberry Pi 3 might also work)
 
-Camera: Tested with Canon EOS 450D and Raspberry Pi camera. Every camera compatible with gPhoto2 or v4l2 will do.
+Camera: Tested with ~~Canon EOS 450D and Raspberry Pi camera~~ USB Webca,. Every camera compatible ~~with gPhoto2 ~~or~~ v4l2 will do.
 
 Printer: Tested Canon Selphy Photo Printer CP910 over wifi via https://github.com/saeugetier/go-selphy-cp. Tested with standard inkjet printer via CUPS.
 
@@ -78,23 +78,30 @@ My own housing is documented in a seperate git repository: https://github.com/sa
 Housing: Plywood 8mm - Cutting via lasercutter. Template generated with http://festi.info/boxes.py/
 
 ## Deployment / Installation
-### Yocto Linux on a Raspberry Pi
 
-In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
- 
-Prebuild images will be available soon. For more information how to create an own image for deployment on SD card, please look into the repository.
+### Flathub ###
+
+Install via `flatpak install io.github.saeugetier.photobooth`. Run with `flatpak run io.github.saeugetier.photobooth` or via desktop item.
 
 ### Raspbian an a Raspberry Pi
 
-Minimum Raspbian Buster must be used, which provides QT 5.11 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
+Minimum Raspbian Buster must be used, which provides QT 6.5 development packages. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
 For now there is no further support for deployment on Raspbian. Please compile the program yourself from sources.
 
 ### Local PC
 
-At least QT 5.11 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
+At least QT 6.5 development packages must be installed in order to compile the application. In order to use GPhoto2 cameras, the Qt GPhoto2 plugin (https://github.com/saeugetier/qtmultimedia-gphoto) must be installed.
 
 For now there is no further support for deployment on local pc. Please compile the program yourself from sources.
+
+### Yocto Linux on a Raspberry Pi
+
+**Deprecated**
+
+In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
+ 
+Prebuild images will be available soon. For more information how to create an own image for deployment on SD card, please look into the repository.
 
 ## Configuration
 

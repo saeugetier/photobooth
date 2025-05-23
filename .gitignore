@@ -1,4 +1,7 @@
 build
 software/build*
 libs
+flatpak/build-dir
+flatpak/repo
+flatpak/.flatpak-builder
 *.user

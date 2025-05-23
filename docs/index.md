@@ -1,10 +1,10 @@
 # Overview
 
-This project contains yet another [Photobooth](https://github.com/saeugetier/photobooth). The software is intended to run on a Raspberry Pi 2 and upwards, but it can run on any linux PC. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed  collage image with multiple photos. All saved images are shown on front page when the photobox is idle.
+This project contains yet another [Photobooth](https://github.com/saeugetier/photobooth). The software is intended to run on a Raspberry Pi 2 and upwards, but it can run on any linux PC. At least a RPi5 is recommended when using the AI background replacement. A preview image is displayed in capture mode. After countdown, a picture is taken and can be discarded or saved. Saved images can be printed immediately or printed  collage image with multiple photos. All saved images are shown on front page when the photobox is idle.
 
-As image source a DSLR over GPhoto2 or a V4L2 camera (Raspberry Pi Camera or webcam) can be used.
+Photo capture is currently only supported via V4L2 camera. In prior version of the software DSLR via GPhoto2 was also supported. This feature has now to be backported after changing from Qt5 to Qt6. Supporting Raspberry Pi Cameras via libcamera is a planned feature.
 
-The application can be either compiled and deployed on an existing Raspberry Pi OS installation, or a ready to go image can be build by Yocto build system: [https://github.com/saeugetier/poky-photobooth/](https://github.com/saeugetier/poky-photobooth/)
+The application is distributed via Flathub. But interested people can compile the software by themselves. Steps are documented. The photobooth application used a [Yocto Linux deployment](https://github.com/saeugetier/poky-photobooth/) in the past. This deployment is deprecated now, because the distribution via flatpak is more convinient. 
 
 ## Video
 
@@ -13,16 +13,12 @@ The application can be either compiled and deployed on an existing Raspberry Pi 
 
 # Technology
 ## Software
-Framework: Qt 5.9 or higher - [https://qt.io](https://qt.io)
+Framework: Qt 6.5 or higher - [https://qt.io](https://qt.io)
 
-By default V4L2 are used. If you use a Raspberry Pi Camera, the v4l2 camera kernel module must be used.
-
-In order to use GPhoto2 cameras, the [QT Multimedia Gphoto Plugin](https://github.com/saeugetier/qtmultimedia-gphoto) must be installed. A [list of supported cameras](http://www.gphoto.org/proj/libgphoto2/support.php) can be trieved from the GPhoto2 website.
-
-The software can be build to run on a local PC. Or it can run on an Raspberry Pi. In order to get the best performance and integration, the recipes for Yocto can be used: https://github.com/saeugetier/poky-photobooth
+Neural network execution for background removal is done via onnxruntime.
 
 ## Tested Hardware
-Camera: Canon EOS 450D
+Camera: USB Webcam
 
 Printer: Canon Selphy Photo Printer
 

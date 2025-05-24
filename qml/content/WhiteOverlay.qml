@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick
 
 Rectangle {
     id: rect
@@ -11,6 +11,13 @@ Rectangle {
             PropertyChanges {
                 target: rect
                 opacity: 1.0
+            }
+        },
+        State {
+            name: "processing"
+            PropertyChanges {
+                target: rect
+                opacity: 0.5
             }
         },
         State {

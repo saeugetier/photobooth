@@ -1,6 +1,5 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.3
-import QtQuick.Window 2.2
+import QtQuick
+import QtQuick.Controls
 
 Dialog {
     width: 600

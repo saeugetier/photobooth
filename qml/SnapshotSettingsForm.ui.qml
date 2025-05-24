@@ -1,8 +1,8 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.2
-import QtGraphicalEffects 1.0
-import QtQuick.Controls.Material 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import QtQuick.Controls.Material
 
 Pane {
     id: pane
@@ -12,6 +12,11 @@ Pane {
     property alias sliderViewfinderBrightness: sliderViewfinderBrightness
     property alias sliderFlashBrightness: sliderFlashBrightness
     property alias switchFlashEnable: switchFlashEnable
+    property alias switchBackgroundFilterEnable: switchBackgroundFilterEnable
+    property alias switchChromaKeyEnable: switchChromaKeyEnable
+    property alias sliderChromaKeyFilterColor: sliderChromaKeyFilterColor
+    property alias backgroundImageSelectorModel: backgroundSelector.model
+    property alias backgroundImageSelector: backgroundSelector
     opacity: 0.5
     spacing: 5
 
@@ -72,159 +77,326 @@ Pane {
             }
         }
 
-        ColumnLayout {
-            id: columnLayout
-
+        ScrollView
+        {
+            id: settingsScrollView
             Layout.fillHeight: true
-
+            Layout.fillWidth: true
             visible: false
 
-            spacing: 15
+            //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
-            Layout.alignment: Qt.AlignTop
+            ColumnLayout {
+                id: columnLayout
 
-            RowLayout {
-
-                spacing: 20
-
-                Label {
-                    id: labelFlashIcon
-                    font.pixelSize: 32
-                    text: "\uE809"
-                    font.family: "fontello"
-                }
-
-                Label {
-                    id: labelFlash
-                    font.pixelSize: 32
-                    text: qsTr("Flash")
-                    font.family: "DejaVu Serif"
-                }
-
-                Switch {
-                    id: switchFlashEnable
-                    text: checked ? qsTr("enabled") : qsTr("disabled")
-                    font.pixelSize: 32
-                    font.family: "DejaVu Serif"
-                    width: 250
-                }
-            }
-
-            RowLayout {
-                id: rowFlashBrightness
-                spacing: 15
-
-                Label {
-                    id: labelFlashBrightnessLow
-                    font.pixelSize: 32
-                    text: "\uE80B"
-                    font.family: "fontello"
-                }
-
-                Slider {
-                    id: sliderFlashBrightness
-                    value: 0.5
-                    width: 250
-                }
-
-                Label {
-                    id: labelFlashBrightnessHigh
-                    font.pixelSize: 32
-                    text: "\uE80A"
-                    font.family: "fontello"
-                }
-            }
-
-            RowLayout {
-                ToolSeparator {
-                    Layout.fillWidth: true
-                    orientation: Qt.Horizontal
-                }
-            }
-
-            RowLayout {
-                id: rowViewfinder
+                Layout.fillHeight: true
 
                 spacing: 15
 
-                Label {
-                    id: labelViewfinderIcon
-                    font.pixelSize: 32
-                    text: "\uE824"
-                    font.family: "fontello"
+                Layout.alignment: Qt.AlignTop
+
+                RowLayout {
+
+                    spacing: 20
+
+                    Label {
+                        id: labelFlashIcon
+                        font.pixelSize: 32
+                        text: "\uE809"
+                        font.family: "fontello"
+                    }
+
+                    Label {
+                        id: labelFlash
+                        font.pixelSize: 32
+                        text: qsTr("Flash")
+                        font.family: "DejaVu Serif"
+                    }
+
+                    Switch {
+                        id: switchFlashEnable
+                        text: checked ? qsTr("enabled") : qsTr("disabled")
+                        font.pixelSize: 32
+                        font.family: "DejaVu Serif"
+                        width: 250
+                    }
                 }
 
-                Label {
-                    id: labelViewfinder
-                    font.pixelSize: 32
-                    text: qsTr("Preview Light")
-                    font.family: "DejaVu Serif"
-                }
-            }
+                RowLayout {
+                    id: rowFlashBrightness
+                    spacing: 15
 
-            RowLayout {
-                id: rowViewfinderBrightness
-                spacing: 20
+                    Label {
+                        id: labelFlashBrightnessLow
+                        font.pixelSize: 32
+                        text: "\uE80B"
+                        font.family: "fontello"
+                    }
 
-                Label {
-                    id: labelViewfinderBrightnessLow
-                    font.pixelSize: 32
-                    text: "\uE80B"
-                    font.family: "fontello"
-                }
+                    Slider {
+                        id: sliderFlashBrightness
+                        value: 0.5
+                        width: 250
+                    }
 
-                Slider {
-                    id: sliderViewfinderBrightness
-                    value: 0.5
-                    width: 250
-                }
-
-                Label {
-                    id: labelViewfinderBrightnessHigh
-                    font.pixelSize: 32
-                    text: "\uE80A"
-                    font.family: "fontello"
-                }
-            }
-
-            RowLayout {
-                ToolSeparator {
-                    Layout.fillWidth: true
-                    orientation: Qt.Horizontal
-                }
-            }
-
-            RowLayout {
-                id: countdown
-
-                spacing: 15
-
-                Label {
-                    id: labelCountdownIcon
-                    font.pixelSize: 32
-                    text: "\uE828"
-                    font.family: "fontello"
+                    Label {
+                        id: labelFlashBrightnessHigh
+                        font.pixelSize: 32
+                        text: "\uE80A"
+                        font.family: "fontello"
+                    }
                 }
 
-                Label {
-                    id: labelCountdown
-                    font.pixelSize: 32
-                    text: qsTr("Countdown")
-                    font.family: "DejaVu Serif"
+                RowLayout {
+                    ToolSeparator {
+                        Layout.fillWidth: true
+                        orientation: Qt.Horizontal
+                    }
                 }
-            }
 
-            RowLayout {
-                id: rowCountdownTime
+                RowLayout {
+                    id: rowViewfinder
 
-                SpinBox {
-                    id: spinBoxCountdownTime
-                    to: 15
-                    from: 3
-                    Layout.fillWidth: true
-                    width: 200
-                    font.pixelSize: 32
-                    font.family: "DejaVu Serif"
+                    spacing: 15
+
+                    Label {
+                        id: labelViewfinderIcon
+                        font.pixelSize: 32
+                        text: "\uE824"
+                        font.family: "fontello"
+                    }
+
+                    Label {
+                        id: labelViewfinder
+                        font.pixelSize: 32
+                        text: qsTr("Preview Light")
+                        font.family: "DejaVu Serif"
+                    }
+                }
+
+                RowLayout {
+                    id: rowViewfinderBrightness
+                    spacing: 20
+
+                    Label {
+                        id: labelViewfinderBrightnessLow
+                        font.pixelSize: 32
+                        text: "\uE80B"
+                        font.family: "fontello"
+                    }
+
+                    Slider {
+                        id: sliderViewfinderBrightness
+                        value: 0.5
+                        width: 250
+                    }
+
+                    Label {
+                        id: labelViewfinderBrightnessHigh
+                        font.pixelSize: 32
+                        text: "\uE80A"
+                        font.family: "fontello"
+                    }
+                }
+
+                RowLayout {
+                    ToolSeparator {
+                        Layout.fillWidth: true
+                        orientation: Qt.Horizontal
+                    }
+                }
+
+                RowLayout {
+                    id: countdown
+
+                    spacing: 15
+
+                    Label {
+                        id: labelCountdownIcon
+                        font.pixelSize: 32
+                        text: "\uE828"
+                        font.family: "fontello"
+                    }
+
+                    Label {
+                        id: labelCountdown
+                        font.pixelSize: 32
+                        text: qsTr("Countdown")
+                        font.family: "DejaVu Serif"
+                    }
+                }
+
+                RowLayout {
+                    id: rowCountdownTime
+
+                    SpinBox {
+                        id: spinBoxCountdownTime
+                        to: 15
+                        from: 3
+                        Layout.fillWidth: true
+                        width: 200
+                        font.pixelSize: 32
+                        font.family: "DejaVu Serif"
+                    }
+                }
+
+                RowLayout {
+                    ToolSeparator {
+                        Layout.fillWidth: true
+                        orientation: Qt.Horizontal
+                    }
+                }
+
+                RowLayout
+                {
+                    id: backgroundFilterLabel
+
+                    spacing: 15
+
+                    Label {
+                        id: labelBackgrounddFilterIcon
+                        font.pixelSize: 32
+                        text: "\uF0D0"
+                        font.family: "fontello"
+                    }
+
+                    Label {
+                        id: labelBackgroundFilter
+                        font.pixelSize: 32
+                        text: qsTr("Background Filter")
+                        font.family: "DejaVu Serif"
+                    }
+                }
+
+                RowLayout
+                {
+                    Label {
+                        id: labelBackgroundFilterEnable
+                        font.pixelSize: 32
+                        text: "Filter: "
+                    }
+
+                    Switch {
+                        id: switchBackgroundFilterEnable
+                        text: checked ? qsTr("enabled") : qsTr("disabled")
+                        font.pixelSize: 32
+                        font.family: "DejaVu Serif"
+                        width: 250
+                    }
+                }
+
+                RowLayout
+                {
+                    visible: switchBackgroundFilterEnable.checked
+
+                    Label {
+                        id: labelChromaKeyFilterEnable
+                        font.pixelSize: 32
+                        text: "Type: "
+                    }
+
+                    Switch {
+                        id: switchChromaKeyEnable
+                        text: checked ? qsTr("chroma") : qsTr("neural")
+                        font.pixelSize: 32
+                        font.family: "DejaVu Serif"
+                        width: 250
+                    }
+
+                }
+
+                RowLayout {
+                    id: rowChromaKeyFilterColor
+                    spacing: 20
+
+                    visible: switchChromaKeyEnable.checked & switchBackgroundFilterEnable.checked
+
+                    Rectangle
+                    {
+                        color: "Green"
+                        width: 32
+                        height: 32
+                    }
+
+                    Slider {
+                        id: sliderChromaKeyFilterColor
+                        value: 0.0
+                        from: 0.0
+                        to: 1.0
+                        width: 250
+                    }
+
+                    Rectangle
+                    {
+                        color: "Blue"
+                        width: 32
+                        height: 32
+                    }
+                }
+
+                RowLayout {
+                    ToolSeparator {
+                        Layout.fillWidth: true
+                        orientation: Qt.Horizontal
+                    }
+                }
+
+                RowLayout
+                {
+                    visible: switchBackgroundFilterEnable.checked
+
+                    Label {
+                        id: labelBackground
+                        font.pixelSize: 32
+                        text: "Background:"
+                    }
+                }
+
+                RowLayout
+                {
+                    visible: switchBackgroundFilterEnable.checked
+
+                    GridView
+                    {
+                        id: backgroundSelector
+                        cellWidth: 100
+                        cellHeight: 120
+                        Layout.fillWidth: true
+
+                        focus: true
+
+                        delegate: Column {
+                            spacing: 5
+
+                            Rectangle {
+                                width: backgroundSelector.cellWidth - 10
+                                height: backgroundSelector.cellHeight - 30
+                                border.color: GridView.isCurrentItem ? "blue" : "gray"
+                                border.width: 5
+                                radius: 8
+
+                                Image {
+                                    anchors.fill: parent
+                                    source: model.fileUrl
+                                    fillMode: Image.PreserveAspectCrop
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: backgroundSelector.currentIndex = index
+                                }
+                            }
+
+                            Label {
+                                width: backgroundSelector.cellWidth - 10
+                                text: model.fileBaseName
+                                font.pixelSize: 12
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -244,7 +416,7 @@ Pane {
                 width: 450
             }
             PropertyChanges {
-                target: columnLayout
+                target: settingsScrollView
                 visible: true
             }
 

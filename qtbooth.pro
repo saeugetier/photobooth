@@ -1,6 +1,13 @@
-QT += qml quick multimedia concurrent xml svg printsupport
+QT += qml quick multimedia concurrent xml svg printsupport multimedia-private
 
 CONFIG += c++17 qml_debug
+
+!contains(QT_CONFIG, no-pkg-config) {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += opencv4
+} else {
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
+}
 
 SOURCES += src/collageiconmodel.cpp \
     src/collageimagemodel.cpp \
@@ -13,12 +20,16 @@ SOURCES += src/collageiconmodel.cpp \
     src/modelparser.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
+    src/replacebackgroundvideofilter.cpp \
     src/selphyprinter.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
-    src/translationhelper.cpp
+    src/translationhelper.cpp \
+    src/yolo11seg.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    yolomodel.large.qrc \
+    yolomodel.small.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -39,7 +50,8 @@ DISTFILES += \
     android/gradlew.bat \
     android/res/values/libs.xml
 
-INCLUDEPATH += src/
+INCLUDEPATH += src/ \
+    libs/onnxruntime/include/ \
 
 HEADERS += \
     src/abstractprinter.h \
@@ -54,10 +66,12 @@ HEADERS += \
     src/modelparser.h \
     src/noprinter.h \
     src/printerfactory.h \
+    src/replacebackgroundvideofilter.h \
     src/selphyprinter.h \
     src/standardprinter.h \
     src/system.h \
-    src/translationhelper.h
+    src/translationhelper.h \
+    src/yolo11seg.h
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_PACKAGE_SOURCE_DIR = \
@@ -65,3 +79,15 @@ contains(ANDROID_TARGET_ARCH,x86) {
 }
 
 DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
+
+LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
+
+!isEmpty(PREFIX) {
+    INSTALLS += target
+    target.path = $$PREFIX/bin
+    LIBS += -L$$PREFIX/lib #possibly local libs are also stored in that prefix
+}
+else {
+    INSTALLS += target
+       target.path = /usr/local/bin
+}

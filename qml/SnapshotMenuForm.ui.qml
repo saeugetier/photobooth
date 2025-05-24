@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.13
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import "content"
 
 Item {
@@ -56,7 +56,7 @@ Item {
     SnapshotSettings {
         id: snapshotSettings
         opacity: 0.0
-        visible: opacity == 0.0 ? false : true
+        visible: opacity === 0.0 ? false : true
         anchors.top: parent.top
         anchors.topMargin: 0
         anchors.right: parent.right
@@ -67,6 +67,11 @@ Item {
     states: [
         State {
             name: "deactivated"
+
+            PropertyChanges {
+                target: cameraRenderer
+                state: "idle"
+            }
         },
         State {
             name: "activated"
@@ -79,6 +84,11 @@ Item {
             PropertyChanges {
                 target: exitButton
                 visible: true
+            }
+
+            PropertyChanges {
+                target: cameraRenderer
+                state: "preview"
             }
         },
         State {

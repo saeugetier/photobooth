@@ -1,10 +1,10 @@
-import QtQuick 2.5
-import Qt.labs.folderlistmodel 2.1
-import QtQuick.Layouts 1.2
-import QtQuick.Controls 2.1
-import QtQuick.Window 2.0
-import QtQml.Models 2.2
-import Printer 1.0
+import QtQuick
+import Qt.labs.folderlistmodel
+import QtQuick.Layouts
+import QtQuick.Controls
+import QtQuick.Window
+import QtQml.Models
+import Printer
 import "content"
 
 Item {

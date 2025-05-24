@@ -1,6 +1,6 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.2
-import QtQuick.Layouts 1.10
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Popup {
     id: popup
@@ -21,12 +21,12 @@ Popup {
     property alias switchPrinter: switchPrinter
     property alias switchPrintFromGallery: switchPrintFromGallery
     property alias buttonCopyPhotos: buttonCopyPhotos
-    property alias buttonSetTime: buttonSetTime
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
     property alias comboBoxCamera: comboBoxCamera
     property alias switchEnableSettingsPassword: switchEnableSettingsPassword
     property alias versionText:  labelVersionText.text
+    property alias comboBoxCameraOrientation:  comboBoxCameraOrientation
 
     Button {
         id: buttonClose
@@ -180,6 +180,29 @@ Popup {
                         text: qsTr("disable")
                     }
                 }
+
+                Row
+                {
+                    id: cameraOrientation
+                    spacing: 5
+                    Label {
+                        id: labelCameraOrientation
+                        text: qsTr("Camera Orientation:")
+                        anchors.verticalCenter: comboBoxCameraOrientation.verticalCenter
+                    }
+                    ComboBox {
+                        id: comboBoxCameraOrientation
+                        textRole: "text"
+                        valueRole: "value"
+                        width: 280
+                        model: [
+                             { value: 0, text: qsTr("Landscape 0°") },
+                             { value: 90,  text: qsTr("Portrait 90°") },
+                             { value: 180, text: qsTr("Landscape 180°") },
+                             { value: 270, text: qsTr("Portrait 270°") }
+                        ]
+                    }
+                }
             }
         }
 
@@ -282,12 +305,6 @@ Popup {
                     Label {
                         id: labelTime
                         text: qsTr("Current time")
-                        anchors.verticalCenter: buttonSetTime.verticalCenter
-                    }
-
-                    Button {
-                        id: buttonSetTime
-                        text: qsTr("Set time")
                     }
                 }
 

@@ -43,12 +43,12 @@
     </release>
     <release version="0.6.2" date="2025-03-19">
       <description translate="no">
-        <p>Bugfix release. See full <a href="https://github.com/saeugetier/photobooth/releases/tag/v0.6.2">changelog</a></p>
+        <p>Bugfix release.</p>
       </description>
     </release>
     <release version="0.6.1" date="2024-05-22">
       <description translate="no">
-        <p>Bugfix release. Fix default layouts and printer busy indicator. See full <a href="https://github.com/saeugetier/photobooth/releases/tag/v0.6.1">changelog</a></p>
+        <p>Bugfix release. Fix default layouts and printer busy indicator. </p>
       </description>
     </release>
     <release version="0.6.0" date="2024-05-21">

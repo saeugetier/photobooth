@@ -10,6 +10,7 @@ Item {
     property alias imagePreview: imagePreview
     property alias collageMenu: collageMenu
     property alias galleryMenu: galleryMenu
+    property alias SettingsMenu: settingsMenu
 
     property real slideValueCollageSelection: 0.0
     property real slideValueSnapshotMenu: 1.0
@@ -53,6 +54,14 @@ Item {
     GalleryMenu
     {
         id: galleryMenu
+        x: root.width * slideValueGalleryMenu
+        y: 0
+        width: root.width
+        height: root.height
+    }
+
+    SettingsMenu {
+        id: settingsMenu
         x: root.width * slideValueGalleryMenu
         y: 0
         width: root.width

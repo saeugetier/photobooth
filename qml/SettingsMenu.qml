@@ -2,7 +2,7 @@ import QtQuick
 import QtMultimedia
 import QtQuick.Controls
 
-SettingsPopupForm {
+SettingsMenuForm {
     id: form
     property alias printerEnabled: form.switchPrinter
     property alias mirrorCamera: form.switchMirrorCamera

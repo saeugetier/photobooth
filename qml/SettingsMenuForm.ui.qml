@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Popup {
-    id: popup
+Item {
+    id: settingsMenu
     width: 400
     height: 600
     property alias switchHideSnapshotSettings: switchHideSnapshotSettings

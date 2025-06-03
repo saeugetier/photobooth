@@ -8,7 +8,6 @@ MainMenuForm {
     id: form
     property alias collageRenderer: form.collageRenderer
     property alias iconModel: form.iconModel
-    property alias settingsPopup: settingsPopup
     property alias settingsPinCode: settingsPassword.password
     property string selectedCollageName : ""
     property bool collageIsPrintable: true

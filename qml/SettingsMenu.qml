@@ -8,11 +8,6 @@ SettingsMenuForm {
     property alias mirrorCamera: form.switchMirrorCamera
     property alias comboBoxCameraOrientation: form.comboBoxCameraOrientation
 
-    Component.onCompleted:
-    {
-        versionText = "Version: " + system.getGitHash()
-    }
-
     function makeCameraList()
     {
         var listModel = [];
@@ -45,8 +40,10 @@ SettingsMenuForm {
         return mediaDevices.defaultVideoInput.id
     }
 
-    onOpened:
+    Component.onCompleted:
     {
+        versionText = "Version: " + system.getGitHash()
+
         if(filesystem.layoutFilesOnRemovableDrive())
         {
             buttonCopyTemplates.enabled = true

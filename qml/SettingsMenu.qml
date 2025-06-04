@@ -7,6 +7,7 @@ SettingsMenuForm {
     property alias printerEnabled: form.switchPrinter
     property alias mirrorCamera: form.switchMirrorCamera
     property alias comboBoxCameraOrientation: form.comboBoxCameraOrientation
+    signal exitSettings
 
     function makeCameraList()
     {
@@ -73,7 +74,7 @@ SettingsMenuForm {
 
     buttonClose.onClicked:
     {
-        close()
+        exitSettings()
     }
 
     buttonCopyTemplates.onClicked:

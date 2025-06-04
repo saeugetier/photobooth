@@ -23,6 +23,7 @@ Item {
         id: mainMenu
         x: root.width * slideValueCollageSelection
         y: 0
+        z: 5
         width: root.width
         height: root.height
     }
@@ -31,6 +32,7 @@ Item {
         id: snapshotMenu
         x: root.width * slideValueSnapshotMenu
         y: 0
+        z: 4
         width: root.width
         height: root.height
         state: "deactivated"
@@ -40,6 +42,7 @@ Item {
         id: imagePreview
         x: root.width * slideValuePreviewMenu
         y: 0
+        z: 3
         width: root.width
         height: root.height
     }
@@ -48,6 +51,7 @@ Item {
         id: collageMenu
         x: root.width * slideValueCollageMenu
         y: 0
+        z: 2
         width: root.width
         height: root.height
     }
@@ -57,6 +61,7 @@ Item {
         id: galleryMenu
         x: root.width * slideValueGalleryMenu
         y: 0
+        z: 1
         width: root.width
         height: root.height
     }
@@ -65,6 +70,7 @@ Item {
         id: settingsMenu
         x: root.width * slideValueSettingsMenu
         y: 0
+        z: 0
         width: root.width
         height: root.height
     }
@@ -141,6 +147,34 @@ Item {
                 slideValuePreviewMenu: -1.0
                 slideValueCollageMenu: -1.0
                 slideValueGalleryMenu: 0.0
+            }
+
+            PropertyChanges {
+                target: snapshotMenu
+                visible: false
+            }
+
+            PropertyChanges {
+                target: imagePreview
+                visible: false
+            }
+
+            PropertyChanges {
+                target: collageMenu
+                visible: false
+            }
+        },
+        State {
+            name: "settings"
+
+            PropertyChanges {
+                target: root
+                slideValueCollageSelection: -1.0
+                slideValueSnapshotMenu: -1.0
+                slideValuePreviewMenu: -1.0
+                slideValueCollageMenu: -1.0
+                slideValueGalleryMenu: -1.0
+                slideValueSettingsMenu: 0.0
             }
 
             PropertyChanges {

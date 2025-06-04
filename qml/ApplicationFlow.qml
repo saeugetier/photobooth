@@ -29,6 +29,11 @@ ApplicationFlowForm {
         mainMenu.selectedCollageName = ""
     }
 
+    mainMenu.onOpenSettings:
+    {
+        state = "settings"
+    }
+
     mainMenu.onGalleryEnter:
     {
         state = "gallery"
@@ -90,6 +95,11 @@ ApplicationFlowForm {
     }
 
     galleryMenu.onExitGallery:
+    {
+        state = "collageSelection"
+    }
+
+    settingsMenu.onExitSettings:
     {
         state = "collageSelection"
     }

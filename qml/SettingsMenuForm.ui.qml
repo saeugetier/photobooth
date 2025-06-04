@@ -34,7 +34,7 @@ Item {
         anchors.rightMargin: 5
         anchors.top: parent.top
         anchors.topMargin: 5
-        text: qsTr("Close")
+        text: qsTr("Close Settings")
     }
 
     Text {

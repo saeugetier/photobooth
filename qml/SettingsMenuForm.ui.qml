@@ -25,354 +25,382 @@ Item {
     property alias comboBoxPrinter: comboBoxPrinter
     property alias comboBoxCamera: comboBoxCamera
     property alias switchEnableSettingsPassword: switchEnableSettingsPassword
-    property alias versionText:  labelVersionText.text
-    property alias comboBoxCameraOrientation:  comboBoxCameraOrientation
+    property alias versionText: labelVersionText.text
+    property alias comboBoxCameraOrientation: comboBoxCameraOrientation
 
-    Button {
-        id: buttonClose
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        anchors.top: parent.top
-        anchors.topMargin: 5
-        text: qsTr("Close Settings")
-    }
+    ColumnLayout {
+        anchors.fill: parent
 
-    Text {
-        id: headerText
-        anchors.topMargin: 5
-        anchors.leftMargin: 5
-        anchors.top: parent.top
-        anchors.left: parent.left
-        color: "#ffffff"
-        text: qsTr("Settings")
-        font.pixelSize: 24
-    }
+        // Header Section
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.margins: 10
 
-    ToolSeparator {
-        id: toolSeparator
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.topMargin: 50
-        orientation: Qt.Horizontal
-    }
+            Text {
+                text: qsTr("Settings")
+                font.pixelSize: 24
+                Layout.alignment: Qt.AlignLeft
+                color: "#ffffff"
+            }
 
-    TabBar {
-        id: tabBar
-        width: 240
-        anchors.topMargin: 0
-        anchors.rightMargin: 0
-        anchors.leftMargin: 0
-        anchors.top: toolSeparator.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+            Item {
+                Layout.fillWidth: true
+            }
 
-        TabButton {
-            id: tabButtonPhotos
-            text: qsTr("Photos")
-        }
-
-        TabButton {
-            id: tabButtonCamera
-            text: qsTr("Camera")
-        }
-
-        TabButton {
-            id: tabButtonPrinter
-            text: qsTr("Printer")
-        }
-
-        TabButton {
-            id: tabButtonSystem
-            text: qsTr("System")
-        }
-    }
-
-    StackLayout {
-        id: stackView
-
-        anchors.topMargin: 5
-        anchors.top: tabBar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-
-        currentIndex: tabBar.currentIndex
-
-        Item {
-            id: elementPhotos
-            Column {
-                spacing: 5
-                Button {
-                    id: buttonCopyPhotos
-                    text: qsTr("Copy photos to removable disk")
-                }
-
-                DelayButton {
-                    id: buttonDeletePhotos
-                    text: qsTr("Delete all photos")
-                    delay: 5000
-                }
+            Button {
+                text: qsTr("Close Settings")
+                id: buttonClose
             }
         }
 
-        Item {
-            id: elementCamera
-            Column {
-                spacing: 5
+        ToolSeparator {
+            Layout.fillWidth: true
+        }
 
-                Row {
-                    spacing: 5
-                    Label {
-                        id: labelCamera
-                        text: qsTr("Camera:")
-                        anchors.verticalCenter: comboBoxCamera.verticalCenter
-                    }
-                    ComboBox {
-                        id: comboBoxCamera
-                        width: 280
-                    }
-                }
-                Row {
-                    id: rowMirrorCamera
-                    spacing: 5
-                    Label {
-                        id: labelMirrorCamera
-                        text: qsTr("Mirror Camera")
-                        anchors.verticalCenter: switchMirrorCamera.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
+        // Tabs
+        TabBar {
+            id: tabBar
+            Layout.fillWidth: true
 
-                    Switch {
-                        id: switchMirrorCamera
-                        text: qsTr("mirror")
-                    }
-                }
-
-                Row {
-                    id: rowHideSnapshotSettings
-                    spacing: 5
-                    Label {
-                        id: labelHideSnapshotSettings
-                        text: qsTr("Snapshot Settings")
-                        anchors.verticalCenter: switchHideSnapshotSettings.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
-
-                    Switch {
-                        id: switchHideSnapshotSettings
-                        text: qsTr("hide")
-                    }
-                }
-
-                Row {
-                    id: rowHideEffectPopup
-                    spacing: 5
-                    Label {
-                        id: labelHideEffectPopup
-                        text: qsTr("Effect Popup")
-                        anchors.verticalCenter: rowHideEffectPopup.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
-
-                    Switch {
-                        id: switchHideEffectPopup
-                        text: qsTr("disable")
-                    }
-                }
-
-                Row
-                {
-                    id: cameraOrientation
-                    spacing: 5
-                    Label {
-                        id: labelCameraOrientation
-                        text: qsTr("Camera Orientation:")
-                        anchors.verticalCenter: comboBoxCameraOrientation.verticalCenter
-                    }
-                    ComboBox {
-                        id: comboBoxCameraOrientation
-                        textRole: "text"
-                        valueRole: "value"
-                        width: 280
-                        model: [
-                             { value: 0, text: qsTr("Landscape 0°") },
-                             { value: 90,  text: qsTr("Portrait 90°") },
-                             { value: 180, text: qsTr("Landscape 180°") },
-                             { value: 270, text: qsTr("Portrait 270°") }
-                        ]
-                    }
-                }
+            TabButton {
+                text: qsTr("Photos")
+            }
+            TabButton {
+                text: qsTr("Camera")
+            }
+            TabButton {
+                text: qsTr("Printer")
+            }
+            TabButton {
+                text: qsTr("System")
             }
         }
 
-        Item {
-            id: elementPrinter
-            Column {
-                spacing: 5
-                Row {
-                    id: rowPrinterEnable
-                    spacing: 5
-                    Label {
-                        id: labelPrinterEnable
-                        text: qsTr("Enable Printing")
-                        anchors.verticalCenter: switchPrinter.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
+        // Content
+        StackLayout {
+            id: stackView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            currentIndex: tabBar.currentIndex
+
+            // Photos Tab
+            Item {
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                    spacing: 20
+
+                    Button {
+                        id: buttonCopyPhotos
+                        text: qsTr("Copy photos to removable disk")
                     }
 
-                    Switch {
-                        id: switchPrinter
-                        text: qsTr("enabled")
-                    }
-                }
-
-                Row {
-                    id: rowPrinter
-                    spacing: 5
-                    Label {
-                        id: labelPrinter
-                        text: qsTr("Printer: ")
-                        anchors.verticalCenter: comboBoxPrinter.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
-
-                    ComboBox {
-                        id: comboBoxPrinter
-                        width: 280
-                    }
-                }
-
-                Row {
-                    id: rowMultiplePrints
-                    spacing: 5
-                    Label {
-                        id: labelMultiplePrints
-                        text: qsTr("Allow multiple prints")
-                        anchors.verticalCenter: switchMultiplePrints.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
-
-                    Switch {
-                        id: switchMultiplePrints
-                        text: qsTr("enabled")
-                    }
-                }
-
-                Row {
-                    id: printFromGallery
-                    spacing: 5
-                    Label {
-                        id: labelPrintFromGallery
-                        text: qsTr("Allow prints from Gallery")
-                        anchors.verticalCenter: switchPrintFromGallery.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
-                    }
-
-                    Switch {
-                        id: switchPrintFromGallery
-                        text: qsTr("enabled")
+                    DelayButton {
+                        id: buttonDeletePhotos
+                        text: qsTr("Delete all photos")
+                        delay: 5000
                     }
                 }
             }
-        }
 
-        Item {
-            id: elementSystem
+            // Camera Tab
+            Item {
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                    spacing: 10
 
-            Column {
-                spacing: 5
-
-                Row
-                {
-                    spacing: 5
-
-                    Label {
-                        id: labelEnableSettingsPassword
-                        text: qsTr("Enable Settings Password:")
-                        anchors.verticalCenter: switchEnableSettingsPassword.verticalCenter
-                        horizontalAlignment: Text.AlignLeft
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Camera:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxCamera
+                        }
                     }
 
-                    Switch {
-                        id: switchEnableSettingsPassword
-                        text: qsTr("enabled")
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Mirror Camera:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchMirrorCamera
+                        }
                     }
-                }
 
-                Row {
-                    spacing: 5
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Snapshot Settings:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchHideSnapshotSettings
+                        }
+                    }
 
-                    Label {
-                        id: labelTime
-                        text: qsTr("Current time")
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Effect Popup:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchHideEffectPopup
+                        }
                     }
-                }
 
-                Row {
-                    spacing: 5
-                    Label {
-                        id: labelLanguage
-                        text: qsTr("Language:")
-                        anchors.verticalCenter: comboBoxLanguages.verticalCenter
-                    }
-                    ComboBox {
-                        id: comboBoxLanguages
-                        model: translation.languages
-                    }
-                }
-
-                Row {
-                    spacing: 5
-                    Label {
-                        id: labelWindowMode
-                        text: qsTr("Window Mode:")
-                        anchors.verticalCenter: comboWindowMode.verticalCenter
-                    }
-                    ComboBox {
-                        id: comboWindowMode
-                        model: ListModel {
-                            ListElement {
-                                text: qsTr("Window")
-                            }
-                            ListElement {
-                                text: qsTr("Fullscreen")
-                            }
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Camera Orientation:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxCameraOrientation
+                            textRole: "text"
+                            valueRole: "value"
+                            model: [{
+                                    "value": 0,
+                                    "text": qsTr("Landscape 0°")
+                                }, {
+                                    "value": 90,
+                                    "text": qsTr("Portrait 90°")
+                                }, {
+                                    "value": 180,
+                                    "text": qsTr("Landscape 180°")
+                                }, {
+                                    "value": 270,
+                                    "text": qsTr("Portrait 270°")
+                                }]
                         }
                     }
                 }
+            }
 
-                Button {
-                    id: buttonCopyTemplates
-                    text: qsTr("Copy layout templates from removable disk")
-                }
+            // Printer Tab
+            Item {
 
-                Row {
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
                     spacing: 10
-                    Button {
-                        id: buttonShutdown
-                        text: qsTr("Shutdown")
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Enable Printing:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchPrinter
+                        }
                     }
 
-                    Button {
-                        id: buttonRestart
-                        text: qsTr("Restart")
+                    RowLayout {
+                        visible: switchPrinter.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Printer:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            Layout.preferredWidth: 300
+                            id: comboBoxPrinter
+                        }
                     }
 
+                    ToolSeparator {
+                        visible: switchPrinter.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchPrinter.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Allow multiple prints:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchMultiplePrints
+                        }
+                    }
+
+                    ToolSeparator {
+                        visible: switchPrinter.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchPrinter.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Print from Gallery:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchPrintFromGallery
+                        }
+                    }
                 }
-                Row
-                {
+            }
+
+            // System Tab
+            Item {
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
                     spacing: 10
-                    Button {
-                        id: buttonCloseProgram
-                        text: qsTr("Exit Photobooth")
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Enable Settings Password:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchEnableSettingsPassword
+                        }
                     }
-                }
-                Row
-                {
-                    Label
-                    {
-                        id: labelVersionText
-                        text: "Version"
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Current Time:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            id: labelTime
+                            text: "HH:MM"
+
+                        }
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Language:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxLanguages
+                            model: translation.languages
+                        }
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Window Mode:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboWindowMode
+                            model: ["Window", "Fullscreen"]
+                        }
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    Button {
+                        text: qsTr("Copy layout templates from removable disk")
+                        id: buttonCopyTemplates
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Button {
+                            text: qsTr("Shutdown")
+                            id: buttonShutdown
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Button {
+                            text: qsTr("Restart")
+                            id: buttonRestart
+                        }
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Button {
+                            text: qsTr("Exit Photobooth")
+                            id: buttonCloseProgram
+                        }
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Version: 1.0.0")
+                            id: labelVersionText
+                        }
                     }
                 }
             }

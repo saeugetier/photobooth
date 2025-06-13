@@ -1,4 +1,7 @@
 build
+builddir
+repo
+.flatpak-builder
 software/build*
 libs
 flatpak/build-dir

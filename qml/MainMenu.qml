@@ -8,13 +8,13 @@ MainMenuForm {
     id: form
     property alias collageRenderer: form.collageRenderer
     property alias iconModel: form.iconModel
-    property alias settingsPopup: settingsPopup
     property alias settingsPinCode: settingsPassword.password
     property string selectedCollageName : ""
     property bool collageIsPrintable: true
     state: "IconNotSelected"
     signal collageSelected
     signal galleryEnter
+    signal openSettings
 
     property real scrollPosition: 0.0
     property real scrollDuration: 50000.0
@@ -76,25 +76,15 @@ MainMenuForm {
 
         onPasswordAccepted:
         {
-            settingsPopup.open()
+            openSettings()
         }
-    }
-
-    SettingsPopup
-    {
-        id: settingsPopup
-        anchors.centerIn: parent
-
-        modal: true
-        focus: true
-        closePolicy: Popup.CloseOnEscape
     }
 
     settingsButton.onClicked:
     {
         if(applicationSettings.password.length == 0 || applicationSettings.enableSettingsPassword == false)
         {
-            settingsPopup.open()
+            openSettings()
         }
         else
         {

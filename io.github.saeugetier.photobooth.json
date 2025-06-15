@@ -4,6 +4,16 @@
     "runtime-version": "6.9",
     "sdk": "org.kde.Sdk",
     "command": "qtbooth",
+    "sdk-extensions": [ "org.freedesktop.Sdk.Extension.golang" ],
+    "build-options":
+    {
+        "append-path": "/usr/lib/sdk/golang/bin",
+        "env": {
+            "GOPATH": "/app/go",
+            "GOBIN": "/app/go/bin"
+        },
+        "strip": true
+    },
     "finish-args": [
         "--share=ipc",
         "--share=network",
@@ -90,6 +100,20 @@
                 "rm -rd ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu/pkgconfig",
                 "mv ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu/* /app/lib/",
                 "rmdir ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu"
+            ]
+        },
+        {
+            "name": "go-selphy-cp",
+            "buildsystem": "simple",
+            "build-commands": [
+                "make selphy"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/saeugetier/go-selphy-cp.git",
+                    "commit": "c6272691c3b02cded7df9642941dc64ea515e651"
+                }
             ]
         },
         {

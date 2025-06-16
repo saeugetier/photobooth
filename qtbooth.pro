@@ -25,7 +25,9 @@ SOURCES += src/collageiconmodel.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp \
-    src/yolo11seg.cpp
+    src/yolo11seg.cpp \
+    src/yolo_ncnn_backend.cpp \
+    src/yolo_onnx_backend.cpp
 
 RESOURCES += qml.qrc \
     yolomodel.large.qrc \
@@ -52,6 +54,7 @@ DISTFILES += \
 
 INCLUDEPATH += src/ \
     libs/onnxruntime/include/ \
+    libs/ncnn/include/ \
 
 HEADERS += \
     src/abstractprinter.h \
@@ -67,11 +70,15 @@ HEADERS += \
     src/noprinter.h \
     src/printerfactory.h \
     src/replacebackgroundvideofilter.h \
+    src/segmentation.h \
     src/selphyprinter.h \
     src/standardprinter.h \
     src/system.h \
     src/translationhelper.h \
-    src/yolo11seg.h
+    src/yolo11seg.h \
+    src/yolo_ncnn_backend.h \
+    src/yolo_onnx_backend.h \
+    src/yolobackend.h
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_PACKAGE_SOURCE_DIR = \
@@ -81,6 +88,7 @@ contains(ANDROID_TARGET_ARCH,x86) {
 DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
+LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
 
 !isEmpty(PREFIX) {
     INSTALLS += target

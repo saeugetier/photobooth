@@ -2,6 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <thread>
+#include <QDebug>
+#include <QStandardPaths>
 
 static std::vector<std::string> loadLabels(const std::string& path) {
     std::vector<std::string> labels;
@@ -18,12 +21,54 @@ YoloOnnxBackend::YoloOnnxBackend(const std::string& modelPath, const std::string
       session(nullptr),
       sessionOptions()
 {
-    if (useGPU) {
-        // Add CUDA or other provider if needed
-        // sessionOptions.AppendExecutionProvider_CUDA(0);
+    sessionOptions.SetIntraOpNumThreads(std::min(6, static_cast<int>(std::thread::hardware_concurrency())));
+    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+    std::vector<std::string> providers = Ort::GetAvailableProviders();
+    if (useGPU && std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end()) {
+        OrtCUDAProviderOptions cudaOptions;
+        sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
+        qDebug() << "[INFO] Using GPU (CUDA) for YOLOv11 Seg inference.";
+    } else {
+        qDebug() << "[INFO] Using CPU for YOLOv11 Seg inference.";
     }
-    sessionOptions.SetIntraOpNumThreads(1);
-    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+
+    numInputNodes  = session.GetInputCount();
+    numOutputNodes = session.GetOutputCount();
+
+    Ort::AllocatorWithDefaultOptions allocator;
+
+    // Input
+    {
+        auto inNameAlloc = session.GetInputNameAllocated(0, allocator);
+        inputNameAllocs.emplace_back(std::move(inNameAlloc));
+        inputNames.push_back(inputNameAllocs.back().get());
+
+        auto inTypeInfo = session.GetInputTypeInfo(0);
+        auto inShape    = inTypeInfo.GetTensorTypeAndShapeInfo().GetShape();
+
+        if (inShape.size() == 4) {
+            if (inShape[2] == -1 || inShape[3] == -1) {
+                isDynamicInputShape = true;
+                inputImageShape = cv::Size(640, 640); // Fallback if dynamic
+            } else {
+                inputImageShape = cv::Size(static_cast<int>(inShape[3]), static_cast<int>(inShape[2]));
+            }
+        } else {
+            throw std::runtime_error("Model input is not 4D! Expect [N, C, H, W].");
+        }
+    }
+
+    // Outputs
+    if (numOutputNodes != 2) {
+        throw std::runtime_error("Expected exactly 2 output nodes: output0 and output1.");
+    }
+
+    for (size_t i = 0; i < numOutputNodes; ++i) {
+        auto outNameAlloc = session.GetOutputNameAllocated(i, allocator);
+        outputNameAllocs.emplace_back(std::move(outNameAlloc));
+        outputNames.push_back(outputNameAllocs.back().get());
+    }
+
     session = Ort::Session(env, modelPath.c_str(), sessionOptions);
     classNames = loadLabels(labelsPath);
 }

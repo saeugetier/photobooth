@@ -17,6 +17,18 @@ private:
     Ort::Session session;
     Ort::SessionOptions sessionOptions;
     std::vector<std::string> classNames;
+
+    bool     isDynamicInputShape{false};
+    cv::Size inputImageShape;
+    
+    std::vector<Ort::AllocatedStringPtr> inputNameAllocs;
+    std::vector<const char*>             inputNames;
+    std::vector<Ort::AllocatedStringPtr> outputNameAllocs;
+    std::vector<const char*>             outputNames;
+
+    size_t numInputNodes  = 0;
+    size_t numOutputNodes = 0;
+
     int inputWidth = 640;
     int inputHeight = 640;
 

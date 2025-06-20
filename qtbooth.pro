@@ -26,6 +26,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/system.cpp \
     src/translationhelper.cpp \
     src/yolo11seg.cpp \
+    src/yolo11segncnn.cpp \
     src/yolo_ncnn_backend.cpp \
     src/yolo_onnx_backend.cpp
 
@@ -76,6 +77,7 @@ HEADERS += \
     src/system.h \
     src/translationhelper.h \
     src/yolo11seg.h \
+    src/yolo11segncnn.h \
     src/yolo_ncnn_backend.h \
     src/yolo_onnx_backend.h \
     src/yolobackend.h

@@ -26,17 +26,7 @@
 
 #include "segmentation.h"
 
-// ============================================================================
-// Constants / Thresholds
-// ============================================================================
-static const float CONFIDENCE_THRESHOLD = 0.40f; // Filter boxes below this confidence
-static const float IOU_THRESHOLD        = 0.45f; // NMS IoU threshold
-static const float MASK_THRESHOLD       = 0.40f; // Slightly lower to capture partial objects
 
-
-// ============================================================================
-// YOLOv11SegDetector Class
-// ============================================================================
 class YOLOv11SegDetectorNcnn {
 public:
     YOLOv11SegDetectorNcnn(const std::string &modelPath,
@@ -90,6 +80,11 @@ private:
                                           const ncnn::Mat &outputs_masks,
                                           float confThreshold,
                                           float iouThreshold);
+
+    static constexpr float CONFIDENCE_THRESHOLD = 0.40f; // Filter boxes below this confidence
+    static constexpr float IOU_THRESHOLD        = 0.45f; // NMS IoU threshold
+    static constexpr float MASK_THRESHOLD       = 0.40f; // Slightly lower to capture partial objects
+
 };
 
 

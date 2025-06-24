@@ -12,14 +12,14 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
                                        const std::string &labelsPath,
                                        bool useGPU)
 {
-    QString ressourcePath = QStandardPaths::locate(QStandardPaths::AppDataLocation, "models", QStandardPaths::LocateDirectory);
-    if (ressourcePath.isEmpty()) {
+    QString ressourcePathApp = QStandardPaths::locate(QStandardPaths::AppDataLocation, "models", QStandardPaths::LocateDirectory);
+    if (ressourcePathApp.isEmpty() && ressourcePathApp.isEmpty()) {
         throw std::runtime_error("Failed to locate the models directory.");
     }
-    ressourcePath = QDir::cleanPath(ressourcePath);
-    qDebug() << "[INFO] Using model path: " << ressourcePath;
-    std::string params_path = ressourcePath.toStdString() + modelPath + "/model.ncnn.param";
-    std::string model_path = ressourcePath.toStdString() + modelPath + "/model.ncnn.bin";
+    ressourcePathApp = QDir::cleanPath(ressourcePathApp);
+    qDebug() << "[INFO] Using model path: " << ressourcePathApp;
+    std::string params_path = ressourcePathApp.toStdString() + "/" + modelPath + "/model.ncnn.param";
+    std::string model_path = ressourcePathApp.toStdString() + "/" + modelPath + "/model.ncnn.bin";
 
     if(0 != net.load_param(params_path.c_str()))
     {
@@ -110,11 +110,11 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     const float* output0_ptr = reinterpret_cast<const float*>(outputs_boxes.data); // [1, 116, num_detections]
     const float* output1_ptr = reinterpret_cast<const float*>(outputs_masks.data); // [1, 32, maskH, maskW]
 
-    if (outputs_masks.dims != 4 || outputs_masks.c != 32)
-        throw std::runtime_error("Unexpected output1 shape. Expected [1, 32, maskH, maskW].");
+    //if (outputs_masks.dims != 4)
+    //    throw std::runtime_error("Unexpected output1 shape. Expected [1, 32, maskH, maskW].");
 
-    const size_t num_features = outputs_boxes.w; // e.g 80 class + 4 bbox parms + 32 seg masks = 116
-    const size_t num_detections = outputs_boxes.h;
+    const size_t num_features = outputs_boxes.h; // e.g 80 class + 4 bbox parms + 32 seg masks = 116
+    const size_t num_detections = outputs_boxes.w;
 
     // Early exit if no detections
     if (num_detections == 0)
@@ -132,7 +132,7 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
 
     const int numBoxes = static_cast<int>(num_detections);
     const int maskH = static_cast<int>(outputs_masks.h);
-    const int maskW = static_cast<int>(outputs_masks.c);
+    const int maskW = static_cast<int>(outputs_masks.w);
 
     // Constants from model architecture
     constexpr int BOX_OFFSET = 0;
@@ -450,18 +450,16 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::segment(const cv::Mat &image,
     float *blobPtr = nullptr;
     std::vector<int64_t> inputShape = {1, 3, inputImageShape.height, inputImageShape.width};
     cv::Mat letterboxImg = preprocess(image, blobPtr, inputShape);
-    cv::Mat rgb;
-    cv::cvtColor(letterboxImg, rgb, cv::COLOR_BGR2RGB);
-
+    
     size_t inputSize = utils::vectorProduct(inputShape);
-    ncnn::Mat in = ncnn::Mat::from_pixels(rgb.data, ncnn::Mat::PIXEL_RGB, inputShape[3], inputShape[2]);
+    ncnn::Mat in = ncnn::Mat::from_pixels(letterboxImg.data, ncnn::Mat::PIXEL_RGB, inputShape[3], inputShape[2]);
     delete[] blobPtr;
 
     ncnn::Extractor ex = net.create_extractor();
-    ex.input("images", in); // adjust input name as needed
+    ex.input("in0", in); // adjust input name as needed
     ncnn::Mat out_boxes, out_masks;
-    ex.extract("output0", out_boxes); // [num, 6] (x, y, w, h, conf, class)
-    ex.extract("output1", out_masks); // [num, mask_dim, mask_dim]
+    ex.extract("out0", out_boxes); // [num, 6] (x, y, w, h, conf, class)
+    ex.extract("out1", out_masks); // [num, mask_dim, mask_dim]
    
     cv::Size letterboxSize(static_cast<int>(inputShape[3]), static_cast<int>(inputShape[2]));
     return postprocess(image.size(), letterboxSize, out_boxes, out_masks, confThreshold, iouThreshold);

@@ -32,10 +32,9 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
     }
 
     // Set options
-    net.opt.use_vulkan_compute = useGPU;
-    net.opt.num_threads = std::min(6, static_cast<int>(std::thread::hardware_concurrency()));
-    net.opt.use_packing_layout = true;
-
+    //net.opt.use_vulkan_compute = useGPU;
+    //net.opt.num_threads = std::min(6, static_cast<int>(std::thread::hardware_concurrency()));
+    //net.opt.use_packing_layout = true;
 
     numInputNodes  = net.input_names().size();
     numOutputNodes = net.output_names().size();
@@ -74,12 +73,10 @@ cv::Mat YOLOv11SegDetectorNcnn::preprocess(const cv::Mat &image,
 {
     cv::Mat letterboxImage;
     utils::letterBox(image, letterboxImage, inputImageShape,
-                     cv::Scalar(114,114,114), /*auto_=*/isDynamicInputShape,
+                     cv::Scalar(114,114,114), /*auto_=*/false,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
-    // Update if dynamic
-    inputTensorShape[2] = static_cast<int64_t>(letterboxImage.rows);
-    inputTensorShape[3] = static_cast<int64_t>(letterboxImage.cols);
+    // No dynamic shape in NCNN, so inputTensorShape is not used    
 
     letterboxImage.convertTo(letterboxImage, CV_32FC3, 1.0f/255.0f);
 
@@ -106,67 +103,40 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
 {
     std::vector<Segmentation> results;
 
-    // Extract outputs
-    const float* output0_ptr = reinterpret_cast<const float*>(outputs_boxes.data); // [1, 116, num_detections]
-    const float* output1_ptr = reinterpret_cast<const float*>(outputs_masks.data); // [1, 32, maskH, maskW]
+    // output0: [num_features, num_boxes]
+    // output1: [32, maskH, maskW]
+    int num_features = outputs_boxes.h;
+    int num_boxes = outputs_boxes.w;
+    int maskH = outputs_masks.h;
+    int maskW = outputs_masks.w;
 
-    //if (outputs_masks.dims != 4)
-    //    throw std::runtime_error("Unexpected output1 shape. Expected [1, 32, maskH, maskW].");
-
-    const size_t num_features = outputs_boxes.h; // e.g 80 class + 4 bbox parms + 32 seg masks = 116
-    const size_t num_detections = outputs_boxes.w;
-
-    // Early exit if no detections
-    if (num_detections == 0)
-    {
-        return results;
-    }
-
-    const int numClasses = static_cast<int>(num_features - 4 - 32); // Corrected number of classes
-
-    // Validate numClasses
-    if (numClasses <= 0)
-    {
-        throw std::runtime_error("Invalid number of classes.");
-    }
-
-    const int numBoxes = static_cast<int>(num_detections);
-    const int maskH = static_cast<int>(outputs_masks.h);
-    const int maskW = static_cast<int>(outputs_masks.w);
-
-    // Constants from model architecture
+    const int numClasses = num_features - 4 - 32;
     constexpr int BOX_OFFSET = 0;
     constexpr int CLASS_CONF_OFFSET = 4;
     const int MASK_COEFF_OFFSET = numClasses + CLASS_CONF_OFFSET;
 
     // 1. Process prototype masks
-    // Store all prototype masks in a vector for easy access
     std::vector<cv::Mat> prototypeMasks;
     prototypeMasks.reserve(32);
     for (int m = 0; m < 32; ++m) {
         // Each mask is maskH x maskW
-        cv::Mat proto(maskH, maskW, CV_32F, const_cast<float*>(output1_ptr + m * maskH * maskW));
-        prototypeMasks.emplace_back(proto.clone()); // Clone to ensure data integrity
+        cv::Mat proto(maskH, maskW, CV_32F, (void*)outputs_masks.channel(m).data);
+        prototypeMasks.emplace_back(proto.clone());
     }
 
     // 2. Process detections
     std::vector<BoundingBox> boxes;
-    boxes.reserve(numBoxes);
     std::vector<float> confidences;
-    confidences.reserve(numBoxes);
     std::vector<int> classIds;
-    classIds.reserve(numBoxes);
     std::vector<std::vector<float>> maskCoefficientsList;
-    maskCoefficientsList.reserve(numBoxes);
 
-    for (int i = 0; i < numBoxes; ++i) {
+    for (int i = 0; i < num_boxes; ++i) {
         // Extract box coordinates
-        float xc = output0_ptr[BOX_OFFSET * numBoxes + i];
-        float yc = output0_ptr[(BOX_OFFSET + 1) * numBoxes + i];
-        float w = output0_ptr[(BOX_OFFSET + 2) * numBoxes + i];
-        float h = output0_ptr[(BOX_OFFSET + 3) * numBoxes + i];
+        float xc = outputs_boxes.row(BOX_OFFSET + 0)[i];
+        float yc = outputs_boxes.row(BOX_OFFSET + 1)[i];
+        float w  = outputs_boxes.row(BOX_OFFSET + 2)[i];
+        float h  = outputs_boxes.row(BOX_OFFSET + 3)[i];
 
-        // Convert to xyxy format
         BoundingBox box{
             static_cast<int>(std::round(xc - w / 2.0f)),
             static_cast<int>(std::round(yc - h / 2.0f)),
@@ -178,7 +148,7 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
         float maxConf = 0.0f;
         int classId = -1;
         for (int c = 0; c < numClasses; ++c) {
-            float conf = output0_ptr[(CLASS_CONF_OFFSET + c) * numBoxes + i];
+            float conf = outputs_boxes.row(CLASS_CONF_OFFSET + c)[i];
             if (conf > maxConf) {
                 maxConf = conf;
                 classId = c;
@@ -187,36 +157,29 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
 
         if (maxConf < confThreshold) continue;
 
-        // Store detection
         boxes.push_back(box);
         confidences.push_back(maxConf);
         classIds.push_back(classId);
 
-        // Store mask coefficients
+        // Mask coefficients
         std::vector<float> maskCoeffs(32);
         for (int m = 0; m < 32; ++m) {
-            maskCoeffs[m] = output0_ptr[(MASK_COEFF_OFFSET + m) * numBoxes + i];
+            maskCoeffs[m] = outputs_boxes.row(MASK_COEFF_OFFSET + m)[i];
         }
         maskCoefficientsList.emplace_back(std::move(maskCoeffs));
     }
 
-    // Early exit if no boxes after confidence threshold
-    if (boxes.empty()) {
-        return results;
-    }
+    if (boxes.empty()) return results;
 
     // 3. Apply NMS
     std::vector<int> nmsIndices;
     utils::NMSBoxes(boxes, confidences, confThreshold, iouThreshold, nmsIndices);
 
-    if (nmsIndices.empty()) {
-        return results;
-    }
+    if (nmsIndices.empty()) return results;
 
     // 4. Prepare final results
     results.reserve(nmsIndices.size());
 
-    // Calculate letterbox parameters
     const float gain = std::min(static_cast<float>(letterboxSize.height) / origSize.height,
                                 static_cast<float>(letterboxSize.width) / origSize.width);
     const int scaledW = static_cast<int>(origSize.width * gain);
@@ -224,7 +187,6 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     const float padW = (letterboxSize.width - scaledW) / 2.0f;
     const float padH = (letterboxSize.height - scaledH) / 2.0f;
 
-    // Precompute mask scaling factors
     const float maskScaleX = static_cast<float>(maskW) / letterboxSize.width;
     const float maskScaleY = static_cast<float>(maskH) / letterboxSize.height;
 
@@ -255,34 +217,26 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
         int x2 = static_cast<int>(std::round((letterboxSize.width - padW + 0.1f) * maskScaleX));
         int y2 = static_cast<int>(std::round((letterboxSize.height - padH + 0.1f) * maskScaleY));
 
-        // Ensure coordinates are within mask bounds
         x1 = std::max(0, std::min(x1, maskW - 1));
         y1 = std::max(0, std::min(y1, maskH - 1));
         x2 = std::max(x1, std::min(x2, maskW));
         y2 = std::max(y1, std::min(y2, maskH));
 
-        // Handle cases where cropping might result in zero area
-        if (x2 <= x1 || y2 <= y1) {
-            // Skip this mask as cropping is invalid
-            continue;
-        }
+        if (x2 <= x1 || y2 <= y1) continue;
 
         cv::Rect cropRect(x1, y1, x2 - x1, y2 - y1);
-        cv::Mat croppedMask = finalMask(cropRect).clone(); // Clone to ensure data integrity
+        cv::Mat croppedMask = finalMask(cropRect).clone();
 
-        // Resize to original dimensions
         cv::Mat resizedMask;
         cv::resize(croppedMask, resizedMask, origSize, 0, 0, cv::INTER_LINEAR);
 
-        // Threshold and convert to binary
         cv::Mat binaryMask;
         cv::threshold(resizedMask, binaryMask, 0.5, 255.0, cv::THRESH_BINARY);
         binaryMask.convertTo(binaryMask, CV_8U);
 
-        // Crop to bounding box
         cv::Mat finalBinaryMask = cv::Mat::zeros(origSize, CV_8U);
         cv::Rect roi(seg.box.x, seg.box.y, seg.box.width, seg.box.height);
-        roi &= cv::Rect(0, 0, binaryMask.cols, binaryMask.rows); // Ensure ROI is within mask
+        roi &= cv::Rect(0, 0, binaryMask.cols, binaryMask.rows);
         if (roi.area() > 0) {
             binaryMask(roi).copyTo(finalBinaryMask(roi));
         }
@@ -448,19 +402,20 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::segment(const cv::Mat &image,
 {
 
     float *blobPtr = nullptr;
-    std::vector<int64_t> inputShape = {1, 3, inputImageShape.height, inputImageShape.width};
-    cv::Mat letterboxImg = preprocess(image, blobPtr, inputShape);
+    std::vector<int64_t> dummyShape; // Not used in NCNN
+    cv::Mat letterboxImg = preprocess(image, blobPtr, dummyShape);
     
-    size_t inputSize = utils::vectorProduct(inputShape);
-    ncnn::Mat in = ncnn::Mat::from_pixels(letterboxImg.data, ncnn::Mat::PIXEL_RGB, inputShape[3], inputShape[2]);
-    delete[] blobPtr;
-
+    ncnn::Mat in = ncnn::Mat::from_pixels(letterboxImg.data, ncnn::Mat::PIXEL_RGB, inputImageShape.width, inputImageShape.height);
+    
     ncnn::Extractor ex = net.create_extractor();
     ex.input("in0", in); // adjust input name as needed
+    
     ncnn::Mat out_boxes, out_masks;
     ex.extract("out0", out_boxes); // [num, 6] (x, y, w, h, conf, class)
     ex.extract("out1", out_masks); // [num, mask_dim, mask_dim]
    
-    cv::Size letterboxSize(static_cast<int>(inputShape[3]), static_cast<int>(inputShape[2]));
+    delete[] blobPtr;
+
+    cv::Size letterboxSize(inputImageShape.width, inputImageShape.height);
     return postprocess(image.size(), letterboxSize, out_boxes, out_masks, confThreshold, iouThreshold);
 }

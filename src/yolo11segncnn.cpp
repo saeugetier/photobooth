@@ -76,19 +76,10 @@ cv::Mat YOLOv11SegDetectorNcnn::preprocess(const cv::Mat &image,
                      cv::Scalar(114,114,114), /*auto_=*/false,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
-    // No dynamic shape in NCNN, so inputTensorShape is not used    
-
-    letterboxImage.convertTo(letterboxImage, CV_32FC3, 1.0f/255.0f);
+    // No dynamic shape in NCNN, so inputTensorShape is not used
 
     size_t size = static_cast<size_t>(letterboxImage.rows) * static_cast<size_t>(letterboxImage.cols) * 3;
     blobPtr = new float[size];
-
-    std::vector<cv::Mat> channels(3);
-    for (int c = 0; c < 3; ++c) {
-        channels[c] = cv::Mat(letterboxImage.rows, letterboxImage.cols, CV_32FC1,
-                              blobPtr + c * (letterboxImage.rows * letterboxImage.cols));
-    }
-    cv::split(letterboxImage, channels);
 
     return letterboxImage;
 }
@@ -107,8 +98,17 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     // output1: [32, maskH, maskW]
     int num_features = outputs_boxes.h;
     int num_boxes = outputs_boxes.w;
+    int maskC = outputs_masks.c; // Should be 32
+    if (maskC != 32) {
+        throw std::runtime_error("Expected 32 prototype masks in output1.");
+    }
     int maskH = outputs_masks.h;
     int maskW = outputs_masks.w;
+
+    if(num_boxes == 0)
+    {
+        return results; // Early exit if no boxes
+    }
 
     const int numClasses = num_features - 4 - 32;
     constexpr int BOX_OFFSET = 0;
@@ -400,22 +400,24 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::segment(const cv::Mat &image,
                                                       float confThreshold,
                                                       float iouThreshold)
 {
+    static int counter = 0;
 
-    float *blobPtr = nullptr;
-    std::vector<int64_t> dummyShape; // Not used in NCNN
-    cv::Mat letterboxImg = preprocess(image, blobPtr, dummyShape);
-    
-    ncnn::Mat in = ncnn::Mat::from_pixels(letterboxImg.data, ncnn::Mat::PIXEL_RGB, inputImageShape.width, inputImageShape.height);
-    
+    cv::Mat letterboxImage;
+    utils::letterBox(image, letterboxImage, inputImageShape,
+                     cv::Scalar(114,114,114), /*auto_=*/false,
+                     /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
+
+    ncnn::Mat in = ncnn::Mat::from_pixels_resize(letterboxImage.data, ncnn::Mat::PIXEL_BGR2RGB, letterboxImage.cols, letterboxImage.rows, 640, 640);
+
+    const float norm_vals[3] = {1 / 255.f, 1 / 255.f, 1 / 255.f};
+    in.substract_mean_normalize(0, norm_vals);
+
     ncnn::Extractor ex = net.create_extractor();
     ex.input("in0", in); // adjust input name as needed
-    
+
     ncnn::Mat out_boxes, out_masks;
     ex.extract("out0", out_boxes); // [num, 6] (x, y, w, h, conf, class)
     ex.extract("out1", out_masks); // [num, mask_dim, mask_dim]
-   
-    delete[] blobPtr;
 
-    cv::Size letterboxSize(inputImageShape.width, inputImageShape.height);
-    return postprocess(image.size(), letterboxSize, out_boxes, out_masks, confThreshold, iouThreshold);
+    return postprocess(image.size(), inputImageShape, out_boxes, out_masks, confThreshold, iouThreshold);
 }

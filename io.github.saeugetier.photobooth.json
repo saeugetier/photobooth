@@ -119,8 +119,8 @@
             ],
             "sources": [
             	{
-                    "type": "dir",
-                    "path": "models"
+                    "type": "file",
+                    "path": "models/coco.names"
             	}
             ]
         },

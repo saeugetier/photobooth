@@ -1,5 +1,5 @@
-#ifndef YOLO11SEG_H
-#define YOLO11SEG_H
+#ifndef YOLO11SEGONNX_H
+#define YOLO11SEGONNX_H
 
 // Original Author: Abdalrahman M. Amer, www.linkedin.com/in/abdalrahman-m-amer
 // Date: 25.01.2025
@@ -35,9 +35,9 @@ static const float MASK_THRESHOLD       = 0.40f; // Slightly lower to capture pa
 // ============================================================================
 // YOLOv11SegDetector Class
 // ============================================================================
-class YOLOv11SegDetector {
+class YOLOv11SegDetectorOnnx {
 public:
-    YOLOv11SegDetector(const std::string &modelPath,
+    YOLOv11SegDetectorOnnx(const std::string &modelPath,
                        const std::string &labelsPath,
                        bool useGPU = false);
 
@@ -94,4 +94,4 @@ private:
 };
 
 
-#endif // YOLO11SEG_H
+#endif // YOLO11SEGONNX_H

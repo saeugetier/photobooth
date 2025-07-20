@@ -1,4 +1,4 @@
-#include "yolo11seg.h"
+#include "yolo11segonnx.h"
 #include <QFile>
 #include "utils.h"
 
@@ -7,7 +7,7 @@
 // Modified for use in photbooth
 
 
-YOLOv11SegDetector::YOLOv11SegDetector(const std::string &modelPath,
+YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
                                        const std::string &labelsPath,
                                        bool useGPU)
     : env(ORT_LOGGING_LEVEL_WARNING, "YOLOv11Seg")
@@ -86,7 +86,7 @@ YOLOv11SegDetector::YOLOv11SegDetector(const std::string &modelPath,
     qDebug() << "      #Classes   : " << classNames.size();
 }
 
-cv::Mat YOLOv11SegDetector::preprocess(const cv::Mat &image,
+cv::Mat YOLOv11SegDetectorOnnx::preprocess(const cv::Mat &image,
                                        float *&blobPtr,
                                        std::vector<int64_t> &inputTensorShape)
 {
@@ -114,7 +114,7 @@ cv::Mat YOLOv11SegDetector::preprocess(const cv::Mat &image,
     return letterboxImage;
 }
 
-std::vector<Segmentation> YOLOv11SegDetector::postprocess(
+std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     const cv::Size &origSize,
     const cv::Size &letterboxSize,
     const std::vector<Ort::Value> &outputs,
@@ -320,7 +320,7 @@ std::vector<Segmentation> YOLOv11SegDetector::postprocess(
     return results;
 }
 
-void YOLOv11SegDetector::drawSegmentationsAndBoxes(cv::Mat &image,
+void YOLOv11SegDetectorOnnx::drawSegmentationsAndBoxes(cv::Mat &image,
                                                    const std::vector<Segmentation> &results,
                                                    float maskAlpha) const
 {
@@ -385,7 +385,7 @@ void YOLOv11SegDetector::drawSegmentationsAndBoxes(cv::Mat &image,
     }
 }
 
-void YOLOv11SegDetector::drawSegmentations(cv::Mat &image,
+void YOLOv11SegDetectorOnnx::drawSegmentations(cv::Mat &image,
                                            const std::vector<Segmentation> &results,
                                            float maskAlpha) const
 {
@@ -422,7 +422,7 @@ void YOLOv11SegDetector::drawSegmentations(cv::Mat &image,
     }
 }
 
-void YOLOv11SegDetector::drawSegmentationMask(cv::Mat &image,
+void YOLOv11SegDetectorOnnx::drawSegmentationMask(cv::Mat &image,
                                            const std::vector<Segmentation> &results,
                                            const std::vector<int> &classesFilter) const
 {
@@ -468,7 +468,7 @@ void YOLOv11SegDetector::drawSegmentationMask(cv::Mat &image,
     }
 }
 
-std::vector<Segmentation> YOLOv11SegDetector::segment(const cv::Mat &image,
+std::vector<Segmentation> YOLOv11SegDetectorOnnx::segment(const cv::Mat &image,
                                                       float confThreshold,
                                                       float iouThreshold)
 {

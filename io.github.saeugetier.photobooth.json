@@ -104,7 +104,7 @@
               "python3 -m venv yolo-venv",
               ". yolo-venv/bin/activate && pip install --no-cache-dir numpy==1.26.4",
               ". yolo-venv/bin/activate && pip install --no-cache-dir torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu",
-              ". yolo-venv/bin/activate && pip install --no-cache-dir ultralytics==8.3.168 onnxruntime onnx==1.17.0 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2",	
+              ". yolo-venv/bin/activate && pip install --no-cache-dir ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2",	
               ". yolo-venv/bin/activate && yolo export model=yolo11n.pt format=onnx",
               ". yolo-venv/bin/activate && yolo export model=yolo11x.pt format=onnx",
               ". yolo-venv/bin/activate && yolo export model=yolo11n.pt format=ncnn",

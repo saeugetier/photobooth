@@ -21,12 +21,13 @@ SOURCES += src/collageiconmodel.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
     src/replacebackgroundvideofilter.cpp \
+    src/segmentation.cpp \
     src/selphyprinter.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp \
-    src/yolo11seg.cpp \
-    src/yolo11segncnn.cpp
+    src/yolo11segncnn.cpp \
+    src/yolo11segonnx.cpp
 
 RESOURCES += qml.qrc \
     yolomodel.large.qrc \
@@ -74,8 +75,8 @@ HEADERS += \
     src/standardprinter.h \
     src/system.h \
     src/translationhelper.h \
-    src/yolo11seg.h \
     src/yolo11segncnn.h \
+    src/yolo11segonnx.h \
     src/yolobackend.h
 
 contains(ANDROID_TARGET_ARCH,x86) {

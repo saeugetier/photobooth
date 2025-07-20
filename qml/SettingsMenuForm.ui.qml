@@ -27,6 +27,7 @@ Item {
     property alias switchEnableSettingsPassword: switchEnableSettingsPassword
     property alias versionText: labelVersionText.text
     property alias comboBoxCameraOrientation: comboBoxCameraOrientation
+    property alias comboBoxNeuralNetworkRuntime: comboBoxNeuralNetworkRuntime
 
     ColumnLayout {
         anchors.fill: parent

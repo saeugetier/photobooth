@@ -116,6 +116,12 @@
             	"rm *.torchscript",
             	"mkdir ${FLATPAK_DEST}/share/models",
             	"mv * ${FLATPAK_DEST}/share/models"
+            ],
+            "sources": [
+            	{
+                    "type": "dir",
+                    "path": "models"
+            	}
             ]
         },
         {

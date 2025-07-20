@@ -34,4 +34,35 @@ struct Segmentation {
     cv::Mat     mask;  // Single-channel (8UC1) mask in full resolution
 };
 
+class Yolo11Segementation
+{
+public:
+    virtual std::vector<Segmentation> segment(const cv::Mat &image,
+                                      float confThreshold = CONFIDENCE_THRESHOLD,
+                                              float iouThreshold  = IOU_THRESHOLD) = 0;
+
+    // Draw results
+    void drawSegmentationsAndBoxes(cv::Mat &image,
+                                   const std::vector<Segmentation> &results,
+                                   float maskAlpha = 0.5f) const;
+
+    void drawSegmentations(cv::Mat &image,
+                           const std::vector<Segmentation> &results,
+                           float maskAlpha = 0.5f) const;
+
+    void drawSegmentationMask(cv::Mat &image,
+                              const std::vector<Segmentation> &results,
+                              const std::vector<int> &classesFilter) const;
+    // Accessors
+    const std::vector<std::string> &getClassNames()  const { return classNames;  }
+    const std::vector<cv::Scalar>  &getClassColors() const { return classColors; }
+protected:
+    std::vector<std::string> classNames;
+    std::vector<cv::Scalar>  classColors;
+
+    static constexpr float CONFIDENCE_THRESHOLD = 0.40f; // Filter boxes below this confidence
+    static constexpr float IOU_THRESHOLD        = 0.45f; // NMS IoU threshold
+    static constexpr float MASK_THRESHOLD       = 0.40f; // Slightly lower to capture partial objects
+};
+
 #endif // SEGMENTATION_H

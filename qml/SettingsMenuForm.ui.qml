@@ -191,6 +191,25 @@ Item {
                                 }]
                         }
                     }
+
+                    RowLayout
+                    {
+                        spacing: 10
+                        Label
+                        {
+                            text: qsTr("Neuroal Network Runtime")
+                        }
+                        Item
+                        {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox
+                        {
+                            id: comboBoxNeuralNetworkRuntime
+                            model: ["ONNX Runtime", "NCNN"]
+                            Layout.preferredWidth: 200
+                        }
+                    }
                 }
             }
 

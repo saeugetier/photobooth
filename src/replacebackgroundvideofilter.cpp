@@ -47,6 +47,31 @@ void ReplaceBackgroundVideoFilter::setMethod(QString method)
     }
 }
 
+void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
+{
+    NeuralNetworkRuntime newRuntime = mNeuralNetworkRuntime;
+    runtime = runtime.toUpper();
+
+    if(runtime.contains("ONNX"))
+    {
+        newRuntime = NeuralNetworkRuntime::ONNX;
+    }
+    else if(runtime.contains("NCNN"))
+    {
+        newRuntime = NeuralNetworkRuntime::NCNN;
+    }
+    else
+    {
+        throw std::runtime_error("Unknown neural network runtime: " + runtime.toStdString());
+    }
+
+    if(newRuntime != mNeuralNetworkRuntime)
+    {
+        mNeuralNetworkRuntime = newRuntime;
+        emit changeNeuralNetworkRuntime(mNeuralNetworkRuntime);
+    }
+}
+
 void ReplaceBackgroundVideoFilter::setBackground(QImage const& image)
 {
     QImage img = image.convertToFormat(QImage::Format_RGB32).rgbSwapped();
@@ -72,6 +97,22 @@ QString ReplaceBackgroundVideoFilter::getMethod() const
     else
     {
         return QString("None");
+    }
+}
+
+QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
+{
+    if(mNeuralNetworkRuntime == NeuralNetworkRuntime::ONNX)
+    {
+        return QString("ONNX");
+    }
+    else if(mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN)
+    {
+        return QString("NCNN");
+    }
+    else
+    {
+        return QString("Unknown");
     }
 }
 
@@ -118,8 +159,10 @@ void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
     emit captureProcessingFinished(fileName);
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter), mYoloSegmentorFast(":/models/yolo11n-seg.onnx", ":/models/coco.names" , false), mYoloSegmentorSlow(":/models/yolo11l-seg.onnx", ":/models/coco.names" , false)
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter)
 {
+    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11n-seg.onnx", ":/models/coco.names", false));
+    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11l-seg.onnx", ":/models/coco.names", false));
 }
 
 void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground, bool highResFilter)
@@ -199,11 +242,11 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         std::vector<Segmentation> results;
         if(!highResFilter)
         {
-            results = mYoloSegmentorFast.segment(mMat, 0.2f, 0.45f);
+            results = mYoloSegmentorPreview->segment(mMat, 0.2f, 0.45f);
         }
         else
         {
-            results = mYoloSegmentorSlow.segment(mMat, 0.2f, 0.45f);
+            results = mYoloSegmentorHighRes->segment(mMat, 0.2f, 0.45f);
         }
 
         cv::Mat mask = cv::Mat::zeros(mMat.size(), CV_8UC1);
@@ -212,11 +255,11 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
         if(!highResFilter)
         {
-            mYoloSegmentorFast.drawSegmentationMask(mask, results, objectFilter);
+            mYoloSegmentorPreview->drawSegmentationMask(mask, results, objectFilter);
         }
         else
         {
-            mYoloSegmentorSlow.drawSegmentationMask(mask, results, objectFilter);
+            mYoloSegmentorHighRes->drawSegmentationMask(mask, results, objectFilter);
             // use a gaussian blur for the mask in order to make it less sharp
             // kernel size of 30 is determined by experiment
             cv::GaussianBlur(mask, mask, cv::Size(31,31), 0, 0);
@@ -255,6 +298,20 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         fileName.replace("/raw", ""); // remove path to raw image. Image shall be saved in the image directory.
         cv::imwrite(fileName.toStdString(), mMat);
         emit imageFileSaved(fileName);
+    }
+}
+
+void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetworkRuntime& runtime)
+{
+    if(runtime == NeuralNetworkRuntime::ONNX)
+    {
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11n-seg.onnx", ":/models/coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11l-seg.onnx", ":/models/coco.names", false));
+    }
+    else if(runtime == NeuralNetworkRuntime::NCNN)
+    {
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model", ":/models/coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", ":/models/coco.names", false));
     }
 }
 

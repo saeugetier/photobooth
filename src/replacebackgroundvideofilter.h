@@ -8,9 +8,17 @@
 #include <QVideoFrameInput>
 #include <QThread>
 #include <opencv2/core/core.hpp>
-#include "yolo11seg.h"
+#include <QSharedPointer>
+#include "yolo11segonnx.h"
+#include "yolo11segncnn.h"
 
 class ReplaceBackgroundFilterRunable;
+
+enum class NeuralNetworkRuntime
+{
+    ONNX,
+    NCNN
+};
 
 class ReplaceBackgroundVideoFilter : public QVideoFrameInput
 {
@@ -24,12 +32,15 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     Q_PROPERTY(QUrl background WRITE setBackground)
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
+    /* neural network runtime */
+    Q_PROPERTY(QString NeuralNetworkRuntime READ getNeuralNetworkRuntime WRITE setNeuralNetworkRuntime)
 
 public:
     ReplaceBackgroundVideoFilter(QObject *parent = nullptr);
     ~ReplaceBackgroundVideoFilter();
 
     void setMethod(QString method);
+    void setNeuralNetworkRuntime(QString runtime);
     void setKeyColor(float color);
     void setBackground(QImage const& image);
     Q_INVOKABLE void setBackground(QUrl& imagePath)
@@ -58,6 +69,7 @@ public:
         }
     }
     QString getMethod() const;
+    QString getNeuralNetworkRuntime() const;
     float getKeyColor() const;
 
     void setVideoSink(QObject *videoSink);
@@ -78,6 +90,8 @@ protected:
 
     FilterMethod mFilterMethod = FilterMethod::CHROMA;
 
+    NeuralNetworkRuntime mNeuralNetworkRuntime = NeuralNetworkRuntime::ONNX;
+
     QVideoSink *mVideoSink;
 
     QThread mWorkerThread;
@@ -95,6 +109,8 @@ signals:
     void asyncProcessFrame(const QVariant& frame, bool applyBackground, bool highResFilter);
 
     void captureProcessingFinished(const QString& fileName);
+
+    void changeNeuralNetworkRuntime(const NeuralNetworkRuntime& runtime);
 };
 
 
@@ -105,6 +121,8 @@ public:
     ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter);
 public slots:
     void run(const QVariant &input, bool highResStill, bool highResFilter);
+
+    void changeNeuralNetworkRuntime(const NeuralNetworkRuntime& runtime);
 protected:
     cv::Mat chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color);
 
@@ -155,9 +173,8 @@ protected:
     bool mYuv;
     ReplaceBackgroundVideoFilter* mFilter;
 
-    YOLOv11SegDetector mYoloSegmentorFast;
-    YOLOv11SegDetector mYoloSegmentorSlow;
-
+    QSharedPointer<Yolo11Segementation> mYoloSegmentorPreview;
+    QSharedPointer<Yolo11Segementation> mYoloSegmentorHighRes;
 signals:
     void processingFinished(const QImage& maskImage);
     void imageFileSaved(const QString& fileName);

@@ -305,11 +305,13 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
 {
     if(runtime == NeuralNetworkRuntime::ONNX)
     {
+        qDebug() << "[INFO] Change YOLOv11Segmentation runtime to ONNX";
         mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11n-seg.onnx", ":/models/coco.names", false));
         mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11l-seg.onnx", ":/models/coco.names", false));
     }
     else if(runtime == NeuralNetworkRuntime::NCNN)
     {
+        qDebug() << "[INFO] Change YOLOv11Segmentation runtime to NCNN";
         mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model", ":/models/coco.names", false));
         mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", ":/models/coco.names", false));
     }

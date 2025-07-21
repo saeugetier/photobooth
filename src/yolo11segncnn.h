@@ -27,7 +27,7 @@
 #include "segmentation.h"
 
 
-class YOLOv11SegDetectorNcnn {
+class YOLOv11SegDetectorNcnn : public Yolo11Segementation {
 public:
     YOLOv11SegDetectorNcnn(const std::string &modelPath,
                        const std::string &labelsPath,
@@ -37,23 +37,6 @@ public:
     std::vector<Segmentation> segment(const cv::Mat &image,
                                       float confThreshold = CONFIDENCE_THRESHOLD,
                                       float iouThreshold  = IOU_THRESHOLD);
-
-    // Draw results
-    void drawSegmentationsAndBoxes(cv::Mat &image,
-                                   const std::vector<Segmentation> &results,
-                                   float maskAlpha = 0.5f) const;
-
-    void drawSegmentations(cv::Mat &image,
-                           const std::vector<Segmentation> &results,
-                           float maskAlpha = 0.5f) const;
-
-    void drawSegmentationMask(cv::Mat &image,
-                           const std::vector<Segmentation> &results,
-                           const std::vector<int> &classesFilter) const;
-    // Accessors
-    const std::vector<std::string> &getClassNames()  const { return classNames;  }
-    const std::vector<cv::Scalar>  &getClassColors() const { return classColors; }
-
 private:
     ncnn::Net net;
 
@@ -65,9 +48,6 @@ private:
 
     size_t numInputNodes  = 0;
     size_t numOutputNodes = 0;
-
-    std::vector<std::string> classNames;
-    std::vector<cv::Scalar>  classColors;
 
     // Helpers
     cv::Mat preprocess(const cv::Mat &image,

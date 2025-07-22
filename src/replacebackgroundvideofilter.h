@@ -33,7 +33,7 @@ class ReplaceBackgroundVideoFilter : public QVideoFrameInput
     /* video frame input */
     Q_PROPERTY(QObject* videoSink WRITE setVideoSink)
     /* neural network runtime */
-    Q_PROPERTY(QString NeuralNetworkRuntime READ getNeuralNetworkRuntime WRITE setNeuralNetworkRuntime)
+    Q_PROPERTY(QString neuralNetworkRuntime READ getNeuralNetworkRuntime WRITE setNeuralNetworkRuntime)
 
 public:
     ReplaceBackgroundVideoFilter(QObject *parent = nullptr);

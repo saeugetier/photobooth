@@ -153,9 +153,9 @@ ApplicationWindow {
             console.log("Camera orientation changed to: " + applicationSettings.cameraOrientation)
         }
 
-        settingsMenu.comboBoxNeuralNetworkRuntime.onCurrentIndexChanged:
+        settingsMenu.comboBoxNeuralNetworkRuntime.onCurrentValueChanged:
         {
-            applicationSettings.neuralNetworkRuntime = settingsMenu.comboBoxNeuralNetworkRuntime.currentValue
+            applicationSettings.neuralNetworkRuntime = String(settingsMenu.comboBoxNeuralNetworkRuntime.currentValue)
             console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
         }
 

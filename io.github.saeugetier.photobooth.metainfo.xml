@@ -36,6 +36,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.7.1" date="2025-07-22">
+      <description translate="no">
+        <p>NCNN as secondary neural network runtime for accelerated execution on Raspberry Pi. Several bugfixes for better user experience with flatpak build.</p>
+      </description>
+    </release>
     <release version="0.7.0" date="2025-05-25">
       <description translate="no">
         <p>Initial release with flatpak. New implementation of background removal filter. Port from Qt5 to Qt6.</p>

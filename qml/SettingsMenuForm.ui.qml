@@ -27,6 +27,7 @@ Item {
     property alias switchEnableSettingsPassword: switchEnableSettingsPassword
     property alias versionText: labelVersionText.text
     property alias comboBoxCameraOrientation: comboBoxCameraOrientation
+    property alias comboBoxNeuralNetworkRuntime: comboBoxNeuralNetworkRuntime
 
     ColumnLayout {
         anchors.fill: parent
@@ -189,6 +190,27 @@ Item {
                                     "value": 270,
                                     "text": qsTr("Portrait 270°")
                                 }]
+                        }
+                    }
+
+                    RowLayout
+                    {
+                        spacing: 10
+                        Label
+                        {
+                            text: qsTr("Neuroal Network Runtime")
+                        }
+                        Item
+                        {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox
+                        {
+                            id: comboBoxNeuralNetworkRuntime
+                            textRole: "text"
+                            valueRole: "value"
+                            model: [{text: "ONNX Runtime", value: "ONNX"}, {text: "NCNN Runtime", value: "NCNN"}]
+                            Layout.preferredWidth: 200
                         }
                     }
                 }

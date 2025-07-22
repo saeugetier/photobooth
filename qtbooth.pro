@@ -29,9 +29,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/yolo11segncnn.cpp \
     src/yolo11segonnx.cpp
 
-RESOURCES += qml.qrc \
-    yolomodel.large.qrc \
-    yolomodel.small.qrc
+RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

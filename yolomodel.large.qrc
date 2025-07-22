@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>models/yolo11l-seg.onnx</file>
-    </qresource>
-</RCC>

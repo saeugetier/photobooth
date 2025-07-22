@@ -66,9 +66,6 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
 
     outputNames = net.output_names();
 
-    classNames = utils::getClassNames(labelsPath);
-    classColors = utils::generateColors(classNames);
-
     qDebug() << "[INFO] YOLOv11Seg loaded: " << modelPath;
     qDebug() << "      Input shape: " << inputImageShape.height << "x" << inputImageShape.width
              << (isDynamicInputShape ? " (dynamic)" : "");

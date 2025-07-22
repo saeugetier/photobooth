@@ -11,7 +11,7 @@ YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
                                                bool useGPU)
     : Yolo11Segementation(labelsPath), env(ORT_LOGGING_LEVEL_WARNING, "YOLOv11Seg")
 {
-    sessionOptions.SetIntraOpNumThreads(std::min(6, static_cast<int>(std::thread::hardware_concurrency())));
+    sessionOptions.SetIntraOpNumThreads(std::min(8, static_cast<int>(std::thread::hardware_concurrency())));
     sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
     std::vector<std::string> providers = Ort::GetAvailableProviders();
@@ -86,9 +86,6 @@ YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
         outputNameAllocs.emplace_back(std::move(outNameAlloc));
         outputNames.push_back(outputNameAllocs.back().get());
     }
-
-    classNames = utils::getClassNames(labelsPath);
-    classColors = utils::generateColors(classNames);
 
     qDebug() << "[INFO] YOLOv11Seg loaded: " << modelPath;
     qDebug() << "      Input shape: " << inputImageShape.height << "x" << inputImageShape.width

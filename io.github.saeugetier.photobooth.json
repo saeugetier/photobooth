@@ -45,7 +45,7 @@
             ],
             "cleanup": [
                 "/bin/*",
-                "/share/opencv4/*"
+                "/share/*"
             ]
         },
         {
@@ -76,6 +76,25 @@
             ]
         },
         {
+            "name": "ncnn",
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "config-opts": [
+                "-DNCNN_BUILD_TESTS=OFF",
+                "-DNCNN_BUILD_EXAMPLES=OFF",
+                "-DNCNN_BUILD_TOOLS=OFF",
+                "-DNCNN_BUILD_BENCHMARK=OFF",
+                "-DNCNN_SHARED_LIB=ON"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/Tencent/ncnn/archive/refs/tags/20250503.tar.gz",
+                    "sha256": "3afea4cf092ce97d06305b72c6affbcfb3530f536ae8e81a4f22007d82b729e9"
+                }
+            ]
+        },
+        {
             "name": "qtvirtualkeyboard",
             "buildsystem": "cmake-ninja",
             "sources": [
@@ -101,27 +120,27 @@
                 ]
             },
             "build-commands": [
-              "python3 -m venv yolo-venv",
-              ". yolo-venv/bin/activate && pip install --no-cache-dir numpy==1.26.4",
-              ". yolo-venv/bin/activate && pip install --no-cache-dir torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu",
-              ". yolo-venv/bin/activate && pip install --no-cache-dir ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2",	
-              ". yolo-venv/bin/activate && yolo export model=yolo11n.pt format=onnx",
-              ". yolo-venv/bin/activate && yolo export model=yolo11x.pt format=onnx",
-              ". yolo-venv/bin/activate && yolo export model=yolo11n.pt format=ncnn",
-              ". yolo-venv/bin/activate && yolo export model=yolo11x.pt format=ncnn",
-              "rm -rf yolo-venv"
+                "python3 -m venv yolo-venv",
+                ". yolo-venv/bin/activate && pip install --no-cache-dir numpy==1.26.4",
+                ". yolo-venv/bin/activate && pip install --no-cache-dir torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu",
+                ". yolo-venv/bin/activate && pip install --no-cache-dir ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2",
+                ". yolo-venv/bin/activate && yolo export model=yolo11n-seg.pt format=onnx",
+                ". yolo-venv/bin/activate && yolo export model=yolo11x-seg.pt format=onnx",
+                ". yolo-venv/bin/activate && yolo export model=yolo11n-seg.pt format=ncnn",
+                ". yolo-venv/bin/activate && yolo export model=yolo11x-seg.pt format=ncnn",
+                "rm -rf yolo-venv"
             ],
             "post-install": [
-            	"rm *.pt",
-            	"rm *.torchscript",
-            	"mkdir ${FLATPAK_DEST}/share/models",
-            	"mv * ${FLATPAK_DEST}/share/models"
+                "rm *.pt",
+                "rm *.torchscript",
+                "mkdir ${FLATPAK_DEST}/share/models",
+                "mv * ${FLATPAK_DEST}/share/models"
             ],
             "sources": [
-            	{
+                {
                     "type": "file",
                     "path": "models/coco.names"
-            	}
+                }
             ]
         },
         {

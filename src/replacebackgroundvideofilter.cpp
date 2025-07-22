@@ -16,6 +16,7 @@ ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QV
     connect(this, &ReplaceBackgroundVideoFilter::asyncProcessFrame, mRunable, &ReplaceBackgroundFilterRunable::run);
     connect(mRunable, &ReplaceBackgroundFilterRunable::processingFinished, this, &ReplaceBackgroundVideoFilter::onProcessingFinished);
     connect(mRunable, &ReplaceBackgroundFilterRunable::imageFileSaved, this, &ReplaceBackgroundVideoFilter::onImageSaved);
+    connect(this, &ReplaceBackgroundVideoFilter::changeNeuralNetworkRuntime, mRunable, &ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime);
 
     mWorkerThread.start();
 }

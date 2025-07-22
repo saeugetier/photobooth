@@ -153,6 +153,12 @@ ApplicationWindow {
             console.log("Camera orientation changed to: " + applicationSettings.cameraOrientation)
         }
 
+        settingsMenu.comboBoxNeuralNetworkRuntime.onCurrentIndexChanged:
+        {
+            applicationSettings.neuralNetworkRuntime = settingsMenu.comboBoxNeuralNetworkRuntime.currentValue
+            console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
+        }
+
         mainMenu.printerBusy: printer ? printer.busy : false
     }
 
@@ -174,6 +180,7 @@ ApplicationWindow {
         property bool printFromGallery: true
         property bool enableSettingsPassword: true
         property int cameraOrientation: 0
+        property string neuralNetworkRuntime: "ONNX"
 
         Component.onCompleted:
         {
@@ -190,6 +197,7 @@ ApplicationWindow {
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
             flow.imagePreview.effectButton.visible = !disableEffectPopup
+            flow.settingsMenu.comboBoxNeuralNetworkRuntime.currentIndex = flow.settingsMenu.comboBoxNeuralNetworkRuntime.indexOfValue(neuralNetworkRuntime)
         }
 
         onPrinterNameChanged:

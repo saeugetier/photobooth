@@ -207,7 +207,9 @@ Item {
                         ComboBox
                         {
                             id: comboBoxNeuralNetworkRuntime
-                            model: ["ONNX Runtime", "NCNN"]
+                            textRole: "text"
+                            valueRole: "value"
+                            model: [{text: "ONNX Runtime", value: "ONNX"}, {text: "NCNN Runtime", value: "NCNN"}]
                             Layout.preferredWidth: 200
                         }
                     }

@@ -7,22 +7,22 @@
 // Date: 25.01.2025
 // Modified for use in photbooth
 
-
 YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
-                                       const std::string &labelsPath,
-                                       bool useGPU)
+                                               const std::string &labelsPath,
+                                               bool useGPU) : Yolo11Segementation(labelsPath)
 {
     QString ressourcePathGeneric = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "models", QStandardPaths::LocateDirectory);
     QString ressourcePathApp = QStandardPaths::locate(QStandardPaths::AppDataLocation, "models", QStandardPaths::LocateDirectory);
-    if (ressourcePathApp.isEmpty() && ressourcePathGeneric.isEmpty()) {
+    if (ressourcePathApp.isEmpty() && ressourcePathGeneric.isEmpty())
+    {
         throw std::runtime_error("Failed to locate the models directory.");
     }
     QString ressourcePath = "";
-    if(!ressourcePathApp.isEmpty())
+    if (!ressourcePathApp.isEmpty())
     {
         ressourcePath = QDir::cleanPath(ressourcePathApp);
     }
-    else if(!ressourcePathGeneric.isEmpty())
+    else if (!ressourcePathGeneric.isEmpty())
     {
         ressourcePath = QDir::cleanPath(ressourcePathGeneric);
     }
@@ -31,12 +31,12 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
     std::string params_path = ressourcePath.toStdString() + "/" + modelPath + "/model.ncnn.param";
     std::string model_path = ressourcePath.toStdString() + "/" + modelPath + "/model.ncnn.bin";
 
-    if(0 != net.load_param(params_path.c_str()))
+    if (0 != net.load_param(params_path.c_str()))
     {
         throw std::runtime_error("Failed to load model parameters from: " + params_path);
     }
 
-    if(0 != net.load_model(model_path.c_str()))
+    if (0 != net.load_model(model_path.c_str()))
     {
         throw std::runtime_error("Failed to load model binary from: " + model_path);
     }
@@ -44,28 +44,29 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
     // Set options
     net.opt.use_vulkan_compute = useGPU;
 
-    numInputNodes  = net.input_names().size();
+    numInputNodes = net.input_names().size();
     numOutputNodes = net.output_names().size();
 
-    isDynamicInputShape = false; // Assume static input shape by default. NCNN models typically have fixed input shapes.
+    isDynamicInputShape = false;          // Assume static input shape by default. NCNN models typically have fixed input shapes.
     inputImageShape = cv::Size(640, 640); // Default shape. This is fixed for YOLOv11SegNCNN
 
-    
     // Input
-    if (numInputNodes != 1) {
+    if (numInputNodes != 1)
+    {
         throw std::runtime_error("Expected exactly 1 input node.");
     }
 
     inputNames = net.input_names();
 
     // Outputs
-    if (numOutputNodes != 2) {
+    if (numOutputNodes != 2)
+    {
         throw std::runtime_error("Expected exactly 2 output nodes: output0 and output1.");
     }
 
     outputNames = net.output_names();
 
-    classNames  = utils::getClassNames(labelsPath);
+    classNames = utils::getClassNames(labelsPath);
     classColors = utils::generateColors(classNames);
 
     qDebug() << "[INFO] YOLOv11Seg loaded: " << modelPath;
@@ -76,12 +77,12 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
 }
 
 cv::Mat YOLOv11SegDetectorNcnn::preprocess(const cv::Mat &image,
-                                       float *&blobPtr,
-                                       std::vector<int64_t> &inputTensorShape)
+                                           float *&blobPtr,
+                                           std::vector<int64_t> &inputTensorShape)
 {
     cv::Mat letterboxImage;
     utils::letterBox(image, letterboxImage, inputImageShape,
-                     cv::Scalar(114,114,114), /*auto_=*/false,
+                     cv::Scalar(114, 114, 114), /*auto_=*/false,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
     // No dynamic shape in NCNN, so inputTensorShape is not used
@@ -107,13 +108,14 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     int num_features = outputs_boxes.h;
     int num_boxes = outputs_boxes.w;
     int maskC = outputs_masks.c; // Should be 32
-    if (maskC != 32) {
+    if (maskC != 32)
+    {
         throw std::runtime_error("Expected 32 prototype masks in output1.");
     }
     int maskH = outputs_masks.h;
     int maskW = outputs_masks.w;
 
-    if(num_boxes == 0)
+    if (num_boxes == 0)
     {
         return results; // Early exit if no boxes
     }
@@ -126,9 +128,10 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     // 1. Process prototype masks
     std::vector<cv::Mat> prototypeMasks;
     prototypeMasks.reserve(32);
-    for (int m = 0; m < 32; ++m) {
+    for (int m = 0; m < 32; ++m)
+    {
         // Each mask is maskH x maskW
-        cv::Mat proto(maskH, maskW, CV_32F, (void*)outputs_masks.channel(m).data);
+        cv::Mat proto(maskH, maskW, CV_32F, (void *)outputs_masks.channel(m).data);
         prototypeMasks.emplace_back(proto.clone());
     }
 
@@ -138,32 +141,35 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     std::vector<int> classIds;
     std::vector<std::vector<float>> maskCoefficientsList;
 
-    for (int i = 0; i < num_boxes; ++i) {
+    for (int i = 0; i < num_boxes; ++i)
+    {
         // Extract box coordinates
         float xc = outputs_boxes.row(BOX_OFFSET + 0)[i];
         float yc = outputs_boxes.row(BOX_OFFSET + 1)[i];
-        float w  = outputs_boxes.row(BOX_OFFSET + 2)[i];
-        float h  = outputs_boxes.row(BOX_OFFSET + 3)[i];
+        float w = outputs_boxes.row(BOX_OFFSET + 2)[i];
+        float h = outputs_boxes.row(BOX_OFFSET + 3)[i];
 
         BoundingBox box{
             static_cast<int>(std::round(xc - w / 2.0f)),
             static_cast<int>(std::round(yc - h / 2.0f)),
             static_cast<int>(std::round(w)),
-            static_cast<int>(std::round(h))
-        };
+            static_cast<int>(std::round(h))};
 
         // Get class confidence
         float maxConf = 0.0f;
         int classId = -1;
-        for (int c = 0; c < numClasses; ++c) {
+        for (int c = 0; c < numClasses; ++c)
+        {
             float conf = outputs_boxes.row(CLASS_CONF_OFFSET + c)[i];
-            if (conf > maxConf) {
+            if (conf > maxConf)
+            {
                 maxConf = conf;
                 classId = c;
             }
         }
 
-        if (maxConf < confThreshold) continue;
+        if (maxConf < confThreshold)
+            continue;
 
         boxes.push_back(box);
         confidences.push_back(maxConf);
@@ -171,19 +177,22 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
 
         // Mask coefficients
         std::vector<float> maskCoeffs(32);
-        for (int m = 0; m < 32; ++m) {
+        for (int m = 0; m < 32; ++m)
+        {
             maskCoeffs[m] = outputs_boxes.row(MASK_COEFF_OFFSET + m)[i];
         }
         maskCoefficientsList.emplace_back(std::move(maskCoeffs));
     }
 
-    if (boxes.empty()) return results;
+    if (boxes.empty())
+        return results;
 
     // 3. Apply NMS
     std::vector<int> nmsIndices;
     utils::NMSBoxes(boxes, confidences, confThreshold, iouThreshold, nmsIndices);
 
-    if (nmsIndices.empty()) return results;
+    if (nmsIndices.empty())
+        return results;
 
     // 4. Prepare final results
     results.reserve(nmsIndices.size());
@@ -198,7 +207,8 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
     const float maskScaleX = static_cast<float>(maskW) / letterboxSize.width;
     const float maskScaleY = static_cast<float>(maskH) / letterboxSize.height;
 
-    for (const int idx : nmsIndices) {
+    for (const int idx : nmsIndices)
+    {
         Segmentation seg;
         seg.box = boxes[idx];
         seg.conf = confidences[idx];
@@ -208,11 +218,12 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
         seg.box = utils::scaleCoords(letterboxSize, seg.box, origSize, true);
 
         // 6. Process mask
-        const auto& maskCoeffs = maskCoefficientsList[idx];
+        const auto &maskCoeffs = maskCoefficientsList[idx];
 
         // Linear combination of prototype masks
         cv::Mat finalMask = cv::Mat::zeros(maskH, maskW, CV_32F);
-        for (int m = 0; m < 32; ++m) {
+        for (int m = 0; m < 32; ++m)
+        {
             finalMask += maskCoeffs[m] * prototypeMasks[m];
         }
 
@@ -230,7 +241,8 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
         x2 = std::max(x1, std::min(x2, maskW));
         y2 = std::max(y1, std::min(y2, maskH));
 
-        if (x2 <= x1 || y2 <= y1) continue;
+        if (x2 <= x1 || y2 <= y1)
+            continue;
 
         cv::Rect cropRect(x1, y1, x2 - x1, y2 - y1);
         cv::Mat croppedMask = finalMask(cropRect).clone();
@@ -245,7 +257,8 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
         cv::Mat finalBinaryMask = cv::Mat::zeros(origSize, CV_8U);
         cv::Rect roi(seg.box.x, seg.box.y, seg.box.width, seg.box.height);
         roi &= cv::Rect(0, 0, binaryMask.cols, binaryMask.rows);
-        if (roi.area() > 0) {
+        if (roi.area() > 0)
+        {
             binaryMask(roi).copyTo(finalBinaryMask(roi));
         }
 
@@ -257,14 +270,14 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::postprocess(
 }
 
 std::vector<Segmentation> YOLOv11SegDetectorNcnn::segment(const cv::Mat &image,
-                                                      float confThreshold,
-                                                      float iouThreshold)
+                                                          float confThreshold,
+                                                          float iouThreshold)
 {
     static int counter = 0;
 
     cv::Mat letterboxImage;
     utils::letterBox(image, letterboxImage, inputImageShape,
-                     cv::Scalar(114,114,114), /*auto_=*/false,
+                     cv::Scalar(114, 114, 114), /*auto_=*/false,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
     ncnn::Mat in = ncnn::Mat::from_pixels_resize(letterboxImage.data, ncnn::Mat::PIXEL_BGR2RGB, letterboxImage.cols, letterboxImage.rows, 640, 640);

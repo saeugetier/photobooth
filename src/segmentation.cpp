@@ -1,12 +1,25 @@
 #include "segmentation.h"
 #include <opencv2/opencv.hpp>
+#include <QStandardPaths>
+#include <QDir>
+#include <QDebug>
+#include <QFile>
+#include "utils.h"
+
+Yolo11Segementation::Yolo11Segementation(const std::string &labelsFile)
+{
+    classNames = utils::getClassNames(getModelRessourcePath(labelsFile));
+    classColors = utils::generateColors(classNames);
+}
 
 void Yolo11Segementation::drawSegmentationsAndBoxes(cv::Mat &image,
-                                                       const std::vector<Segmentation> &results,
-                                                       float maskAlpha) const
+                                                    const std::vector<Segmentation> &results,
+                                                    float maskAlpha) const
 {
-    for (const auto &seg : results) {
-        if (seg.conf < CONFIDENCE_THRESHOLD) {
+    for (const auto &seg : results)
+    {
+        if (seg.conf < CONFIDENCE_THRESHOLD)
+        {
             continue;
         }
         cv::Scalar color = classColors[seg.classId % classColors.size()];
@@ -42,12 +55,16 @@ void Yolo11Segementation::drawSegmentationsAndBoxes(cv::Mat &image,
         // -----------------------------
         // 3. Apply Segmentation Mask
         // -----------------------------
-        if (!seg.mask.empty()) {
+        if (!seg.mask.empty())
+        {
             // Ensure the mask is single-channel
             cv::Mat mask_gray;
-            if (seg.mask.channels() == 3) {
+            if (seg.mask.channels() == 3)
+            {
                 cv::cvtColor(seg.mask, mask_gray, cv::COLOR_BGR2GRAY);
-            } else {
+            }
+            else
+            {
                 mask_gray = seg.mask.clone();
             }
 
@@ -67,11 +84,13 @@ void Yolo11Segementation::drawSegmentationsAndBoxes(cv::Mat &image,
 }
 
 void Yolo11Segementation::drawSegmentations(cv::Mat &image,
-                                               const std::vector<Segmentation> &results,
-                                               float maskAlpha) const
+                                            const std::vector<Segmentation> &results,
+                                            float maskAlpha) const
 {
-    for (const auto &seg : results) {
-        if (seg.conf < CONFIDENCE_THRESHOLD) {
+    for (const auto &seg : results)
+    {
+        if (seg.conf < CONFIDENCE_THRESHOLD)
+        {
             continue;
         }
         cv::Scalar color = classColors[seg.classId % classColors.size()];
@@ -79,12 +98,16 @@ void Yolo11Segementation::drawSegmentations(cv::Mat &image,
         // -----------------------------
         // Draw Segmentation Mask Only
         // -----------------------------
-        if (!seg.mask.empty()) {
+        if (!seg.mask.empty())
+        {
             // Ensure the mask is single-channel
             cv::Mat mask_gray;
-            if (seg.mask.channels() == 3) {
+            if (seg.mask.channels() == 3)
+            {
                 cv::cvtColor(seg.mask, mask_gray, cv::COLOR_BGR2GRAY);
-            } else {
+            }
+            else
+            {
                 mask_gray = seg.mask.clone();
             }
 
@@ -104,17 +127,19 @@ void Yolo11Segementation::drawSegmentations(cv::Mat &image,
 }
 
 void Yolo11Segementation::drawSegmentationMask(cv::Mat &image,
-                                                  const std::vector<Segmentation> &results,
-                                                  const std::vector<int> &classesFilter) const
+                                               const std::vector<Segmentation> &results,
+                                               const std::vector<int> &classesFilter) const
 {
-    for (const auto &seg : results) {
-        if (seg.conf < CONFIDENCE_THRESHOLD) {
+    for (const auto &seg : results)
+    {
+        if (seg.conf < CONFIDENCE_THRESHOLD)
+        {
             continue;
         }
 
-        if(!classesFilter.empty())
+        if (!classesFilter.empty())
         {
-            if(std::find(classesFilter.begin(), classesFilter.end(), seg.classId) == classesFilter.end())
+            if (std::find(classesFilter.begin(), classesFilter.end(), seg.classId) == classesFilter.end())
             {
                 // class id not in filter
                 continue;
@@ -124,12 +149,16 @@ void Yolo11Segementation::drawSegmentationMask(cv::Mat &image,
         // -----------------------------
         // Draw Segmentation Mask Only
         // -----------------------------
-        if (!seg.mask.empty()) {
+        if (!seg.mask.empty())
+        {
             // Ensure the mask is single-channel
             cv::Mat mask_gray;
-            if (seg.mask.channels() == 3) {
+            if (seg.mask.channels() == 3)
+            {
                 cv::cvtColor(seg.mask, mask_gray, cv::COLOR_BGR2GRAY);
-            } else {
+            }
+            else
+            {
                 mask_gray = seg.mask.clone();
                 mask_gray *= 255;
             }
@@ -147,4 +176,32 @@ void Yolo11Segementation::drawSegmentationMask(cv::Mat &image,
             cv::add(image, mask_binary, image);
         }
     }
+}
+
+std::string Yolo11Segementation::getModelRessourcePath(const std::string &filename) const
+{
+    QString ressourcePathGeneric = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "models", QStandardPaths::LocateDirectory);
+    QString ressourcePathApp = QStandardPaths::locate(QStandardPaths::AppDataLocation, "models", QStandardPaths::LocateDirectory);
+    if (ressourcePathApp.isEmpty() && ressourcePathGeneric.isEmpty())
+    {
+        throw std::runtime_error("Failed to locate the models directory.");
+    }
+    QString ressourcePath = "";
+
+    if (QFile(ressourcePathApp + "/" + QString::fromStdString(filename)).exists())
+    {
+        ressourcePath = ressourcePathApp + "/" + QString::fromStdString(filename);
+        qDebug() << "Using model from app data path:" << ressourcePath;
+    }
+    else if (QFile(ressourcePathGeneric + "/" + QString::fromStdString(filename)).exists())
+    {
+        ressourcePath = ressourcePathGeneric + "/" + QString::fromStdString(filename);
+        qDebug() << "Using model from generic data path:" << ressourcePath;
+    }
+    else
+    {
+        throw std::runtime_error("Model file not found: " + filename);
+    }
+
+    return ressourcePath.toStdString();
 }

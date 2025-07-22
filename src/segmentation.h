@@ -3,6 +3,7 @@
 
 #include <opencv2/core.hpp>
 #include <vector>
+#include <string>
 
 struct BoundingBox {
     int x{0};
@@ -37,6 +38,8 @@ struct Segmentation {
 class Yolo11Segementation
 {
 public:
+    Yolo11Segementation(const std::string &labelsPath);
+
     virtual std::vector<Segmentation> segment(const cv::Mat &image,
                                       float confThreshold = CONFIDENCE_THRESHOLD,
                                               float iouThreshold  = IOU_THRESHOLD) = 0;
@@ -59,6 +62,8 @@ public:
 protected:
     std::vector<std::string> classNames;
     std::vector<cv::Scalar>  classColors;
+
+    std::string getModelRessourcePath(const std::string &filename) const;
 
     static constexpr float CONFIDENCE_THRESHOLD = 0.40f; // Filter boxes below this confidence
     static constexpr float IOU_THRESHOLD        = 0.45f; // NMS IoU threshold

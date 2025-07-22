@@ -6,27 +6,30 @@
 // Date: 25.01.2025
 // Modified for use in photbooth
 
-
 YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
-                                       const std::string &labelsPath,
-                                       bool useGPU)
-    : env(ORT_LOGGING_LEVEL_WARNING, "YOLOv11Seg")
+                                               const std::string &labelsPath,
+                                               bool useGPU)
+    : Yolo11Segementation(labelsPath), env(ORT_LOGGING_LEVEL_WARNING, "YOLOv11Seg")
 {
     sessionOptions.SetIntraOpNumThreads(std::min(6, static_cast<int>(std::thread::hardware_concurrency())));
     sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
     std::vector<std::string> providers = Ort::GetAvailableProviders();
-    if (useGPU && std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end()) {
+    if (useGPU && std::find(providers.begin(), providers.end(), "CUDAExecutionProvider") != providers.end())
+    {
         OrtCUDAProviderOptions cudaOptions;
         sessionOptions.AppendExecutionProvider_CUDA(cudaOptions);
         qDebug() << "[INFO] Using GPU (CUDA) for YOLOv11 Seg inference.";
-    } else {
+    }
+    else
+    {
         qDebug() << "[INFO] Using CPU for YOLOv11 Seg inference.";
     }
 
-    QFile modelFile(modelPath.c_str());
+    QFile modelFile(getModelRessourcePath(modelPath.c_str()).c_str());
 
-    if (!modelFile.open(QIODevice::ReadOnly)) {
+    if (!modelFile.open(QIODevice::ReadOnly))
+    {
         qWarning() << "Failed to open the model file!";
     }
 
@@ -39,7 +42,7 @@ YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
     session = Ort::Session(env, binaryData.data(), binaryData.size(), sessionOptions);
 #endif
 
-    numInputNodes  = session.GetInputCount();
+    numInputNodes = session.GetInputCount();
     numOutputNodes = session.GetOutputCount();
 
     Ort::AllocatorWithDefaultOptions allocator;
@@ -51,32 +54,40 @@ YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
         inputNames.push_back(inputNameAllocs.back().get());
 
         auto inTypeInfo = session.GetInputTypeInfo(0);
-        auto inShape    = inTypeInfo.GetTensorTypeAndShapeInfo().GetShape();
+        auto inShape = inTypeInfo.GetTensorTypeAndShapeInfo().GetShape();
 
-        if (inShape.size() == 4) {
-            if (inShape[2] == -1 || inShape[3] == -1) {
+        if (inShape.size() == 4)
+        {
+            if (inShape[2] == -1 || inShape[3] == -1)
+            {
                 isDynamicInputShape = true;
                 inputImageShape = cv::Size(640, 640); // Fallback if dynamic
-            } else {
+            }
+            else
+            {
                 inputImageShape = cv::Size(static_cast<int>(inShape[3]), static_cast<int>(inShape[2]));
             }
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("Model input is not 4D! Expect [N, C, H, W].");
         }
     }
 
     // Outputs
-    if (numOutputNodes != 2) {
+    if (numOutputNodes != 2)
+    {
         throw std::runtime_error("Expected exactly 2 output nodes: output0 and output1.");
     }
 
-    for (size_t i = 0; i < numOutputNodes; ++i) {
+    for (size_t i = 0; i < numOutputNodes; ++i)
+    {
         auto outNameAlloc = session.GetOutputNameAllocated(i, allocator);
         outputNameAllocs.emplace_back(std::move(outNameAlloc));
         outputNames.push_back(outputNameAllocs.back().get());
     }
 
-    classNames  = utils::getClassNames(labelsPath);
+    classNames = utils::getClassNames(labelsPath);
     classColors = utils::generateColors(classNames);
 
     qDebug() << "[INFO] YOLOv11Seg loaded: " << modelPath;
@@ -87,25 +98,26 @@ YOLOv11SegDetectorOnnx::YOLOv11SegDetectorOnnx(const std::string &modelPath,
 }
 
 cv::Mat YOLOv11SegDetectorOnnx::preprocess(const cv::Mat &image,
-                                       float *&blobPtr,
-                                       std::vector<int64_t> &inputTensorShape)
+                                           float *&blobPtr,
+                                           std::vector<int64_t> &inputTensorShape)
 {
     cv::Mat letterboxImage;
     utils::letterBox(image, letterboxImage, inputImageShape,
-                     cv::Scalar(114,114,114), /*auto_=*/isDynamicInputShape,
+                     cv::Scalar(114, 114, 114), /*auto_=*/isDynamicInputShape,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
     // Update if dynamic
     inputTensorShape[2] = static_cast<int64_t>(letterboxImage.rows);
     inputTensorShape[3] = static_cast<int64_t>(letterboxImage.cols);
 
-    letterboxImage.convertTo(letterboxImage, CV_32FC3, 1.0f/255.0f);
+    letterboxImage.convertTo(letterboxImage, CV_32FC3, 1.0f / 255.0f);
 
     size_t size = static_cast<size_t>(letterboxImage.rows) * static_cast<size_t>(letterboxImage.cols) * 3;
     blobPtr = new float[size];
 
     std::vector<cv::Mat> channels(3);
-    for (int c = 0; c < 3; ++c) {
+    for (int c = 0; c < 3; ++c)
+    {
         channels[c] = cv::Mat(letterboxImage.rows, letterboxImage.cols, CV_32FC1,
                               blobPtr + c * (letterboxImage.rows * letterboxImage.cols));
     }
@@ -124,13 +136,14 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     std::vector<Segmentation> results;
 
     // Validate outputs size
-    if (outputs.size() < 2) {
+    if (outputs.size() < 2)
+    {
         throw std::runtime_error("Insufficient outputs from the model. Expected at least 2 outputs.");
     }
 
     // Extract outputs
-    const float* output0_ptr = outputs[0].GetTensorData<float>();
-    const float* output1_ptr = outputs[1].GetTensorData<float>();
+    const float *output0_ptr = outputs[0].GetTensorData<float>();
+    const float *output1_ptr = outputs[1].GetTensorData<float>();
 
     // Get shapes
     auto shape0 = outputs[0].GetTensorTypeAndShapeInfo().GetShape(); // [1, 116, num_detections]
@@ -169,9 +182,10 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     // Store all prototype masks in a vector for easy access
     std::vector<cv::Mat> prototypeMasks;
     prototypeMasks.reserve(32);
-    for (int m = 0; m < 32; ++m) {
+    for (int m = 0; m < 32; ++m)
+    {
         // Each mask is maskH x maskW
-        cv::Mat proto(maskH, maskW, CV_32F, const_cast<float*>(output1_ptr + m * maskH * maskW));
+        cv::Mat proto(maskH, maskW, CV_32F, const_cast<float *>(output1_ptr + m * maskH * maskW));
         prototypeMasks.emplace_back(proto.clone()); // Clone to ensure data integrity
     }
 
@@ -185,7 +199,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     std::vector<std::vector<float>> maskCoefficientsList;
     maskCoefficientsList.reserve(numBoxes);
 
-    for (int i = 0; i < numBoxes; ++i) {
+    for (int i = 0; i < numBoxes; ++i)
+    {
         // Extract box coordinates
         float xc = output0_ptr[BOX_OFFSET * numBoxes + i];
         float yc = output0_ptr[(BOX_OFFSET + 1) * numBoxes + i];
@@ -197,21 +212,23 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
             static_cast<int>(std::round(xc - w / 2.0f)),
             static_cast<int>(std::round(yc - h / 2.0f)),
             static_cast<int>(std::round(w)),
-            static_cast<int>(std::round(h))
-        };
+            static_cast<int>(std::round(h))};
 
         // Get class confidence
         float maxConf = 0.0f;
         int classId = -1;
-        for (int c = 0; c < numClasses; ++c) {
+        for (int c = 0; c < numClasses; ++c)
+        {
             float conf = output0_ptr[(CLASS_CONF_OFFSET + c) * numBoxes + i];
-            if (conf > maxConf) {
+            if (conf > maxConf)
+            {
                 maxConf = conf;
                 classId = c;
             }
         }
 
-        if (maxConf < confThreshold) continue;
+        if (maxConf < confThreshold)
+            continue;
 
         // Store detection
         boxes.push_back(box);
@@ -220,14 +237,16 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
 
         // Store mask coefficients
         std::vector<float> maskCoeffs(32);
-        for (int m = 0; m < 32; ++m) {
+        for (int m = 0; m < 32; ++m)
+        {
             maskCoeffs[m] = output0_ptr[(MASK_COEFF_OFFSET + m) * numBoxes + i];
         }
         maskCoefficientsList.emplace_back(std::move(maskCoeffs));
     }
 
     // Early exit if no boxes after confidence threshold
-    if (boxes.empty()) {
+    if (boxes.empty())
+    {
         return results;
     }
 
@@ -235,7 +254,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     std::vector<int> nmsIndices;
     utils::NMSBoxes(boxes, confidences, confThreshold, iouThreshold, nmsIndices);
 
-    if (nmsIndices.empty()) {
+    if (nmsIndices.empty())
+    {
         return results;
     }
 
@@ -254,7 +274,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
     const float maskScaleX = static_cast<float>(maskW) / letterboxSize.width;
     const float maskScaleY = static_cast<float>(maskH) / letterboxSize.height;
 
-    for (const int idx : nmsIndices) {
+    for (const int idx : nmsIndices)
+    {
         Segmentation seg;
         seg.box = boxes[idx];
         seg.conf = confidences[idx];
@@ -264,11 +285,12 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
         seg.box = utils::scaleCoords(letterboxSize, seg.box, origSize, true);
 
         // 6. Process mask
-        const auto& maskCoeffs = maskCoefficientsList[idx];
+        const auto &maskCoeffs = maskCoefficientsList[idx];
 
         // Linear combination of prototype masks
         cv::Mat finalMask = cv::Mat::zeros(maskH, maskW, CV_32F);
-        for (int m = 0; m < 32; ++m) {
+        for (int m = 0; m < 32; ++m)
+        {
             finalMask += maskCoeffs[m] * prototypeMasks[m];
         }
 
@@ -288,7 +310,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
         y2 = std::max(y1, std::min(y2, maskH));
 
         // Handle cases where cropping might result in zero area
-        if (x2 <= x1 || y2 <= y1) {
+        if (x2 <= x1 || y2 <= y1)
+        {
             // Skip this mask as cropping is invalid
             continue;
         }
@@ -309,7 +332,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
         cv::Mat finalBinaryMask = cv::Mat::zeros(origSize, CV_8U);
         cv::Rect roi(seg.box.x, seg.box.y, seg.box.width, seg.box.height);
         roi &= cv::Rect(0, 0, binaryMask.cols, binaryMask.rows); // Ensure ROI is within mask
-        if (roi.area() > 0) {
+        if (roi.area() > 0)
+        {
             binaryMask(roi).copyTo(finalBinaryMask(roi));
         }
 
@@ -321,8 +345,8 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::postprocess(
 }
 
 std::vector<Segmentation> YOLOv11SegDetectorOnnx::segment(const cv::Mat &image,
-                                                      float confThreshold,
-                                                      float iouThreshold)
+                                                          float confThreshold,
+                                                          float iouThreshold)
 {
 
     float *blobPtr = nullptr;
@@ -339,8 +363,7 @@ std::vector<Segmentation> YOLOv11SegDetectorOnnx::segment(const cv::Mat &image,
         inputVals.data(),
         inputSize,
         inputShape.data(),
-        inputShape.size()
-        );
+        inputShape.size());
 
     std::vector<Ort::Value> outputs = session.Run(
         Ort::RunOptions{nullptr},

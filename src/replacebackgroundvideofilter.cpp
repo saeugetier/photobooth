@@ -8,7 +8,7 @@
 #include <QtConcurrent>
 
 ReplaceBackgroundVideoFilter::ReplaceBackgroundVideoFilter(QObject *parent) : QVideoFrameInput(parent),
-    mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)), mRunable(new ReplaceBackgroundFilterRunable(this))
+                                                                              mBackgroundImage(320, 240, CV_8UC3, cv::Scalar(0, 0, 0)), mRunable(new ReplaceBackgroundFilterRunable(this))
 {
     mRunable->moveToThread(&mWorkerThread);
 
@@ -33,11 +33,11 @@ void ReplaceBackgroundVideoFilter::setKeyColor(float color)
 
 void ReplaceBackgroundVideoFilter::setMethod(QString method)
 {
-    if(method.contains("Chroma"))
+    if (method.contains("Chroma"))
     {
         mFilterMethod = FilterMethod::CHROMA;
     }
-    else if(method.contains("Neural"))
+    else if (method.contains("Neural"))
     {
         mFilterMethod = FilterMethod::NEURAL;
     }
@@ -52,11 +52,11 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
     NeuralNetworkRuntime newRuntime = mNeuralNetworkRuntime;
     runtime = runtime.toUpper();
 
-    if(runtime.contains("ONNX"))
+    if (runtime.contains("ONNX"))
     {
         newRuntime = NeuralNetworkRuntime::ONNX;
     }
-    else if(runtime.contains("NCNN"))
+    else if (runtime.contains("NCNN"))
     {
         newRuntime = NeuralNetworkRuntime::NCNN;
     }
@@ -65,17 +65,17 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
         throw std::runtime_error("Unknown neural network runtime: " + runtime.toStdString());
     }
 
-    if(newRuntime != mNeuralNetworkRuntime)
+    if (newRuntime != mNeuralNetworkRuntime)
     {
         mNeuralNetworkRuntime = newRuntime;
         emit changeNeuralNetworkRuntime(mNeuralNetworkRuntime);
     }
 }
 
-void ReplaceBackgroundVideoFilter::setBackground(QImage const& image)
+void ReplaceBackgroundVideoFilter::setBackground(QImage const &image)
 {
     QImage img = image.convertToFormat(QImage::Format_RGB32).rgbSwapped();
-    cv::Mat tmp(img.height(), img.width(), CV_8UC4, (void *) img.bits(), img.bytesPerLine());
+    cv::Mat tmp(img.height(), img.width(), CV_8UC4, (void *)img.bits(), img.bytesPerLine());
     mBackgroundImage = tmp.clone();
 }
 
@@ -86,11 +86,11 @@ float ReplaceBackgroundVideoFilter::getKeyColor() const
 
 QString ReplaceBackgroundVideoFilter::getMethod() const
 {
-    if(mFilterMethod == FilterMethod::CHROMA)
+    if (mFilterMethod == FilterMethod::CHROMA)
     {
         return QString("Chroma");
     }
-    else if(mFilterMethod == FilterMethod::NEURAL)
+    else if (mFilterMethod == FilterMethod::NEURAL)
     {
         return QString("Neural");
     }
@@ -102,11 +102,11 @@ QString ReplaceBackgroundVideoFilter::getMethod() const
 
 QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
 {
-    if(mNeuralNetworkRuntime == NeuralNetworkRuntime::ONNX)
+    if (mNeuralNetworkRuntime == NeuralNetworkRuntime::ONNX)
     {
         return QString("ONNX");
     }
-    else if(mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN)
+    else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN)
     {
         return QString("NCNN");
     }
@@ -118,14 +118,14 @@ QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
 
 void ReplaceBackgroundVideoFilter::setVideoSink(QObject *videoSink)
 {
-    mVideoSink = qobject_cast<QVideoSink*>(videoSink);
+    mVideoSink = qobject_cast<QVideoSink *>(videoSink);
 
     connect(mVideoSink, &QVideoSink::videoFrameChanged, this, &ReplaceBackgroundVideoFilter::processFrame);
 }
 
-void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
+void ReplaceBackgroundVideoFilter::processCapture(const QString &capture)
 {
-    if(!mCaptureProcessing)
+    if (!mCaptureProcessing)
     {
         mCaptureProcessing = true;
         emit asyncProcessFrame(capture, true, true);
@@ -134,7 +134,7 @@ void ReplaceBackgroundVideoFilter::processCapture(const QString& capture)
 
 void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
 {
-    if(!mProcessing)
+    if (!mProcessing)
     {
         mProcessing = true;
         QVariant frameVariant;
@@ -143,9 +143,9 @@ void ReplaceBackgroundVideoFilter::processFrame(const QVideoFrame &frame)
     }
 }
 
-void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
+void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage &maskImage)
 {
-    if(!maskImage.isNull())
+    if (!maskImage.isNull())
     {
         sendVideoFrame(QVideoFrame(maskImage));
     }
@@ -153,36 +153,37 @@ void ReplaceBackgroundVideoFilter::onProcessingFinished(const QImage& maskImage)
     mProcessing = false;
 }
 
-void ReplaceBackgroundVideoFilter::onImageSaved(const QString& fileName)
+void ReplaceBackgroundVideoFilter::onImageSaved(const QString &fileName)
 {
     mCaptureProcessing = false;
     emit captureProcessingFinished(fileName);
 }
 
-ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter* filter) : mFilter(filter)
+ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter *filter) : mFilter(filter)
 {
-    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11n-seg.onnx", ":/models/coco.names", false));
-    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11l-seg.onnx", ":/models/coco.names", false));
+    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg.onnx", "coco.names", false));
+    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg.onnx", "coco.names", false));
 }
 
-void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBackground, bool highResFilter)
+void ReplaceBackgroundFilterRunable::run(const QVariant &variant, bool applyBackground, bool highResFilter)
 {
 
-    if(variant.canConvert<QVideoFrame>())
+    if (variant.canConvert<QVideoFrame>())
     {
         QImage image;
 
         QVideoFrame input = variant.value<QVideoFrame>();
         // Supports YUV (I420 and NV12) and RGB. The GL path is readback-based and slow.
-        if (!input.isValid()
-            || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle)) {
+        if (!input.isValid() || (input.handleType() != QVideoFrame::HandleType::NoHandle && input.handleType() != QVideoFrame::RhiTextureHandle))
+        {
             qWarning("Invalid input format");
             emit processingFinished(QImage());
         }
 
         QVideoFrame frame = input;
 
-        if (!frame.map(QVideoFrame::ReadOnly)) {
+        if (!frame.map(QVideoFrame::ReadOnly))
+        {
             qWarning() << "Failed to map QVideoFrame";
             emit processingFinished(QImage());
             return;
@@ -190,7 +191,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
         image = frame.toImage();
 
-        if(ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
+        if (ReplaceBackgroundVideoFilter::FilterMethod::NONE == mFilter->mFilterMethod)
         {
             // do not go any further. no filter selected!
             emit processingFinished(image);
@@ -202,7 +203,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
         frame.unmap();
     }
-    else if(variant.canConvert<QString>())
+    else if (variant.canConvert<QString>())
     {
         mMat = cv::imread(variant.toString().toStdString());
     }
@@ -213,7 +214,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
     ensureC3(&mMat);
 
-    switch(mFilter->mFilterMethod)
+    switch (mFilter->mFilterMethod)
     {
     case ReplaceBackgroundVideoFilter::FilterMethod::CHROMA:
     {
@@ -226,7 +227,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         cv::Scalar lower_color = (lower_green * (1.0 - mFilter->mKeyColor)) + (lower_blue * mFilter->mKeyColor);
         cv::Scalar upper_color = (upper_green * (1.0 - mFilter->mKeyColor)) + (upper_blue * mFilter->mKeyColor);
 
-        if(!highResFilter)
+        if (!highResFilter)
         {
             mMat = chromaKeyMask(mMat, lower_color, upper_color);
         }
@@ -240,7 +241,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
     case ReplaceBackgroundVideoFilter::FilterMethod::NEURAL:
     {
         std::vector<Segmentation> results;
-        if(!highResFilter)
+        if (!highResFilter)
         {
             results = mYoloSegmentorPreview->segment(mMat, 0.2f, 0.45f);
         }
@@ -253,7 +254,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
 
         std::vector<int> objectFilter = {0, 27, 39, 40, 41, 67};
 
-        if(!highResFilter)
+        if (!highResFilter)
         {
             mYoloSegmentorPreview->drawSegmentationMask(mask, results, objectFilter);
         }
@@ -262,7 +263,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
             mYoloSegmentorHighRes->drawSegmentationMask(mask, results, objectFilter);
             // use a gaussian blur for the mask in order to make it less sharp
             // kernel size of 30 is determined by experiment
-            cv::GaussianBlur(mask, mask, cv::Size(31,31), 0, 0);
+            cv::GaussianBlur(mask, mask, cv::Size(31, 31), 0, 0);
         }
 
         std::vector<cv::Mat> channels;
@@ -277,7 +278,7 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
         break;
     }
 
-    if(applyBackground)
+    if (applyBackground)
     {
         prepareBackground(mFilter->mBackgroundImage, mMat.size());
         // use alpha channel to add bg image to mMat. The alpha channel is converted to float in order to multiply it with the color values.
@@ -287,11 +288,11 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
     }
 
     // Output is an RGB video frame.
-    if(variant.canConvert<QVideoFrame>())
+    if (variant.canConvert<QVideoFrame>())
     {
         emit processingFinished(mat8ToImage(mMat));
     }
-    else if(variant.canConvert<QString>())
+    else if (variant.canConvert<QString>())
     {
         // Save the image to a file
         QString fileName = variant.toString();
@@ -301,19 +302,19 @@ void ReplaceBackgroundFilterRunable::run(const QVariant& variant, bool applyBack
     }
 }
 
-void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetworkRuntime& runtime)
+void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetworkRuntime &runtime)
 {
-    if(runtime == NeuralNetworkRuntime::ONNX)
+    if (runtime == NeuralNetworkRuntime::ONNX)
     {
         qDebug() << "[INFO] Change YOLOv11Segmentation runtime to ONNX";
-        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11n-seg.onnx", ":/models/coco.names", false));
-        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx(":/models/yolo11l-seg.onnx", ":/models/coco.names", false));
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg.onnx", "coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg.onnx", "coco.names", false));
     }
-    else if(runtime == NeuralNetworkRuntime::NCNN)
+    else if (runtime == NeuralNetworkRuntime::NCNN)
     {
         qDebug() << "[INFO] Change YOLOv11Segmentation runtime to NCNN";
-        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model", ":/models/coco.names", false));
-        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", ":/models/coco.names", false));
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model", "coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", "coco.names", false));
     }
 }
 
@@ -322,10 +323,11 @@ void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size siz
     cv::resize(bg, bg, size);
 }
 
-void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat& alpha, cv::Mat &dst)
+void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Mat &bg, const cv::Mat &alpha, cv::Mat &dst)
 {
     // Ensure the source and background images are the same size
-    if (src.size() != bg.size()) {
+    if (src.size() != bg.size())
+    {
         cv::resize(bg, bg, src.size());
     }
 
@@ -344,8 +346,8 @@ void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Ma
     // Convert the alpha channel to float
     cv::Mat alpha_float(alpha.size(), CV_8UC3);
     std::vector<cv::Mat> channels;
-    channels.push_back(alpha);                      // Kanal 1: Grauwert
-    channels.push_back(alpha);                      // Kanal 2: Grauwert (optional duplizieren)
+    channels.push_back(alpha); // Kanal 1: Grauwert
+    channels.push_back(alpha); // Kanal 2: Grauwert (optional duplizieren)
     channels.push_back(alpha);
     cv::merge(channels, alpha_float);
     alpha_float.convertTo(alpha_float, CV_32FC3, 1.0 / 255.0);
@@ -356,14 +358,14 @@ void ReplaceBackgroundFilterRunable::alphaBlend(const cv::Mat &src, const cv::Ma
     // Blend the images
     cv::Mat ouImage(src_float.size(), src_float.type());
     cv::multiply(alpha_float, src_float, src_float);
-    cv::multiply(cv::Scalar::all(1.0)-alpha_float, bg_float, bg_float);
+    cv::multiply(cv::Scalar::all(1.0) - alpha_float, bg_float, bg_float);
     cv::add(src_float, bg_float, ouImage);
     // Convert the result back to 8-bit
     ouImage.convertTo(ouImage, CV_8UC3, 255.0);
     ouImage.copyTo(dst);
 }
 
-cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color)
+cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat &img, const cv::Scalar &lower_color, const cv::Scalar &upper_color)
 {
     // Convert the image from BGR to YUV
     cv::Mat hsv_img;
@@ -378,9 +380,9 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     int dilation_elem = 5;
     int dilation_size = 5;
 
-    cv::Mat element = getStructuringElement( cv::MORPH_DILATE,
-                                            cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
-                                            cv::Point( dilation_size, dilation_size ) );
+    cv::Mat element = getStructuringElement(cv::MORPH_DILATE,
+                                            cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                            cv::Point(dilation_size, dilation_size));
 
     cv::dilate(mask, mask, element);
 
@@ -394,7 +396,8 @@ cv::Mat ReplaceBackgroundFilterRunable::chromaKeyMask(const cv::Mat& img, const 
     return result;
 }
 
-cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, const cv::Scalar& lower_color, const cv::Scalar& upper_color) {
+cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat &img, const cv::Scalar &lower_color, const cv::Scalar &upper_color)
+{
     // Convert the image from BGR to YUV
     cv::Mat hsv_img;
     cv::Mat result;
@@ -407,7 +410,7 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
     int num_foreground_pixels = countNonZero(mask);
     int num_background_pixels = mask.total() - num_foreground_pixels;
 
-    if(num_background_pixels != 0)
+    if (num_background_pixels != 0)
     {
         // Initialize GrabCut mask
         cv::Mat grabcut_mask = cv::Mat::zeros(img.size(), CV_8UC1);
@@ -419,7 +422,7 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
         // Run GrabCut algorithm
         cv::Mat bgd_model, fgd_model;
         cv::Rect rect(1, 1, img.cols - 2, img.rows - 2);
-        //cv::Rect rect(0, 0, img.cols, img.rows); // Use entire image
+        // cv::Rect rect(0, 0, img.cols, img.rows); // Use entire image
         cv::grabCut(img, grabcut_mask, rect, bgd_model, fgd_model, 1, cv::GC_INIT_WITH_MASK);
 
         // Create final mask
@@ -429,14 +432,14 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
 
         int dilation_size = 5;
 
-        cv::Mat element = getStructuringElement( cv::MORPH_DILATE,
-                                                cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
-                                                cv::Point( dilation_size, dilation_size ) );
+        cv::Mat element = getStructuringElement(cv::MORPH_DILATE,
+                                                cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                                cv::Point(dilation_size, dilation_size));
 
         cv::dilate(final_mask, final_mask, element);
 
         // use a gaussian blur for the mask in order to make it less sharp
-        cv::GaussianBlur(final_mask, final_mask, cv::Size(31,31), 0, 0);
+        cv::GaussianBlur(final_mask, final_mask, cv::Size(31, 31), 0, 0);
 
         // Extract the foreground
         cv::Mat fg, bg;
@@ -456,14 +459,15 @@ cv::Mat ReplaceBackgroundFilterRunable::grabcutChromaKey(const cv::Mat& img, con
 cv::Mat ReplaceBackgroundFilterRunable::imageToMat8(const QImage &image)
 {
     QImage img = image.convertToFormat(QImage::Format_RGB32).rgbSwapped();
-    cv::Mat tmp(img.height(), img.width(), CV_8UC4, (void *) img.bits(), img.bytesPerLine());
+    cv::Mat tmp(img.height(), img.width(), CV_8UC4, (void *)img.bits(), img.bytesPerLine());
     return tmp.clone();
 }
 
 void ReplaceBackgroundFilterRunable::ensureC3(cv::Mat *mat)
 {
     Q_ASSERT(mat->type() == CV_8UC3 || mat->type() == CV_8UC4);
-    if (mat->type() != CV_8UC3) {
+    if (mat->type() != CV_8UC3)
+    {
         cv::Mat tmp;
         cvtColor(*mat, tmp, cv::COLOR_BGRA2BGR);
         *mat = tmp;
@@ -472,13 +476,14 @@ void ReplaceBackgroundFilterRunable::ensureC3(cv::Mat *mat)
 
 QImage ReplaceBackgroundFilterRunable::mat8ToImage(const cv::Mat &mat)
 {
-    switch (mat.type()) {
+    switch (mat.type())
+    {
     case CV_8UC1:
     {
         QVector<QRgb> ct;
         for (int i = 0; i < 256; ++i)
             ct.append(qRgb(i, i, i));
-        QImage result(mat.data, mat.cols, mat.rows, (int) mat.step, QImage::Format_Indexed8);
+        QImage result(mat.data, mat.cols, mat.rows, (int)mat.step, QImage::Format_Indexed8);
         result.setColorTable(ct);
         return result.copy();
     }
@@ -490,7 +495,7 @@ QImage ReplaceBackgroundFilterRunable::mat8ToImage(const cv::Mat &mat)
     }
     case CV_8UC4:
     {
-        QImage result(mat.data, mat.cols, mat.rows, (int) mat.step, QImage::Format_RGB32);
+        QImage result(mat.data, mat.cols, mat.rows, (int)mat.step, QImage::Format_RGB32);
         return result.rgbSwapped();
     }
     default:
@@ -504,7 +509,7 @@ cv::Mat ReplaceBackgroundFilterRunable::yuvFrameToMat8(const QVideoFrame &frame)
     Q_ASSERT(frame.handleType() == QVideoFrame::HandleType::NoHandle && frame.isReadable());
     Q_ASSERT(frame.pixelFormat() == QVideoFrameFormat::Format_YUV420P || frame.pixelFormat() == QVideoFrameFormat::Format_NV12);
 
-    cv::Mat tmp(frame.height() + frame.height() / 2, frame.width(), CV_8UC1, (uchar *) frame.bits(0));
+    cv::Mat tmp(frame.height() + frame.height() / 2, frame.width(), CV_8UC1, (uchar *)frame.bits(0));
     cv::Mat result(frame.height(), frame.width(), CV_8UC3);
     cvtColor(tmp, result, frame.pixelFormat() == QVideoFrameFormat::Format_YUV420P ? cv::COLOR_YUV2BGR_YV12 : cv::COLOR_YUV2BGR_NV12);
     return result;
@@ -513,14 +518,17 @@ cv::Mat ReplaceBackgroundFilterRunable::yuvFrameToMat8(const QVideoFrame &frame)
 class YUVBuffer : public QAbstractVideoBuffer
 {
 public:
-    YUVBuffer(cv::Mat *mat) : m_mode(QVideoFrame::NotMapped) {
+    YUVBuffer(cv::Mat *mat) : m_mode(QVideoFrame::NotMapped)
+    {
         m_yuvMat.reset(mat);
     }
     QVideoFrameFormat format() const Q_DECL_OVERRIDE { return QVideoFrameFormat(QSize(m_yuvMat->cols, m_yuvMat->rows), QVideoFrameFormat::Format_YUV420P); }
-    QAbstractVideoBuffer::MapData map(QVideoFrame::MapMode mode) Q_DECL_OVERRIDE {
+    QAbstractVideoBuffer::MapData map(QVideoFrame::MapMode mode) Q_DECL_OVERRIDE
+    {
         QAbstractVideoBuffer::MapData data;
 
-        if (mode != QVideoFrame::NotMapped && m_mode == QVideoFrame::NotMapped) {
+        if (mode != QVideoFrame::NotMapped && m_mode == QVideoFrame::NotMapped)
+        {
 
             data.planeCount = 1;
             data.dataSize[0] = m_yuvMat->rows * m_yuvMat->cols;
@@ -534,6 +542,7 @@ public:
         return data;
     }
     void unmap() Q_DECL_OVERRIDE { m_mode = QVideoFrame::NotMapped; }
+
 private:
     QVideoFrame::MapMode m_mode;
     QScopedPointer<cv::Mat> m_yuvMat;
@@ -571,7 +580,8 @@ void ReplaceBackgroundFilterRunable::mat8ToYuvFrame(const cv::Mat &mat, uchar *d
 QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
 {
 #ifndef QT_NO_OPENGL
-    if (frame.handleType() == QVideoFrame::RhiTextureHandle) {
+    if (frame.handleType() == QVideoFrame::RhiTextureHandle)
+    {
         // Slow and inefficient path. Ideally what's on the GPU should remain on the GPU, instead of readbacks like this.
         QImage img(frame.width(), frame.height(), QImage::Format_RGBA8888);
         // GLuint textureId = frame.handle().toUInt();
@@ -586,10 +596,12 @@ QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
         // f->glReadPixels(0, 0, frame.width(), frame.height(), GL_RGBA, GL_UNSIGNED_BYTE, img.bits());
         // f->glBindFramebuffer(GL_FRAMEBUFFER, prevFbo);
         return img;
-    } else
+    }
+    else
 #endif // QT_NO_OPENGL
     {
-        if (!frame.isReadable()) {
+        if (!frame.isReadable())
+        {
             qWarning("imageWrapper: No mapped image data available for read");
             return QImage();
         }
@@ -606,12 +618,12 @@ QImage ReplaceBackgroundFilterRunable::imageWrapper(const QVideoFrame &frame)
 class TextureBuffer : public QAbstractVideoBuffer
 {
 public:
-    TextureBuffer(uint id) : QAbstractVideoBuffer(), m_id(id) { }
+    TextureBuffer(uint id) : QAbstractVideoBuffer(), m_id(id) {}
     QVideoFrame::MapMode mapMode() const { return QVideoFrame::NotMapped; }
     QAbstractVideoBuffer::MapData map(QVideoFrame::MapMode) override { return QAbstractVideoBuffer::MapData(); }
-    void unmap() override { }
+    void unmap() override {}
     QVariant handle() const { return QVariant::fromValue<uint>(m_id); }
-    QVideoFrameFormat format() const override {return QVideoFrameFormat(); }
+    QVideoFrameFormat format() const override { return QVideoFrameFormat(); }
 
 private:
     GLuint m_id;

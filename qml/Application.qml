@@ -135,6 +135,7 @@ ApplicationWindow {
         settingsMenu.comboWindowMode.onCurrentIndexChanged:
         {
             applicationSettings.windowMode = settingsMenu.comboWindowMode.currentIndex === 0 ? Window.Maximized : Window.FullScreen
+            console.log("Window mode changed to: " + applicationSettings.windowMode)
         }
 
         settingsMenu.comboBoxCamera.onCurrentIndexChanged:
@@ -166,7 +167,7 @@ ApplicationWindow {
         property string language: "en"
         property bool cameraMirrored: true
         property string printerName: "No Printer"
-        property int windowMode: Window.Maximized
+        property int windowMode: Number(Window.Maximized)
         property bool multiplePrints: false
         property bool disableSnapshotSettingsPane: false
         property bool disableEffectPopup: false

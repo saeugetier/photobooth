@@ -9,6 +9,8 @@ SettingsMenuForm {
     property alias comboBoxCameraOrientation: form.comboBoxCameraOrientation
     signal exitSettings
 
+    comboWindowMode.currentIndex: applicationSettings.windowMode === Window.Maximized ? 0 : 1
+
     function makeCameraList()
     {
         var listModel = [];

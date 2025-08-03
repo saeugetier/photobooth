@@ -167,7 +167,7 @@ ApplicationWindow {
     {
         id: applicationSettings
         category: "Application"
-        property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
+        property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation) + "/photobooth"
         property bool printEnable: true
         property string password: "0815"
         property string language: "en"

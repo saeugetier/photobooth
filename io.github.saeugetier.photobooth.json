@@ -9,6 +9,7 @@
         "--share=network",
         "--device=all",
         "--filesystem=home",
+        "--filesystem=host:removable",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],

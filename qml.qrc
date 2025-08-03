@@ -94,5 +94,6 @@
         <file>shaders/previewshader.frag.qsb</file>
         <file>models/coco.names</file>
         <file>images/backgrounds/Stripes.png</file>
+        <file>qml/content/CustomFolderDialog.qml</file>
     </qresource>
 </RCC>

@@ -1,6 +1,10 @@
 import QtQuick
 import QtMultimedia
 import QtQuick.Controls
+import QtQuick.Dialogs
+import Qt.labs.platform
+import QtQml
+import "content"
 
 SettingsMenuForm {
     id: form
@@ -72,6 +76,50 @@ SettingsMenuForm {
         var index = comboBoxPrinter.find(applicationSettings.printerName)
         comboBoxPrinter.currentIndex = index
         console.log("index: " + Number(index).toString())
+    }
+
+    function delay(delayTime, cb) {
+        timer = new Timer();
+        timer.interval = delayTime;
+        timer.repeat = false;
+        timer.triggered.connect(cb);
+        timer.start();
+    }
+
+    CustomFolderDialog {
+        id: pictureFolderDialog
+        title: qsTr("Select Pictures Folder")
+        anchors.centerIn: parent
+        width: parent.width - 100
+        height: parent.height - 100
+
+        Timer
+        {
+            id: folderCheckTimer
+            interval: 1000
+            running: false
+            repeat: false
+            onTriggered: function() {
+                filesystem.checkImageFolders()
+                console.log("Checked folder: " + applicationSettings.foldername)
+            }
+        }
+
+        onAccepted: function()
+        {
+            console.log("Selected folder: " + pictureFolderDialog.currentFolder)
+            applicationSettings.foldername = pictureFolderDialog.currentFolder
+            applicationSettings.sync()
+
+            folderCheckTimer.start()
+        }
+    }
+
+    buttonSelectPhotoDirectory.onClicked:
+    {
+        pictureFolderDialog.currentFolder = applicationSettings.foldername
+        console.log("selecting pictures folder: " + pictureFolderDialog.currentFolder)
+        pictureFolderDialog.open()
     }
 
     buttonClose.onClicked:

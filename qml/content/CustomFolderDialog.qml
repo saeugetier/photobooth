@@ -14,7 +14,7 @@ Dialog {
     standardButtons: Dialog.NoButton
 
     property url currentFolder: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
-    signal accepted(url folderUrl)
+
     signal canceled()
 
     property bool createMode: false
@@ -167,7 +167,7 @@ Dialog {
                 Button {
                     text: "Select"
                     onClicked: {
-                        root.accepted(root.currentFolder)
+                        root.accepted()
                         root.close()
                     }
                 }

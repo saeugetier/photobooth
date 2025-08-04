@@ -30,26 +30,73 @@ Dialog {
             spacing: 10
 
             Text {
-                text: "Select Folder"
+                text: qsTr("Select Folder")
                 font.pixelSize: 20
                 Layout.alignment: Qt.AlignHCenter
             }
 
-            // Path display field (read-only)
-            Label {
-                text: currentFolder
+            RowLayout {
+                id: breadcrumbBar
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignLeft
-                wrapMode: Text.WrapAnywhere
-                font.pixelSize: 14
+                spacing: 4
+
+                // Root Button "/"
+                Button {
+                    text: "/"
+                    font.pixelSize: 14
+                    onClicked: {
+                        root.currentFolder = "file:///"
+                        folderModel.folder = root.currentFolder
+                    }
+                }
+
+                Repeater {
+                    model:{
+                        var path = root.currentFolder.toString().replace("file://", "")
+                        var segments = path.split("/").filter(s => s.length > 0)
+                        return segments
+                    }
+
+                    delegate: RowLayout {
+                        spacing: 2
+
+                        Button {
+                            text: modelData === "/" ? "/" : modelData
+                            font.pixelSize: 14
+                            onClicked: {
+                                let segments = root.currentFolder.toString().replace("file://", "").split("/").filter(s => s.length > 0)
+                                let newPath = "/" + segments.slice(0, index + 1).join("/")
+                                root.currentFolder = "file://" + newPath
+                                folderModel.folder = root.currentFolder
+
+                            }
+                        }
+
+                        Text {
+                            text: index < breadcrumbBarRepeater.count - 1 ? " / " : ""
+                            font.pixelSize: 14
+                            color: Material.foreground
+                        }
+                    }
+
+                    id: breadcrumbBarRepeater
+                }
+            }
+
+            RowLayout {
+                ToolSeparator {
+                    Layout.fillWidth: true
+                    orientation: Qt.Horizontal
+                }
             }
 
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
 
+
                 Button {
-                    text: "Go Up"
+                    text: qsTr("Parent folder")
                     enabled: currentFolder !== "file:///"
                     onClicked: {
                         var path = currentFolder.toString().replace("file://", "")
@@ -68,13 +115,24 @@ Dialog {
                     }
                 }
 
+                Item {
+                    Layout.fillWidth: true
+                }
+
                 Button {
-                    text: createMode ? "Cancel" : "New Folder"
+                    text: createMode ? qsTr("Cancel") : qsTr("New Folder")
                     onClicked: {
                         createMode = !createMode
                         if (!createMode)
                             newFolderNameField.text = ""
                     }
+                }
+            }
+
+            RowLayout {
+                ToolSeparator {
+                    Layout.fillWidth: true
+                    orientation: Qt.Horizontal
                 }
             }
 
@@ -104,20 +162,20 @@ Dialog {
                     Button {
                         text: "Create"
                         onClicked: {
-                                const name = newFolderNameField.text.trim()
-                                if (name.length > 0) {
-                                    var basePath = currentFolder.toString().replace("file://", "")
-                                    var newPath = basePath + "/" + name
-                                    var success = filesystem.createFolder(newPath)
-                                    console.log("Folder created:", success, newPath)
+                            const name = newFolderNameField.text.trim()
+                            if (name.length > 0) {
+                                var basePath = currentFolder.toString().replace("file://", "")
+                                var newPath = basePath + "/" + name
+                                var success = filesystem.createFolder(newPath)
+                                console.log("Folder created:", success, newPath)
 
-                                    if (success) {
-                                        createMode = false
-                                        newFolderNameField.text = ""
-                                        Qt.inputMethod.hide()
-                                    }
+                                if (success) {
+                                    createMode = false
+                                    newFolderNameField.text = ""
+                                    Qt.inputMethod.hide()
                                 }
                             }
+                        }
                     }
                 }
             }
@@ -127,6 +185,10 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
+
+                ScrollBar.vertical: ScrollBar {
+                            policy: ScrollBar.AlwaysOn
+                        }
 
                 model: FolderListModel {
                     id: folderModel
@@ -186,8 +248,9 @@ Dialog {
         InputPanel {
             id: inputPanel
             y: parent.height - height
-            width: parent.width
+            width: parent.width > 600 ? 600 : parent.width
             visible: Qt.inputMethod.visible && createMode
+            anchors.horizontalCenter: parent.horizontalCenter
             z: 100
         }
     }

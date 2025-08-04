@@ -101,6 +101,7 @@ Item {
                         Label {
                             id: labelPhotoDirectory
                             Layout.fillWidth: true
+                            text: applicationSettings.foldername
                         }
                         Item {
                             Layout.fillWidth: true

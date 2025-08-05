@@ -70,10 +70,40 @@ QUrl FileSystem::findFile(QString filename, QList<QUrl> searchPaths, bool search
 QString FileSystem::getImagePath()
 {
     QSettings settings("saeugetier", "qtbooth");
+    settings.sync();
     if(settings.contains("Application/foldername"))
         return settings.value("Application/foldername").value<QString>();
     else
         return "file://" + QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+}
+
+bool FileSystem::createFolder(const QString &path)
+{
+    if(path.length() == 0)
+    {
+        qDebug() << "Filesystem Error: path is empty!";
+        return false;
+    }
+
+    QDir dir(path);
+    if(!dir.exists())
+    {
+        if(dir.mkpath("."))
+        {
+            qDebug() << "Created folder: " << path;
+            return true;
+        }
+        else
+        {
+            qDebug() << "Filesystem Error: Could not create folder: " << path;
+            return false;
+        }
+    }
+    else
+    {
+        qDebug() << "Folder already exists: " << path;
+        return true;
+    }
 }
 
 void FileSystem::checkImageFolders()

@@ -28,6 +28,7 @@ Item {
     property alias versionText: labelVersionText.text
     property alias comboBoxCameraOrientation: comboBoxCameraOrientation
     property alias comboBoxNeuralNetworkRuntime: comboBoxNeuralNetworkRuntime
+    property alias buttonSelectPhotoDirectory: buttonSelectPhotoDirectory
 
     ColumnLayout {
         anchors.fill: parent
@@ -91,6 +92,25 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 20
                     spacing: 20
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Photo Directory: ")
+                        }
+                        Label {
+                            id: labelPhotoDirectory
+                            Layout.fillWidth: true
+                            text: applicationSettings.foldername
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Button {
+                            id: buttonSelectPhotoDirectory
+                            text: qsTr("Browse")
+                        }
+                    }
 
                     Button {
                         id: buttonCopyPhotos

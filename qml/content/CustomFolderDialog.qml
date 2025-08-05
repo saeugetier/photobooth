@@ -81,39 +81,6 @@ Dialog {
 
                     id: breadcrumbBarRepeater
                 }
-            }
-
-            RowLayout {
-                ToolSeparator {
-                    Layout.fillWidth: true
-                    orientation: Qt.Horizontal
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 10
-
-
-                Button {
-                    text: qsTr("Parent folder")
-                    enabled: currentFolder !== "file:///"
-                    onClicked: {
-                        var path = currentFolder.toString().replace("file://", "")
-                        if (path.endsWith("/")) path = path.slice(0, -1)
-                        var parts = path.split("/")
-
-                        if (parts.length > 1) {
-                            parts.pop() // Go up one folder
-                        } else {
-                            parts = [""] // Ensure root "/"
-                        }
-
-                        var newPath = "file://" + (parts.join("/") || "/")
-                        currentFolder = newPath
-                        folderModel.folder = currentFolder
-                    }
-                }
 
                 Item {
                     Layout.fillWidth: true

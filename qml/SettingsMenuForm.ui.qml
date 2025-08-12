@@ -21,6 +21,7 @@ Item {
     property alias switchPrinter: switchPrinter
     property alias switchPrintFromGallery: switchPrintFromGallery
     property alias buttonCopyPhotos: buttonCopyPhotos
+    property alias buttonCopyPhotosCustomLocation: buttonCopyPhotosCustomLocation
     property alias switchMirrorCamera: switchMirrorCamera
     property alias comboBoxPrinter: comboBoxPrinter
     property alias comboBoxCamera: comboBoxCamera
@@ -115,6 +116,16 @@ Item {
                     Button {
                         id: buttonCopyPhotos
                         text: qsTr("Copy photos to removable disk")
+                    }
+
+                    Button {
+                        id: buttonCopyPhotosCustomLocation
+                        text: qsTr("Copy photos to custom location")
+                    }
+
+                    ToolSeparator {
+                        Layout.fillWidth: true
+                        orientation: Qt.Horizontal
                     }
 
                     DelayButton {

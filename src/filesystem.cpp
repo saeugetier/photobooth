@@ -144,14 +144,23 @@ void FileSystem::unmountRemoveableDrive()
     unmountProcess.waitForFinished();
 }
 
-void FileSystem::startCopyFilesToRemovableDrive()
+void FileSystem::startCopyFilesToPath(const QString &path)
 {
     QString imagePath = this->getImagePath();
     imagePath = imagePath.right(imagePath.length() - QString("file://").length());
-    QString removableDrivePath = this->getRemovableDrivePath();
-    qDebug() << "Try to copy all images to removable drive";
 
-    if(removableDrivePath.length())
+    QString copyPath;
+    if (path.startsWith("file://", Qt::CaseInsensitive))
+    {
+        QUrl url(path);
+        copyPath = QUrl(path).toLocalFile();
+    }
+    else
+    {
+        copyPath = path;
+    }
+
+    if(copyPath.length())
     {
         QDir imageDir(imagePath);
         QStringList filters;
@@ -161,7 +170,7 @@ void FileSystem::startCopyFilesToRemovableDrive()
         if(!imageDir.isEmpty() && imageDir.exists())
         {
             qDebug() << "Image folder not empty and found removable disc. Copying...";
-            m_copyFuture = QtConcurrent::run([removableDrivePath,imagePath, this]() {
+            m_copyFuture = QtConcurrent::run([copyPath,imagePath, this]() {
                 QDir imageDir(imagePath);
                 QStringList filters;
                 filters << "*.jpg" << "*.JPG";
@@ -174,13 +183,13 @@ void FileSystem::startCopyFilesToRemovableDrive()
                 for(i = 0; i < files.count() && !this->m_copyFuture.isCanceled(); i++)
                 {
                     int progress = (100 * i + 1) / files.count();
-                    qDebug() << "Copy file: " << imagePath + "/" + files[i] << " to: " << removableDrivePath + "/" + files[i] << " Progress: " << progress;
-                    if(QFile::exists(removableDrivePath + "/" + files[i]))
-                        QFile::remove(removableDrivePath + "/" + files[i]);
+                    qDebug() << "Copy file: " << imagePath + "/" + files[i] << " to: " << copyPath + "/" + files[i] << " Progress: " << progress;
+                    if(QFile::exists(copyPath + "/" + files[i]))
+                        QFile::remove(copyPath + "/" + files[i]);
 
-                    if(!QFile::copy(imagePath + "/" + files[i], removableDrivePath + "/" + files[i]))
+                    if(!QFile::copy(imagePath + "/" + files[i], copyPath + "/" + files[i]))
                     {
-                        if(!QFile::copy(imagePath + "/collage/" + files[i], removableDrivePath + "/" + files[i]))
+                        if(!QFile::copy(imagePath + "/collage/" + files[i], copyPath + "/" + files[i]))
                         {
                             qDebug() << "Copying file: " << files[i] << " was not successfull";
                         }
@@ -211,7 +220,7 @@ void FileSystem::startCopyFilesToRemovableDrive()
 QString FileSystem::getRemovableDrivePath()
 {
     static QRegularExpression regexDrive("\\/dev\\/sd*");
-    static QRegularExpression regexBoot("\\/boot");
+    static QRegularExpression regexBoot("^/(boot|home|tmp)?$");
     QList<QStorageInfo> drives = QStorageInfo::mountedVolumes();
     for(int i = 0; i < drives.count(); i++)
     {

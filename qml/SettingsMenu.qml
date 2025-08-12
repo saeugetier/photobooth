@@ -115,11 +115,33 @@ SettingsMenuForm {
         }
     }
 
+    CustomFolderDialog
+    {
+        id: pictureCopyFolderDialog
+        title: qsTr("Select Copy Pictures Folder")
+        anchors.centerIn: parent
+        width: parent.width - 100
+        height: parent.height - 100
+
+        onAccepted: function()
+        {
+            console.log("Selected copy folder: " + pictureCopyFolderDialog.currentFolder)
+            copyProgressPopup.targetPath = pictureCopyFolderDialog.currentFolder
+            copyProgressPopup.open()
+        }
+    }
+
     buttonSelectPhotoDirectory.onClicked:
     {
         pictureFolderDialog.currentFolder = applicationSettings.foldername
         console.log("selecting pictures folder: " + pictureFolderDialog.currentFolder)
         pictureFolderDialog.open()
+    }
+
+    buttonCopyPhotosCustomLocation.onClicked:
+    {
+        pictureCopyFolderDialog.currentFolder = StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        pictureCopyFolderDialog.open()
     }
 
     buttonClose.onClicked:
@@ -139,6 +161,7 @@ SettingsMenuForm {
 
     buttonCopyPhotos.onClicked:
     {
+        copyProgressPopup.targetPath = filesystem.getRemovableDrivePath()
         copyProgressPopup.open()
     }
 

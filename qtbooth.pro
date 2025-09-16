@@ -10,6 +10,7 @@ CONFIG += c++17 qml_debug
 }
 
 SOURCES += src/collageiconmodel.cpp \
+    src/captureprocessor.cpp \
     src/collageimagemodel.cpp \
     src/collagemodelfactory.cpp \
     src/fakeprinter.cpp \
@@ -57,6 +58,7 @@ INCLUDEPATH += src/ \
 HEADERS += \
     src/abstractprinter.h \
     src/call_once.h \
+    src/captureprocessor.h \
     src/collageiconmodel.h \
     src/collageimagemodel.h \
     src/collagemodelfactory.h \

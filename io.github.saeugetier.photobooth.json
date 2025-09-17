@@ -115,32 +115,17 @@
         {
             "name": "yolo-models",
             "buildsystem": "simple",
-            "build-options": {
-                "build-args": [
-                    "--share=network"
-                ]
-            },
             "build-commands": [
-                "python3 -m venv yolo-venv",
-                ". yolo-venv/bin/activate && pip install --no-cache-dir numpy==1.26.4",
-                ". yolo-venv/bin/activate && pip install --no-cache-dir torch==2.4.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu",
-                ". yolo-venv/bin/activate && pip install --no-cache-dir ultralytics==8.3.168 onnxruntime onnx==1.16.1 onnxslim==0.1.59 ncnn==1.0.20250503 rknn-toolkit2==2.3.2",
-                ". yolo-venv/bin/activate && yolo export model=yolo11n-seg.pt format=onnx",
-                ". yolo-venv/bin/activate && yolo export model=yolo11x-seg.pt format=onnx",
-                ". yolo-venv/bin/activate && yolo export model=yolo11n-seg.pt format=ncnn",
-                ". yolo-venv/bin/activate && yolo export model=yolo11x-seg.pt format=ncnn",
-                "rm -rf yolo-venv"
-            ],
-            "post-install": [
-                "rm *.pt",
-                "rm *.torchscript",
-                "mkdir ${FLATPAK_DEST}/share/models",
-                "mv * ${FLATPAK_DEST}/share/models"
+                "mkdir -p ${FLATPAK_DEST}/share/models",
+                "install -Dm644 *.onnx ${FLATPAK_DEST}/share/models/",
+                "install -Dm644 coco.names ${FLATPAK_DEST}/share/models/",
+                "for d in *_model; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done"
             ],
             "sources": [
                 {
-                    "type": "file",
-                    "path": "models/coco.names"
+                    "type": "archive",
+                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.1.0/yolo-models-v0.1.0.tar.gz",
+                    "sha256": "48dd52be9d6ab57ce45e237e0a39fbe99275bd19e30a695df6db29e6b1ab65fb"
                 }
             ]
         },

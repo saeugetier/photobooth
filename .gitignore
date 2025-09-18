@@ -1,7 +1,13 @@
 build
+builddir
+repo
+.flatpak-builder
 software/build*
 libs
 flatpak/build-dir
 flatpak/repo
 flatpak/.flatpak-builder
 *.user
+models/*.bin
+models/*.param
+logs

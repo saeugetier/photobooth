@@ -27,8 +27,8 @@
         <file>qml/MainMenuForm.ui.qml</file>
         <file>qml/SettingsPassword.qml</file>
         <file>qml/SettingsPasswordForm.ui.qml</file>
-        <file>qml/SettingsPopup.qml</file>
-        <file>qml/SettingsPopupForm.ui.qml</file>
+        <file>qml/SettingsMenu.qml</file>
+        <file>qml/SettingsMenuForm.ui.qml</file>
         <file>qml/SnapshotMenu.qml</file>
         <file>qml/SnapshotMenuForm.ui.qml</file>
         <file>qml/SnapshotSettings.qml</file>
@@ -94,5 +94,6 @@
         <file>shaders/previewshader.frag.qsb</file>
         <file>models/coco.names</file>
         <file>images/backgrounds/Stripes.png</file>
+        <file>qml/content/CustomFolderDialog.qml</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@ CONFIG += c++17 qml_debug
 }
 
 SOURCES += src/collageiconmodel.cpp \
+    src/captureprocessor.cpp \
     src/collageimagemodel.cpp \
     src/collagemodelfactory.cpp \
     src/fakeprinter.cpp \
@@ -21,15 +22,15 @@ SOURCES += src/collageiconmodel.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
     src/replacebackgroundvideofilter.cpp \
+    src/segmentation.cpp \
     src/selphyprinter.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp \
-    src/yolo11seg.cpp
+    src/yolo11segncnn.cpp \
+    src/yolo11segonnx.cpp
 
-RESOURCES += qml.qrc \
-    yolomodel.large.qrc \
-    yolomodel.small.qrc
+RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -52,10 +53,12 @@ DISTFILES += \
 
 INCLUDEPATH += src/ \
     libs/onnxruntime/include/ \
+    libs/ncnn/include/ \
 
 HEADERS += \
     src/abstractprinter.h \
     src/call_once.h \
+    src/captureprocessor.h \
     src/collageiconmodel.h \
     src/collageimagemodel.h \
     src/collagemodelfactory.h \
@@ -67,11 +70,14 @@ HEADERS += \
     src/noprinter.h \
     src/printerfactory.h \
     src/replacebackgroundvideofilter.h \
+    src/segmentation.h \
     src/selphyprinter.h \
     src/standardprinter.h \
     src/system.h \
     src/translationhelper.h \
-    src/yolo11seg.h
+    src/yolo11segncnn.h \
+    src/yolo11segonnx.h \
+    src/yolobackend.h
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_PACKAGE_SOURCE_DIR = \
@@ -81,6 +87,7 @@ contains(ANDROID_TARGET_ARCH,x86) {
 DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
+LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
 
 !isEmpty(PREFIX) {
     INSTALLS += target

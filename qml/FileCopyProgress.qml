@@ -5,6 +5,7 @@ FileCopyProgressForm {
     standardButtons: Dialog.Cancel
     id: copyFileDialog
     closePolicy: Popup.CloseOnEscape
+    property string targetPath : ""
 
     Connections
     {
@@ -20,7 +21,7 @@ FileCopyProgressForm {
 
     onOpened:
     {
-        filesystem.startCopyFilesToRemovableDrive()
+        filesystem.startCopyFilesToPath(targetPath)
     }
 
     function updateProgress(progress)
@@ -32,10 +33,5 @@ FileCopyProgressForm {
     {
         console.log("Cancel copy")
         filesystem.abortCopy()
-    }
-
-    onClosed:
-    {
-        filesystem.unmountRemoveableDrive()
     }
 }

@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
 import BackgroundFilter
+import CaptureProcessor
 
 Item {
    id: renderer
@@ -41,6 +42,29 @@ Item {
                          }
                       }
 
+   CaptureProcessor
+   {
+      id: captureProcessor
+
+      rotation: applicationSettings.cameraOrientation
+
+      onCaptureSaved: fileName =>
+                      {
+
+                         if(backgroundFilterEnabled)
+                         {
+                            console.log("Process file: " + fileName)
+                            backgroundFilter.processCapture(fileName)
+                         }
+                         else
+                         {
+                            renderer.state = "preview"
+                            savedPhoto("file:" + fileName)
+                            console.log("Saved: " + fileName)
+                         }
+                      }
+   }
+
    CaptureSession {
 
       camera: Camera {
@@ -60,25 +84,25 @@ Item {
       imageCapture: ImageCapture {
          id: imageCapture
 
-         onImageSaved: (_, fileName) => {
+         onImageCaptured:
+                          {
+                             whiteOverlay.state = "released"
+                             renderer.state = "store"
+                             console.log("Captured")
 
-                          if(backgroundFilterEnabled)
-                          {
-                             console.log("Process file: " + fileName)
-                             backgroundFilter.processCapture(fileName)
+                             console.log(applicationSettings.foldername.toString())
+                             var path = applicationSettings.foldername.toString()
+                             if(backgroundFilterEnabled)
+                             {
+                                path = path + "/raw"
+                             }
+                             path = path.replace(/^(file:\/{2})/, "")
+                             var cleanPath = decodeURIComponent(path)
+                             console.log(cleanPath)
+
+                             captureProcessor.saveCapture(preview, cleanPath + "/Pict_" + new Date().toLocaleString(
+                                                             locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
                           }
-                          else
-                          {
-                             renderer.state = "preview"
-                             savedPhoto("file:" + fileName)
-                             console.log("Saved: " + fileName)
-                          }
-                       }
-         onImageCaptured: {
-            whiteOverlay.state = "released"
-            renderer.state = "store"
-            console.log("Captured")
-         }
          onErrorOccurred: {
             renderer.state = "preview"
             failed()
@@ -120,14 +144,15 @@ Item {
       videoSink: output.videoSink
       background: backgroundImage
 
-      onCaptureProcessingFinished: {
-         console.log("Capture processing finished")
-         if (backgroundFilterEnabled) {
-            renderer.state = "preview"
-            savedPhoto("file:" + fileName)
-            console.log("Saved: " + fileName)
-         }
-      }
+      onCaptureProcessingFinished: fileName =>
+                                   {
+                                      console.log("Capture processing finished")
+                                      if (backgroundFilterEnabled) {
+                                         renderer.state = "preview"
+                                         savedPhoto("file:" + fileName)
+                                         console.log("Saved: " + fileName)
+                                      }
+                                   }
    }
 
    Connections {
@@ -221,18 +246,7 @@ Item {
    function takePhoto() {
       if (cameraSession.imageCapture.readyForCapture) {
          state = "snapshot"
-         console.log(applicationSettings.foldername.toString())
-         var path = applicationSettings.foldername.toString()
-         if(backgroundFilterEnabled)
-         {
-            path = path + "/raw"
-         }
-         path = path.replace(/^(file:\/{2})/, "")
-         var cleanPath = decodeURIComponent(path)
-         console.log(cleanPath)
-         cameraSession.imageCapture.captureToFile(
-                  cleanPath + "/Pict_" + new Date().toLocaleString(
-                     locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
+         cameraSession.imageCapture.capture()
       } else {
          renderer.state = "preview"
          failed()
@@ -240,9 +254,9 @@ Item {
    }
 
    BusyIndicator {
-       id: busyIndicator
-       anchors.centerIn: parent
-       visible: false
+      id: busyIndicator
+      anchors.centerIn: parent
+      visible: false
    }
 
    states: [

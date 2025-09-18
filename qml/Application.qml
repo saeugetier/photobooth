@@ -42,7 +42,7 @@ ApplicationWindow {
         id: printerFactory
         Component.onCompleted:
         {
-            flow.mainMenu.settingsPopup.comboBoxPrinter.model = printerFactory.printers
+            flow.settingsMenu.comboBoxPrinter.model = printerFactory.printers
         }
     }
 
@@ -76,81 +76,88 @@ ApplicationWindow {
         width: parent.width
         collageMenu.printer : printer
 
-        mainMenu.settingsPopup.switchPrinter.onCheckedChanged:
+        settingsMenu.switchPrinter.onCheckedChanged:
         {
-            applicationSettings.printEnable = mainMenu.settingsPopup.switchPrinter.checked
+            applicationSettings.printEnable = settingsMenu.switchPrinter.checked
         }
 
-        mainMenu.settingsPopup.switchMultiplePrints.onCheckedChanged:
+        settingsMenu.switchMultiplePrints.onCheckedChanged:
         {
-            applicationSettings.multiplePrints = mainMenu.settingsPopup.switchMultiplePrints.checked
+            applicationSettings.multiplePrints = settingsMenu.switchMultiplePrints.checked
         }
 
-        mainMenu.settingsPopup.switchPrintFromGallery.onCheckedChanged:
+        settingsMenu.switchPrintFromGallery.onCheckedChanged:
         {
-            applicationSettings.printFromGallery = mainMenu.settingsPopup.switchPrintFromGallery.checked
+            applicationSettings.printFromGallery = settingsMenu.switchPrintFromGallery.checked
         }
 
-        mainMenu.settingsPopup.switchHideSnapshotSettings.onCheckedChanged:
+        settingsMenu.switchHideSnapshotSettings.onCheckedChanged:
         {
-            applicationSettings.disableSnapshotSettingsPane = mainMenu.settingsPopup.switchHideSnapshotSettings.checked
+            applicationSettings.disableSnapshotSettingsPane = settingsMenu.switchHideSnapshotSettings.checked
         }
 
-        mainMenu.settingsPopup.switchHideEffectPopup.onCheckedChanged:
+        settingsMenu.switchHideEffectPopup.onCheckedChanged:
         {
-            applicationSettings.disableEffectPopup = mainMenu.settingsPopup.switchHideEffectPopup.checked
+            applicationSettings.disableEffectPopup = settingsMenu.switchHideEffectPopup.checked
         }
 
-        mainMenu.settingsPopup.comboBoxLanguages.onDisplayTextChanged:
+        settingsMenu.comboBoxLanguages.onDisplayTextChanged:
         {
-            applicationSettings.language = mainMenu.settingsPopup.comboBoxLanguages.displayText
-            console.log("Language changed to: " + mainMenu.settingsPopup.comboBoxLanguages.displayText)
+            applicationSettings.language = settingsMenu.comboBoxLanguages.displayText
+            console.log("Language changed to: " + settingsMenu.comboBoxLanguages.displayText)
             translation.setLanguage(applicationSettings.language)
         }
 
-        mainMenu.settingsPopup.switchMirrorCamera.onCheckedChanged:
+        settingsMenu.switchMirrorCamera.onCheckedChanged:
         {
-            applicationSettings.cameraMirrored = mainMenu.settingsPopup.switchMirrorCamera.checked
+            applicationSettings.cameraMirrored = settingsMenu.switchMirrorCamera.checked
         }
 
-        mainMenu.settingsPopup.comboBoxLanguages.onCountChanged:
+        settingsMenu.comboBoxLanguages.onCountChanged:
         {
-            if(mainMenu.settingsPopup.comboBoxLanguages.count !== 0)
+            if(settingsMenu.comboBoxLanguages.count !== 0)
             {
-                var indexOfLanguage = mainMenu.settingsPopup.comboBoxLanguages.find(applicationSettings.language)
-                mainMenu.settingsPopup.comboBoxLanguages.currentIndex = indexOfLanguage
-                console.log("Language selected: " + Number(indexOfLanguage).toString() + " - " + applicationSettings.language + " - " + Number(mainMenu.settingsPopup.comboBoxLanguages.count).toString())
+                var indexOfLanguage = settingsMenu.comboBoxLanguages.find(applicationSettings.language)
+                settingsMenu.comboBoxLanguages.currentIndex = indexOfLanguage
+                console.log("Language selected: " + Number(indexOfLanguage).toString() + " - " + applicationSettings.language + " - " + Number(settingsMenu.comboBoxLanguages.count).toString())
                 translation.setLanguage(applicationSettings.language)
             }
         }
 
-        mainMenu.settingsPopup.comboBoxPrinter.onCurrentTextChanged:
+        settingsMenu.comboBoxPrinter.onCurrentTextChanged:
         {
-            if(flow.mainMenu.settingsPopup.opened)
+            if(flow.settingsMenu.opened)
             {
-                applicationSettings.printerName = mainMenu.settingsPopup.comboBoxPrinter.currentText
+                applicationSettings.printerName = settingsMenu.comboBoxPrinter.currentText
             }
         }
 
-        mainMenu.settingsPopup.comboWindowMode.onCurrentIndexChanged:
+        settingsMenu.comboWindowMode.onCurrentIndexChanged:
         {
-            applicationSettings.windowMode = mainMenu.settingsPopup.comboWindowMode.currentIndex === 0 ? Window.Maximized : Window.FullScreen
+            applicationSettings.windowMode = settingsMenu.comboWindowMode.currentIndex === 0 ? Window.Maximized : Window.FullScreen
+            console.log("Window mode changed to: " + applicationSettings.windowMode)
         }
 
-        mainMenu.settingsPopup.comboBoxCamera.onCurrentIndexChanged:
+        settingsMenu.comboBoxCamera.onCurrentIndexChanged:
         {
-            applicationSettings.cameraName = mainMenu.settingsPopup.comboBoxCamera.currentText
+            applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentText
         }
 
-        mainMenu.settingsPopup.switchEnableSettingsPassword.onCheckedChanged:
+        settingsMenu.switchEnableSettingsPassword.onCheckedChanged:
         {
-            applicationSettings.enableSettingsPassword = mainMenu.settingsPopup.switchEnableSettingsPassword.checked
+            applicationSettings.enableSettingsPassword = settingsMenu.switchEnableSettingsPassword.checked
         }
 
-        mainMenu.settingsPopup.comboBoxCameraOrientation.onCurrentValueChanged:
+        settingsMenu.comboBoxCameraOrientation.onCurrentValueChanged:
         {
-            applicationSettings.cameraOrientation = Number(mainMenu.settingsPopup.comboBoxCameraOrientation.currentValue)
+            applicationSettings.cameraOrientation = Number(settingsMenu.comboBoxCameraOrientation.currentValue)
             console.log("Camera orientation changed to: " + applicationSettings.cameraOrientation)
+        }
+
+        settingsMenu.comboBoxNeuralNetworkRuntime.onCurrentValueChanged:
+        {
+            applicationSettings.neuralNetworkRuntime = String(settingsMenu.comboBoxNeuralNetworkRuntime.currentValue)
+            console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
         }
 
         mainMenu.printerBusy: printer ? printer.busy : false
@@ -160,13 +167,13 @@ ApplicationWindow {
     {
         id: applicationSettings
         category: "Application"
-        property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation)
+        property url foldername: StandardPaths.writableLocation(StandardPaths.PicturesLocation) + "/photobooth"
         property bool printEnable: true
         property string password: "0815"
         property string language: "en"
         property bool cameraMirrored: true
         property string printerName: "No Printer"
-        property int windowMode: Window.Maximized
+        property int windowMode: Number(Window.Maximized)
         property bool multiplePrints: false
         property bool disableSnapshotSettingsPane: false
         property bool disableEffectPopup: false
@@ -174,22 +181,24 @@ ApplicationWindow {
         property bool printFromGallery: true
         property bool enableSettingsPassword: true
         property int cameraOrientation: 0
+        property string neuralNetworkRuntime: "ONNX"
 
         Component.onCompleted:
         {
-            flow.mainMenu.settingsPopup.printerEnabled.checked = printEnable
-            flow.mainMenu.settingsPopup.switchPrintFromGallery.checked = printFromGallery
-            flow.mainMenu.settingsPopup.switchMultiplePrints.checked = multiplePrints
+            flow.settingsMenu.printerEnabled.checked = printEnable
+            flow.settingsMenu.switchPrintFromGallery.checked = printFromGallery
+            flow.settingsMenu.switchMultiplePrints.checked = multiplePrints
             flow.mainMenu.settingsPinCode = password
-            flow.mainMenu.settingsPopup.mirrorCamera.checked = cameraMirrored
-            flow.mainMenu.settingsPopup.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
-            flow.mainMenu.settingsPopup.switchHideEffectPopup.checked = disableEffectPopup
-            flow.mainMenu.settingsPopup.switchEnableSettingsPassword.checked = enableSettingsPassword
-            flow.mainMenu.settingsPopup.comboBoxCameraOrientation.currentIndex = flow.mainMenu.settingsPopup.comboBoxCameraOrientation.indexOfValue(cameraOrientation)
+            flow.settingsMenu.mirrorCamera.checked = cameraMirrored
+            flow.settingsMenu.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
+            flow.settingsMenu.switchHideEffectPopup.checked = disableEffectPopup
+            flow.settingsMenu.switchEnableSettingsPassword.checked = enableSettingsPassword
+            flow.settingsMenu.comboBoxCameraOrientation.currentIndex = flow.settingsMenu.comboBoxCameraOrientation.indexOfValue(cameraOrientation)
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
             flow.imagePreview.effectButton.visible = !disableEffectPopup
+            flow.settingsMenu.comboBoxNeuralNetworkRuntime.currentIndex = flow.settingsMenu.comboBoxNeuralNetworkRuntime.indexOfValue(neuralNetworkRuntime)
         }
 
         onPrinterNameChanged:
@@ -220,7 +229,7 @@ ApplicationWindow {
         onCameraNameChanged:
         {
             print("Camera changed to " + cameraName)
-            var id = flow.mainMenu.settingsPopup.findDeviceId(cameraName)
+            var id = flow.settingsMenu.findDeviceId(cameraName)
             print("Found ID: " + id)
             flow.snapshotMenu.cameraRenderer.deviceId = id
         }

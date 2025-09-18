@@ -9,6 +9,7 @@
         "--share=network",
         "--device=all",
         "--filesystem=home",
+        "--filesystem=host:removable",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],
@@ -45,7 +46,7 @@
             ],
             "cleanup": [
                 "/bin/*",
-                "/share/opencv4/*"
+                "/share/*"
             ]
         },
         {
@@ -76,13 +77,32 @@
             ]
         },
         {
+            "name": "ncnn",
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "config-opts": [
+                "-DNCNN_BUILD_TESTS=OFF",
+                "-DNCNN_BUILD_EXAMPLES=OFF",
+                "-DNCNN_BUILD_TOOLS=OFF",
+                "-DNCNN_BUILD_BENCHMARK=OFF",
+                "-DNCNN_SHARED_LIB=ON"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/Tencent/ncnn/archive/refs/tags/20250503.tar.gz",
+                    "sha256": "3afea4cf092ce97d06305b72c6affbcfb3530f536ae8e81a4f22007d82b729e9"
+                }
+            ]
+        },
+        {
             "name": "qtvirtualkeyboard",
             "buildsystem": "cmake-ninja",
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.qt.io/official_releases/qt/6.9/6.9.0/submodules/qtvirtualkeyboard-everywhere-src-6.9.0.tar.xz",
-                    "sha256": "b85489ffbdd50cc42ea6a74f266215782045668a99cafc73007f6b4b28d69127"
+                    "url": "https://download.qt.io/official_releases/qt/6.9/6.9.2/submodules/qtvirtualkeyboard-everywhere-src-6.9.2.tar.xz",
+                    "sha256": "7b4100da01bafa72e20ab4e1459dcda1e6048e70b4d650b3c578613f0ffc11e3"
                 }
             ],
             "post-install": [
@@ -90,6 +110,23 @@
                 "rm -rd ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu/pkgconfig",
                 "mv ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu/* /app/lib/",
                 "rmdir ${FLATPAK_DEST}/lib/${FLATPAK_ARCH}-linux-gnu"
+            ]
+        },
+        {
+            "name": "yolo-models",
+            "buildsystem": "simple",
+            "build-commands": [
+                "mkdir -p ${FLATPAK_DEST}/share/models",
+                "install -Dm644 *.onnx ${FLATPAK_DEST}/share/models/",
+                "install -Dm644 coco.names ${FLATPAK_DEST}/share/models/",
+                "for d in *_model; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.1.0/yolo-models-v0.1.0.tar.gz",
+                    "sha256": "48dd52be9d6ab57ce45e237e0a39fbe99275bd19e30a695df6db29e6b1ab65fb"
+                }
             ]
         },
         {

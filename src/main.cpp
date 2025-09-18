@@ -7,6 +7,7 @@
 #include <QQmlContext>
 #include <QTranslator>
 #include "translationhelper.h"
+#include "captureprocessor.h"
 #include "fakeprinter.h"
 #include "selphyprinter.h"
 #include "printerfactory.h"
@@ -111,6 +112,9 @@ int main(int argc, char *argv[])
     if (QFontDatabase::addApplicationFont(":/font/DejaVuSerif/DejaVuSerif.ttf") == -1)
         qWarning() << "Failed to load DejaVuSerif.ttf";
 
+    qDebug() << "Standard path: " << QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    qDebug() << "Standard path: " << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+
     qmlRegisterType<CollageModelFactory>("CollageModel", 1, 0, "CollageModelFactory");
     qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
     qmlRegisterUncreatableType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel", "CollageImageModel can only be created via CollageModeFactory");
@@ -120,6 +124,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 
     qmlRegisterType<System>("System", 1, 0, "System");
+
+    qmlRegisterType<CaptureProcessor>("CaptureProcessor", 1, 0, "CaptureProcessor");
 
     qmlRegisterInterface<AbstractPrinter>("AbstractPrinter", 1);
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");

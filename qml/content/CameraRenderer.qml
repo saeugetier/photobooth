@@ -5,6 +5,7 @@ import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
 import BackgroundFilter
 import CaptureProcessor
+import GPhotoCamera
 
 Item {
    id: renderer
@@ -63,6 +64,14 @@ Item {
                             console.log("Saved: " + fileName)
                          }
                       }
+   }
+
+   GPhotoCamera {
+      id: gphotoCamera
+      Component.onCompleted:
+      {
+         console.log(gphotoCamera.availableCameras())
+      }
    }
 
    CaptureSession {

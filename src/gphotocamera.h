@@ -3,8 +3,16 @@
 #include <QThread>
 #include <QStringList>
 
+#include <gphoto2/gphoto2-abilities-list.h>
+#include <gphoto2/gphoto2-context.h>
+#include <gphoto2/gphoto2-port.h>
+
 
 class GPhotoCameraWorker;
+
+using CameraAbilitiesListPtr = std::unique_ptr<CameraAbilitiesList, int (*)(CameraAbilitiesList*)>;
+using GPContextPtr = std::unique_ptr<GPContext, void (*)(GPContext*)>;
+using GPPortInfoListPtr = std::unique_ptr<GPPortInfoList, int (*)(GPPortInfoList*)>;
 
 class GPhotoCameraDevice : public QVideoFrameInput
 {
@@ -44,7 +52,10 @@ public slots:
 signals:
     void frameReady(const QVideoFrame &frame);
     void errorOccurred(const QString &error);
-private:
+protected:
+    GPContextPtr mContext;
+    GPPortInfoListPtr mPortInfoList;
+    CameraAbilitiesListPtr mAbilitiesList;
     // Add private members for camera handling
 };
 

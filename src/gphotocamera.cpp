@@ -1,6 +1,8 @@
 #include "gphotocamera.h"
 #include <gphoto2/gphoto2-camera.h>
 #include <gphoto2/gphoto2-context.h>
+#include <gphoto2/gphoto2-list.h>
+#include <gphoto2/gphoto2-port.h>
 
 GPhotoCameraDevice::GPhotoCameraDevice() : mWorker(new GPhotoCameraWorker() )
 {
@@ -40,8 +42,17 @@ void GPhotoCameraDevice::onFrameReady(const QVideoFrame &frame)
     sendVideoFrame(frame);
 }
 
-GPhotoCameraWorker::GPhotoCameraWorker()
+GPhotoCameraWorker::GPhotoCameraWorker() : mContext(gp_context_new(), gp_context_unref)
+    , mPortInfoList(nullptr, gp_port_info_list_free)
+    , mAbilitiesList(nullptr, gp_abilities_list_free)
 {
+    GPPortInfoList *piList;
+    gp_port_info_list_new(&piList);
+    mPortInfoList.reset(piList);
+
+    CameraAbilitiesList *caList;
+    gp_abilities_list_new(&caList);
+    mAbilitiesList.reset(caList);
 }
 GPhotoCameraWorker::~GPhotoCameraWorker()
 {
@@ -89,6 +100,14 @@ QStringList GPhotoCameraWorker::availableCameras() const
 void GPhotoCameraWorker::getPreviewFrame()
 {
     // Implement logic to get a preview frame from the camera and emit frameReady signal
+
+    // retrieve frame from selected gphoto camera 
+    
+    // convert to QImage
+
+    // and convert to QVideoFrame
+
+    // emit frameReady(videoFrame);
 }
 
 

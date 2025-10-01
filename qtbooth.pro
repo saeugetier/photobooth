@@ -90,7 +90,7 @@ DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
-LIBS += -lgphoto2
+LIBS += -lgphoto2 -lgphoto2_port
 
 !isEmpty(PREFIX) {
     INSTALLS += target

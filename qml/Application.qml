@@ -179,7 +179,7 @@ ApplicationWindow {
         property bool disableEffectPopup: false
         property string cameraName: ""
         property bool printFromGallery: true
-        property bool enableSettingsPassword: true
+        property bool enableSettingsPassword: false
         property int cameraOrientation: 0
         property string neuralNetworkRuntime: "ONNX"
 

@@ -2,10 +2,13 @@
 #include <QVideoFrameInput>
 #include <QThread>
 #include <QStringList>
+#include <QImage>
 
+#include <cstdint>
 #include <gphoto2/gphoto2-abilities-list.h>
 #include <gphoto2/gphoto2-context.h>
 #include <gphoto2/gphoto2-port.h>
+#include <gphoto2/gphoto2-camera.h>
 
 
 class GPhotoCameraWorker;
@@ -13,6 +16,8 @@ class GPhotoCameraWorker;
 using CameraAbilitiesListPtr = std::unique_ptr<CameraAbilitiesList, int (*)(CameraAbilitiesList*)>;
 using GPContextPtr = std::unique_ptr<GPContext, void (*)(GPContext*)>;
 using GPPortInfoListPtr = std::unique_ptr<GPPortInfoList, int (*)(GPPortInfoList*)>;
+using CameraFilePtr = std::unique_ptr<CameraFile, int (*)(CameraFile*)>;
+using CameraPtr = std::unique_ptr<Camera, int (*)(Camera*)>;
 
 class GPhotoCameraDevice : public QVideoFrameInput
 {
@@ -56,6 +61,10 @@ protected:
     GPContextPtr mContext;
     GPPortInfoListPtr mPortInfoList;
     CameraAbilitiesListPtr mAbilitiesList;
+    CameraPtr mCamera;
+    CameraFilePtr mPreviewFile;
+    bool mCameraStarted = false;
+    uint32_t mCapturingFailCount = 0;
     // Add private members for camera handling
 };
 

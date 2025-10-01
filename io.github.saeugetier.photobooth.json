@@ -142,8 +142,8 @@
                 {
                     "type": "git",
                     "url": "https://github.com/gphoto/libgphoto2.git",
-                    "tag": "v2.5.31",
-                    "commit": "ba28af2d22fd4cb7fa76a8ff569ba498e8021db5",
+                    "tag": "v2.5.32",
+                    "commit": "de1f0617b1ffa39c1980d1306343709c7dc0120e",
                     "x-checker-data": {
                         "type": "anitya",
                         "project-id": 12558,

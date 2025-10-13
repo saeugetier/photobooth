@@ -36,6 +36,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.7.3" date="2025-10-13">
+      <description translate="no">
+        <p>Fix release build. Used wrong version of QT plugin for virtual keyboard.</p>
+      </description>
+    </release>
     <release version="0.7.2" date="2025-10-01">
       <description translate="no">
         <p>Disable settings password by default.</p>

@@ -103,8 +103,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.qt.io/official_releases/qt/6.9/6.9.2/submodules/qtvirtualkeyboard-everywhere-src-6.9.2.tar.xz",
-                    "sha256": "7b4100da01bafa72e20ab4e1459dcda1e6048e70b4d650b3c578613f0ffc11e3"
+                    "url": "https://download.qt.io/official_releases/qt/6.9/6.9.3/submodules/qtvirtualkeyboard-everywhere-src-6.9.3.tar.xz",
+                    "sha256": "a1a0d5c91c9e7fe608867718c152272feae8560d920effa59c2c84b6dd415534"
                 }
             ],
             "post-install": [

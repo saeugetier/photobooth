@@ -22,6 +22,7 @@ using CameraPtr = std::unique_ptr<Camera, int (*)(Camera*)>;
 class GPhotoCameraDevice : public QVideoFrameInput
 {
     Q_OBJECT
+    Q_PROPERTY(QString cameraName READ getCameraName WRITE setCameraName)
 public:
     GPhotoCameraDevice();
     ~GPhotoCameraDevice() override;
@@ -29,8 +30,13 @@ public:
     Q_INVOKABLE QStringList availableCameras() const;
 
     Q_INVOKABLE QString getDefautCamera() const;
+
+    QString getCameraName() const { return mCameraName; }
+    void setCameraName(const QString &name);
 protected:
     QThread mWorkerThread;
+    QString mCameraName;
+    bool mPreviewStarted = false;
 
 protected slots:
     void onFrameReady(const QVideoFrame &frame);
@@ -57,6 +63,8 @@ public slots:
 signals:
     void frameReady(const QVideoFrame &frame);
     void errorOccurred(const QString &error);
+    void imageCaptured(const QImage &image);
+    void captureError(const QString &error);
 protected:
     GPContextPtr mContext;
     GPPortInfoListPtr mPortInfoList;

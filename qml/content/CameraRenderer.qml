@@ -76,6 +76,12 @@ Item {
       onErrorOccurred: function(errorString) {
          console.log("GPhotoCamera errorOccurred: " + errorString)
       }
+      onImageCaptured: function(image) {
+         console.log("GPhotoCamera imageCaptured")
+      }
+      onCaptureError: function(errorString) {
+         console.log("GPhotoCamera captureError: " + errorString)
+      }
    }
 
    CaptureSession {
@@ -249,7 +255,7 @@ Item {
 
       anchors.fill: parent
 
-      visible: false
+      visible: true
 
       //focus: visible // to receive focus and capture key events when visible
    }
@@ -279,6 +285,8 @@ Item {
       if (cameraSession.imageCapture.readyForCapture) {
          state = "snapshot"
          cameraSession.imageCapture.capture()
+
+         gphotoCamera.captureImage()
       } else {
          renderer.state = "preview"
          failed()

@@ -20,7 +20,11 @@ GPhotoCameraDevice::GPhotoCameraDevice() : mWorker(new GPhotoCameraWorker()) {
           &GPhotoCameraDevice::onFrameReady);
   connect(mWorker.get(), &GPhotoCameraWorker::errorOccurred,
             this, &GPhotoCameraDevice::errorOccurred);
-
+  connect(mWorker.get(), &GPhotoCameraWorker::imageCaptured,
+            this, &GPhotoCameraDevice::imageCaptured);
+  connect(mWorker.get(), &GPhotoCameraWorker::captureError,
+            this, &GPhotoCameraDevice::captureError);
+  
   mWorkerThread.start();
 }
 
@@ -43,6 +47,11 @@ QStringList GPhotoCameraDevice::availableCameras() const {
                             Qt::BlockingQueuedConnection,
                             Q_RETURN_ARG(QStringList, result));
   return result;
+}
+
+void GPhotoCameraDevice::captureImage() const {
+  QMetaObject::invokeMethod(mWorker.get(), "captureImage",
+                            Qt::QueuedConnection);
 }
 
 void GPhotoCameraDevice::setCameraName(const QString &name) {

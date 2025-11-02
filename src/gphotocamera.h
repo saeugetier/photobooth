@@ -31,6 +31,8 @@ public:
 
     Q_INVOKABLE QString getDefautCamera() const;
 
+    Q_INVOKABLE void captureImage() const;
+
     QString getCameraName() const { return mCameraName; }
     void setCameraName(const QString &name);
 protected:
@@ -47,6 +49,8 @@ protected:
 
 signals:
     void errorOccurred(const QString &error);
+    void imageCaptured(const QImage &image);
+    void captureError(const QString &error);
 };
 
 class GPhotoCameraWorker : public QObject

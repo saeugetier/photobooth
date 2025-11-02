@@ -18,13 +18,13 @@ GPhotoCameraDevice::GPhotoCameraDevice() : mWorker(new GPhotoCameraWorker()) {
           &GPhotoCameraWorker::getPreviewFrame);
   connect(mWorker.get(), &GPhotoCameraWorker::frameReady, this,
           &GPhotoCameraDevice::onFrameReady);
-  connect(mWorker.get(), &GPhotoCameraWorker::errorOccurred,
-            this, &GPhotoCameraDevice::errorOccurred);
-  connect(mWorker.get(), &GPhotoCameraWorker::imageCaptured,
-            this, &GPhotoCameraDevice::imageCaptured);
-  connect(mWorker.get(), &GPhotoCameraWorker::captureError,
-            this, &GPhotoCameraDevice::captureError);
-  
+  connect(mWorker.get(), &GPhotoCameraWorker::errorOccurred, this,
+          &GPhotoCameraDevice::errorOccurred);
+  connect(mWorker.get(), &GPhotoCameraWorker::imageCaptured, this,
+          &GPhotoCameraDevice::imageCaptured);
+  connect(mWorker.get(), &GPhotoCameraWorker::captureError, this,
+          &GPhotoCameraDevice::captureError);
+
   mWorkerThread.start();
 }
 
@@ -57,13 +57,12 @@ void GPhotoCameraDevice::captureImage() const {
 void GPhotoCameraDevice::setCameraName(const QString &name) {
   mCameraName = name;
 
-  if( mCameraName.isEmpty()) {
+  if (mCameraName.isEmpty()) {
     QMetaObject::invokeMethod(mWorker.get(), "stopCamera",
                               Qt::QueuedConnection);
-  }
-  else {
+  } else {
     QMetaObject::invokeMethod(mWorker.get(), "startCamera",
-                            Qt::QueuedConnection, Q_ARG(QString, name));
+                              Qt::QueuedConnection, Q_ARG(QString, name));
   }
 }
 
@@ -83,6 +82,10 @@ GPhotoCameraWorker::GPhotoCameraWorker()
   CameraAbilitiesList *caList;
   gp_abilities_list_new(&caList);
   mAbilitiesList.reset(caList);
+
+  mCaptureTimer.setInterval(1000 * 60); // Check every minute
+  connect(&mCaptureTimer, &QTimer::timeout, this,
+          &GPhotoCameraWorker::checkCaptureParameter);
 }
 GPhotoCameraWorker::~GPhotoCameraWorker() {}
 
@@ -144,12 +147,20 @@ void GPhotoCameraWorker::startCamera(const QString &cameraName) {
 
   mCameraStarted = true;
 
+  if (!mCaptureTimer.isActive()) {
+    mCaptureTimer.start();
+  }
+
   getPreviewFrame();
 }
 
 void GPhotoCameraWorker::stopCamera() {
   if (!mCameraStarted) {
     return;
+  }
+
+  if (mCaptureTimer.isActive()) {
+    mCaptureTimer.stop();
   }
 
   // Reset capturing fail counter
@@ -274,5 +285,27 @@ void GPhotoCameraWorker::getPreviewFrame() {
       emit errorOccurred(tr("Unable to capture frame"));
       stopCamera();
     }
+  }
+}
+
+void GPhotoCameraWorker::checkCaptureParameter() {
+  // this function checks and sets the capture parameter to keep the camera
+  // alive
+  if (!mCameraStarted || !mCamera) {
+    return;
+  }
+
+  CameraWidget *widget = nullptr;
+  int ret = gp_camera_get_config(mCamera.get(), &widget, mContext.get());
+  if (ret >= GP_OK) {
+    CameraWidget *child = nullptr;
+    ret = gp_widget_get_child_by_name(widget, "capture", &child);
+    if (ret >= GP_OK) {
+      ret = gp_widget_set_value(child, 1); // Set capture to true
+      if (ret >= GP_OK) {
+        gp_camera_set_config(mCamera.get(), widget, mContext.get());
+      }
+    }
+    gp_widget_free(widget);
   }
 }

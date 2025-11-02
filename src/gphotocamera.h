@@ -73,6 +73,7 @@ signals:
     void imageCaptured(const QImage &image);
     void captureError(const QString &error);
 protected:
+    QTimer mCaptureTimer;
     GPContextPtr mContext;
     GPPortInfoListPtr mPortInfoList;
     CameraAbilitiesListPtr mAbilitiesList;
@@ -81,6 +82,9 @@ protected:
     bool mCameraStarted = false;
     uint32_t mCapturingFailCount = 0;
     // Add private members for camera handling
+protected slots:
+    // check and set capture parameters to keep camera alive
+    void checkCaptureParameter();
 };
 
 

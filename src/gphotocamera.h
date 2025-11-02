@@ -44,6 +44,9 @@ protected slots:
 protected:
     // worker object for camera operations in thread
     std::unique_ptr<GPhotoCameraWorker> mWorker;
+
+signals:
+    void errorOccurred(const QString &error);
 };
 
 class GPhotoCameraWorker : public QObject

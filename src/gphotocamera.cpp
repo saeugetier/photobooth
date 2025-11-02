@@ -18,6 +18,8 @@ GPhotoCameraDevice::GPhotoCameraDevice() : mWorker(new GPhotoCameraWorker()) {
           &GPhotoCameraWorker::getPreviewFrame);
   connect(mWorker.get(), &GPhotoCameraWorker::frameReady, this,
           &GPhotoCameraDevice::onFrameReady);
+  connect(mWorker.get(), &GPhotoCameraWorker::errorOccurred,
+            this, &GPhotoCameraDevice::errorOccurred);
 
   mWorkerThread.start();
 }
@@ -45,7 +47,7 @@ QStringList GPhotoCameraDevice::availableCameras() const {
 
 void GPhotoCameraDevice::setCameraName(const QString &name) {
   mCameraName = name;
-  
+
   if( mCameraName.isEmpty()) {
     QMetaObject::invokeMethod(mWorker.get(), "stopCamera",
                               Qt::QueuedConnection);
@@ -132,6 +134,8 @@ void GPhotoCameraWorker::startCamera(const QString &cameraName) {
   mPreviewFile.reset(file);
 
   mCameraStarted = true;
+
+  getPreviewFrame();
 }
 
 void GPhotoCameraWorker::stopCamera() {

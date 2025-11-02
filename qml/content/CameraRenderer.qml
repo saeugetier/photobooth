@@ -71,6 +71,10 @@ Item {
       Component.onCompleted:
       {
          console.log(gphotoCamera.availableCameras())
+         cameraName = gphotoCamera.getDefautCamera()
+      }
+      onErrorOccurred: function(errorString) {
+         console.log("GPhotoCamera errorOccurred: " + errorString)
       }
    }
 
@@ -229,6 +233,25 @@ Item {
       y: output.y
       width: output.width
       height: output.height
+   }
+
+   CaptureSession
+   {
+      id: rendererSession
+      videoFrameInput: gphotoCamera
+      videoOutput: output2
+   }
+
+   VideoOutput {
+      id: output2
+
+      rotation: applicationSettings.cameraOrientation
+
+      anchors.fill: parent
+
+      visible: false
+
+      //focus: visible // to receive focus and capture key events when visible
    }
 
    /* Timer

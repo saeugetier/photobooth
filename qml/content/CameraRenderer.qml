@@ -14,34 +14,15 @@ Item {
 
    property bool photoProcessing: (state === "snapshot")
    property bool mirrored: true
-   property string deviceId: camera.deviceId
+   property string cameraName: ""
    property alias backgroundFilter: backgroundFilter
    property bool backgroundFilterEnabled: false
    property url backgroundImage: ""
 
-   function printDevicesToConsole(devices) {
-      console.log("Found " + devices.length + " camera devices!")
-      for (var i = 0; i < devices.length; i++) {
-         console.log(
-                  "Found device: " + devices[i].deviceId + " with number " + i)
-      }
+   onCameraNameChanged:
+   {
+      print("Camera changed to " + cameraName)
    }
-
-   MediaDevices {
-      id: mediaDevices
-   }
-
-   onDeviceIdChanged: id => {
-                         // get the camera device with id from mediaDevices
-                         console.log("Selected camera: " + id)
-                         var availableCameras = mediaDevices.videoInputs
-                         for (var i = 0; i < availableCameras.length; i++) {
-                            if (availableCameras[i].deviceId === id) {
-                               camera.cameraDevice = availableCameras[i]
-                               break
-                            }
-                         }
-                      }
 
    CaptureProcessor
    {
@@ -66,101 +47,41 @@ Item {
                       }
    }
 
-   GPhotoCamera {
-      id: gphotoCamera
-      Component.onCompleted:
-      {
-         console.log(gphotoCamera.availableCameras())
-         cameraName = gphotoCamera.getDefautCamera()
-      }
-      onErrorOccurred: function(errorString) {
-         console.log("GPhotoCamera errorOccurred: " + errorString)
-      }
+   CameraSource
+   {
+      id: cameraSource
+
+      cameraName: renderer.cameraName
+
       onImageCaptured: function(image) {
-         console.log("GPhotoCamera imageCaptured")
+         whiteOverlay.state = "released"
+         renderer.state = "store"
+         console.log("Captured")
+
+         console.log(applicationSettings.foldername.toString())
+         var path = applicationSettings.foldername.toString()
+         if(backgroundFilterEnabled)
+         {
+            path = path + "/raw"
+         }
+         path = path.replace(/^(file:\/{2})/, "")
+         var cleanPath = decodeURIComponent(path)
+         console.log(cleanPath)
+
+         captureProcessor.saveCapture(image, cleanPath + "/Pict_" + new Date().toLocaleString(
+                                 locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
       }
-      onCaptureError: function(errorString) {
-         console.log("GPhotoCamera captureError: " + errorString)
+
+      onErrorOccurred: function(errorString) {
+         renderer.state = "preview"
+         failed()
       }
    }
 
-   CaptureSession {
-
-      camera: Camera {
-         id: camera
-         cameraDevice: mediaDevices.defaultVideoInput
-         exposureMode: Camera.ExposurePortrait
-         exposureCompensation: -1.0
-         whiteBalanceMode: Camera.WhiteBalanceAuto
-         flashMode: Camera.FlashAuto
-         torchMode: Camera.TorchAuto
-      }
-
-      id: cameraSession
-
-      videoOutput: output
-
-      imageCapture: ImageCapture {
-         id: imageCapture
-
-         onImageCaptured:
-                          {
-                             whiteOverlay.state = "released"
-                             renderer.state = "store"
-                             console.log("Captured")
-
-                             console.log(applicationSettings.foldername.toString())
-                             var path = applicationSettings.foldername.toString()
-                             if(backgroundFilterEnabled)
-                             {
-                                path = path + "/raw"
-                             }
-                             path = path.replace(/^(file:\/{2})/, "")
-                             var cleanPath = decodeURIComponent(path)
-                             console.log(cleanPath)
-
-                             captureProcessor.saveCapture(preview, cleanPath + "/Pict_" + new Date().toLocaleString(
-                                                             locale, "dd_MM_yyyy_hh_mm_ss") + ".jpg")
-                          }
-         onErrorOccurred: {
-            renderer.state = "preview"
-            failed()
-         }
-         onErrorStringChanged: {
-            console.log("Camera error: " + errorString)
-         }
-      }
-
-
-      /*onCameraStateChanged:
-        {
-            if(camera.cameraState == Camera.UnloadedState)
-            {
-                console.log("Camera State Changed: Unloaded")
-                printDevicesToConsole(QtMultimedia.availableCameras)
-                camera.stop()
-                cameraDiscoveryTimer.start()
-            }
-            else if(camera.cameraState == Camera.LoadedState)
-            {
-                console.log("Camera State Changed: Loaded")
-                printDevicesToConsole(QtMultimedia.availableCameras)
-            }
-            else if(camera.cameraState == Camera.ActiveState)
-            {
-                console.log("Camera State Changed: Active");
-                cameraDiscoveryTimer.stop()
-            }
-            else
-            {
-                console.log("Camera State Changed: Unknown");
-            }
-        }*/
-   }
 
    ReplaceBackgroundVideoFilter {
       id: backgroundFilter
-      videoSink: output.videoSink
+      videoSink: cameraSource.output.videoSink
       background: backgroundImage
 
       onCaptureProcessingFinished: fileName =>
@@ -172,14 +93,6 @@ Item {
                                          console.log("Saved: " + fileName)
                                       }
                                    }
-   }
-
-   Connections {
-      id: cameraErrorListener
-      target: camera
-      function errorOccured(_, errorString) {
-         console.log("Camera Error: " + errorString)
-      }
    }
 
    VideoOutput {
@@ -241,52 +154,10 @@ Item {
       height: output.height
    }
 
-   CaptureSession
-   {
-      id: rendererSession
-      videoFrameInput: gphotoCamera
-      videoOutput: output2
-   }
-
-   VideoOutput {
-      id: output2
-
-      rotation: applicationSettings.cameraOrientation
-
-      anchors.fill: parent
-
-      visible: true
-
-      //focus: visible // to receive focus and capture key events when visible
-   }
-
-   /* Timer
-    {
-        id: cameraDiscoveryTimer
-
-        interval: 1000
-        repeat: true
-
-        onTriggered:
-        {
-            //camera discovery is delayed
-            var availableCameras = QtMultimedia.availableCameras
-            printDevicesToConsole(availableCameras)
-
-            if(availableCameras.length > 0)
-            {
-                camera.deviceId = availableCameras[0].deviceId
-                camera.start()
-            }
-
-        }
-    }*/
    function takePhoto() {
-      if (cameraSession.imageCapture.readyForCapture) {
+      if (cameraSource.readyForCapture) {
          state = "snapshot"
-         cameraSession.imageCapture.capture()
-
-         gphotoCamera.captureImage()
+         cameraSource.captureImage()
       } else {
          renderer.state = "preview"
          failed()
@@ -319,7 +190,7 @@ Item {
          }
          StateChangeScript {
             script: {
-               camera.start()
+               cameraSource.start()
             }
          }
       },
@@ -350,7 +221,7 @@ Item {
          }
          ScriptAction {
             script: {
-               camera.stop()
+               cameraSource.stop()
             }
          }
       }

@@ -1,9 +1,17 @@
+import GPhotoCamera
+import QtQuick
+import QtMultimedia
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
+import QtQuick.Layouts
+
 Item
 {
    id: cameraSource
 
    property alias output: output
    property string cameraName: ""
+   property alias readyForCapture: cameraSession.imageCapture.readyForCapture
 
    signal imageCaptured(var image)
    signal errorOccurred(var errorString)
@@ -23,7 +31,7 @@ Item
       for (var j = 0; j < gphotoCameras.length; j++) {
          if (gphotoCameras[j] === cameraName) {
             cameraSource.state = "GPhotoCamera"
-            gphotoCamera.setCameraByName(cameraName)
+            gphotoCamera.cameraName = cameraName
             console.log("CameraSource using GPhoto camera device: " + cameraName)
             return
          }
@@ -32,11 +40,43 @@ Item
       cameraSource.state = "noCamera"
    }
 
+   function start()
+   {
+      if(state === "StandardCamera")
+      {
+         systemCamera.start()
+      }
+      else if(state === "GPhotoCamera")
+      {
+         //gphotoCamera.startCamera()
+      }
+      else
+      {
+         console.log("No camera available to start!")
+      }
+   }
+
+   function stop()
+   {
+      if(state === "StandardCamera")
+      {
+         systemCamera.stop()
+      }
+      else if(state === "GPhotoCamera")
+      {
+         //gphotoCamera.stopCamera()
+      }
+      else
+      {
+         console.log("No camera available to stop!")
+      }
+   }
+
    function captureImage()
    {
       if(state === "StandardCamera")
       {
-         imageCapture.capture()
+         cameraSession.imageCapture.capture()
       }
       else if(state === "GPhotoCamera")
       {
@@ -75,6 +115,14 @@ Item
       flashMode: Camera.FlashAuto
       torchMode: Camera.TorchAuto
    }
+   
+   Connections {
+      id: cameraErrorListener
+      target: systemCamera
+      function errorOccured(_, errorString) {
+         console.log("Camera Error: " + errorString)
+      }
+   }
 
    CaptureSession {
       
@@ -87,7 +135,7 @@ Item
 
          onImageCaptured:
          {
-            imageCaptured(image)
+            imageCaptured(preview)
          }
          onErrorOccurred: {
             errorOccurred(errorString)

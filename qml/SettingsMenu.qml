@@ -44,20 +44,6 @@ SettingsMenuForm {
         id: mediaDevices
     }
 
-    function findDeviceId(cameraName)
-    {
-        var i;
-        var availableCameras = mediaDevices.videoInputs;
-        for(i = 0; i < availableCameras.length; i++)
-        {
-            if(availableCameras[i].description === cameraName)
-            {
-                return availableCameras[i].id;
-            }
-        }
-        return mediaDevices.defaultVideoInput.id
-    }
-
     Component.onCompleted:
     {
         versionText = "Version: " + system.getGitHash()

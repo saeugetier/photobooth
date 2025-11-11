@@ -133,9 +133,9 @@ Item
       imageCapture: ImageCapture {
          id: imageCapture
 
-         onImageCaptured:
+         onImageCaptured: function(requestId, preview)
          {
-            imageCaptured(preview)
+            cameraSource.imageCaptured(preview)
          }
          onErrorOccurred: {
             errorOccurred(errorString)

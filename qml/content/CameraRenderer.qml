@@ -56,7 +56,7 @@ Item {
       onImageCaptured: function(image) {
          whiteOverlay.state = "released"
          renderer.state = "store"
-         console.log("Captured")
+         console.log("Captured: " + image)
 
          console.log(applicationSettings.foldername.toString())
          var path = applicationSettings.foldername.toString()

@@ -74,6 +74,7 @@ Item {
 
       onErrorOccurred: function(errorString) {
          renderer.state = "preview"
+         console.log("Camera error: " + errorString)
          failed()
       }
    }

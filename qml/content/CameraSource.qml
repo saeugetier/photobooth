@@ -11,7 +11,7 @@ Item
 
    property alias output: output
    property string cameraName: ""
-   property alias readyForCapture: cameraSession.imageCapture.readyForCapture
+   property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera"))
 
    signal imageCaptured(var image)
    signal errorOccurred(var errorString)
@@ -76,10 +76,12 @@ Item
    {
       if(state === "StandardCamera")
       {
+         console.log("Standard camera capture")
          cameraSession.imageCapture.capture()
       }
       else if(state === "GPhotoCamera")
       {
+         console.log("GPhoto capture")
          gphotoCamera.captureImage()
       }
       else
@@ -96,13 +98,13 @@ Item
       id: gphotoCamera
 
       onErrorOccurred: function(errorString) {
-         errorOccured(errorString)
+         cameraSource.errorOccurred(errorString)
       }
       onImageCaptured: function(image) {
-         imageCaptured(image)
+         cameraSource.imageCaptured(image)
       }
       onCaptureError: function(errorString) {
-         errorOccured(errorString)
+         cameraSource.errorOccurred(errorString)
       }
    }
 
@@ -138,7 +140,7 @@ Item
             cameraSource.imageCaptured(preview)
          }
          onErrorOccurred: {
-            errorOccurred(errorString)
+            cameraSource.errorOccurred(errorString)
          }
       }
    }

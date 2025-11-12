@@ -21,6 +21,10 @@ jobs:
     runs-on: ${{ matrix.variant.runner }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive     # fetch submodules (recursively)
+          fetch-depth: 0           # ensure full history so submodule refs are resolvable
+          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: photobooth.flatpak

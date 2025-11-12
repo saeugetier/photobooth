@@ -3,6 +3,9 @@
 #include <QThread>
 #include <QStringList>
 #include <QImage>
+#include <QTimer>
+#include <QVariant>
+#include <memory>
 
 #include <cstdint>
 #include <gphoto2/gphoto2-abilities-list.h>
@@ -73,7 +76,7 @@ signals:
     void imageCaptured(const QImage &image);
     void captureError(const QString &error);
 protected:
-    QTimer mCaptureTimer;
+    QTimer mKeepAliveTimer;
     GPContextPtr mContext;
     GPPortInfoListPtr mPortInfoList;
     CameraAbilitiesListPtr mAbilitiesList;
@@ -81,7 +84,10 @@ protected:
     CameraFilePtr mPreviewFile;
     bool mCameraStarted = false;
     uint32_t mCapturingFailCount = 0;
-    // Add private members for camera handling
+
+    void waitForOperationCompleted();
+    QVariant parameter(const QString &name);
+    bool setParameter(const QString &name, const QVariant &value);
 protected slots:
     // check and set capture parameters to keep camera alive
     void checkCaptureParameter();

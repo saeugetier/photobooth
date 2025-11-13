@@ -132,6 +132,37 @@
             ]
         },
         {
+            "name": "libgphoto2",
+            "builddir": true,
+            "cleanup": [
+                "/doc",
+                "*.la"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/gphoto/libgphoto2.git",
+                    "tag": "v2.5.32",
+                    "commit": "de1f0617b1ffa39c1980d1306343709c7dc0120e",
+                    "x-checker-data": {
+                        "type": "anitya",
+                        "project-id": 12558,
+                        "stable-only": true
+                    }
+                },
+                {
+                    "type": "script",
+                    "dest-filename": "autogen.sh",
+                    "commands": [
+                        "AUTOMAKE=\"automake --foreign\" autoreconf -vfis"
+                    ]
+                }
+            ],
+            "modules": [
+                "shared-modules/libusb/libusb.json"
+            ]
+        },
+        {
             "name": "qtbooth",
             "buildsystem": "qmake",
             "post-install": [

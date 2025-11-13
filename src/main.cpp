@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QQmlContext>
 #include <QTranslator>
+#include "gphotocamera.h"
 #include "translationhelper.h"
 #include "captureprocessor.h"
 #include "fakeprinter.h"
@@ -126,6 +127,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<System>("System", 1, 0, "System");
 
     qmlRegisterType<CaptureProcessor>("CaptureProcessor", 1, 0, "CaptureProcessor");
+    qmlRegisterType<GPhotoCameraDevice>("GPhotoCamera", 1, 0, "GPhotoCamera");
 
     qmlRegisterInterface<AbstractPrinter>("AbstractPrinter", 1);
     qmlRegisterUncreatableType<AbstractPrinter>("Printer", 1, 0, "Printer", "Printer can only be created via PrinterFactory");

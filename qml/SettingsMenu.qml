@@ -4,6 +4,7 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.platform
 import QtQml
+import GPhotoCamera
 import "content"
 
 SettingsMenuForm {
@@ -25,26 +26,22 @@ SettingsMenuForm {
         {
             listModel.push(availableCameras[i].description)
         }
+        var gphotoCameras = gphotoCamera.availableCameras();
+        console.log("GPhoto Camera Count: " + Number(gphotoCameras.length).toString())
+        for(i = 0; i < gphotoCameras.length; i++)
+        {
+            listModel.push(gphotoCameras[i])
+        }
         return listModel;
+    }
+
+    GPhotoCamera {
+      id: gphotoCamera
     }
 
     MediaDevices
     {
         id: mediaDevices
-    }
-
-    function findDeviceId(cameraName)
-    {
-        var i;
-        var availableCameras = mediaDevices.videoInputs;
-        for(i = 0; i < availableCameras.length; i++)
-        {
-            if(availableCameras[i].description === cameraName)
-            {
-                return availableCameras[i].id;
-            }
-        }
-        return mediaDevices.defaultVideoInput.id
     }
 
     Component.onCompleted:

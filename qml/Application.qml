@@ -138,7 +138,7 @@ ApplicationWindow {
             console.log("Window mode changed to: " + applicationSettings.windowMode)
         }
 
-        settingsMenu.comboBoxCamera.onCurrentIndexChanged:
+        settingsMenu.comboBoxCamera.onCurrentTextChanged:
         {
             applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentText
         }
@@ -224,14 +224,6 @@ ApplicationWindow {
         onDisableEffectPopupChanged:
         {
             flow.imagePreview.effectButton.visible = !disableEffectPopup
-        }
-
-        onCameraNameChanged:
-        {
-            print("Camera changed to " + cameraName)
-            var id = flow.settingsMenu.findDeviceId(cameraName)
-            print("Found ID: " + id)
-            flow.snapshotMenu.cameraRenderer.deviceId = id
         }
     }
 }

@@ -242,8 +242,8 @@ Item {
                             id: comboBoxNeuralNetworkRuntime
                             textRole: "text"
                             valueRole: "value"
-                            model: [{text: "ONNX Runtime", value: "ONNX"}, {text: "NCNN Runtime", value: "NCNN"}]
-                            Layout.preferredWidth: 200
+                            model: [{text: "ONNX Runtime", value: "ONNX"}, {text: "NCNN Runtime", value: "NCNN"}, {text: "NCNN Runtime (faster preview)", value: "NCNN_LOW_RES"} ]
+                            Layout.preferredWidth: 250
                         }
                     }
                 }

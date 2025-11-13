@@ -17,7 +17,8 @@ class ReplaceBackgroundFilterRunable;
 enum class NeuralNetworkRuntime
 {
     ONNX,
-    NCNN
+    NCNN,
+    NCNN_LOW_RES
 };
 
 class ReplaceBackgroundVideoFilter : public QVideoFrameInput

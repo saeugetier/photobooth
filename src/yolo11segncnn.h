@@ -30,7 +30,7 @@ class YOLOv11SegDetectorNcnn : public Yolo11Segementation {
 public:
     YOLOv11SegDetectorNcnn(const std::string &modelPath,
                        const std::string &labelsPath,
-                       bool useGPU = false);
+                       bool useGPU = false, bool use320x320input = false);
 
     // Main API
     std::vector<Segmentation> segment(const cv::Mat &image,

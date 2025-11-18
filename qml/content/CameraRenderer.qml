@@ -51,6 +51,8 @@ Item {
    {
       id: cameraSource
 
+      anchors.fill: parent
+
       cameraName: renderer.cameraName
 
       onImageCaptured: function(image) {
@@ -116,6 +118,8 @@ Item {
 
    VideoOutput {
       id: maskOutput
+
+      visible: cameraSource.state !== "noCamera" && cameraSource.state !== "Error"
 
       rotation: applicationSettings.cameraOrientation
 

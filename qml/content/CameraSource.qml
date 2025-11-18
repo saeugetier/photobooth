@@ -17,6 +17,7 @@ Item
    signal errorOccurred(var errorString)
 
    onCameraNameChanged: {
+      stop()
       console.log("CameraSource selected cameraName: " + cameraName)
       var availableCameras = mediaDevices.videoInputs
       for (var i = 0; i < availableCameras.length; i++) {
@@ -30,8 +31,8 @@ Item
       var gphotoCameras = gphotoCamera.availableCameras()
       for (var j = 0; j < gphotoCameras.length; j++) {
          if (gphotoCameras[j] === cameraName) {
-            cameraSource.state = "GPhotoCamera"
             gphotoCamera.cameraName = cameraName
+            cameraSource.state = "GPhotoCamera"
             console.log("CameraSource using GPhoto camera device: " + cameraName)
             return
          }
@@ -98,13 +99,19 @@ Item
       id: gphotoCamera
 
       onErrorOccurred: function(errorString) {
-         cameraSource.errorOccurred(errorString)
+         if(state === "GPhotoCamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
       }
       onImageCaptured: function(image) {
          cameraSource.imageCaptured(image)
       }
       onCaptureError: function(errorString) {
-         cameraSource.errorOccurred(errorString)
+         if(state === "GPhotoCamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
       }
    }
 
@@ -117,12 +124,15 @@ Item
       flashMode: Camera.FlashAuto
       torchMode: Camera.TorchAuto
    }
-   
+
    Connections {
       id: cameraErrorListener
       target: systemCamera
       function errorOccured(_, errorString) {
-         console.log("Camera Error: " + errorString)
+         if(state === "StandardCamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
       }
    }
 
@@ -140,7 +150,10 @@ Item
             cameraSource.imageCaptured(preview)
          }
          onErrorOccurred: {
-            cameraSource.errorOccurred(errorString)
+            if(state === "StandardCamera")
+            {
+               cameraSource.errorOccurred(errorString)
+            }
          }
       }
    }
@@ -148,12 +161,48 @@ Item
    VideoOutput {
       id: output
       anchors.fill: parent
+      visible: false  // video is displayed in masked output after applying the filter
+   }
+
+   property string lastError: ""
+
+   onErrorOccurred: function(errorString) {
+      lastError = errorString
+      cameraSource.state = "Error"
+   }
+
+   Rectangle {
+      id: errorDisplay
+      anchors.fill: parent
+      color: "#99000000"
+      radius: 6
       visible: false
+
+      Text {
+         id: errorText
+         text: lastError
+         color: "white"
+         font.pixelSize: 36
+         wrapMode: Text.WordWrap
+         horizontalAlignment: Text.AlignHCenter
+         verticalAlignment: Text.AlignVCenter
+         anchors.centerIn: parent
+         width: parent.width * 0.9
+      }
+
    }
 
    states: [
       State {
          name: "noCamera"
+         PropertyChanges {
+            target: errorDisplay
+            visible: true
+         }
+         PropertyChanges {
+            target: cameraSource
+            lastError: qsTr("No camera found with the name: ") + cameraName
+         }
       },
       State {
          name: "StandardCamera"
@@ -168,6 +217,14 @@ Item
             target: cameraSession
             videoFrameInput: gphotoCamera
          }
+      },
+      State {
+         name: "Error"
+         PropertyChanges {
+            target: errorDisplay
+            visible: true
+         }
       }
+
    ]
 }

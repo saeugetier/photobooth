@@ -66,11 +66,12 @@ SettingsMenuForm {
             buttonCopyPhotos.enabled = false
         }
 
+        var cameraNameTemp = applicationSettings.cameraName
         comboBoxCamera.model = makeCameraList();
-        var indexCamera = comboBoxCamera.find(applicationSettings.cameraName)
+        var indexCamera = comboBoxCamera.indexOfValue(cameraNameTemp)
         comboBoxCamera.currentIndex = indexCamera
 
-        var index = comboBoxPrinter.find(applicationSettings.printerName)
+        var index = comboBoxPrinter.indexOfValue(applicationSettings.printerName)
         comboBoxPrinter.currentIndex = index
         console.log("index: " + Number(index).toString())
     }

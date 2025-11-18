@@ -72,8 +72,8 @@ SettingsMenuForm {
         comboBoxCamera.currentIndex = indexCamera
 
         var index = comboBoxPrinter.indexOfValue(applicationSettings.printerName)
+        console.log("Printer " + applicationSettings.printerName * " - index: " + Number(index).toString())
         comboBoxPrinter.currentIndex = index
-        console.log("index: " + Number(index).toString())
     }
 
     function delay(delayTime, cb) {

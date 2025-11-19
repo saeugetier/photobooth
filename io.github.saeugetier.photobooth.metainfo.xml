@@ -49,6 +49,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.8.0" date="2025-11-19">
+      <description translate="no">
+        <p>Add GPhoto2 camera support. Added faster background removal model.</p>
+      </description>
+    </release>
     <release version="0.7.3" date="2025-10-13">
       <description translate="no">
         <p>Fix release build. Used wrong version of QT plugin for virtual keyboard.</p>

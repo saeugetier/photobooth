@@ -9,7 +9,7 @@
 
 YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
                                                const std::string &labelsPath,
-                                               bool useGPU) : Yolo11Segementation(labelsPath)
+                                               bool useGPU, bool use320x320input) : Yolo11Segementation(labelsPath)
 {
     QString ressourcePathGeneric = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "models", QStandardPaths::LocateDirectory);
     QString ressourcePathApp = QStandardPaths::locate(QStandardPaths::AppDataLocation, "models", QStandardPaths::LocateDirectory);
@@ -48,7 +48,14 @@ YOLOv11SegDetectorNcnn::YOLOv11SegDetectorNcnn(const std::string &modelPath,
     numOutputNodes = net.output_names().size();
 
     isDynamicInputShape = false;          // Assume static input shape by default. NCNN models typically have fixed input shapes.
-    inputImageShape = cv::Size(640, 640); // Default shape. This is fixed for YOLOv11SegNCNN
+    
+    if(use320x320input) {
+        inputImageShape = cv::Size(320, 320);
+    }
+    else
+    {
+        inputImageShape = cv::Size(640, 640); // Default shape. This is fixed for YOLOv11SegNCNN
+    }
 
     // Input
     if (numInputNodes != 1)
@@ -277,7 +284,7 @@ std::vector<Segmentation> YOLOv11SegDetectorNcnn::segment(const cv::Mat &image,
                      cv::Scalar(114, 114, 114), /*auto_=*/false,
                      /*scaleFill=*/false, /*scaleUp=*/true, /*stride=*/32);
 
-    ncnn::Mat in = ncnn::Mat::from_pixels_resize(letterboxImage.data, ncnn::Mat::PIXEL_BGR2RGB, letterboxImage.cols, letterboxImage.rows, 640, 640);
+    ncnn::Mat in = ncnn::Mat::from_pixels_resize(letterboxImage.data, ncnn::Mat::PIXEL_BGR2RGB, letterboxImage.cols, letterboxImage.rows, inputImageShape.width, inputImageShape.height);
 
     const float norm_vals[3] = {1 / 255.f, 1 / 255.f, 1 / 255.f};
     in.substract_mean_normalize(0, norm_vals);

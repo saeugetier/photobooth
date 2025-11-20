@@ -34,6 +34,7 @@
         <file>qml/SnapshotSettings.qml</file>
         <file>qml/SnapshotSettingsForm.ui.qml</file>
         <file>qml/content/CameraRenderer.qml</file>
+        <file>qml/content/CameraSource.qml</file>
         <file>qml/content/CollageImageDelegate.qml</file>
         <file>qml/content/CollageRenderer.qml</file>
         <file>qml/content/Countdown.qml</file>

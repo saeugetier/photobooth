@@ -57,6 +57,10 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
     {
         newRuntime = NeuralNetworkRuntime::ONNX;
     }
+    else if (runtime.contains("NCNN_LOW_RES"))
+    {
+        newRuntime = NeuralNetworkRuntime::NCNN_LOW_RES;
+    }
     else if (runtime.contains("NCNN"))
     {
         newRuntime = NeuralNetworkRuntime::NCNN;
@@ -110,6 +114,10 @@ QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
     else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN)
     {
         return QString("NCNN");
+    }
+    else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN_LOW_RES)
+    {
+        return QString("NCNN_LOW_RES");
     }
     else
     {
@@ -315,6 +323,12 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
     {
         qDebug() << "[INFO] Change YOLOv11Segmentation runtime to NCNN";
         mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model", "coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", "coco.names", false));
+    }
+    else if (runtime == NeuralNetworkRuntime::NCNN_LOW_RES)
+    {
+        qDebug() << "[INFO] Change YOLOv11Segmentation runtime to NCNN_LOW_RES";
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model_320", "coco.names", false, true));
         mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", "coco.names", false));
     }
 }

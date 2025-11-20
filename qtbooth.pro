@@ -16,6 +16,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/fakeprinter.cpp \
     src/fileio.cpp \
     src/filesystem.cpp \
+    src/gphotocamera.cpp \
     src/gpio.cpp \
     src/main.cpp \
     src/modelparser.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     src/fakeprinter.h \
     src/fileio.h \
     src/filesystem.h \
+    src/gphotocamera.h \
     src/gpio.h \
     src/modelparser.h \
     src/noprinter.h \
@@ -84,10 +86,12 @@ contains(ANDROID_TARGET_ARCH,x86) {
         $$PWD/android
 }
 
-DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
+DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)"
+DEFINES += GIT_CURRENT_TAG="$(shell git -C \""$$_PRO_FILE_PWD_"\" tag --points-at HEAD)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
+LIBS += -lgphoto2 -lgphoto2_port
 
 !isEmpty(PREFIX) {
     INSTALLS += target

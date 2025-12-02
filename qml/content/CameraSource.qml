@@ -201,7 +201,7 @@ Item
          }
          PropertyChanges {
             target: cameraSource
-            lastError: qsTr("No camera found with the name: ") + cameraName
+            lastError: cameraName.length !== 0 ? qsTr("No camera found with the name: ") + cameraName : qsTr("No camera selected.")
          }
       },
       State {

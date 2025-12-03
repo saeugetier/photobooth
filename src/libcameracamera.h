@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QStringList>
 #include <memory>
+#include <QVideoFrameInput>
 
 #undef emit
 #undef slots
@@ -17,7 +18,7 @@
 
 class LibCameraWorker;
 
-class LibcameraDevice : public QObject
+class LibcameraDevice : public QVideoFrameInput
 {
     Q_OBJECT
 public:

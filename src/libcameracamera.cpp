@@ -11,7 +11,7 @@
 using namespace libcamera;
 
 LibcameraDevice::LibcameraDevice(QObject *parent)
-    : QObject(parent),
+    : QVideoFrameInput(parent),
       mWorkerThread(std::make_unique<QThread>(this))
 {
     // Create worker
@@ -157,6 +157,8 @@ void LibCameraWorker::startCamera(const QString &cameraId)
         return;
     }
     mCamera = cam;
+
+    mCamera->acquire();
 
     // configure camera for viewfinder role (basic example)
     std::unique_ptr<CameraConfiguration> config =

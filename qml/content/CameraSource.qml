@@ -40,7 +40,6 @@ Item
       var libcameras = libcamera.availableCameras()
       for (var j = 0; j < libcameras.length; j++) {
          if (libcameras[j] === cameraName) {
-            libcamera.cameraName = cameraName
             cameraSource.state = "Libcamera"
             console.log("CameraSource using Libcamera camera device: " + cameraName)
             return
@@ -61,6 +60,10 @@ Item
       {
          //gphotoCamera.startCamera()
       }
+      else if(state === "Libcamera")
+      {
+         libcamera.startCamera(cameraName)
+      }
       else
       {
          console.log("No camera available to start!")
@@ -76,6 +79,10 @@ Item
       else if(state === "GPhotoCamera")
       {
          //gphotoCamera.stopCamera()
+      }
+      else if(state === "Libcamera")
+      {
+         libcamera.stopCamera()
       }
       else
       {
@@ -103,6 +110,24 @@ Item
 
    MediaDevices {
       id: mediaDevices
+   }
+
+   Connections {
+      target: libcamera
+      function errorOccured(errorString) {
+         if(state === "Libcamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
+      }
+   }
+
+   Connections
+   {
+      target: libcamera
+      function imageCaptured(image) {
+            cameraSource.imageCaptured(image)
+         }
    }
 
    GPhotoCamera {

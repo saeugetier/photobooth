@@ -14,6 +14,40 @@
 #define slots Q_SLOTS
 #define emit Q_EMIT
 
+
+class LibCameraWorker;
+
+class LibcameraDevice : public QObject
+{
+    Q_OBJECT
+public:
+    explicit LibcameraDevice(QObject *parent = nullptr);
+    ~LibcameraDevice() override;
+
+    QStringList availableCameras() const;
+    QString getDefaultCamera() const;
+
+public slots:
+    void startCamera(const QString &cameraId);
+    void stopCamera();
+    void captureImage();
+
+signals:
+    void frameReady(const QImage &image);
+    void imageCaptured(const QImage &image);
+    void errorOccurred(const QString &error);
+
+private slots:
+    void onFrameReady(const QImage &image);
+    void onImageCaptured(const QImage &image);
+    void onErrorOccurred(const QString &error);
+
+private:
+    std::unique_ptr<QThread> mWorkerThread;
+    LibCameraWorker *mWorker = nullptr;
+};
+
+
 class LibCameraWorker : public QObject
 {
     Q_OBJECT
@@ -21,13 +55,13 @@ public:
     explicit LibCameraWorker(QObject *parent = nullptr);
     ~LibCameraWorker() override;
 
-public Q_SLOTS:
+public slots:
     void startCamera(const QString &cameraId); // cameraId as returned by CameraManager
     void stopCamera();
     void captureImage();                        // single capture -> emits imageCaptured
     QStringList availableCameras() const;
 
-Q_SIGNALS:
+signals:
     void frameReady(const QImage &image);      // optionally emit preview frames
     void imageCaptured(const QImage &image);   // emitted after captureImage
     void errorOccurred(const QString &err);

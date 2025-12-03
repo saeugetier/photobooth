@@ -8,6 +8,7 @@ import Qt.labs.platform
 import CollageModel
 import Printer
 import QtQuick.Window
+import Libcamera
 
 ApplicationWindow {
     id: mainWindow
@@ -67,6 +68,20 @@ ApplicationWindow {
     {
         flow.collageMenu.printer = printer
         flow.galleryMenu.printer = printer
+    }
+
+    Libcamera {
+       id: libcamera
+
+       onErrorOccurred: function(errorString) {
+          if(state === "Libcamera")
+          {
+             cameraSource.errorOccurred(errorString)
+          }
+       }
+       onImageCaptured: function(image) {
+          cameraSource.imageCaptured(image)
+       }
     }
 
     ApplicationFlow

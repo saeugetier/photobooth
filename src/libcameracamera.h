@@ -80,4 +80,8 @@ private:
     std::atomic<bool> mRunning{false};
     QTimer mPreviewTimer; // optional periodic preview or parameter checks
     int mRequestedWidth{640}, mRequestedHeight{480};
+
+    std::vector<std::shared_ptr<libcamera::Request>> mPendingRequests;
+    size_t mBufferIndex = 0;
+    void processCompletedRequest(libcamera::Request *request);
 };

@@ -6,6 +6,7 @@
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>
 #include <QDebug>
+#include <sys/mman.h>
 
 using namespace libcamera;
 
@@ -285,16 +286,82 @@ void LibCameraWorker::captureImage()
 
 void LibCameraWorker::queueViewfinderRequest()
 {
-    if (!mCamera) return;
-    // Similar to captureImage but re-use buffers and emit frameReady for previews.
-    // TODO: implement re-queueing multiple requests, handle Request::completed, reuse buffers
+    if (!mCamera || mBuffers.empty()) return;
+
+    // Create a request
+    std::shared_ptr<Request> request = mCamera->createRequest();
+    if (!request) {
+        Q_EMIT errorOccurred("libcamera: createRequest failed for preview");
+        return;
+    }
+
+    // Get next buffer (rotate through available buffers)
+    FrameBuffer *fb = mBuffers[mBufferIndex % mBuffers.size()].get();
+    mBufferIndex++;
+
+    // Attach buffer to stream
+    Stream *stream = *mCamera->streams().begin();
+    if (request->addBuffer(stream, fb) < 0) {
+        Q_EMIT errorOccurred("libcamera: addBuffer failed for preview");
+        return;
+    }
+
+    // Store request to keep it alive
+    mPendingRequests.push_back(request);
+
+    // Queue the request (async completion via event loop)
+    if (mCamera->queueRequest(request.get()) < 0) {
+        Q_EMIT errorOccurred("libcamera: queueRequest failed for preview");
+        mPendingRequests.pop_back();
+        return;
+    }
+
+    // In production libcamera, you'd use a callback/event loop.
+    // For now, use a simple timer-based poll as fallback:
+    QTimer::singleShot(50, this, [this, request]() {
+        if (request->status() == Request::RequestComplete) {
+            processCompletedRequest(request.get());
+            // Remove completed request from pending list
+            auto it = std::find(mPendingRequests.begin(), mPendingRequests.end(), request);
+            if (it != mPendingRequests.end())
+                mPendingRequests.erase(it);
+            // Queue next preview
+            if (mRunning)
+                queueViewfinderRequest();
+        }
+    });
+}
+
+void LibCameraWorker::processCompletedRequest(Request *request)
+{
+    if (!request || request->buffers().empty()) return;
+
+    auto it = request->buffers().begin();
+    FrameBuffer *completedFb = it->second;
+
+    // Convert buffer to QImage and emit preview
+    QImage preview = convertBufferToImage(*completedFb);
+    if (!preview.isNull())
+        Q_EMIT frameReady(preview);
 }
 
 QImage LibCameraWorker::convertBufferToImage(const FrameBuffer &fb)
 {
-    // TODO: implement conversion from FrameBuffer payload to QImage.
-    // If fb.pixelFormat() == formats::RGB888 you can construct QImage directly from buffer.
-    // If YUV, use conversion (libyuv/opencv) to RGB.
-    // Placeholder empty image:
-    return QImage();
+    if (fb.planes().empty()) return QImage();
+
+    const FrameMetadata &metadata = fb.metadata();
+    uint32_t width = metadata.planes()[0].bytesused / 3; // Assume RGB888 (3 bytes per pixel)
+    uint32_t height = fb.planes()[0].length / metadata.planes()[0].bytesused;
+
+    if (width == 0 || height == 0) return QImage();
+
+    // Map buffer to accessible
+    void *data = mmap(NULL, fb.planes()[0].length, PROT_READ | PROT_WRITE, MAP_SHARED, fb.planes()[0].fd.get(), 0);
+
+    // Create QImage from RGB888 data (copy data)
+    QImage image(width, height, QImage::Format_RGB888);
+    std::memcpy(image.bits(), data, image.sizeInBytes());
+
+    return image;
 }
+

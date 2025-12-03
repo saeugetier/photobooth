@@ -1,5 +1,4 @@
 import GPhotoCamera
-import Libcamera
 import QtQuick
 import QtMultimedia
 import QtQuick.Controls
@@ -38,6 +37,16 @@ Item
             return
          }
       }
+      var libcameras = libcamera.availableCameras()
+      for (var j = 0; j < libcameras.length; j++) {
+         if (libcameras[j] === cameraName) {
+            libcamera.cameraName = cameraName
+            cameraSource.state = "Libcamera"
+            console.log("CameraSource using Libcamera camera device: " + cameraName)
+            return
+         }
+      }
+
       console.log("CameraSource could not find camera device: " + cameraName)
       cameraSource.state = "noCamera"
    }
@@ -113,20 +122,6 @@ Item
          {
             cameraSource.errorOccurred(errorString)
          }
-      }
-   }
-
-   Libcamera {
-      id: libcamera
-      
-      onErrorOccurred: function(errorString) {
-         if(state === "Libcamera")
-         {
-            cameraSource.errorOccurred(errorString)
-         }
-      }
-      onImageCaptured: function(image) {
-         cameraSource.imageCaptured(image)
       }
    }
 
@@ -239,7 +234,7 @@ Item
             target: cameraSession
             videoFrameInput: libcamera
          }
-      }
+      },
       State {
          name: "Error"
          PropertyChanges {

@@ -1,4 +1,5 @@
 import GPhotoCamera
+import Libcamera
 import QtQuick
 import QtMultimedia
 import QtQuick.Controls
@@ -115,6 +116,20 @@ Item
       }
    }
 
+   Libcamera {
+      id: libcamera
+      
+      onErrorOccurred: function(errorString) {
+         if(state === "Libcamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
+      }
+      onImageCaptured: function(image) {
+         cameraSource.imageCaptured(image)
+      }
+   }
+
    Camera {
       id: systemCamera
       cameraDevice: mediaDevices.defaultVideoInput
@@ -218,6 +233,13 @@ Item
             videoFrameInput: gphotoCamera
          }
       },
+      State {
+         name: "Libcamera"
+         PropertyChanges {
+            target: cameraSession
+            videoFrameInput: libcamera
+         }
+      }
       State {
          name: "Error"
          PropertyChanges {

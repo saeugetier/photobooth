@@ -24,8 +24,8 @@ public:
     explicit LibcameraDevice(QObject *parent = nullptr);
     ~LibcameraDevice() override;
 
-    QStringList availableCameras() const;
-    QString getDefaultCamera() const;
+    Q_INVOKABLE QStringList availableCameras() const;
+    Q_INVOKABLE QString getDefaultCamera() const;
 
 public slots:
     void startCamera(const QString &cameraId);

@@ -5,6 +5,7 @@ import QtQuick.Dialogs
 import Qt.labs.platform
 import QtQml
 import GPhotoCamera
+import Libcamera
 import "content"
 
 SettingsMenuForm {
@@ -32,11 +33,21 @@ SettingsMenuForm {
         {
             listModel.push(gphotoCameras[i])
         }
+        var libcameras = libcamera.availableCameras();
+        console.log("Libcamera Camera Count: " + Number(libcameras.length).toString())
+        for(i = 0; i < libcameras.length; i++)
+        {
+            listModel.push(libcameras[i])
+        }
         return listModel;
     }
 
     GPhotoCamera {
       id: gphotoCamera
+    }
+
+    Libcamera {
+        id: libcamera
     }
 
     MediaDevices

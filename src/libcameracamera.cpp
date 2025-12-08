@@ -5,8 +5,10 @@
 #include <thread>
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>
-#include <QDebug>
+#include <qvideoframe.h>
 #include <sys/mman.h>
+#include <iostream>
+#include <iomanip>
 
 using namespace libcamera;
 
@@ -92,7 +94,7 @@ void LibcameraDevice::captureImage()
 
 void LibcameraDevice::onFrameReady(const QImage &image)
 {
-    emit frameReady(image);
+    sendVideoFrame(QVideoFrame(image));
 }
 
 void LibcameraDevice::onImageCaptured(const QImage &image)
@@ -109,10 +111,6 @@ LibCameraWorker::LibCameraWorker(QObject *parent)
     : QObject(parent)
 {
     initCameraManager();
-    connect(&mPreviewTimer, &QTimer::timeout, this, [this](){
-        if (mRunning && mCamera)
-            queueViewfinderRequest(); // optional: grab periodic preview frames
-    });
 }
 
 LibCameraWorker::~LibCameraWorker()
@@ -162,7 +160,7 @@ void LibCameraWorker::startCamera(const QString &cameraId)
 
     // configure camera for viewfinder role (basic example)
     std::unique_ptr<CameraConfiguration> config =
-        mCamera->generateConfiguration({ StreamRole::Viewfinder });
+        mCamera->generateConfiguration({ StreamRole::Raw });
     if (!config) {
         emit errorOccurred("libcamera: failed to generate configuration");
         mCamera.reset();
@@ -209,14 +207,15 @@ void LibCameraWorker::startCamera(const QString &cameraId)
     }
 
     mRunning = true;
-    mPreviewTimer.start(100); // optional: request preview every 100ms
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+    queueViewfinderRequest();
 }
 
 void LibCameraWorker::stopCamera()
 {
     if (!mRunning) return;
-
-    mPreviewTimer.stop();
 
     if (mCamera) {
         mCamera->stop();
@@ -280,7 +279,7 @@ void LibCameraWorker::captureImage()
     if (!request->buffers().empty()) {
         auto it = request->buffers().begin();
         FrameBuffer *completedFb = it->second;
-        QImage img = convertBufferToImage(*completedFb);
+        QImage img;// = convertBufferToImage(completedFb);
         emit imageCaptured(img);
     }
     // request destroyed when leaving scope
@@ -320,7 +319,7 @@ void LibCameraWorker::queueViewfinderRequest()
 
     // In production libcamera, you'd use a callback/event loop.
     // For now, use a simple timer-based poll as fallback:
-    QTimer::singleShot(50, this, [this, request]() {
+    QTimer::singleShot(200, this, [this, request]() {
         if (request->status() == Request::RequestComplete) {
             processCompletedRequest(request.get());
             // Remove completed request from pending list
@@ -338,31 +337,47 @@ void LibCameraWorker::processCompletedRequest(Request *request)
 {
     if (!request || request->buffers().empty()) return;
 
-    auto it = request->buffers().begin();
-    FrameBuffer *completedFb = it->second;
+    const std::map<const Stream *, FrameBuffer *> &buffers = request->buffers();
 
     // Convert buffer to QImage and emit preview
-    QImage preview = convertBufferToImage(*completedFb);
+    QImage preview = convertBufferToImage(buffers);
     if (!preview.isNull())
         Q_EMIT frameReady(preview);
 }
 
-QImage LibCameraWorker::convertBufferToImage(const FrameBuffer &fb)
+QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, FrameBuffer *> &buffers)
 {
-    if (fb.planes().empty()) return QImage();
-
-    const FrameMetadata &metadata = fb.metadata();
-    uint32_t width = metadata.planes()[0].bytesused / 3; // Assume RGB888 (3 bytes per pixel)
-    uint32_t height = fb.planes()[0].length / metadata.planes()[0].bytesused;
-
-    if (width == 0 || height == 0) return QImage();
-
-    // Map buffer to accessible
-    void *data = mmap(NULL, fb.planes()[0].length, PROT_READ | PROT_WRITE, MAP_SHARED, fb.planes()[0].fd.get(), 0);
-
     // Create QImage from RGB888 data (copy data)
-    QImage image(width, height, QImage::Format_RGB888);
-    std::memcpy(image.bits(), data, image.sizeInBytes());
+    QImage image;
+    
+    for (auto bufferPair : buffers)
+    {
+        // Use framebuffer which has the image data
+        FrameBuffer *buffer = bufferPair.second;
+
+        // Use the frame metadata
+        const FrameMetadata &metadata = buffer->metadata();
+        std::cout << " seq: " << std::setw(6) << std::setfill('0') << metadata.sequence << " bytesused: ";
+
+        // Calculate the amount of storage used for a single frame
+        unsigned int nplane = 0;
+        for (const FrameMetadata::Plane &plane : metadata.planes())
+        {
+            std::cout << plane.bytesused;
+            if (++nplane < metadata.planes().size())
+                std::cout << "/";
+        }
+        std::cout << std::endl;
+
+        // Find the size of buffer
+        size_t size = buffer->metadata().planes()[0].bytesused;
+        const FrameBuffer::Plane &plane = buffer->planes().front();
+        void *memory = mmap(NULL, plane.length, PROT_READ, MAP_SHARED, plane.fd.get(), 0);
+
+        // Load image from a raw buffer into the QImage widget
+        image.loadFromData(static_cast<unsigned char *>(memory), (int)size);
+        image.save("test.png");
+    }
 
     return image;
 }

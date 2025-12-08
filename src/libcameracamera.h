@@ -34,7 +34,6 @@ public slots:
     void captureImage();
 
 signals:
-    void frameReady(const QImage &image);
     void imageCaptured(const QImage &image);
     void errorOccurred(const QString &error);
 
@@ -71,7 +70,7 @@ private:
     void initCameraManager();
     void configureCamera(int width, int height);
     void queueViewfinderRequest();
-    QImage convertBufferToImage(const libcamera::FrameBuffer &fb);
+    QImage convertBufferToImage(const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
 
     std::unique_ptr<libcamera::CameraManager> mCameraManager;
     std::shared_ptr<libcamera::Camera> mCamera;
@@ -79,7 +78,7 @@ private:
 
     std::vector<std::unique_ptr<libcamera::FrameBuffer>> mBuffers;
     std::atomic<bool> mRunning{false};
-    QTimer mPreviewTimer; // optional periodic preview or parameter checks
+    
     int mRequestedWidth{640}, mRequestedHeight{480};
 
     std::vector<std::shared_ptr<libcamera::Request>> mPendingRequests;

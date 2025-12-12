@@ -133,8 +133,21 @@ void GPhotoCameraWorker::startCamera(const QString &cameraName) {
 
   // Initialize camera connection
   int ret = gp_camera_init(mCamera.get(), mContext.get());
+
   if (ret < GP_OK) {
-    emit errorOccurred(tr("Failed to initialize camera: %1").arg(ret));
+    // Translate gPhoto2 result code to a human-readable string and report it
+    const char *gphotoErrStr = nullptr;
+
+    // gp_result_as_string is available in libgphoto2 and translates result
+    // codes
+    gphotoErrStr = gp_result_as_string(ret);
+
+    QString initErrorString = QString::fromLocal8Bit(
+        gphotoErrStr ? gphotoErrStr : "Unknown gPhoto2 error");
+
+    emit errorOccurred(tr("Failed to initialize camera: (Code %1) - %2")
+                           .arg(ret)
+                           .arg(initErrorString));
     mCamera.reset();
     return;
   }
@@ -190,7 +203,17 @@ void GPhotoCameraWorker::captureImage() {
   int ret = gp_camera_capture(mCamera.get(), GP_CAPTURE_IMAGE,
                               &camera_file_path, mContext.get());
   if (ret < GP_OK) {
-    emit captureError(tr("Failed to capture image: %1").arg(ret));
+    // Translate gPhoto2 result code to a human-readable string and report it
+    const char *gphotoErrStr = nullptr;
+
+    // gp_result_as_string is available in libgphoto2 and translates result
+    // codes
+    gphotoErrStr = gp_result_as_string(ret);
+
+    QString captureErrorString = QString::fromLocal8Bit(
+        gphotoErrStr ? gphotoErrStr : "Unknown gPhoto2 error");
+
+    emit captureError(tr("Failed to capture image: (Code %1) - $2").arg(ret).arg(captureErrorString));
     return;
   }
 
@@ -199,7 +222,17 @@ void GPhotoCameraWorker::captureImage() {
                            camera_file_path.name, GP_FILE_TYPE_NORMAL,
                            captureFile.get(), mContext.get());
   if (ret < GP_OK) {
-    emit captureError(tr("Failed to download image: %1").arg(ret));
+    // Translate gPhoto2 result code to a human-readable string and report it
+    const char *gphotoErrStr = nullptr;
+
+    // gp_result_as_string is available in libgphoto2 and translates result
+    // codes
+    gphotoErrStr = gp_result_as_string(ret);
+
+    QString captureErrorString = QString::fromLocal8Bit(
+        gphotoErrStr ? gphotoErrStr : "Unknown gPhoto2 error");
+
+    emit captureError(tr("Failed to download image: (Code %1) - %2").arg(ret).arg(captureErrorString));
     return;
   }
 
@@ -208,7 +241,17 @@ void GPhotoCameraWorker::captureImage() {
   unsigned long int size = 0;
   ret = gp_file_get_data_and_size(captureFile.get(), &data, &size);
   if (ret < GP_OK) {
-    emit captureError(tr("Failed to get image data: %1").arg(ret));
+    // Translate gPhoto2 result code to a human-readable string and report it
+    const char *gphotoErrStr = nullptr;
+
+    // gp_result_as_string is available in libgphoto2 and translates result
+    // codes
+    gphotoErrStr = gp_result_as_string(ret);
+
+    QString captureErrorString = QString::fromLocal8Bit(
+        gphotoErrStr ? gphotoErrStr : "Unknown gPhoto2 error");
+
+    emit captureError(tr("Failed to get image data: (Code %1) - %2").arg(ret).arg(captureErrorString));
     return;
   }
 

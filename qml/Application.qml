@@ -150,12 +150,20 @@ ApplicationWindow {
 
         settingsMenu.comboBoxCameraOrientation.onCurrentValueChanged:
         {
+            if(slideValueSettingsMenu !== 0)
+            {
+                return
+            }
             applicationSettings.cameraOrientation = Number(settingsMenu.comboBoxCameraOrientation.currentValue)
             console.log("Camera orientation changed to: " + applicationSettings.cameraOrientation)
         }
 
         settingsMenu.comboBoxNeuralNetworkRuntime.onCurrentValueChanged:
         {
+            if(slideValueSettingsMenu !== 0)
+            {
+                return
+            }
             applicationSettings.neuralNetworkRuntime = String(settingsMenu.comboBoxNeuralNetworkRuntime.currentValue)
             console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
         }
@@ -193,12 +201,10 @@ ApplicationWindow {
             flow.settingsMenu.switchHideSnapshotSettings.checked = disableSnapshotSettingsPane
             flow.settingsMenu.switchHideEffectPopup.checked = disableEffectPopup
             flow.settingsMenu.switchEnableSettingsPassword.checked = enableSettingsPassword
-            flow.settingsMenu.comboBoxCameraOrientation.currentIndex = flow.settingsMenu.comboBoxCameraOrientation.indexOfValue(cameraOrientation)
             flow.mainMenuModel.setShowPrintable(printEnable)
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
             flow.imagePreview.effectButton.visible = !disableEffectPopup
-            flow.settingsMenu.comboBoxNeuralNetworkRuntime.currentIndex = flow.settingsMenu.comboBoxNeuralNetworkRuntime.indexOfValue(neuralNetworkRuntime)
         }
 
         onPrinterNameChanged:

@@ -77,8 +77,20 @@ SettingsMenuForm {
         comboBoxCamera.currentIndex = indexCamera
 
         var index = comboBoxPrinter.indexOfValue(applicationSettings.printerName)
+        if(index === -1)
+        {
+            index = 0
+        }
         console.log("Printer " + applicationSettings.printerName * " - index: " + Number(index).toString())
         comboBoxPrinter.currentIndex = index
+
+        // Neural network runtime
+        var nnIndex = comboBoxNeuralNetworkRuntime.indexOfValue(applicationSettings.neuralNetworkRuntime)
+        comboBoxNeuralNetworkRuntime.currentIndex = nnIndex
+
+        // Camera orientation
+        var orientIndex = comboBoxCameraOrientation.indexOfValue(applicationSettings.cameraOrientation)
+        comboBoxCameraOrientation.currentIndex = orientIndex
     }
 
     function delay(delayTime, cb) {

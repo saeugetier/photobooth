@@ -49,6 +49,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.8.1" date="2025-12-12">
+      <description translate="no">
+        <p>Bugfix Release: improve error message, correct settings behaviour.</p>
+      </description>
+    </release>
     <release version="0.8.0" date="2025-11-19">
       <description translate="no">
         <p>Add GPhoto2 camera support. Added faster background removal model.</p>

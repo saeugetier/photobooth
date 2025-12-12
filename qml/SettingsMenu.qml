@@ -69,6 +69,11 @@ SettingsMenuForm {
         var cameraNameTemp = applicationSettings.cameraName
         comboBoxCamera.model = makeCameraList();
         var indexCamera = comboBoxCamera.indexOfValue(cameraNameTemp)
+        // if not found, select first camera
+        if(indexCamera === -1)
+        {
+            indexCamera = 0
+        }
         comboBoxCamera.currentIndex = indexCamera
 
         var index = comboBoxPrinter.indexOfValue(applicationSettings.printerName)

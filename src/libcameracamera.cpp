@@ -160,12 +160,14 @@ void LibCameraWorker::startCamera(const QString &cameraId)
 
     // configure camera for viewfinder role (basic example)
     std::unique_ptr<CameraConfiguration> config =
-        mCamera->generateConfiguration({ StreamRole::Raw });
+        mCamera->generateConfiguration({ StreamRole::Viewfinder });
     if (!config) {
         emit errorOccurred("libcamera: failed to generate configuration");
         mCamera.reset();
         return;
     }
+
+    qDebug() << "libcamera: generated configuration with default width " << config->at(0).size.width << ", height " << config->at(0).size.height << ", pixelFormat " << config->at(0).pixelFormat;
 
     // choose size; you can support both 320 and 640 by selecting based on requested size
     config->at(0).pixelFormat = formats::RGB888; // prefer RGB if supported; else use YUV and convert

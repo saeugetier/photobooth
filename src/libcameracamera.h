@@ -58,7 +58,8 @@ public:
 public slots:
     void startCamera(const QString &cameraId); // cameraId as returned by CameraManager
     void stopCamera();
-    void captureImage();                        // single capture -> emits imageCaptured
+    void captureImage();
+    void queueViewfinderRequest();        // single capture -> emits imageCaptured
     QStringList availableCameras() const;
 
 signals:
@@ -69,7 +70,7 @@ signals:
 private:
     void initCameraManager();
     void configureCamera(int width, int height);
-    void queueViewfinderRequest();
+
     QImage convertBufferToImage(const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
 
     std::unique_ptr<libcamera::CameraManager> mCameraManager;

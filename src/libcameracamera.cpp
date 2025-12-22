@@ -2,6 +2,7 @@
 #include <QThread>
 #include <QDebug>
 #include <chrono>
+#include <gphoto2/gphoto2-list.h>
 #include <thread>
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>
@@ -19,6 +20,9 @@ LibcameraDevice::LibcameraDevice(QObject *parent)
     // Create worker
     mWorker = new LibCameraWorker();
     mWorker->moveToThread(mWorkerThread.get());
+
+    connect(this, &QVideoFrameInput::readyToSendVideoFrame, mWorker,
+          &LibCameraWorker::queueViewfinderRequest);
 
     // Connect worker signals to device signals (relay/forward)
     connect(mWorker, &LibCameraWorker::frameReady,
@@ -167,12 +171,17 @@ void LibCameraWorker::startCamera(const QString &cameraId)
         return;
     }
 
-    qDebug() << "libcamera: generated configuration with default width " << config->at(0).size.width << ", height " << config->at(0).size.height << ", pixelFormat " << config->at(0).pixelFormat;
+    // Get default size and aspect ratio
+    unsigned int defaultWidth = config->at(0).size.width;
+    unsigned int defaultHeight = config->at(0).size.height;
+    float aspectRatio = static_cast<float>(defaultWidth) / defaultHeight;
 
-    // choose size; you can support both 320 and 640 by selecting based on requested size
-    config->at(0).pixelFormat = formats::RGB888; // prefer RGB if supported; else use YUV and convert
-    config->at(0).size.width = mRequestedWidth;
-    config->at(0).size.height = mRequestedHeight;
+    qDebug() << "libcamera: generated configuration with default width " << defaultWidth << ", height " << defaultHeight << ", pixelFormat " << config->at(0).pixelFormat;
+
+    // Set preview size: width = 640, height = 640 / aspectRatio (maintain aspect ratio)
+    config->at(0).pixelFormat = formats::RGB888;
+    config->at(0).size.width = 640;
+    config->at(0).size.height = static_cast<unsigned int>(640.0f / aspectRatio);
     config->at(0).bufferCount = 4;
 
     if (config->validate() == CameraConfiguration::Invalid) {
@@ -207,6 +216,8 @@ void LibCameraWorker::startCamera(const QString &cameraId)
         mCamera.reset();
         return;
     }
+
+    mCamera->requestCompleted.connect(this, &LibCameraWorker::processCompletedRequest);
 
     mRunning = true;
 
@@ -312,27 +323,12 @@ void LibCameraWorker::queueViewfinderRequest()
     // Store request to keep it alive
     mPendingRequests.push_back(request);
 
-    // Queue the request (async completion via event loop)
+    // Queue the request (async completion via callback)
     if (mCamera->queueRequest(request.get()) < 0) {
         Q_EMIT errorOccurred("libcamera: queueRequest failed for preview");
         mPendingRequests.pop_back();
         return;
     }
-
-    // In production libcamera, you'd use a callback/event loop.
-    // For now, use a simple timer-based poll as fallback:
-    QTimer::singleShot(200, this, [this, request]() {
-        if (request->status() == Request::RequestComplete) {
-            processCompletedRequest(request.get());
-            // Remove completed request from pending list
-            auto it = std::find(mPendingRequests.begin(), mPendingRequests.end(), request);
-            if (it != mPendingRequests.end())
-                mPendingRequests.erase(it);
-            // Queue next preview
-            if (mRunning)
-                queueViewfinderRequest();
-        }
-    });
 }
 
 void LibCameraWorker::processCompletedRequest(Request *request)
@@ -345,6 +341,13 @@ void LibCameraWorker::processCompletedRequest(Request *request)
     QImage preview = convertBufferToImage(buffers);
     if (!preview.isNull())
         Q_EMIT frameReady(preview);
+
+    auto it = std::find_if(mPendingRequests.begin(), mPendingRequests.end(),
+                           [request](const std::shared_ptr<Request> &ptr) {
+                             return ptr.get() == request;
+                           });
+    if (it != mPendingRequests.end())
+        mPendingRequests.erase(it);
 }
 
 QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, FrameBuffer *> &buffers)
@@ -357,20 +360,6 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
         // Use framebuffer which has the image data
         FrameBuffer *buffer = bufferPair.second;
 
-        // Use the frame metadata
-        const FrameMetadata &metadata = buffer->metadata();
-        std::cout << " seq: " << std::setw(6) << std::setfill('0') << metadata.sequence << " bytesused: ";
-
-        // Calculate the amount of storage used for a single frame
-        unsigned int nplane = 0;
-        for (const FrameMetadata::Plane &plane : metadata.planes())
-        {
-            std::cout << plane.bytesused;
-            if (++nplane < metadata.planes().size())
-                std::cout << "/";
-        }
-        std::cout << std::endl;
-
         // Find the size of buffer
         size_t size = buffer->metadata().planes()[0].bytesused;
         const FrameBuffer::Plane &plane = buffer->planes().front();
@@ -378,7 +367,6 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
 
         // Load image from a raw buffer into the QImage widget
         image.loadFromData(static_cast<unsigned char *>(memory), (int)size);
-        image.save("test.png");
     }
 
     return image;

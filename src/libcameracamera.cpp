@@ -162,53 +162,7 @@ void LibCameraWorker::startCamera(const QString &cameraId)
 
     mCamera->acquire();
 
-    // configure camera for viewfinder role (basic example)
-    std::unique_ptr<CameraConfiguration> config =
-        mCamera->generateConfiguration({ StreamRole::Viewfinder });
-    if (!config) {
-        emit errorOccurred("libcamera: failed to generate configuration");
-        mCamera.reset();
-        return;
-    }
-
-    // Get default size and aspect ratio
-    unsigned int defaultWidth = config->at(0).size.width;
-    unsigned int defaultHeight = config->at(0).size.height;
-    float aspectRatio = static_cast<float>(defaultWidth) / defaultHeight;
-
-    qDebug() << "libcamera: generated configuration with default width " << defaultWidth << ", height " << defaultHeight << ", pixelFormat " << config->at(0).pixelFormat;
-
-    // Set preview size: width = 640, height = 640 / aspectRatio (maintain aspect ratio)
-    config->at(0).pixelFormat = formats::RGB888;
-    config->at(0).size.width = 640;
-    config->at(0).size.height = static_cast<unsigned int>(640.0f / aspectRatio);
-    config->at(0).bufferCount = 4;
-
-    if (config->validate() == CameraConfiguration::Invalid) {
-        emit errorOccurred("libcamera: configuration invalid");
-        mCamera.reset();
-        return;
-    }
-
-    if (mCamera->configure(config.get()) < 0) {
-        emit errorOccurred("libcamera: camera configure failed");
-        mCamera.reset();
-        return;
-    }
-
-    // allocate buffers
-    mAllocator = std::make_unique<FrameBufferAllocator>(mCamera);
-    for (StreamConfiguration &cfg : *config) {
-        Stream *stream = cfg.stream();
-        if (mAllocator->allocate(stream) < 0) {
-            emit errorOccurred("libcamera: buffer allocation failed");
-            mCamera.reset();
-            return;
-        }
-        const std::vector<std::unique_ptr<FrameBuffer>> &bufs = mAllocator->buffers(stream);
-        for (auto &b : bufs)
-            mBuffers.push_back(std::unique_ptr<FrameBuffer>(b.get()));
-    }
+    configureCamera(StreamRole::Viewfinder);  // Configure for viewfinder
 
     // start camera
     if (mCamera->start() < 0) {
@@ -232,13 +186,11 @@ void LibCameraWorker::stopCamera()
 
     if (mCamera) {
         mCamera->stop();
-        if (mAllocator) {
-            // free buffers
-            mAllocator.reset();
-        }
+        // Clear buffers BEFORE resetting allocator to avoid double deletion
+        mBuffers.clear();
+        mAllocator.reset();
         mCamera.reset();
     }
-    mBuffers.clear();
     mRunning = false;
 }
 
@@ -249,14 +201,39 @@ void LibCameraWorker::captureImage()
         return;
     }
 
-    // Create a request and keep it alive until completion
+    if(mCaptureInProgress) {
+        emit errorOccurred("libcamera: capture already in progress");
+        return;
+    }
+
+    // wait for pending requests to complete
+    while(!mPendingRequests.empty()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+
+    mCaptureInProgress = true;
+
+    // Stop camera for reconfiguration
+    mCamera->stop();
+    mAllocator.reset();
+    mBuffers.clear();
+
+    // Reconfigure for still capture
+    configureCamera(StreamRole::StillCapture);
+
+    // Start camera for capture
+    if (mCamera->start() < 0) {
+        emit errorOccurred("libcamera: start failed");
+        return;
+    }
+
+    // Create request and capture (use existing logic)
     std::unique_ptr<Request> request = mCamera->createRequest();
     if (!request) {
         emit errorOccurred("libcamera: createRequest failed");
         return;
     }
 
-    // attach first available buffer for viewfinder stream (simplified)
     Stream *stream = *mCamera->streams().begin();
     if (mBuffers.empty()) {
         emit errorOccurred("libcamera: no buffers available");
@@ -268,13 +245,12 @@ void LibCameraWorker::captureImage()
         return;
     }
 
-    // queue request
     if (mCamera->queueRequest(request.get()) < 0) {
         emit errorOccurred("libcamera: queueRequest failed");
         return;
     }
 
-    // wait for completion (polling). This runs in the worker thread so blocking is acceptable.
+    // Wait for completion
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     while (std::chrono::steady_clock::now() < deadline) {
         if (request->status() != Request::RequestPending)
@@ -284,23 +260,39 @@ void LibCameraWorker::captureImage()
 
     if (request->status() != Request::RequestComplete) {
         emit errorOccurred("libcamera: capture failed or timed out");
-        // let request be destroyed / cleaned up
         return;
     }
 
-    // find buffer and convert
+    // Convert full-resolution buffer to QImage
     if (!request->buffers().empty()) {
         auto it = request->buffers().begin();
         FrameBuffer *completedFb = it->second;
-        QImage img;// = convertBufferToImage(completedFb);
+        std::map<const Stream *, FrameBuffer *> buffers = {{stream, completedFb}};
+        QImage img = convertBufferToImage(buffers);
         emit imageCaptured(img);
     }
-    // request destroyed when leaving scope
+
+    // Stop camera again for reconfiguration back to viewfinder
+    mCamera->stop();
+    mAllocator.reset();
+    mBuffers.clear();
+
+    // Reconfigure back to viewfinder
+    configureCamera(StreamRole::Viewfinder);
+
+    // Start camera again
+    if (mCamera->start() < 0) {
+        emit errorOccurred("libcamera: start failed");
+        return;
+    }
+
+    // Resume preview
+    queueViewfinderRequest();
 }
 
 void LibCameraWorker::queueViewfinderRequest()
 {
-    if (!mCamera || mBuffers.empty()) return;
+    if (!mCamera || mBuffers.empty() || !mRunning || mCaptureInProgress) return;
 
     // Create a request
     std::shared_ptr<Request> request = mCamera->createRequest();
@@ -333,6 +325,11 @@ void LibCameraWorker::queueViewfinderRequest()
 
 void LibCameraWorker::processCompletedRequest(Request *request)
 {
+    if(mCaptureInProgress) {
+        mCaptureInProgress = false;
+        return; // Ignore preview processing during capture
+    }
+    
     if (!request || request->buffers().empty()) return;
 
     const std::map<const Stream *, FrameBuffer *> &buffers = request->buffers();
@@ -370,5 +367,60 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
     }
 
     return image;
+}
+
+void LibCameraWorker::configureCamera(libcamera::StreamRole role)
+{
+    // Configure single stream based on role
+    std::unique_ptr<CameraConfiguration> config =
+        mCamera->generateConfiguration({ role });
+    if (!config) {
+        emit errorOccurred("libcamera: failed to generate configuration");
+        return;
+    }
+
+    if (role == StreamRole::Viewfinder) {
+        // Get default size and aspect ratio
+        unsigned int defaultWidth = config->at(0).size.width;
+        unsigned int defaultHeight = config->at(0).size.height;
+        float aspectRatio = static_cast<float>(defaultWidth) / defaultHeight;
+
+        // Set preview size: width = 640, height to match aspect ratio
+        config->at(0).pixelFormat = formats::RGB888;
+        config->at(0).size.width = 640;
+        config->at(0).size.height = static_cast<unsigned int>(640.0f / aspectRatio);
+        mCurrentWidth = config->at(0).size.width;
+        mCurrentHeight = config->at(0).size.height;
+    } else if (role == StreamRole::StillCapture) {
+        // Use full resolution for still capture
+        config->at(0).pixelFormat = formats::RGB888;
+        mCurrentWidth = config->at(0).size.width;
+        mCurrentHeight = config->at(0).size.height;
+    }
+    config->at(0).bufferCount = 4;
+
+    if (config->validate() == CameraConfiguration::Invalid) {
+        emit errorOccurred("libcamera: configuration invalid");
+        return;
+    }
+
+    if (mCamera->configure(config.get()) < 0) {
+        emit errorOccurred("libcamera: camera configure failed");
+        return;
+    }
+
+    // Allocate buffers
+    mAllocator = std::make_unique<FrameBufferAllocator>(mCamera);
+    for (StreamConfiguration &cfg : *config) {
+        Stream *stream = cfg.stream();
+        if (mAllocator->allocate(stream) < 0) {
+            emit errorOccurred("libcamera: buffer allocation failed");
+            return;
+        }
+        const std::vector<std::unique_ptr<FrameBuffer>> &bufs = mAllocator->buffers(stream);
+        for (auto &b : bufs) {
+            mBuffers.push_back(std::move(b));  // Move ownership to mBuffers (avoids copying)
+        }
+    }
 }
 

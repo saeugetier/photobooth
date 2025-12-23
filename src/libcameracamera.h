@@ -79,10 +79,15 @@ private:
 
     std::vector<std::unique_ptr<libcamera::FrameBuffer>> mBuffers;
     std::atomic<bool> mRunning{false};
-    
-    int mRequestedWidth{640}, mRequestedHeight{480};
 
     std::vector<std::shared_ptr<libcamera::Request>> mPendingRequests;
     size_t mBufferIndex = 0;
     void processCompletedRequest(libcamera::Request *request);
+
+    unsigned int mCurrentWidth = 0;
+    unsigned int mCurrentHeight = 0;
+
+    void configureCamera(libcamera::StreamRole role);
+
+    bool mCaptureInProgress = false;
 };

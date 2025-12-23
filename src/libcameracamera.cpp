@@ -186,7 +186,7 @@ void LibCameraWorker::stopCamera()
 
     if (mCamera) {
         mCamera->stop();
-        // Clear buffers BEFORE resetting allocator to avoid double deletion
+        // Clear raw pointers (allocator will delete the unique_ptrs)
         mBuffers.clear();
         mAllocator.reset();
         mCamera.reset();
@@ -239,7 +239,7 @@ void LibCameraWorker::captureImage()
         emit errorOccurred("libcamera: no buffers available");
         return;
     }
-    FrameBuffer *fb = mBuffers.front().get();
+    FrameBuffer *fb = mBuffers.front();  // Use raw pointer directly
     if (request->addBuffer(stream, fb) < 0) {
         emit errorOccurred("libcamera: addBuffer failed");
         return;
@@ -302,7 +302,7 @@ void LibCameraWorker::queueViewfinderRequest()
     }
 
     // Get next buffer (rotate through available buffers)
-    FrameBuffer *fb = mBuffers[mBufferIndex % mBuffers.size()].get();
+    FrameBuffer *fb = mBuffers[mBufferIndex % mBuffers.size()];  // Use raw pointer directly
     mBufferIndex++;
 
     // Attach buffer to stream
@@ -419,7 +419,7 @@ void LibCameraWorker::configureCamera(libcamera::StreamRole role)
         }
         const std::vector<std::unique_ptr<FrameBuffer>> &bufs = mAllocator->buffers(stream);
         for (auto &b : bufs) {
-            mBuffers.push_back(std::move(b));  // Move ownership to mBuffers (avoids copying)
+            mBuffers.push_back(b.get());  // Store raw pointer (allocator owns the unique_ptr)
         }
     }
 }

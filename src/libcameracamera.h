@@ -77,7 +77,7 @@ private:
     std::shared_ptr<libcamera::Camera> mCamera;
     std::unique_ptr<libcamera::FrameBufferAllocator> mAllocator;
 
-    std::vector<std::unique_ptr<libcamera::FrameBuffer>> mBuffers;
+    std::vector<libcamera::FrameBuffer*> mBuffers;  // Changed to raw pointers to avoid ownership issues
     std::atomic<bool> mRunning{false};
 
     std::vector<std::shared_ptr<libcamera::Request>> mPendingRequests;

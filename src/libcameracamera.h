@@ -29,9 +29,9 @@ public:
     Q_INVOKABLE QString getDefaultCamera() const;
 
 public slots:
-    void startCamera(const QString &cameraId);
-    void stopCamera();
-    void captureImage();
+    Q_INVOKABLE void startCamera(const QString &cameraId);
+    Q_INVOKABLE void stopCamera();
+    Q_INVOKABLE void captureImage();
 
 signals:
     void imageCaptured(const QImage &image);

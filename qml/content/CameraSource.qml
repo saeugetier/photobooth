@@ -11,7 +11,7 @@ Item
 
    property alias output: output
    property string cameraName: ""
-   property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera"))
+   property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera") || (cameraSource.state === "Libcamera"))
 
    signal imageCaptured(var image)
    signal errorOccurred(var errorString)
@@ -96,6 +96,11 @@ Item
       {
          console.log("Standard camera capture")
          cameraSession.imageCapture.capture()
+      }
+      else if(state === "Libcamera")
+      {
+         console.log("Libcamera capture")
+         libcamera.captureImage()
       }
       else if(state === "GPhotoCamera")
       {

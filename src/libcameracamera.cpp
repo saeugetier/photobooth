@@ -263,6 +263,7 @@ void LibCameraWorker::captureImage()
 
     if (mCamera->queueRequest(request.get()) < 0) {
         emit errorOccurred("libcamera: queueRequest failed");
+        mCaptureInProgress = false;
         return;
     }
 
@@ -276,6 +277,7 @@ void LibCameraWorker::captureImage()
 
     if (request->status() != Request::RequestComplete) {
         emit errorOccurred("libcamera: capture failed or timed out");
+        mCaptureInProgress = false;
         return;
     }
 
@@ -289,6 +291,8 @@ void LibCameraWorker::captureImage()
     } else {
         emit errorOccurred("libcamera: capture request failed");
     }
+
+    mCaptureInProgress = false;
 
     // Reconfigure back to viewfinder
     mCamera->stop();
@@ -309,8 +313,7 @@ void LibCameraWorker::captureImage()
         mCaptureInProgress = false;
         return;
     }
-
-    mCaptureInProgress = false;
+    
     // Resume preview
     queueViewfinderRequest();
 }

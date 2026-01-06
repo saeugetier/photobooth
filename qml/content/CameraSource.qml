@@ -119,7 +119,7 @@ Item
 
    Connections {
       target: libcamera
-      function errorOccured(errorString) {
+      function onErrorOccured(errorString) {
          if(state === "Libcamera")
          {
             cameraSource.errorOccurred(errorString)
@@ -130,7 +130,7 @@ Item
    Connections
    {
       target: libcamera
-      function imageCaptured(image) {
+      function onImageCaptured(image) {
             cameraSource.imageCaptured(image)
          }
    }
@@ -168,7 +168,7 @@ Item
    Connections {
       id: cameraErrorListener
       target: systemCamera
-      function errorOccured(_, errorString) {
+      function onErrorOccured(_, errorString) {
          if(state === "StandardCamera")
          {
             cameraSource.errorOccurred(errorString)

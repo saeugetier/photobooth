@@ -198,6 +198,8 @@ void LibCameraWorker::stopCamera()
 
 void LibCameraWorker::captureImage()
 {
+    qDebug() << "[INFO] LibCameraWorker::captureImage called";
+
     if (!mRunning || !mCamera) {
         emit errorOccurred("libcamera: camera not running");
         return;

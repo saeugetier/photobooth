@@ -187,6 +187,7 @@ void LibCameraWorker::stopCamera()
     if (mCamera) {
         mCamera->requestCompleted.disconnect();
         mCamera->stop();
+        mPendingRequests.clear();
         // Clear raw pointers (allocator will delete the unique_ptrs)
         mBuffers.clear();
         mAllocator.reset();

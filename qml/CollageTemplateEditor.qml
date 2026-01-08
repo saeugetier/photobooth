@@ -121,8 +121,7 @@ Item {
     
     function loadXmlFile() {
         if(xmlFilePath.length === 0) {
-            statusLabel.text = qsTr("Error: No file path specified")
-            statusLabel.color = "#F44336"
+            showStatusMessage(qsTr("Error: No file path specified"), "#F44336")
             return
         }
         
@@ -136,41 +135,29 @@ Item {
             var defaultContent = String(fileIO.read())
             if(defaultContent.length > 0) {
                 xmlTextArea.text = defaultContent
-                statusLabel.text = qsTr("Loaded default template")
-                statusLabel.color = "#FF9800"
+                showStatusMessage(qsTr("Loaded default template"), "#FF9800")
             } else {
-                statusLabel.text = qsTr("Error loading file")
-                statusLabel.color = "#F44336"
+                showStatusMessage(qsTr("Error loading file"), "#F44336")
             }
         } else {
             xmlTextArea.text = content
-            statusLabel.text = qsTr("Loaded successfully")
-            statusLabel.color = "#4CAF50"
+            showStatusMessage(qsTr("Loaded successfully"), "#4CAF50")
         }
-        
-        // Clear status after 3 seconds
-        statusTimer.restart()
     }
     
     function saveXmlFile() {
         if(xmlFilePath.length === 0) {
-            statusLabel.text = qsTr("Error: No file path specified")
-            statusLabel.color = "#F44336"
+            showStatusMessage(qsTr("Error: No file path specified"), "#F44336")
             return
         }
         
         fileIO.source = xmlFilePath
         var success = fileIO.write(xmlTextArea.text)
         if(success) {
-            statusLabel.text = qsTr("Saved successfully!")
-            statusLabel.color = "#4CAF50"
+            showStatusMessage(qsTr("Saved successfully!"), "#4CAF50")
         } else {
-            statusLabel.text = qsTr("Error saving file")
-            statusLabel.color = "#F44336"
+            showStatusMessage(qsTr("Error saving file"), "#F44336")
         }
-        
-        // Clear status after 3 seconds
-        statusTimer.restart()
     }
     
     function resetToDefault() {
@@ -178,14 +165,15 @@ Item {
         var defaultContent = String(fileIO.read())
         if(defaultContent.length > 0) {
             xmlTextArea.text = defaultContent
-            statusLabel.text = qsTr("Reset to default template")
-            statusLabel.color = "#4CAF50"
+            showStatusMessage(qsTr("Reset to default template"), "#4CAF50")
         } else {
-            statusLabel.text = qsTr("Error loading default template")
-            statusLabel.color = "#F44336"
+            showStatusMessage(qsTr("Error loading default template"), "#F44336")
         }
-        
-        // Clear status after 3 seconds
+    }
+    
+    function showStatusMessage(text, color) {
+        statusLabel.text = text
+        statusLabel.color = color
         statusTimer.restart()
     }
     

@@ -168,7 +168,7 @@ Item
    Connections {
       id: cameraErrorListener
       target: systemCamera
-      function onErrorOccured(_, errorString) {
+      function onErrorOccurred(_, errorString) {
          if(state === "StandardCamera")
          {
             cameraSource.errorOccurred(errorString)

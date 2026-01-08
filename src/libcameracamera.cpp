@@ -10,6 +10,8 @@
 #include <sys/mman.h>
 #include <iostream>
 #include <iomanip>
+#include <cerrno>
+#include <cstring>
 
 using namespace libcamera;
 
@@ -383,7 +385,7 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
     QImage image;
     std::vector<std::pair<void*, size_t>> mappedMemory;
     
-    for (auto bufferPair : buffers)
+    for (const auto& bufferPair : buffers)
     {
         // Use framebuffer which has the image data
         FrameBuffer *buffer = bufferPair.second;
@@ -394,7 +396,7 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
         void *memory = mmap(NULL, plane.length, PROT_READ, MAP_SHARED, plane.fd.get(), 0);
         
         if (memory == MAP_FAILED) {
-            qDebug() << "[ERROR] Failed to mmap framebuffer memory";
+            qDebug() << "[ERROR] Failed to mmap framebuffer memory:" << strerror(errno);
             // Unmap any previously mapped memory before returning
             for (const auto &mapped : mappedMemory) {
                 munmap(mapped.first, mapped.second);

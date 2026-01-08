@@ -2,7 +2,6 @@
 #include <QThread>
 #include <QDebug>
 #include <chrono>
-#include <gphoto2/gphoto2-list.h>
 #include <thread>
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>

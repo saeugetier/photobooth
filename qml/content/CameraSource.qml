@@ -119,7 +119,7 @@ Item
 
    Connections {
       target: libcamera
-      function onErrorOccured(errorString) {
+      function onErrorOccurred(errorString) {
          if(state === "Libcamera")
          {
             cameraSource.errorOccurred(errorString)

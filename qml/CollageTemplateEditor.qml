@@ -8,6 +8,7 @@ import FileIO
 Item {
     id: collageTemplateEditor
     
+    readonly property string defaultXmlPath: "qrc:/XmlData.xml"
     property alias textArea: xmlTextArea
     property string xmlFilePath: ""
     
@@ -129,7 +130,7 @@ Item {
         
         if(content.length === 0) {
             // Try to load from resources as template
-            fileIO.source = "qrc:/XmlData.xml"
+            fileIO.source = defaultXmlPath
             var defaultContent = String(fileIO.read())
             if(defaultContent.length !== 0) {
                 xmlTextArea.text = defaultContent
@@ -159,7 +160,7 @@ Item {
     }
     
     function resetToDefault() {
-        fileIO.source = "qrc:/XmlData.xml"
+        fileIO.source = defaultXmlPath
         var defaultContent = String(fileIO.read())
         if(defaultContent.length !== 0) {
             xmlTextArea.text = defaultContent

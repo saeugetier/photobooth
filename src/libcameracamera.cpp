@@ -355,7 +355,7 @@ void LibCameraWorker::queueViewfinderRequest()
 
 void LibCameraWorker::processCompletedRequest(Request *request)
 {
-    if(mCaptureInProgress) {
+    if (mCaptureInProgress) {
         mCaptureInProgress = false;
         return; // Ignore preview processing during capture
     }

@@ -384,7 +384,7 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
     QImage image;
     std::vector<std::pair<void*, size_t>> mappedMemory;
     
-    for (const auto& bufferPair : buffers)
+    for (const auto &bufferPair : buffers)
     {
         // Use framebuffer which has the image data
         FrameBuffer *buffer = bufferPair.second;

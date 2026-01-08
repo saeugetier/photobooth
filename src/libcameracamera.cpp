@@ -381,6 +381,7 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
 {
     // Create QImage from RGB888 data (copy data)
     QImage image;
+    std::vector<std::pair<void*, size_t>> mappedMemory;
     
     for (auto bufferPair : buffers)
     {
@@ -394,15 +395,24 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
         
         if (memory == MAP_FAILED) {
             qDebug() << "[ERROR] Failed to mmap framebuffer memory";
+            // Unmap any previously mapped memory before returning
+            for (const auto &mapped : mappedMemory) {
+                munmap(mapped.first, mapped.second);
+            }
             emit errorOccurred("libcamera: failed to map framebuffer memory");
             return QImage();
         }
+        
+        // Track mapped memory for cleanup
+        mappedMemory.push_back({memory, plane.length});
 
         // Load image from a raw buffer into the QImage widget
         image.loadFromData(static_cast<unsigned char *>(memory), (int)size);
-        
-        // Unmap the memory to avoid memory leak
-        munmap(memory, plane.length);
+    }
+    
+    // Unmap all memory to avoid memory leak
+    for (const auto &mapped : mappedMemory) {
+        munmap(mapped.first, mapped.second);
     }
 
     return image;

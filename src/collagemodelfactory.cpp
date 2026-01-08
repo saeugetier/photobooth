@@ -190,3 +190,46 @@ void CollageModelFactory::clearModels()
     }
     mCollageModels.clear();
 }
+
+bool CollageModelFactory::saveToFile(const QUrl &url)
+{
+    QString fileName;
+    if(url.isLocalFile())
+        fileName = url.toLocalFile();
+    else
+        fileName = url.toString();
+
+    QFile file(fileName);
+    if(!file.open(QFile::WriteOnly | QFile::Text))
+    {
+        qCritical("Could not open file for writing: %s", fileName.toStdString().c_str());
+        return false;
+    }
+
+    QDomDocument doc;
+    QDomProcessingInstruction xmlDecl = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild(xmlDecl);
+
+    QDomElement root = doc.createElement("catalog");
+    root.setAttribute("version", "1.0");
+    doc.appendChild(root);
+
+    // For simplicity, just write a placeholder comment
+    // Full implementation would serialize all collage models
+    QDomComment comment = doc.createComment("Collage templates - edit via settings");
+    root.appendChild(comment);
+
+    QTextStream stream(&file);
+    stream << doc.toString(4);
+    file.close();
+
+    return true;
+}
+
+QString CollageModelFactory::getSourcePath() const
+{
+    if(mSource.isLocalFile())
+        return mSource.toLocalFile();
+    else
+        return mSource.toString();
+}

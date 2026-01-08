@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
 import Qt.labs.platform
+import QtCore
 import CollageModel
 import FileIO
 
@@ -131,12 +132,12 @@ Item {
         
         // Try to read the custom file
         fileReader.source = xmlFilePath
-        var content = fileReader.read()
+        var content = String(fileReader.read())
         
         if(content.length === 0) {
             // Try to load from resources as template
             fileReader.source = "qrc:/XmlData.xml"
-            var defaultContent = fileReader.read()
+            var defaultContent = String(fileReader.read())
             if(defaultContent.length > 0) {
                 xmlTextArea.text = defaultContent
                 statusLabel.text = qsTr("Loaded default template")
@@ -178,7 +179,7 @@ Item {
     
     function resetToDefault() {
         fileReader.source = "qrc:/XmlData.xml"
-        var defaultContent = fileReader.read()
+        var defaultContent = String(fileReader.read())
         if(defaultContent.length > 0) {
             xmlTextArea.text = defaultContent
             statusLabel.text = qsTr("Reset to default template")

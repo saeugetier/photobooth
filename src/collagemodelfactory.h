@@ -33,8 +33,6 @@ public:
 
     Q_INVOKABLE CollageIconModel* getCollageIconModel();
     Q_INVOKABLE CollageImageModel* getCollageImageModel(const QString& name);
-    Q_INVOKABLE bool saveToFile(const QUrl &url);
-    Q_INVOKABLE QString getSourcePath() const;
 signals:
     void sourceChanged(const QUrl &);
     void statusChanged(const Status &);

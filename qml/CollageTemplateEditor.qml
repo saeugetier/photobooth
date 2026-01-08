@@ -1,10 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 import Qt.labs.platform
 import QtCore
-import CollageModel
 import FileIO
 
 Item {
@@ -75,7 +73,7 @@ Item {
             
             Button {
                 text: qsTr("Save")
-                enabled: xmlFilePath.length > 0
+                enabled: xmlFilePath.length !== 0
                 onClicked: saveXmlFile()
             }
             
@@ -107,12 +105,12 @@ Item {
     Component.onCompleted: {
         // Try to find the collages file
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
-        if(path.length > 0) {
+        if(path.length !== 0) {
             xmlFilePath = path
         } else {
             // Get the AppLocalDataLocation path
             var locations = StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation)
-            if(locations.length > 0) {
+            if(locations.length !== 0) {
                 xmlFilePath = locations[0] + "/Collages.xml"
             }
         }
@@ -133,7 +131,7 @@ Item {
             // Try to load from resources as template
             fileIO.source = "qrc:/XmlData.xml"
             var defaultContent = String(fileIO.read())
-            if(defaultContent.length > 0) {
+            if(defaultContent.length !== 0) {
                 xmlTextArea.text = defaultContent
                 showStatusMessage(qsTr("Loaded default template"), "#FF9800")
             } else {
@@ -163,7 +161,7 @@ Item {
     function resetToDefault() {
         fileIO.source = "qrc:/XmlData.xml"
         var defaultContent = String(fileIO.read())
-        if(defaultContent.length > 0) {
+        if(defaultContent.length !== 0) {
             xmlTextArea.text = defaultContent
             showStatusMessage(qsTr("Reset to default template"), "#4CAF50")
         } else {

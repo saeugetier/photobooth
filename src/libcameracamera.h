@@ -69,7 +69,6 @@ signals:
 
 private:
     void initCameraManager();
-    void configureCamera(int width, int height);
 
     QImage convertBufferToImage(const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
 

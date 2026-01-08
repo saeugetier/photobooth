@@ -14,11 +14,7 @@ Item {
     property string xmlFilePath: ""
     
     FileIO {
-        id: fileReader
-    }
-    
-    FileIO {
-        id: fileWriter
+        id: fileIO
     }
     
     ColumnLayout {
@@ -131,13 +127,13 @@ Item {
         }
         
         // Try to read the custom file
-        fileReader.source = xmlFilePath
-        var content = String(fileReader.read())
+        fileIO.source = xmlFilePath
+        var content = String(fileIO.read())
         
         if(content.length === 0) {
             // Try to load from resources as template
-            fileReader.source = "qrc:/XmlData.xml"
-            var defaultContent = String(fileReader.read())
+            fileIO.source = "qrc:/XmlData.xml"
+            var defaultContent = String(fileIO.read())
             if(defaultContent.length > 0) {
                 xmlTextArea.text = defaultContent
                 statusLabel.text = qsTr("Loaded default template")
@@ -163,8 +159,8 @@ Item {
             return
         }
         
-        fileWriter.source = xmlFilePath
-        var success = fileWriter.write(xmlTextArea.text)
+        fileIO.source = xmlFilePath
+        var success = fileIO.write(xmlTextArea.text)
         if(success) {
             statusLabel.text = qsTr("Saved successfully!")
             statusLabel.color = "#4CAF50"
@@ -178,8 +174,8 @@ Item {
     }
     
     function resetToDefault() {
-        fileReader.source = "qrc:/XmlData.xml"
-        var defaultContent = String(fileReader.read())
+        fileIO.source = "qrc:/XmlData.xml"
+        var defaultContent = String(fileIO.read())
         if(defaultContent.length > 0) {
             xmlTextArea.text = defaultContent
             statusLabel.text = qsTr("Reset to default template")

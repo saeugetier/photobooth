@@ -52,8 +52,7 @@ public:
   ~LibCameraWorker() override;
 
 public slots:
-  void
-  startCamera(const QString &cameraId); // cameraId as returned by CameraManager
+  void startCamera(const QString &cameraId); // cameraId as returned by CameraManager
   void stopCamera();
   void captureImage();
   void queueViewfinderRequest(); // single capture -> emits imageCaptured

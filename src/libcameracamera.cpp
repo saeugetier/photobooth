@@ -276,11 +276,11 @@ void LibCameraWorker::captureImage()
     }
 
     // Wait for completion
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
-    while (std::chrono::steady_clock::now() < deadline) {
-        if (request->status() != Request::RequestPending)
-            break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    const auto deadline =
+        std::chrono::steady_clock::now() + std::chrono::seconds(1);
+    while (std::chrono::steady_clock::now() < deadline &&
+           request->status() == Request::RequestPending) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
     if (request->status() != Request::RequestComplete) {

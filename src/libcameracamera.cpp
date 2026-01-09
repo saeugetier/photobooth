@@ -291,8 +291,8 @@ void LibCameraWorker::captureImage()
 
     // Convert full-resolution buffer to QImage
     if (!request->buffers().empty()) {
-            auto it = request->buffers().begin();
-            FrameBuffer *completedFb = it->second;
+            auto bufferIt = request->buffers().begin();
+            FrameBuffer *completedFb = bufferIt->second;
             std::map<const Stream *, FrameBuffer *> buffers = {{stream, completedFb}};
             QImage img = convertBufferToImage(buffers);
             emit imageCaptured(img);

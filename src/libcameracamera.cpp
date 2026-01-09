@@ -212,9 +212,15 @@ void LibCameraWorker::captureImage()
         return;
     }
 
-    // Wait for pending requests to complete
-    while (!mPendingRequests.empty()) {
+    // Wait for pending requests to complete with timeout
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(1);
+    while (!mPendingRequests.empty() && std::chrono::steady_clock::now() < deadline) {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    
+    if (!mPendingRequests.empty()) {
+        emit errorOccurred("libcamera: timeout waiting for pending preview image requests");
+       return;
     }
 
     mCaptureInProgress = true;

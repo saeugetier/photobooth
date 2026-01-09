@@ -12,6 +12,7 @@
         "--filesystem=/media",
         "--filesystem=/run/media",
         "--filesystem=/mnt",
+        "--filesystem=/dev",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],

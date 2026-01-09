@@ -362,6 +362,7 @@ void LibCameraWorker::processCompletedRequest(Request *request)
     if (mCaptureInProgress) {
         mCaptureInProgress = false;
         return; // Ignore preview processing during capture
+        // Capture processing handled separately by blocking captureImage threaded function.
     }
     
     if (!request || request->buffers().empty()) return;
@@ -371,7 +372,7 @@ void LibCameraWorker::processCompletedRequest(Request *request)
     // Convert buffer to QImage and emit preview
     QImage preview = convertBufferToImage(buffers);
 
-    if (!preview.isNull())
+    if (!preview.isNull())        mCaptureInProgress = false;
         Q_EMIT frameReady(preview);
 
     auto it = std::find_if(mPendingRequests.begin(), mPendingRequests.end(),

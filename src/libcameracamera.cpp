@@ -397,7 +397,7 @@ QImage LibCameraWorker::convertBufferToImage(const std::map<const Stream *, Fram
             for (const auto &mapped : mappedMemory) {
                 munmap(mapped.first, mapped.second);
             }
-            emit errorOccurred("libcamera: failed to map framebuffer memory");
+        
             return QImage();
         }
         

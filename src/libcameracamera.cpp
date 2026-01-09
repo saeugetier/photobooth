@@ -351,15 +351,18 @@ void LibCameraWorker::processCompletedRequest(Request *request) {
   QImage preview = convertBufferToImage(buffers);
 
   if (!preview.isNull())
-    mCaptureInProgress = false;
-  Q_EMIT frameReady(preview);
+  {
+    Q_EMIT frameReady(preview);
+  }
 
   auto it = std::find_if(mPendingRequests.begin(), mPendingRequests.end(),
                          [request](const std::shared_ptr<Request> &ptr) {
                            return ptr.get() == request;
                          });
   if (it != mPendingRequests.end())
+  {
     mPendingRequests.erase(it);
+  }
 }
 
 QImage LibCameraWorker::convertBufferToImage(

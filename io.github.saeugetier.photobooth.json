@@ -12,9 +12,12 @@
         "--filesystem=/media",
         "--filesystem=/run/media",
         "--filesystem=/mnt",
-        "--filesystem=/dev",
+        "--filesystem=/dev:rw",
+        "--filesystem=/sys:ro",
+        "--filesystem=/run/udev:ro",
         "--socket=fallback-x11",
-        "--socket=wayland"
+        "--socket=wayland",
+        "--env=LIBCAMERA_LOG_LEVELS=*:DEBUG"
     ],
     "cleanup": [
         "/include",

@@ -33,14 +33,6 @@ LibcameraDevice::LibcameraDevice(QObject *parent)
     connect(mWorker, &LibCameraWorker::errorOccurred,
             this, &LibcameraDevice::onErrorOccurred);
 
-    // Connect device slots to worker slots
-    connect(this, &LibcameraDevice::startCamera,
-            mWorker, &LibCameraWorker::startCamera);
-    connect(this, &LibcameraDevice::stopCamera,
-            mWorker, &LibCameraWorker::stopCamera);
-    connect(this, &LibcameraDevice::captureImage,
-            mWorker, &LibCameraWorker::captureImage);
-
     // Clean up when thread finishes
     connect(mWorkerThread.get(), &QThread::finished,
             mWorker, &QObject::deleteLater);

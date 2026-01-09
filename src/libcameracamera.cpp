@@ -310,7 +310,6 @@ void LibCameraWorker::captureImage()
 
     if (mCamera->acquire() < 0) {
         emit errorOccurred("libcamera: acquire failed for viewfinder");
-        mCaptureInProgress = false;
         return;
     }
 

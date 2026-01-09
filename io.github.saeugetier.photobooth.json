@@ -17,7 +17,10 @@
         "--filesystem=/run/udev:ro",
         "--socket=fallback-x11",
         "--socket=wayland",
-        "--env=LIBCAMERA_LOG_LEVELS=*:DEBUG"
+        "--env=LIBCAMERA_LOG_LEVELS=*:DEBUG",
+        "--env=LIBCAMERA_IPA_FORCE_ISOLATION=0",
+        "--env=LIBCAMERA_IPA_MODULE_PATH=/app/lib/libcamera",
+        "--env=LIBCAMERA_IPA_CONFIG_PATH=/app/share/libcamera/ipa"
     ],
     "cleanup": [
         "/include",
@@ -62,7 +65,12 @@
             "config-opts": [
                 "--buildtype=release",
                 "-Dpycamera=disabled",
-                "-Dgstreamer=enabled"
+                "-Dgstreamer=enabled",
+                "-Dtest=false",
+                "-Ddocumentation=disabled",
+                "-Dcam=disabled",
+                "-Dqcam=disabled",
+                "-Dlc-compliance=disabled"
             ],
             "cleanup": [
                 "/share/doc",

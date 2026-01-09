@@ -318,7 +318,6 @@ void LibCameraWorker::captureImage()
 
     if (mCamera->start() < 0) {
         emit errorOccurred("libcamera: start failed for viewfinder");
-        mCaptureInProgress = false;
         return;
     }
     

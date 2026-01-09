@@ -101,13 +101,24 @@ LibCameraWorker::~LibCameraWorker() {
 }
 
 void LibCameraWorker::initCameraManager() {
-  mCameraManager = std::make_unique<CameraManager>();
-  int ret = mCameraManager->start();
-  if (ret) {
-    emit errorOccurred(
-        QString::asprintf("libcamera: CameraManager start failed: %d", ret));
-    mCameraManager.reset();
-  }
+    // Check environment variables for debugging
+    qDebug() << "[INFO] LIBCAMERA_IPA_CONFIG_PATH:" << qgetenv("LIBCAMERA_IPA_CONFIG_PATH");
+    qDebug() << "[INFO] LIBCAMERA_IPA_MODULE_PATH:" << qgetenv("LIBCAMERA_IPA_MODULE_PATH");
+
+    mCameraManager = std::make_unique<CameraManager>();
+    int ret = mCameraManager->start();
+    if (ret) {
+        emit errorOccurred(
+            QString::asprintf("libcamera: CameraManager start failed: %d", ret));
+        mCameraManager.reset();
+        return;
+    }
+
+    // Debug: list detected cameras
+    qDebug() << "[INFO] libcamera: CameraManager started, cameras found:" << mCameraManager->cameras().size();
+    for (const auto &cam : mCameraManager->cameras()) {
+        qDebug() << "[INFO] libcamera: Camera ID:" << QString::fromStdString(cam->id());
+    }
 }
 
 QStringList LibCameraWorker::availableCameras() const {

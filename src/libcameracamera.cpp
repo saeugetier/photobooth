@@ -213,7 +213,7 @@ void LibCameraWorker::captureImage()
     }
 
     // Wait for pending requests to complete with timeout
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(1);
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(1);
     while (!mPendingRequests.empty() && std::chrono::steady_clock::now() < deadline) {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
@@ -276,7 +276,7 @@ void LibCameraWorker::captureImage()
     }
 
     // Wait for completion
-    const auto deadline =
+    deadline =
         std::chrono::steady_clock::now() + std::chrono::seconds(1);
     while (std::chrono::steady_clock::now() < deadline &&
            request->status() == Request::RequestPending) {

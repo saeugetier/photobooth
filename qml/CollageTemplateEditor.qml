@@ -105,9 +105,9 @@ Item {
             }
         }
         
-        // Right panel: Template editor
+        // Middle panel: Template editor
         ColumnLayout {
-            Layout.fillWidth: true
+            Layout.preferredWidth: 350
             Layout.fillHeight: true
             spacing: 10
             
@@ -158,7 +158,10 @@ Item {
                                 Layout.fillWidth: true
                                 text: currentTemplate ? currentTemplate.icon : ""
                                 onEditingFinished: {
-                                    if(currentTemplate) currentTemplate.icon = text
+                                    if(currentTemplate) {
+                                        currentTemplate.icon = text
+                                        refreshPreview()
+                                    }
                                 }
                             }
                             
@@ -167,7 +170,10 @@ Item {
                                 id: printableCheck
                                 checked: currentTemplate ? (currentTemplate.printable !== false) : true
                                 onToggled: {
-                                    if(currentTemplate) currentTemplate.printable = checked
+                                    if(currentTemplate) {
+                                        currentTemplate.printable = checked
+                                        refreshPreview()
+                                    }
                                 }
                             }
                         }
@@ -190,7 +196,10 @@ Item {
                                 Layout.fillWidth: true
                                 text: currentTemplate ? currentTemplate.background : ""
                                 onEditingFinished: {
-                                    if(currentTemplate) currentTemplate.background = text
+                                    if(currentTemplate) {
+                                        currentTemplate.background = text
+                                        refreshPreview()
+                                    }
                                 }
                             }
                             
@@ -200,7 +209,10 @@ Item {
                                 Layout.fillWidth: true
                                 text: currentTemplate ? currentTemplate.foreground : ""
                                 onEditingFinished: {
-                                    if(currentTemplate) currentTemplate.foreground = text
+                                    if(currentTemplate) {
+                                        currentTemplate.foreground = text
+                                        refreshPreview()
+                                    }
                                 }
                             }
                         }
@@ -224,7 +236,10 @@ Item {
                                 to: 10000
                                 value: currentTemplate ? currentTemplate.width : 3570
                                 onValueModified: {
-                                    if(currentTemplate) currentTemplate.width = value
+                                    if(currentTemplate) {
+                                        currentTemplate.width = value
+                                        refreshPreview()
+                                    }
                                 }
                             }
                             
@@ -235,7 +250,10 @@ Item {
                                 to: 10000
                                 value: currentTemplate ? currentTemplate.height : 2380
                                 onValueModified: {
-                                    if(currentTemplate) currentTemplate.height = value
+                                    if(currentTemplate) {
+                                        currentTemplate.height = value
+                                        refreshPreview()
+                                    }
                                 }
                             }
                         }
@@ -304,6 +322,162 @@ Item {
                 }
             }
         }
+        
+        // Right panel: Preview
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 10
+            visible: currentTemplate !== null
+            
+            Label {
+                text: qsTr("Preview")
+                font.pixelSize: 16
+                font.bold: true
+            }
+            
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: "#f0f0f0"
+                border.color: "#cccccc"
+                border.width: 1
+                
+                Item {
+                    id: previewArea
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    
+                    Rectangle {
+                        id: previewCanvas
+                        anchors.centerIn: parent
+                        width: {
+                            if(!currentTemplate) return 400
+                            var aspect = currentTemplate.width / currentTemplate.height
+                            var maxWidth = previewArea.width
+                            var maxHeight = previewArea.height
+                            if(maxWidth / aspect <= maxHeight) {
+                                return maxWidth
+                            } else {
+                                return maxHeight * aspect
+                            }
+                        }
+                        height: width / (currentTemplate ? (currentTemplate.width / currentTemplate.height) : 1.5)
+                        color: "#ffffff"
+                        border.color: "#333333"
+                        border.width: 2
+                        
+                        // Background indicator
+                        Label {
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.margins: 5
+                            text: currentTemplate ? "BG: " + currentTemplate.background : ""
+                            font.pixelSize: 10
+                            color: "#666666"
+                        }
+                        
+                        // Photo slots
+                        Repeater {
+                            model: currentTemplate ? currentTemplate.images.length : 0
+                            
+                            Rectangle {
+                                property var slot: currentTemplate.images[index]
+                                x: slot.x * previewCanvas.width
+                                y: slot.y * previewCanvas.height
+                                width: slot.width * previewCanvas.width
+                                height: slot.height * previewCanvas.height
+                                color: Qt.rgba(0.3, 0.5, 0.8, 0.3)
+                                border.color: "#2196F3"
+                                border.width: 2
+                                rotation: slot.rotation || 0
+                                transformOrigin: Item.TopLeft
+                                
+                                Label {
+                                    anchors.centerIn: parent
+                                    text: (index + 1).toString()
+                                    font.pixelSize: 20
+                                    font.bold: true
+                                    color: "#2196F3"
+                                }
+                                
+                                // Border indicator
+                                Rectangle {
+                                    anchors.fill: parent
+                                    anchors.margins: 3
+                                    color: "transparent"
+                                    border.color: "#FF5722"
+                                    border.width: slot.border && slot.border.file ? 3 : 0
+                                }
+                                
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        photoSlotEditor.currentSlotIndex = index
+                                        photoSlotEditor.visible = true
+                                    }
+                                    cursorShape: Qt.PointingHandCursor
+                                }
+                            }
+                        }
+                        
+                        // Foreground indicator
+                        Label {
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            anchors.margins: 5
+                            text: currentTemplate && currentTemplate.foreground ? "FG: " + currentTemplate.foreground : ""
+                            font.pixelSize: 10
+                            color: "#666666"
+                        }
+                    }
+                }
+                
+                // Legend
+                Column {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 10
+                    spacing: 5
+                    
+                    Row {
+                        spacing: 5
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            color: Qt.rgba(0.3, 0.5, 0.8, 0.3)
+                            border.color: "#2196F3"
+                            border.width: 2
+                        }
+                        Label {
+                            text: qsTr("Photo slot")
+                            font.pixelSize: 10
+                        }
+                    }
+                    
+                    Row {
+                        spacing: 5
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            color: "transparent"
+                            border.color: "#FF5722"
+                            border.width: 3
+                        }
+                        Label {
+                            text: qsTr("Has border")
+                            font.pixelSize: 10
+                        }
+                    }
+                }
+            }
+            
+            Label {
+                text: currentTemplate ? qsTr("Size: %1 x %2 px").arg(currentTemplate.width).arg(currentTemplate.height) : ""
+                font.pixelSize: 12
+                Layout.alignment: Qt.AlignHCenter
+            }
+        }
     }
     
     // Photo slot editor dialog
@@ -332,7 +506,10 @@ Item {
                     from: 0
                     to: 100
                     value: getSlotValue("x", 0) * 100
-                    onValueModified: setSlotValue("x", value / 100.0)
+                    onValueModified: {
+                        setSlotValue("x", value / 100.0)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Position Y (0-1):") }
@@ -341,7 +518,10 @@ Item {
                     from: 0
                     to: 100
                     value: getSlotValue("y", 0) * 100
-                    onValueModified: setSlotValue("y", value / 100.0)
+                    onValueModified: {
+                        setSlotValue("y", value / 100.0)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Width (0-1):") }
@@ -350,7 +530,10 @@ Item {
                     from: 1
                     to: 100
                     value: getSlotValue("width", 100) * 100
-                    onValueModified: setSlotValue("width", value / 100.0)
+                    onValueModified: {
+                        setSlotValue("width", value / 100.0)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Height (0-1):") }
@@ -359,7 +542,10 @@ Item {
                     from: 1
                     to: 100
                     value: getSlotValue("height", 100) * 100
-                    onValueModified: setSlotValue("height", value / 100.0)
+                    onValueModified: {
+                        setSlotValue("height", value / 100.0)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Rotation (degrees):") }
@@ -368,7 +554,10 @@ Item {
                     from: -180
                     to: 180
                     value: getSlotValue("rotation", 0)
-                    onValueModified: setSlotValue("rotation", value)
+                    onValueModified: {
+                        setSlotValue("rotation", value)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Border Image:") }
@@ -376,7 +565,10 @@ Item {
                     id: borderField
                     Layout.fillWidth: true
                     text: getSlotBorderValue("file", "")
-                    onEditingFinished: setSlotBorderValue("file", text)
+                    onEditingFinished: {
+                        setSlotBorderValue("file", text)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Effect Preset:") }
@@ -384,14 +576,20 @@ Item {
                     id: effectPresetField
                     Layout.fillWidth: true
                     text: getSlotValue("effectPreset", "")
-                    onEditingFinished: setSlotValue("effectPreset", text)
+                    onEditingFinished: {
+                        setSlotValue("effectPreset", text)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
                 
                 Label { text: qsTr("Effect Selectable:") }
                 CheckBox {
                     id: effectSelectableCheck
                     checked: getSlotValue("effectSelectable", true)
-                    onToggled: setSlotValue("effectSelectable", checked)
+                    onToggled: {
+                        setSlotValue("effectSelectable", checked)
+                        collageTemplateEditor.refreshPreview()
+                    }
                 }
             }
             
@@ -648,6 +846,7 @@ Item {
             rotation: 0
         })
         photoSlotsView.model = currentTemplate.images.length
+        refreshPreview()
         showStatus(qsTr("Added photo slot"), "#4CAF50")
     }
     
@@ -656,7 +855,15 @@ Item {
         
         currentTemplate.images.pop()
         photoSlotsView.model = currentTemplate.images.length
+        refreshPreview()
         showStatus(qsTr("Removed photo slot"), "#4CAF50")
+    }
+    
+    function refreshPreview() {
+        // Trigger preview update by modifying a property
+        var temp = currentTemplate
+        currentTemplate = null
+        currentTemplate = temp
     }
     
     function showStatus(text, color) {

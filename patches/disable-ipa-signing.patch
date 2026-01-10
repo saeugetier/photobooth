@@ -1,5 +1,5 @@
 diff --git a/src/libcamera/meson.build b/src/libcamera/meson.build
-index 34e20f55..72ddbf47 100644
+index 34e20f55..46d29251 100644
 --- a/src/libcamera/meson.build
 +++ b/src/libcamera/meson.build
 @@ -85,24 +85,10 @@ libyaml = dependency('yaml-0.1', default_options : [
@@ -31,6 +31,14 @@ index 34e20f55..72ddbf47 100644
  
  if liblttng.found()
      tracing_enabled = true
+@@ -175,7 +161,6 @@ libcamera_deps += [
+     libatomic,
+     libcamera_base,
+     libcamera_base_private,
+-    libcrypto,
+     libdl,
+     liblttng,
+     libudev,
 diff --git a/src/meson.build b/src/meson.build
 index 9b63c8e8..687d6b51 100644
 --- a/src/meson.build

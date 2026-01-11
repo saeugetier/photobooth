@@ -1,0 +1,11 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra $(shell pkg-config --cflags libcamera)
+LDFLAGS = $(shell pkg-config --libs libcamera)
+
+test_libcamera: test_libcamera.cpp
+    $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+
+clean:
+    rm -f test_libcamera
+
+.PHONY: clean

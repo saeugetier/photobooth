@@ -64,16 +64,17 @@ index 9b63c8e8..687d6b51 100644
  # libyuv, used by the Android adaptation layer and the virtual pipeline handler.
  # Fallback to a subproject if libyuv isn't found, as it's typically not provided
 diff --git a/src/libcamera/ipa_manager.cpp b/src/libcamera/ipa_manager.cpp
-index 35171d09..a0ff2636 100644
+index 35171d09..e883a200 100644
 --- a/src/libcamera/ipa_manager.cpp
 +++ b/src/libcamera/ipa_manager.cpp
-@@ -106,6 +106,9 @@ LOG_DEFINE_CATEGORY(IPAManager)
-  */
- IPAManager::IPAManager(const GlobalConfiguration &configuration)
+@@ -288,6 +288,10 @@ IPAModule *IPAManager::module(PipelineHandler *pipe, uint32_t minVersion,
+ 
+ bool IPAManager::isSignatureValid([[maybe_unused]] IPAModule *ipa) const
  {
 +	/* Flatpak: Always return true to run IPA in-process (fork not available) */
 +	if (getenv("FLATPAK_ID"))
 +		return true;
++	
  #if HAVE_IPA_PUBKEY
- 	if (!pubKey_.isValid())
- 		LOG(IPAManager, Warning) << "Public key not valid";
+ 	if (forceIsolation_) {
+ 		LOG(IPAManager, Debug)

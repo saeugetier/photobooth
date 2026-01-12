@@ -63,14 +63,14 @@
             "buildsystem": "meson",
             "builddir": true,
             "config-opts": [
-                "--buildtype=release",
-                "-Dpycamera=disabled",
+                "-Dpipelines=rpi/vc4,rpi/pisp,uvcvideo",
+                "-Dipas=rpi/vc4,rpi/pisp",
                 "-Dgstreamer=enabled",
                 "-Dtest=false",
-                "-Ddocumentation=disabled",
                 "-Dcam=disabled",
                 "-Dqcam=disabled",
-                "-Dlc-compliance=disabled"
+                "-Ddocumentation=disabled",
+                "-Dpycamera=disabled"
             ],
             "cleanup": [
                 "/share/doc",
@@ -85,6 +85,10 @@
                 {
                     "type": "patch",
                     "path": "patches/disable-ipa-signing.patch"
+                },
+                {
+                    "type": "patch",
+                    "path": "patches/fix-cfe-entity-names.patch"
                 },
                 {
                     "type": "patch",

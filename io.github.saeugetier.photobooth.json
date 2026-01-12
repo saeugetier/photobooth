@@ -85,6 +85,10 @@
                 {
                     "type": "patch",
                     "path": "patches/disable-ipa-signing.patch"
+                },
+                {
+                    "type": "patch",
+                    "path": "patches/debug.patch"
                 }
             ],
             "modules": [

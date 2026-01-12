@@ -14,7 +14,7 @@ index 77acd2f6..2b65ee32 100644
 +		if (!cfeDevice) {
 +			LOG(RPI, Debug) << "acquireMediaDevice returned null for CFE";
 +			LOG(RPI, Debug) << "Checking available media devices:";
-+			auto dev = enumerator->search(cfe));
++			auto dev = enumerator->search(cfe);
 +			if(dev != nullptr)
 +			{
 +				LOG(RPI, Debug) << "  Found matching device: " << dev->deviceNode();

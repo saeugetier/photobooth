@@ -89,10 +89,6 @@
                 {
                     "type": "patch",
                     "path": "patches/fix-cfe-entity-names.patch"
-                },
-                {
-                    "type": "patch",
-                    "path": "patches/debug.patch"
                 }
             ],
             "modules": [

@@ -29,3 +29,18 @@ index 77acd2f6..cce0cc2b 100644
  	MediaEntity *ispInput = isp->getEntityByName("pispbe-input");
  	MediaEntity *IpaPrepare = isp->getEntityByName("pispbe-config");
  	MediaEntity *ispOutput0 = isp->getEntityByName("pispbe-output0");
+diff --git a/src/libcamera/ipa_manager.cpp b/src/libcamera/ipa_manager.cpp
+index 35171d09..e883a200 100644
+--- a/src/libcamera/ipa_manager.cpp
++++ b/src/libcamera/ipa_manager.cpp
+@@ -288,6 +288,10 @@ IPAModule *IPAManager::module(PipelineHandler *pipe, uint32_t minVersion,
+ 
+ bool IPAManager::isSignatureValid([[maybe_unused]] IPAModule *ipa) const
+ {
++	/* Flatpak: Always return true to run IPA in-process (fork not available) */
++	if (getenv("FLATPAK_ID"))
++		return true;
++	
+ #if HAVE_IPA_PUBKEY
+ 	if (forceIsolation_) {
+ 		LOG(IPAManager, Debug)

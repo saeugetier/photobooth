@@ -84,11 +84,7 @@
                 },
                 {
                     "type": "patch",
-                    "path": "patches/disable-ipa-signing.patch"
-                },
-                {
-                    "type": "patch",
-                    "path": "patches/fix-cfe-entity-names.patch"
+                    "path": "patches/flatpak-patch.patch"
                 }
             ],
             "modules": [
@@ -335,6 +331,19 @@
                 {
                     "type": "file",
                     "path": "test_libcamera.cpp"
+                }
+            ]
+        },
+        {
+            "name": "test-libcamera2",
+            "buildsystem": "simple",
+            "build-commands": [
+                "g++ -std=c++17 -Wall -o ${FLATPAK_DEST}/bin/test_libcamera2 test_libcamera2.cpp $(pkg-config --cflags --libs libcamera)"
+            ],
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "test_libcamera2.cpp"
                 }
             ]
         }

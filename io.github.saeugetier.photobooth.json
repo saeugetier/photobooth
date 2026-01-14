@@ -81,6 +81,10 @@
                     "type": "git",
                     "url": "https://github.com/raspberrypi/libcamera.git",
                     "tag": "v0.6.0+rpt20251202"
+                },
+                {
+                    "type": "patch",
+                    "path": "patches/flatpak-patch.patch"
                 }
             ],
             "modules": [

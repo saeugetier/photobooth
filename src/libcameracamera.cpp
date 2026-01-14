@@ -376,16 +376,12 @@ void LibCameraWorker::processCompletedRequest(Request *request) {
 
 QImage LibCameraWorker::convertBufferToImage(
     const std::map<const Stream *, FrameBuffer *> &buffers) {
-  // Create QImage from RGB888 data (copy data)
   QImage image;
-  std::vector<std::pair<void *, size_t>> mappedMemory;
 
   for (const auto &bufferPair : buffers) {
-    // Use framebuffer which has the image data
+    const Stream *stream = bufferPair.first;
     FrameBuffer *buffer = bufferPair.second;
 
-    // Find the size of buffer
-    size_t size = buffer->metadata().planes()[0].bytesused;
     const FrameBuffer::Plane &plane = buffer->planes().front();
     void *memory =
         mmap(NULL, plane.length, PROT_READ, MAP_SHARED, plane.fd.get(), 0);
@@ -393,24 +389,35 @@ QImage LibCameraWorker::convertBufferToImage(
     if (memory == MAP_FAILED) {
       qDebug() << "[ERROR] Failed to mmap framebuffer memory:"
                << strerror(errno);
-      // Unmap any previously mapped memory before returning
-      for (const auto &mapped : mappedMemory) {
-        munmap(mapped.first, mapped.second);
-      }
-
       return QImage();
     }
 
-    // Track mapped memory for cleanup
-    mappedMemory.push_back({memory, plane.length});
+    // Get the stream configuration to know the format
+    const StreamConfiguration &cfg = stream->configuration();
+    
+    if (cfg.pixelFormat == libcamera::formats::RGB888) {
+      // Raw RGB888 data - create QImage directly from raw pixels
+      // Note: RGB888 in libcamera is actually BGR in memory order for QImage
+      QImage temp(static_cast<const uchar *>(memory),
+                  cfg.size.width,
+                  cfg.size.height,
+                  cfg.stride,
+                  QImage::Format_RGB888);
+      // Make a deep copy since we'll unmap the memory
+      image = temp.copy();
+    } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
+      // MJPEG - use loadFromData for encoded formats
+      size_t size = buffer->metadata().planes()[0].bytesused;
+      image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
+    } else {
+      qDebug() << "[ERROR] Unsupported pixel format:" 
+               << QString::fromStdString(cfg.pixelFormat.toString());
+    }
 
-    // Load image from a raw buffer into the QImage widget
-    image.loadFromData(static_cast<unsigned char *>(memory), (int)size);
-  }
-
-  // Unmap all memory to avoid memory leak
-  for (const auto &mapped : mappedMemory) {
-    munmap(mapped.first, mapped.second);
+    munmap(memory, plane.length);
+    
+    // Only process first buffer
+    break;
   }
 
   return image;

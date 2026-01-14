@@ -472,4 +472,99 @@ void LibCameraWorker::configureCamera(libcamera::StreamRole role) {
       mBuffers.push_back(b.get());
     }
   }
+
+  // After allocating buffers, populate the free buffer queue
+  Stream *stream = config_->at(0).stream();
+  const std::vector<std::unique_ptr<FrameBuffer>> &buffers = allocator_->buffers(stream);
+  
+  {
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    for (const auto &buffer : buffers) {
+      freeBuffers_.push(buffer.get());
+    }
+  }
+
+  // Start the camera
+  int ret = camera_->start();
+  if (ret) {
+    qDebug() << "[ERROR] Failed to start camera:" << ret;
+    return false;
+  }
+
+  // Queue initial requests
+  for (size_t i = 0; i < buffers.size(); i++) {
+    if (!queueRequest(CaptureMode::Preview)) {
+      qDebug() << "[ERROR] Failed to queue initial request";
+    }
+  }
+
+  return true;
+}
+
+bool LibCameraWorker::queueRequest(CaptureMode mode) {
+  FrameBuffer *buffer = nullptr;
+  
+  {
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    if (freeBuffers_.empty()) {
+      qDebug() << "[WARNING] No free buffers available";
+      return false;
+    }
+    buffer = freeBuffers_.front();
+    freeBuffers_.pop();
+  }
+
+  std::unique_ptr<Request> request = camera_->createRequest();
+  if (!request) {
+    // Return buffer to pool
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    freeBuffers_.push(buffer);
+    qDebug() << "[ERROR] Failed to create request";
+    return false;
+  }
+
+  Stream *stream = config_->at(0).stream();
+  int ret = request->addBuffer(stream, buffer);
+  if (ret < 0) {
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    freeBuffers_.push(buffer);
+    qDebug() << "[ERROR] Failed to add buffer to request:" << ret;
+    return false;
+  }
+
+  ret = camera_->queueRequest(request.release());
+  if (ret < 0) {
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    freeBuffers_.push(buffer);
+    qDebug() << "[ERROR] Failed to queue request:" << ret;
+    return false;
+  }
+
+  return true;
+}
+
+void LibCameraWorker::requestComplete(Request *request) {
+  if (request->status() == Request::RequestCancelled) {
+    return;
+  }
+
+  // Process the completed buffers
+  const Request::BufferMap &buffers = request->buffers();
+  
+  // Convert buffer to image and emit signal
+  QImage image = convertBufferToImage(buffers);
+  if (!image.isNull()) {
+    emit frameReady(image);
+  }
+
+  // Return buffers to the free pool
+  {
+    std::lock_guard<std::mutex> lock(bufferMutex_);
+    for (auto &[stream, buffer] : buffers) {
+      freeBuffers_.push(buffer);
+    }
+  }
+
+  // Queue another request to keep the pipeline running
+  queueRequest(CaptureMode::Preview);
 }

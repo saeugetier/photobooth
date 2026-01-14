@@ -88,8 +88,4 @@ private:
   void configureCamera(libcamera::StreamRole role);
 
   bool mCaptureInProgress = false;
-
-  private:
-    std::queue<FrameBuffer *> freeBuffers_;
-    std::mutex bufferMutex_;
 };

@@ -533,6 +533,36 @@ QImage LibCameraWorker::convertBufferToImage(
           image.setPixel(x + 1, y, qRgb(r1, g1, b1));
         }
       }
+    } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
+      // YUV420 planar format (I420)
+      unsigned int width = cfg.size.width;
+      unsigned int height = cfg.size.height;
+      image = QImage(width, height, QImage::Format_RGB888);
+      
+      const uint8_t *src = static_cast<const uint8_t *>(memory);
+      const uint8_t *yPlane = src;
+      const uint8_t *uPlane = src + width * height;
+      const uint8_t *vPlane = uPlane + (width * height / 4);
+      
+      for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+          int yVal = yPlane[y * width + x];
+          int uVal = uPlane[(y / 2) * (width / 2) + (x / 2)];
+          int vVal = vPlane[(y / 2) * (width / 2) + (x / 2)];
+          
+          auto clamp = [](int val) { return std::max(0, std::min(255, val)); };
+          
+          int c = yVal - 16;
+          int d = uVal - 128;
+          int e = vVal - 128;
+          
+          int r = clamp((298 * c + 409 * e + 128) >> 8);
+          int g = clamp((298 * c - 100 * d - 208 * e + 128) >> 8);
+          int b = clamp((298 * c + 516 * d + 128) >> 8);
+          
+          image.setPixel(x, y, qRgb(r, g, b));
+        }
+      }
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());
@@ -566,10 +596,14 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;
   } else if (role == StreamRole::StillCapture) {
-    cfg.pixelFormat = formats::MJPEG;
+    // Don't force MJPEG - use the camera's default format for still capture
+    // Pi cameras typically use YUV420 which we'll convert
+    // Only set buffer count, keep default format and resolution
     cfg.bufferCount = 1;
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;
+    qDebug() << "[INFO] Still capture default format:" << QString::fromStdString(cfg.pixelFormat.toString());
+    qDebug() << "[INFO] Still capture default size:" << cfg.size.width << "x" << cfg.size.height;
   }
 
   CameraConfiguration::Status status = mConfig->validate();

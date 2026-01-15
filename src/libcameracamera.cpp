@@ -540,33 +540,43 @@ QImage LibCameraWorker::convertBufferToImage(
         }
       }
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
-      // YUV420 planar format (I420)
+      // YUV420 planar format - Pi camera uses I420 (Y, U, V order)
+      // But colors appear swapped, so this might be YV12 (Y, V, U order)
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
+      unsigned int stride = cfg.stride;
       image = QImage(width, height, QImage::Format_RGB888);
       
       const uint8_t *src = static_cast<const uint8_t *>(memory);
       const uint8_t *yPlane = src;
-      const uint8_t *uPlane = src + width * height;
-      const uint8_t *vPlane = uPlane + (width * height / 4);
+      // Swap U and V planes - Pi outputs Y, V, U (YV12) not Y, U, V (I420)
+      const uint8_t *vPlane = src + stride * height;
+      const uint8_t *uPlane = vPlane + (stride / 2) * (height / 2);
       
       for (unsigned int y = 0; y < height; y++) {
+        uint8_t *destRow = image.scanLine(y);
         for (unsigned int x = 0; x < width; x++) {
-          int yVal = yPlane[y * width + x];
-          int uVal = uPlane[(y / 2) * (width / 2) + (x / 2)];
-          int vVal = vPlane[(y / 2) * (width / 2) + (x / 2)];
+          int yVal = yPlane[y * stride + x];
+          int uVal = uPlane[(y / 2) * (stride / 2) + (x / 2)];
+          int vVal = vPlane[(y / 2) * (stride / 2) + (x / 2)];
           
-          auto clamp = [](int val) { return std::max(0, std::min(255, val)); };
-          
+          // YUV to RGB conversion
           int c = yVal - 16;
           int d = uVal - 128;
           int e = vVal - 128;
           
-          int r = clamp((298 * c + 409 * e + 128) >> 8);
-          int g = clamp((298 * c - 100 * d - 208 * e + 128) >> 8);
-          int b = clamp((298 * c + 516 * d + 128) >> 8);
+          int r = (298 * c + 409 * e + 128) >> 8;
+          int g = (298 * c - 100 * d - 208 * e + 128) >> 8;
+          int b = (298 * c + 516 * d + 128) >> 8;
           
-          image.setPixel(x, y, qRgb(r, g, b));
+          // Clamp values
+          r = r < 0 ? 0 : (r > 255 ? 255 : r);
+          g = g < 0 ? 0 : (g > 255 ? 255 : g);
+          b = b < 0 ? 0 : (b > 255 ? 255 : b);
+          
+          destRow[x * 3 + 0] = static_cast<uint8_t>(r);
+          destRow[x * 3 + 1] = static_cast<uint8_t>(g);
+          destRow[x * 3 + 2] = static_cast<uint8_t>(b);
         }
       }
     } else {

@@ -550,8 +550,8 @@ QImage LibCameraWorker::convertBufferToImage(
       const uint8_t *src = static_cast<const uint8_t *>(memory);
       const uint8_t *yPlane = src;
       // Swap U and V planes - Pi outputs Y, V, U (YV12) not Y, U, V (I420)
-      const uint8_t *vPlane = src + stride * height;
-      const uint8_t *uPlane = vPlane + (stride / 2) * (height / 2);
+      const uint8_t *uPlane = src + stride * height;
+      const uint8_t *vPlane = uPlane + (stride / 2) * (height / 2);
       
       for (unsigned int y = 0; y < height; y++) {
         uint8_t *destRow = image.scanLine(y);

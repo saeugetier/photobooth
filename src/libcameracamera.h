@@ -33,6 +33,7 @@ public slots:
   void startCamera(const QString &cameraId);
   void stopCamera();
   void captureImage();
+  void resumeViewfinder();
   void queueViewfinderRequest();
 
 signals:
@@ -45,7 +46,7 @@ private:
   bool configureCamera(libcamera::StreamRole role);
   void processCompletedRequest(libcamera::Request *request);
   void processCaptureComplete(libcamera::Request *request);
-  void resumeViewfinder();
+  
   QImage convertBufferToImage(
       const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
 

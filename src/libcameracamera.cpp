@@ -320,8 +320,11 @@ void LibCameraWorker::captureImage() {
 }
 
 void LibCameraWorker::processCaptureComplete(Request *request) {
+  qDebug() << "[DEBUG] processCaptureComplete called, status:" << request->status();
+
   if (request->status() == Request::RequestCancelled) {
-    resumeViewfinder();
+    // Defer resumeViewfinder to run outside this callback
+    QMetaObject::invokeMethod(this, "resumeViewfinder", Qt::QueuedConnection);
     return;
   }
 
@@ -329,15 +332,17 @@ void LibCameraWorker::processCaptureComplete(Request *request) {
   if (!request->buffers().empty()) {
     QImage img = convertBufferToImage(request->buffers());
     if (!img.isNull()) {
-      emit imageCaptured(img);
+      Q_EMIT imageCaptured(img);
     } else {
-      emit errorOccurred("libcamera: failed to convert capture buffer");
+      Q_EMIT errorOccurred("libcamera: failed to convert capture buffer");
     }
   } else {
-    emit errorOccurred("libcamera: capture request has no buffers");
+    Q_EMIT errorOccurred("libcamera: capture request has no buffers");
   }
 
-  resumeViewfinder();
+  // Defer resumeViewfinder to run outside this callback
+  // This is critical - we cannot call mCamera->stop() from within the requestCompleted callback
+  QMetaObject::invokeMethod(this, "resumeViewfinder", Qt::QueuedConnection);
 }
 
 void LibCameraWorker::resumeViewfinder() {

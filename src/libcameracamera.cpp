@@ -540,18 +540,22 @@ QImage LibCameraWorker::convertBufferToImage(
         }
       }
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
-      // YUV420 planar format - Pi camera uses I420 (Y, U, V order)
-      // But colors appear swapped, so this might be YV12 (Y, V, U order)
+      // YUV420 planar format
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
       unsigned int stride = cfg.stride;
+      
+      // Use Format_RGB888 - byte order is R, G, B
       image = QImage(width, height, QImage::Format_RGB888);
       
       const uint8_t *src = static_cast<const uint8_t *>(memory);
       const uint8_t *yPlane = src;
-      // Swap U and V planes - Pi outputs Y, V, U (YV12) not Y, U, V (I420)
+      
+      // Try standard I420 order first: Y, U, V
       const uint8_t *uPlane = src + stride * height;
       const uint8_t *vPlane = uPlane + (stride / 2) * (height / 2);
+      
+      qDebug() << "[DEBUG] YUV420 conversion: width=" << width << "height=" << height << "stride=" << stride;
       
       for (unsigned int y = 0; y < height; y++) {
         uint8_t *destRow = image.scanLine(y);
@@ -560,7 +564,7 @@ QImage LibCameraWorker::convertBufferToImage(
           int uVal = uPlane[(y / 2) * (stride / 2) + (x / 2)];
           int vVal = vPlane[(y / 2) * (stride / 2) + (x / 2)];
           
-          // YUV to RGB conversion
+          // YUV to RGB conversion (BT.601)
           int c = yVal - 16;
           int d = uVal - 128;
           int e = vVal - 128;
@@ -574,11 +578,14 @@ QImage LibCameraWorker::convertBufferToImage(
           g = g < 0 ? 0 : (g > 255 ? 255 : g);
           b = b < 0 ? 0 : (b > 255 ? 255 : b);
           
-          destRow[x * 3 + 0] = static_cast<uint8_t>(r);
+          // RGB888 format: B at offset 0, G at offset 1, R at offset 2
+          destRow[x * 3 + 0] = static_cast<uint8_t>(b);
           destRow[x * 3 + 1] = static_cast<uint8_t>(g);
-          destRow[x * 3 + 2] = static_cast<uint8_t>(b);
+          destRow[x * 3 + 2] = static_cast<uint8_t>(r);
         }
       }
+      
+      qDebug() << "[DEBUG] YUV420 conversion complete, image size:" << image.size();
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());

@@ -5,23 +5,75 @@
 #include <QTimer>
 #include <QVideoFrameInput>
 #include <memory>
+#include <deque>
+#include <set>
+#include <mutex>
 
 #undef emit
 #undef slots
 #include <libcamera/camera.h>
 #include <libcamera/camera_manager.h>
-#include <libcamera/controls.h>
 #include <libcamera/framebuffer_allocator.h>
+#include <libcamera/stream.h>
+
 #define slots Q_SLOTS
 #define emit Q_EMIT
 
-class LibCameraWorker;
+class QThread;
+
+class LibCameraWorker : public QObject {
+  Q_OBJECT
+public:
+  explicit LibCameraWorker(QObject *parent = nullptr);
+  ~LibCameraWorker();
+
+  QStringList availableCameras() const;
+
+public slots:
+  void startCamera(const QString &cameraId);
+  void stopCamera();
+  void captureImage();
+  void queueViewfinderRequest();
+
+signals:
+  void frameReady(const QImage &image);
+  void imageCaptured(const QImage &image);
+  void errorOccurred(const QString &error);
+
+private:
+  void initCameraManager();
+  bool configureCamera(libcamera::StreamRole role);
+  void processCompletedRequest(libcamera::Request *request);
+  void processCaptureComplete(libcamera::Request *request);
+  void resumeViewfinder();
+  QImage convertBufferToImage(
+      const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
+
+  void queueViewfinderRequestLocked();
+
+  std::unique_ptr<libcamera::CameraManager> mCameraManager;
+  std::shared_ptr<libcamera::Camera> mCamera;
+  std::unique_ptr<libcamera::CameraConfiguration> mConfig;
+  std::unique_ptr<libcamera::FrameBufferAllocator> mAllocator;
+  libcamera::Stream *mStream = nullptr;
+  
+  // Buffer management - use deque for free buffers, set for in-flight tracking
+  std::deque<libcamera::FrameBuffer *> mFreeBuffers;
+  std::set<libcamera::FrameBuffer *> mBuffersInFlight;
+
+  std::mutex mBufferMutex;
+
+  bool mRunning = false;
+  bool mCaptureInProgress = false;
+  unsigned int mCurrentWidth = 0;
+  unsigned int mCurrentHeight = 0;
+};
 
 class LibcameraDevice : public QVideoFrameInput {
   Q_OBJECT
 public:
   explicit LibcameraDevice(QObject *parent = nullptr);
-  ~LibcameraDevice() override;
+  ~LibcameraDevice();
 
   Q_INVOKABLE QStringList availableCameras() const;
   Q_INVOKABLE QString getDefaultCamera() const;
@@ -41,51 +93,6 @@ private slots:
   void onErrorOccurred(const QString &error);
 
 private:
-  std::unique_ptr<QThread> mWorkerThread;
   LibCameraWorker *mWorker = nullptr;
-};
-
-class LibCameraWorker : public QObject {
-  Q_OBJECT
-public:
-  explicit LibCameraWorker(QObject *parent = nullptr);
-  ~LibCameraWorker() override;
-
-public slots:
-  void startCamera(const QString &cameraId); // cameraId as returned by CameraManager
-  void stopCamera();
-  void captureImage();
-  void queueViewfinderRequest(); // single capture -> emits imageCaptured
-  QStringList availableCameras() const;
-
-signals:
-  void frameReady(const QImage &image);    // optionally emit preview frames
-  void imageCaptured(const QImage &image); // emitted after captureImage
-  void errorOccurred(const QString &err);
-
-private:
-  void initCameraManager();
-
-  QImage convertBufferToImage(
-      const std::map<const libcamera::Stream *, libcamera::FrameBuffer *>
-          &buffers);
-
-  std::unique_ptr<libcamera::CameraManager> mCameraManager;
-  std::shared_ptr<libcamera::Camera> mCamera;
-  std::unique_ptr<libcamera::FrameBufferAllocator> mAllocator;
-
-  std::vector<libcamera::FrameBuffer *>
-      mBuffers; // Changed to raw pointers to avoid ownership issues
-  std::atomic<bool> mRunning{false};
-
-  std::vector<std::shared_ptr<libcamera::Request>> mPendingRequests;
-  size_t mBufferIndex = 0;
-  void processCompletedRequest(libcamera::Request *request);
-
-  unsigned int mCurrentWidth = 0;
-  unsigned int mCurrentHeight = 0;
-
-  void configureCamera(libcamera::StreamRole role);
-
-  bool mCaptureInProgress = false;
+  std::unique_ptr<QThread> mWorkerThread;
 };

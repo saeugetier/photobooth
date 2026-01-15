@@ -1,6 +1,7 @@
 #include "libcameracamera.h"
 #include <QDebug>
 #include <QThread>
+#include <QTimer>
 #include <cerrno>
 #include <chrono>
 #include <cstring>
@@ -86,6 +87,12 @@ void LibcameraDevice::onErrorOccurred(const QString &error) {
 }
 
 LibCameraWorker::LibCameraWorker(QObject *parent) : QObject(parent) {
+  // Connect captureCompleted to resumeViewfinder with QueuedConnection
+  // This ensures resumeViewfinder runs on the Qt event loop, not libcamera's thread
+  connect(this, &LibCameraWorker::captureCompleted, 
+          this, &LibCameraWorker::resumeViewfinder, 
+          Qt::QueuedConnection);
+  
   initCameraManager();
 }
 
@@ -322,27 +329,21 @@ void LibCameraWorker::captureImage() {
 void LibCameraWorker::processCaptureComplete(Request *request) {
   qDebug() << "[DEBUG] processCaptureComplete called, status:" << request->status();
 
-  if (request->status() == Request::RequestCancelled) {
-    // Defer resumeViewfinder to run outside this callback
-    QMetaObject::invokeMethod(this, "resumeViewfinder", Qt::QueuedConnection);
-    return;
-  }
-
-  // Convert buffer to image
-  if (!request->buffers().empty()) {
-    QImage img = convertBufferToImage(request->buffers());
-    if (!img.isNull()) {
-      Q_EMIT imageCaptured(img);
+  if (request->status() != Request::RequestCancelled) {
+    if (!request->buffers().empty()) {
+      QImage img = convertBufferToImage(request->buffers());
+      if (!img.isNull()) {
+        Q_EMIT imageCaptured(img);
+      } else {
+        Q_EMIT errorOccurred("libcamera: failed to convert capture buffer");
+      }
     } else {
-      Q_EMIT errorOccurred("libcamera: failed to convert capture buffer");
+      Q_EMIT errorOccurred("libcamera: capture request has no buffers");
     }
-  } else {
-    Q_EMIT errorOccurred("libcamera: capture request has no buffers");
   }
 
-  // Defer resumeViewfinder to run outside this callback
-  // This is critical - we cannot call mCamera->stop() from within the requestCompleted callback
-  QMetaObject::invokeMethod(this, "resumeViewfinder", Qt::QueuedConnection);
+  // Emit signal to trigger resume on Qt thread
+  Q_EMIT captureCompleted();
 }
 
 void LibCameraWorker::resumeViewfinder() {

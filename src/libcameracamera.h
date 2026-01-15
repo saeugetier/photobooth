@@ -40,6 +40,7 @@ signals:
   void frameReady(const QImage &image);
   void imageCaptured(const QImage &image);
   void errorOccurred(const QString &error);
+  void captureCompleted();  // Add this
 
 private:
   void initCameraManager();

@@ -8,6 +8,7 @@
 #include <libcamera/framebuffer_allocator.h>
 #include <qvideoframe.h>
 #include <sys/mman.h>
+#include <QColorSpace>
 
 using namespace libcamera;
 
@@ -494,6 +495,7 @@ QImage LibCameraWorker::convertBufferToImage(
                   cfg.size.height,
                   cfg.stride,
                   QImage::Format_RGB888);
+      temp.setColorSpace(QColorSpace::SRgb);
       image = temp.copy();
     } else if (cfg.pixelFormat == libcamera::formats::BGR888) {
       QImage temp(static_cast<const uchar *>(memory),

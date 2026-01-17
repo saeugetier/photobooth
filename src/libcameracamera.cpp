@@ -8,6 +8,7 @@
 #include <libcamera/framebuffer_allocator.h>
 #include <qvideoframe.h>
 #include <sys/mman.h>
+#include <opencv2/opencv.hpp>
 
 using namespace libcamera;
 
@@ -509,48 +510,28 @@ QImage LibCameraWorker::convertBufferToImage(
       image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
       qDebug() << "[DEBUG] MJPEG conversion complete, image size:" << image.size();
     } else if (cfg.pixelFormat == libcamera::formats::YUYV) {
-      image = QImage(cfg.size.width, cfg.size.height, QImage::Format_RGB888);
-      const uint8_t *src = static_cast<const uint8_t *>(memory);
-      for (unsigned int y = 0; y < cfg.size.height; y++) {
-        const uint8_t *row = src + y * cfg.stride;
-        for (unsigned int x = 0; x < cfg.size.width; x += 2) {
-          int y0 = row[x * 2 + 0];
-          int u  = row[x * 2 + 1];
-          int y1 = row[x * 2 + 2];
-          int v  = row[x * 2 + 3];
-
-          auto clamp = [](int val) { return std::max(0, std::min(255, val)); };
-
-          int c0 = y0 - 16;
-          int c1 = y1 - 16;
-          int d = u - 128;
-          int e = v - 128;
-
-          int r0 = clamp((298 * c0 + 409 * e + 128) >> 8);
-          int g0 = clamp((298 * c0 - 100 * d - 208 * e + 128) >> 8);
-          int b0 = clamp((298 * c0 + 516 * d + 128) >> 8);
-
-          int r1 = clamp((298 * c1 + 409 * e + 128) >> 8);
-          int g1 = clamp((298 * c1 - 100 * d - 208 * e + 128) >> 8);
-          int b1 = clamp((298 * c1 + 516 * d + 128) >> 8);
-
-          image.setPixel(x, y, qRgb(r0, g0, b0));
-          image.setPixel(x + 1, y, qRgb(r1, g1, b1));
-        }
-      }
-      qDebug() << "[DEBUG] YUYV conversion complete, image size:" << image.size();
+      // Use OpenCV for YUYV to RGB conversion
+      cv::Mat yuyv(cfg.size.height, cfg.size.width, CV_8UC2, 
+                   const_cast<void*>(memory), cfg.stride);
+      cv::Mat rgb;
+      cv::cvtColor(yuyv, rgb, cv::COLOR_YUV2RGB_YUYV);
+      
+      image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
+                     QImage::Format_RGB888).copy();
+      qDebug() << "[DEBUG] YUYV conversion complete (OpenCV), image size:" << image.size();
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
-      // YUV420 has 3 planes - need to map each separately
+      // Use OpenCV for YUV420 (I420) to RGB conversion
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
+      unsigned int stride = cfg.stride;
       
-      Span< const FrameBuffer::Plane > planes = buffer->planes();
+      Span<const FrameBuffer::Plane> planes = buffer->planes();
       
-      qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height
-               << "num_planes=" << planes.size();
+      qDebug() << "[DEBUG] YUV420: width=" << width << " height=" << height
+               << " stride=" << stride << " num_planes=" << planes.size();
       
       if (planes.size() >= 3) {
-        // Multi-plane format - map each plane separately
+        // Multi-plane format - map each plane separately and copy to contiguous buffer
         void *yMem = mmap(NULL, planes[0].length, PROT_READ, MAP_SHARED, 
                           planes[0].fd.get(), planes[0].offset);
         void *uMem = mmap(NULL, planes[1].length, PROT_READ, MAP_SHARED, 
@@ -567,80 +548,57 @@ QImage LibCameraWorker::convertBufferToImage(
           return QImage();
         }
         
-        const uint8_t *yPlane = static_cast<const uint8_t *>(yMem);
-        const uint8_t *uPlane = static_cast<const uint8_t *>(uMem);
-        const uint8_t *vPlane = static_cast<const uint8_t *>(vMem);
+        // Create contiguous I420 buffer for OpenCV
+        // I420 layout: Y plane (height rows), U plane (height/2 rows), V plane (height/2 rows)
+        size_t ySize = stride * height;
+        size_t uvStride = stride / 2;
+        size_t uvSize = uvStride * (height / 2);
+        std::vector<uint8_t> i420Buffer(ySize + 2 * uvSize);
         
-        unsigned int yStride = cfg.stride;
-        unsigned int uvStride = cfg.stride / 2;
+        // Copy Y plane
+        memcpy(i420Buffer.data(), yMem, ySize);
+        // Copy U plane
+        memcpy(i420Buffer.data() + ySize, uMem, uvSize);
+        // Copy V plane
+        memcpy(i420Buffer.data() + ySize + uvSize, vMem, uvSize);
         
-        qDebug() << "[DEBUG] YUV420 multi-plane: yStride=" << yStride 
-                 << "uvStride=" << uvStride;
+        // Create OpenCV Mat wrapping the I420 data (height * 3/2 rows, stride columns)
+        cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, i420Buffer.data());
+        cv::Mat rgb;
+        cv::cvtColor(yuv, rgb, cv::COLOR_YUV2RGB_I420);
         
-        image = QImage(width, height, QImage::Format_RGB888);
-        
-        for (unsigned int y = 0; y < height; ++y) {
-          uint8_t *rgbRow = image.scanLine(y);
-          for (unsigned int x = 0; x < width; ++x) {
-            int Y = yPlane[y * yStride + x];
-            int U = uPlane[(y / 2) * uvStride + (x / 2)] - 128;
-            int V = vPlane[(y / 2) * uvStride + (x / 2)] - 128;
-            
-            int R = Y + static_cast<int>(1.402 * V);
-            int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
-            int B = Y + static_cast<int>(1.772 * U);
-            
-            R = R < 0 ? 0 : (R > 255 ? 255 : R);
-            G = G < 0 ? 0 : (G > 255 ? 255 : G);
-            B = B < 0 ? 0 : (B > 255 ? 255 : B);
-            
-            rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
-            rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
-            rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
-          }
+        // Crop to actual width if stride != width
+        if (stride != width) {
+          rgb = rgb(cv::Rect(0, 0, width, height)).clone();
         }
+        
+        image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
+                       QImage::Format_RGB888).copy();
+        
+        qDebug() << "[DEBUG] YUV420 multi-plane conversion complete (OpenCV)";
         
         munmap(yMem, planes[0].length);
         munmap(uMem, planes[1].length);
         munmap(vMem, planes[2].length);
         
       } else {
-        // Single plane - all data contiguous
-        unsigned int yStride = width;
-        unsigned int uvStride = width / 2;
+        // Single plane - all data contiguous, use OpenCV directly
+        // The buffer contains Y, U, V planes contiguously
+        cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, 
+                    const_cast<void*>(memory));
+        cv::Mat rgb;
+        cv::cvtColor(yuv, rgb, cv::COLOR_YUV2RGB_I420);
         
-        const uint8_t *yPlane = static_cast<const uint8_t *>(memory);
-        const uint8_t *uPlane = yPlane + width * height;
-        const uint8_t *vPlane = uPlane + (width / 2) * (height / 2);
-        
-        qDebug() << "[DEBUG] YUV420 single-plane: yStride=" << yStride 
-                 << "uvStride=" << uvStride;
-        
-        image = QImage(width, height, QImage::Format_RGB888);
-        
-        for (unsigned int y = 0; y < height; ++y) {
-          uint8_t *rgbRow = image.scanLine(y);
-          for (unsigned int x = 0; x < width; ++x) {
-            int Y = yPlane[y * yStride + x];
-            int U = uPlane[(y / 2) * uvStride + (x / 2)] - 128;
-            int V = vPlane[(y / 2) * uvStride + (x / 2)] - 128;
-            
-            int R = Y + static_cast<int>(1.402 * V);
-            int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
-            int B = Y + static_cast<int>(1.772 * U);
-            
-            R = R < 0 ? 0 : (R > 255 ? 255 : R);
-            G = G < 0 ? 0 : (G > 255 ? 255 : G);
-            B = B < 0 ? 0 : (B > 255 ? 255 : B);
-            
-            rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
-            rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
-            rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
-          }
+        // Crop to actual width if stride != width
+        if (stride != width) {
+          rgb = rgb(cv::Rect(0, 0, width, height)).clone();
         }
+        
+        image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
+                       QImage::Format_RGB888).copy();
+        
+        qDebug() << "[DEBUG] YUV420 single-plane conversion complete (OpenCV)";
       }
-      
-      qDebug() << "[DEBUG] YUV420 conversion complete";
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());

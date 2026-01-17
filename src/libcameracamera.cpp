@@ -604,8 +604,8 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
 
     // Priority order: BGR888, RGB888, YUYV, MJPEG, YUV420
     std::vector<PixelFormat> preferredFormats = {
-      formats::BGR888,
       formats::RGB888,
+      formats::BGR888,
       formats::YUYV,
       formats::MJPEG,
       formats::YUV420

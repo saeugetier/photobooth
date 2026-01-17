@@ -540,52 +540,107 @@ QImage LibCameraWorker::convertBufferToImage(
       }
       qDebug() << "[DEBUG] YUYV conversion complete, image size:" << image.size();
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
-      // YUV420 planar format (I420)
+      // YUV420 has 3 planes - need to map each separately
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
       
-      // Use width as stride for packed YUV420 (not cfg.stride which may have padding)
-      unsigned int yStride = width;
-      unsigned int uvStride = width / 2;
+      const std::vector<FrameBuffer::Plane> &planes = buffer->planes();
       
-      image = QImage(width, height, QImage::Format_RGB888);
+      qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height
+               << "num_planes=" << planes.size();
       
-      const uint8_t *yPlane = static_cast<const uint8_t *>(memory);
-      const uint8_t *uPlane = yPlane + width * height;
-      const uint8_t *vPlane = uPlane + (width / 2) * (height / 2);
-      
-      qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height 
-               << "yStride=" << yStride << "uvStride=" << uvStride
-               << "cfg.stride=" << cfg.stride;
-      
-      for (unsigned int y = 0; y < height; ++y) {
-        uint8_t *rgbRow = image.scanLine(y);
-        for (unsigned int x = 0; x < width; ++x) {
-          int Y = yPlane[y * yStride + x];
-          
-          unsigned int uvX = x / 2;
-          unsigned int uvY = y / 2;
-          
-          int U = uPlane[uvY * uvStride + uvX] - 128;
-          int V = vPlane[uvY * uvStride + uvX] - 128;
-          
-          // BT.601 / sYCC conversion (full range)
-          int R = Y + static_cast<int>(1.402 * V);
-          int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
-          int B = Y + static_cast<int>(1.772 * U);
-          
-          // Clamp
-          R = R < 0 ? 0 : (R > 255 ? 255 : R);
-          G = G < 0 ? 0 : (G > 255 ? 255 : G);
-          B = B < 0 ? 0 : (B > 255 ? 255 : B);
-          
-          rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
-          rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
-          rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
+      if (planes.size() >= 3) {
+        // Multi-plane format - map each plane separately
+        void *yMem = mmap(NULL, planes[0].length, PROT_READ, MAP_SHARED, 
+                          planes[0].fd.get(), planes[0].offset);
+        void *uMem = mmap(NULL, planes[1].length, PROT_READ, MAP_SHARED, 
+                          planes[1].fd.get(), planes[1].offset);
+        void *vMem = mmap(NULL, planes[2].length, PROT_READ, MAP_SHARED, 
+                          planes[2].fd.get(), planes[2].offset);
+        
+        if (yMem == MAP_FAILED || uMem == MAP_FAILED || vMem == MAP_FAILED) {
+          qDebug() << "[ERROR] Failed to mmap YUV420 planes";
+          if (yMem != MAP_FAILED) munmap(yMem, planes[0].length);
+          if (uMem != MAP_FAILED) munmap(uMem, planes[1].length);
+          if (vMem != MAP_FAILED) munmap(vMem, planes[2].length);
+          munmap(memory, plane.length);
+          return QImage();
+        }
+        
+        const uint8_t *yPlane = static_cast<const uint8_t *>(yMem);
+        const uint8_t *uPlane = static_cast<const uint8_t *>(uMem);
+        const uint8_t *vPlane = static_cast<const uint8_t *>(vMem);
+        
+        unsigned int yStride = cfg.stride;
+        unsigned int uvStride = cfg.stride / 2;
+        
+        qDebug() << "[DEBUG] YUV420 multi-plane: yStride=" << yStride 
+                 << "uvStride=" << uvStride;
+        
+        image = QImage(width, height, QImage::Format_RGB888);
+        
+        for (unsigned int y = 0; y < height; ++y) {
+          uint8_t *rgbRow = image.scanLine(y);
+          for (unsigned int x = 0; x < width; ++x) {
+            int Y = yPlane[y * yStride + x];
+            int U = uPlane[(y / 2) * uvStride + (x / 2)] - 128;
+            int V = vPlane[(y / 2) * uvStride + (x / 2)] - 128;
+            
+            int R = Y + static_cast<int>(1.402 * V);
+            int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
+            int B = Y + static_cast<int>(1.772 * U);
+            
+            R = R < 0 ? 0 : (R > 255 ? 255 : R);
+            G = G < 0 ? 0 : (G > 255 ? 255 : G);
+            B = B < 0 ? 0 : (B > 255 ? 255 : B);
+            
+            rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
+            rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
+            rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
+          }
+        }
+        
+        munmap(yMem, planes[0].length);
+        munmap(uMem, planes[1].length);
+        munmap(vMem, planes[2].length);
+        
+      } else {
+        // Single plane - all data contiguous
+        unsigned int yStride = width;
+        unsigned int uvStride = width / 2;
+        
+        const uint8_t *yPlane = static_cast<const uint8_t *>(memory);
+        const uint8_t *uPlane = yPlane + width * height;
+        const uint8_t *vPlane = uPlane + (width / 2) * (height / 2);
+        
+        qDebug() << "[DEBUG] YUV420 single-plane: yStride=" << yStride 
+                 << "uvStride=" << uvStride;
+        
+        image = QImage(width, height, QImage::Format_RGB888);
+        
+        for (unsigned int y = 0; y < height; ++y) {
+          uint8_t *rgbRow = image.scanLine(y);
+          for (unsigned int x = 0; x < width; ++x) {
+            int Y = yPlane[y * yStride + x];
+            int U = uPlane[(y / 2) * uvStride + (x / 2)] - 128;
+            int V = vPlane[(y / 2) * uvStride + (x / 2)] - 128;
+            
+            int R = Y + static_cast<int>(1.402 * V);
+            int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
+            int B = Y + static_cast<int>(1.772 * U);
+            
+            R = R < 0 ? 0 : (R > 255 ? 255 : R);
+            G = G < 0 ? 0 : (G > 255 ? 255 : G);
+            B = B < 0 ? 0 : (B > 255 ? 255 : B);
+            
+            rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
+            rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
+            rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
+          }
         }
       }
       
-      qDebug() << "[DEBUG] YUV420 conversion complete, image size:" << image.size();
+      qDebug() << "[DEBUG] YUV420 conversion complete";
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());

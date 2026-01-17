@@ -543,30 +543,37 @@ QImage LibCameraWorker::convertBufferToImage(
       // YUV420 planar format (I420)
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
+      unsigned int stride = cfg.stride;
+      unsigned int uvStride = stride / 2;
+      
       image = QImage(width, height, QImage::Format_RGB888);
       
-      const uint8_t *src = static_cast<const uint8_t *>(memory);
-      const uint8_t *yPlane = src;
-      const uint8_t *uPlane = src + width * height;
-      const uint8_t *vPlane = uPlane + (width * height / 4);
+      const uint8_t *yPlane = static_cast<const uint8_t *>(memory);
+      const uint8_t *uPlane = yPlane + stride * height;
+      const uint8_t *vPlane = uPlane + uvStride * (height / 2);
       
-      for (unsigned int y = 0; y < height; y++) {
-        for (unsigned int x = 0; x < width; x++) {
-          int yVal = yPlane[y * width + x];
-          int uVal = uPlane[(y / 2) * (width / 2) + (x / 2)];
-          int vVal = vPlane[(y / 2) * (width / 2) + (x / 2)];
+      qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height 
+               << "stride=" << stride << "uvStride=" << uvStride;
+      
+      for (unsigned int j = 0; j < height; ++j) {
+        uint8_t *rgbRow = image.scanLine(j);
+        for (unsigned int i = 0; i < width; ++i) {
+          int Y = yPlane[j * stride + i];
+          int U = uPlane[(j / 2) * uvStride + (i / 2)] - 128;
+          int V = vPlane[(j / 2) * uvStride + (i / 2)] - 128;
           
-          auto clamp = [](int val) { return std::max(0, std::min(255, val)); };
+          // BT.601 / sYCC conversion (full range)
+          int R = Y + static_cast<int>(1.402 * V);
+          int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
+          int B = Y + static_cast<int>(1.772 * U);
           
-          int c = yVal - 16;
-          int d = uVal - 128;
-          int e = vVal - 128;
+          R = std::clamp(R, 0, 255);
+          G = std::clamp(G, 0, 255);
+          B = std::clamp(B, 0, 255);
           
-          int r = clamp((298 * c + 409 * e + 128) >> 8);
-          int g = clamp((298 * c - 100 * d - 208 * e + 128) >> 8);
-          int b = clamp((298 * c + 516 * d + 128) >> 8);
-          
-          image.setPixel(x, y, qRgb(r, g, b));
+          rgbRow[i * 3 + 0] = static_cast<uint8_t>(R);
+          rgbRow[i * 3 + 1] = static_cast<uint8_t>(G);
+          rgbRow[i * 3 + 2] = static_cast<uint8_t>(B);
         }
       }
       

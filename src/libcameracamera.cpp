@@ -543,37 +543,45 @@ QImage LibCameraWorker::convertBufferToImage(
       // YUV420 planar format (I420)
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
-      unsigned int stride = cfg.stride;
-      unsigned int uvStride = stride / 2;
+      
+      // Use width as stride for packed YUV420 (not cfg.stride which may have padding)
+      unsigned int yStride = width;
+      unsigned int uvStride = width / 2;
       
       image = QImage(width, height, QImage::Format_RGB888);
       
       const uint8_t *yPlane = static_cast<const uint8_t *>(memory);
-      const uint8_t *uPlane = yPlane + stride * height;
-      const uint8_t *vPlane = uPlane + uvStride * (height / 2);
+      const uint8_t *uPlane = yPlane + width * height;
+      const uint8_t *vPlane = uPlane + (width / 2) * (height / 2);
       
       qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height 
-               << "stride=" << stride << "uvStride=" << uvStride;
+               << "yStride=" << yStride << "uvStride=" << uvStride
+               << "cfg.stride=" << cfg.stride;
       
-      for (unsigned int j = 0; j < height; ++j) {
-        uint8_t *rgbRow = image.scanLine(j);
-        for (unsigned int i = 0; i < width; ++i) {
-          int Y = yPlane[j * stride + i];
-          int U = uPlane[(j / 2) * uvStride + (i / 2)] - 128;
-          int V = vPlane[(j / 2) * uvStride + (i / 2)] - 128;
+      for (unsigned int y = 0; y < height; ++y) {
+        uint8_t *rgbRow = image.scanLine(y);
+        for (unsigned int x = 0; x < width; ++x) {
+          int Y = yPlane[y * yStride + x];
+          
+          unsigned int uvX = x / 2;
+          unsigned int uvY = y / 2;
+          
+          int U = uPlane[uvY * uvStride + uvX] - 128;
+          int V = vPlane[uvY * uvStride + uvX] - 128;
           
           // BT.601 / sYCC conversion (full range)
           int R = Y + static_cast<int>(1.402 * V);
           int G = Y - static_cast<int>(0.344136 * U) - static_cast<int>(0.714136 * V);
           int B = Y + static_cast<int>(1.772 * U);
           
-          R = std::clamp(R, 0, 255);
-          G = std::clamp(G, 0, 255);
-          B = std::clamp(B, 0, 255);
+          // Clamp
+          R = R < 0 ? 0 : (R > 255 ? 255 : R);
+          G = G < 0 ? 0 : (G > 255 ? 255 : G);
+          B = B < 0 ? 0 : (B > 255 ? 255 : B);
           
-          rgbRow[i * 3 + 0] = static_cast<uint8_t>(R);
-          rgbRow[i * 3 + 1] = static_cast<uint8_t>(G);
-          rgbRow[i * 3 + 2] = static_cast<uint8_t>(B);
+          rgbRow[x * 3 + 0] = static_cast<uint8_t>(R);
+          rgbRow[x * 3 + 1] = static_cast<uint8_t>(G);
+          rgbRow[x * 3 + 2] = static_cast<uint8_t>(B);
         }
       }
       

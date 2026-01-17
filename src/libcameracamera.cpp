@@ -544,7 +544,7 @@ QImage LibCameraWorker::convertBufferToImage(
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
       
-      const std::vector<FrameBuffer::Plane> &planes = buffer->planes();
+      Span< const FrameBuffer::Plane > planes = buffer->planes();
       
       qDebug() << "[DEBUG] YUV420: width=" << width << "height=" << height
                << "num_planes=" << planes.size();

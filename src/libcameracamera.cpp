@@ -634,9 +634,37 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;
   } else if (role == StreamRole::StillCapture) {
-    // Don't force MJPEG - use the camera's default format for still capture
-    // Pi cameras typically use YUV420 which we'll convert
-    // Only set buffer count, keep default format and resolution
+    std::vector<PixelFormat> pixelFormats = cfg.formats().pixelformats();
+    // Search for the best available pixel format in order of preference
+    PixelFormat selectedFormat = formats::RGB888; // fallback
+    bool formatFound = false;
+
+    // Priority order: BGR888, RGB888, YUYV, MJPEG, YUV420
+    std::vector<PixelFormat> preferredFormats = {
+      formats::RGB888,
+      formats::BGR888,
+      formats::YUYV,
+      formats::MJPEG,
+      formats::YUV420
+    };
+
+    for (const auto &preferred : preferredFormats) {
+      for (const auto &available : pixelFormats) {
+        if (available == preferred) {
+          selectedFormat = preferred;
+          formatFound = true;
+          qDebug() << "[INFO] Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
+          break;
+        }
+      }
+      if (formatFound) break;
+    }
+
+    if (!formatFound) {
+      qDebug() << "[WARNING] None of the preferred formats available, using default";
+    }
+
+    cfg.pixelFormat = selectedFormat;
     cfg.bufferCount = 1;
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;

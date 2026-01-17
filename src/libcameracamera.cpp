@@ -8,7 +8,6 @@
 #include <libcamera/framebuffer_allocator.h>
 #include <qvideoframe.h>
 #include <sys/mman.h>
-#include <QColorSpace>
 
 using namespace libcamera;
 
@@ -494,7 +493,8 @@ QImage LibCameraWorker::convertBufferToImage(
                   cfg.size.width,
                   cfg.size.height,
                   cfg.stride,
-                  QImage::Format_BGR888);
+                  QImage::Format_RGB888);
+      qDebug() << "[DEBUG] RGB888 conversion complete, image size:" << temp.size();
       image = temp.copy();
     } else if (cfg.pixelFormat == libcamera::formats::BGR888) {
       QImage temp(static_cast<const uchar *>(memory),
@@ -502,10 +502,12 @@ QImage LibCameraWorker::convertBufferToImage(
                   cfg.size.height,
                   cfg.stride,
                   QImage::Format_BGR888);
+      qDebug() << "[DEBUG] BGR888 conversion complete, image size:" << temp.size();
       image = temp.copy();
     } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
       size_t size = buffer->metadata().planes()[0].bytesused;
       image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
+      qDebug() << "[DEBUG] MJPEG conversion complete, image size:" << image.size();
     } else if (cfg.pixelFormat == libcamera::formats::YUYV) {
       image = QImage(cfg.size.width, cfg.size.height, QImage::Format_RGB888);
       const uint8_t *src = static_cast<const uint8_t *>(memory);
@@ -536,6 +538,7 @@ QImage LibCameraWorker::convertBufferToImage(
           image.setPixel(x + 1, y, qRgb(r1, g1, b1));
         }
       }
+      qDebug() << "[DEBUG] YUYV conversion complete, image size:" << image.size();
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
       // YUV420 planar format (I420)
       unsigned int width = cfg.size.width;

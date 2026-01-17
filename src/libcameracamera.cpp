@@ -3,15 +3,11 @@
 #include <QThread>
 #include <QTimer>
 #include <cerrno>
-#include <chrono>
 #include <cstring>
-#include <iomanip>
-#include <iostream>
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>
 #include <qvideoframe.h>
 #include <sys/mman.h>
-#include <thread>
 
 using namespace libcamera;
 
@@ -540,48 +536,33 @@ QImage LibCameraWorker::convertBufferToImage(
         }
       }
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
-      // YUV420 planar format
+      // YUV420 planar format (I420)
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
-      unsigned int stride = cfg.stride;
-      
-      // Use Format_RGB888 - byte order is R, G, B
       image = QImage(width, height, QImage::Format_RGB888);
       
       const uint8_t *src = static_cast<const uint8_t *>(memory);
       const uint8_t *yPlane = src;
-      
-      // Try standard I420 order first: Y, U, V
-      const uint8_t *uPlane = src + stride * height;
-      const uint8_t *vPlane = uPlane + (stride / 2) * (height / 2);
-      
-      qDebug() << "[DEBUG] YUV420 conversion: width=" << width << "height=" << height << "stride=" << stride;
+      const uint8_t *uPlane = src + width * height;
+      const uint8_t *vPlane = uPlane + (width * height / 4);
       
       for (unsigned int y = 0; y < height; y++) {
-        uint8_t *destRow = image.scanLine(y);
         for (unsigned int x = 0; x < width; x++) {
-          int yVal = yPlane[y * stride + x];
-          int uVal = uPlane[(y / 2) * (stride / 2) + (x / 2)];
-          int vVal = vPlane[(y / 2) * (stride / 2) + (x / 2)];
+          int yVal = yPlane[y * width + x];
+          int uVal = uPlane[(y / 2) * (width / 2) + (x / 2)];
+          int vVal = vPlane[(y / 2) * (width / 2) + (x / 2)];
           
-          // YUV to RGB conversion (BT.601)
+          auto clamp = [](int val) { return std::max(0, std::min(255, val)); };
+          
           int c = yVal - 16;
           int d = uVal - 128;
           int e = vVal - 128;
           
-          int r = (298 * c + 409 * e + 128) >> 8;
-          int g = (298 * c - 100 * d - 208 * e + 128) >> 8;
-          int b = (298 * c + 516 * d + 128) >> 8;
+          int r = clamp((298 * c + 409 * e + 128) >> 8);
+          int g = clamp((298 * c - 100 * d - 208 * e + 128) >> 8);
+          int b = clamp((298 * c + 516 * d + 128) >> 8);
           
-          // Clamp values
-          r = r < 0 ? 0 : (r > 255 ? 255 : r);
-          g = g < 0 ? 0 : (g > 255 ? 255 : g);
-          b = b < 0 ? 0 : (b > 255 ? 255 : b);
-          
-          // RGB888 format: B at offset 0, G at offset 1, R at offset 2
-          destRow[x * 3 + 0] = static_cast<uint8_t>(b);
-          destRow[x * 3 + 1] = static_cast<uint8_t>(g);
-          destRow[x * 3 + 2] = static_cast<uint8_t>(r);
+          image.setPixel(x, y, qRgb(r, g, b));
         }
       }
       
@@ -612,7 +593,37 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
     unsigned int defaultHeight = cfg.size.height;
     float aspectRatio = static_cast<float>(defaultWidth) / defaultHeight;
 
-    cfg.pixelFormat = formats::RGB888;
+    std::vector<PixelFormat> pixelFormats = cfg.formats().pixelformats();
+    // Search for the best available pixel format in order of preference
+    PixelFormat selectedFormat = formats::RGB888; // fallback
+    bool formatFound = false;
+
+    // Priority order: BGR888, RGB888, YUYV, MJPEG, YUV420
+    std::vector<PixelFormat> preferredFormats = {
+      formats::BGR888,
+      formats::RGB888,
+      formats::YUYV,
+      formats::MJPEG,
+      formats::YUV420
+    };
+
+    for (const auto &preferred : preferredFormats) {
+      for (const auto &available : pixelFormats) {
+        if (available == preferred) {
+          selectedFormat = preferred;
+          formatFound = true;
+          qDebug() << "[INFO] Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
+          break;
+        }
+      }
+      if (formatFound) break;
+    }
+
+    if (!formatFound) {
+      qDebug() << "[WARNING] None of the preferred formats available, using default";
+    }
+
+    cfg.pixelFormat = selectedFormat;
     cfg.size.width = 640;
     cfg.size.height = static_cast<unsigned int>(640.0f / aspectRatio);
     cfg.bufferCount = 4;

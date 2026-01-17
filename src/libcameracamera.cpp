@@ -494,7 +494,7 @@ QImage LibCameraWorker::convertBufferToImage(
                   cfg.size.width,
                   cfg.size.height,
                   cfg.stride,
-                  QImage::Format_RGB888);
+                  QImage::Format_BGR888);
       temp.setColorSpace(QColorSpace::SRgb);
       image = temp.copy();
     } else if (cfg.pixelFormat == libcamera::formats::BGR888) {

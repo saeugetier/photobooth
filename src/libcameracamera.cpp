@@ -530,14 +530,14 @@ QImage LibCameraWorker::convertBufferToImage(
       qDebug() << "[DEBUG] YUV420: width=" << width << " height=" << height
                << " stride=" << stride << " num_planes=" << planes.size();
       
-      /*if (planes.size() >= 3) {
+      if (planes.size() >= 3) {
         // Multi-plane format - map each plane separately and copy to contiguous buffer
         void *yMem = mmap(NULL, planes[0].length, PROT_READ, MAP_SHARED, 
-                          planes[0].fd.get(), planes[0].offset);
+                          planes[0].fd.get(), 0);
         void *uMem = mmap(NULL, planes[1].length, PROT_READ, MAP_SHARED, 
-                          planes[1].fd.get(), planes[1].offset);
+                          planes[1].fd.get(), 0);
         void *vMem = mmap(NULL, planes[2].length, PROT_READ, MAP_SHARED, 
-                          planes[2].fd.get(), planes[2].offset);
+                          planes[2].fd.get(), 0);
         
         if (yMem == MAP_FAILED || uMem == MAP_FAILED || vMem == MAP_FAILED) {
           qDebug() << "[ERROR] Failed to mmap YUV420 planes";
@@ -581,7 +581,7 @@ QImage LibCameraWorker::convertBufferToImage(
         munmap(uMem, planes[1].length);
         munmap(vMem, planes[2].length);
         
-      } else {*/
+      } else {
         // Single plane - all data contiguous, use OpenCV directly
         // The buffer contains Y, U, V planes contiguously
         cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, 
@@ -598,7 +598,7 @@ QImage LibCameraWorker::convertBufferToImage(
                        QImage::Format_RGB888).copy();
         
         qDebug() << "[DEBUG] YUV420 single-plane conversion complete (OpenCV)";
-      //}
+      }
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());

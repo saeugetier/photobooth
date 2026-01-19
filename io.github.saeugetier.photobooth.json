@@ -18,7 +18,6 @@
         "--filesystem=/proc:ro",
         "--socket=fallback-x11",
         "--socket=wayland",
-        "--env=LIBCAMERA_LOG_LEVELS=*:DEBUG",
         "--env=LIBCAMERA_IPA_MODULE_PATH=/app/lib/libcamera",
         "--env=LIBCAMERA_IPA_CONFIG_PATH=/app/share/libcamera/ipa"
     ],

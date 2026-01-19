@@ -644,7 +644,7 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
         if (available == preferred) {
           selectedFormat = preferred;
           formatFound = true;
-          qDebug() << "[INFO] Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
+          qDebug() << "[INFO] Viewfinder - Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
           break;
         }
       }
@@ -669,11 +669,11 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
 
     // Priority order: BGR888, RGB888, YUYV, MJPEG, YUV420
     std::vector<PixelFormat> preferredFormats = {
+      formats::YUV420,
       formats::RGB888,
       formats::BGR888,
       formats::YUYV,
-      formats::MJPEG,
-      formats::YUV420
+      formats::MJPEG
     };
 
     for (const auto &preferred : preferredFormats) {
@@ -681,7 +681,7 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
         if (available == preferred) {
           selectedFormat = preferred;
           formatFound = true;
-          qDebug() << "[INFO] Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
+          qDebug() << "[INFO] StillCapture - Selected pixel format:" << QString::fromStdString(selectedFormat.toString());
           break;
         }
       }

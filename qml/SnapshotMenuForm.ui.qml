@@ -44,7 +44,7 @@ Item {
 
     NavigationButton {
         id: exitButton
-        text: qsTr("Abort")
+        text: qsTr("Cancel")
         visible: false
         anchors.left: parent.left
         anchors.leftMargin: 30

@@ -693,7 +693,7 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
     }
 
     cfg.pixelFormat = selectedFormat;
-    cfg.bufferCount = 1;
+    cfg.bufferCount = 4;
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;
     qDebug() << "[INFO] Still capture default format:" << QString::fromStdString(cfg.pixelFormat.toString());

@@ -444,7 +444,21 @@ void LibCameraWorker::processCompletedRequest(Request *request) {
 
   const std::map<const Stream *, FrameBuffer *> &buffers = request->buffers();
   
-  // Return buffer to free list (with lock)
+  if (request->status() == Request::RequestCancelled) {
+    // Return buffer to free list (with lock)
+    std::lock_guard<std::mutex> lock(mBufferMutex);
+    for (auto it = buffers.begin(); it != buffers.end(); ++it) {
+      mBuffersInFlight.erase(it->second);
+      mFreeBuffers.push_back(it->second);
+    }
+    return;
+  }
+
+  // IMPORTANT: Convert image BEFORE returning buffer to free list!
+  // Otherwise the buffer may be reused before we read it
+  QImage preview = convertBufferToImage(buffers);
+  
+  // Now return buffer to free list (with lock)
   {
     std::lock_guard<std::mutex> lock(mBufferMutex);
     for (auto it = buffers.begin(); it != buffers.end(); ++it) {
@@ -452,12 +466,7 @@ void LibCameraWorker::processCompletedRequest(Request *request) {
       mFreeBuffers.push_back(it->second);
     }
   }
-
-  if (request->status() == Request::RequestCancelled) {
-    return;
-  }
-
-  QImage preview = convertBufferToImage(buffers);
+  
   if (!preview.isNull()) {
     Q_EMIT frameReady(preview);
   }
@@ -477,97 +486,143 @@ QImage LibCameraWorker::convertBufferToImage(
     const Stream *stream = it->first;
     FrameBuffer *buffer = it->second;
 
-    const FrameBuffer::Plane &plane = buffer->planes().front();
-    void *memory =
-        mmap(NULL, plane.length, PROT_READ, MAP_SHARED, plane.fd.get(), 0);
-
-    if (memory == MAP_FAILED) {
-      qDebug() << "[ERROR] Failed to mmap framebuffer memory:"
-               << strerror(errno);
+    const StreamConfiguration &cfg = stream->configuration();
+    Span<const FrameBuffer::Plane> planes = buffer->planes();
+    
+    // Log buffer metadata for debugging
+    const FrameMetadata &metadata = buffer->metadata();
+    qDebug() << "[DEBUG] convertBufferToImage: format=" << QString::fromStdString(cfg.pixelFormat.toString())
+             << " size=" << cfg.size.width << "x" << cfg.size.height
+             << " stride=" << cfg.stride
+             << " num_planes=" << planes.size()
+             << " metadata_status=" << metadata.status;
+    
+    for (size_t i = 0; i < planes.size() && i < metadata.planes().size(); i++) {
+      qDebug() << "[DEBUG] Plane" << i << ": fd=" << planes[i].fd.get()
+               << " offset=" << planes[i].offset 
+               << " length=" << planes[i].length
+               << " bytesused=" << metadata.planes()[i].bytesused;
+    }
+    
+    // Check if buffer has data
+    if (metadata.planes().empty() || metadata.planes()[0].bytesused == 0) {
+      qDebug() << "[ERROR] Buffer is empty - bytesused=0";
       return QImage();
     }
 
-    const StreamConfiguration &cfg = stream->configuration();
-
-    if (cfg.pixelFormat == libcamera::formats::RGB888) {
-      QImage temp(static_cast<const uchar *>(memory),
-                  cfg.size.width,
-                  cfg.size.height,
-                  cfg.stride,
-                  QImage::Format_BGR888);
-      qDebug() << "[DEBUG] RGB888 conversion complete, image size:" << temp.size();
-      image = temp.copy();
-    } else if (cfg.pixelFormat == libcamera::formats::BGR888) {
-      QImage temp(static_cast<const uchar *>(memory),
-                  cfg.size.width,
-                  cfg.size.height,
-                  cfg.stride,
-                  QImage::Format_BGR888);
-      qDebug() << "[DEBUG] BGR888 conversion complete, image size:" << temp.size();
-      image = temp.copy();
-    } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
-      size_t size = buffer->metadata().planes()[0].bytesused;
-      image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
-      qDebug() << "[DEBUG] MJPEG conversion complete, image size:" << image.size();
-    } else if (cfg.pixelFormat == libcamera::formats::YUYV) {
-      // Use OpenCV for YUYV to RGB conversion
-      cv::Mat yuyv(cfg.size.height, cfg.size.width, CV_8UC2, 
-                   const_cast<void*>(memory), cfg.stride);
-      cv::Mat rgb;
-      cv::cvtColor(yuyv, rgb, cv::COLOR_YUV2RGB_YUYV);
+    // For single-plane formats (RGB, BGR, MJPEG, YUYV)
+    if (cfg.pixelFormat == libcamera::formats::RGB888 ||
+        cfg.pixelFormat == libcamera::formats::BGR888 ||
+        cfg.pixelFormat == libcamera::formats::MJPEG ||
+        cfg.pixelFormat == libcamera::formats::YUYV) {
       
-      image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
-                     QImage::Format_RGB888).copy();
-      qDebug() << "[DEBUG] YUYV conversion complete (OpenCV), image size:" << image.size();
+      const FrameBuffer::Plane &plane = planes.front();
+      void *memory = mmap(NULL, plane.length, PROT_READ, MAP_SHARED, 
+                          plane.fd.get(), plane.offset);
+      
+      if (memory == MAP_FAILED) {
+        qDebug() << "[ERROR] Failed to mmap framebuffer memory:" << strerror(errno);
+        return QImage();
+      }
+      
+      if (cfg.pixelFormat == libcamera::formats::RGB888) {
+        QImage temp(static_cast<const uchar *>(memory),
+                    cfg.size.width,
+                    cfg.size.height,
+                    cfg.stride,
+                    QImage::Format_BGR888);
+        qDebug() << "[DEBUG] RGB888 conversion complete, image size:" << temp.size();
+        image = temp.copy();
+      } else if (cfg.pixelFormat == libcamera::formats::BGR888) {
+        QImage temp(static_cast<const uchar *>(memory),
+                    cfg.size.width,
+                    cfg.size.height,
+                    cfg.stride,
+                    QImage::Format_BGR888);
+        qDebug() << "[DEBUG] BGR888 conversion complete, image size:" << temp.size();
+        image = temp.copy();
+      } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
+        size_t size = metadata.planes()[0].bytesused;
+        image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
+        qDebug() << "[DEBUG] MJPEG conversion complete, image size:" << image.size();
+      } else if (cfg.pixelFormat == libcamera::formats::YUYV) {
+        cv::Mat yuyv(cfg.size.height, cfg.size.width, CV_8UC2, 
+                     const_cast<void*>(memory), cfg.stride);
+        cv::Mat rgb;
+        cv::cvtColor(yuyv, rgb, cv::COLOR_YUV2RGB_YUYV);
+        
+        image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
+                       QImage::Format_RGB888).copy();
+        qDebug() << "[DEBUG] YUYV conversion complete (OpenCV), image size:" << image.size();
+      }
+      
+      munmap(memory, plane.length);
+      
     } else if (cfg.pixelFormat == libcamera::formats::YUV420) {
       // Use OpenCV for YUV420 (I420) to RGB conversion
       unsigned int width = cfg.size.width;
       unsigned int height = cfg.size.height;
       unsigned int stride = cfg.stride;
       
-      Span<const FrameBuffer::Plane> planes = buffer->planes();
-      
       qDebug() << "[DEBUG] YUV420: width=" << width << " height=" << height
                << " stride=" << stride << " num_planes=" << planes.size();
       
+      // Check if all planes share the same fd (contiguous buffer with offsets)
+      bool samefd = true;
       if (planes.size() >= 3) {
-        // Multi-plane format - map each plane separately and copy to contiguous buffer
-        void *yMem = mmap(NULL, planes[0].length, PROT_READ, MAP_SHARED, 
-                          planes[0].fd.get(), 0);
-        void *uMem = mmap(NULL, planes[1].length, PROT_READ, MAP_SHARED, 
-                          planes[1].fd.get(), 0);
-        void *vMem = mmap(NULL, planes[2].length, PROT_READ, MAP_SHARED, 
-                          planes[2].fd.get(), 0);
+        int fd0 = planes[0].fd.get();
+        for (size_t i = 1; i < planes.size(); i++) {
+          if (planes[i].fd.get() != fd0) {
+            samefd = false;
+            break;
+          }
+        }
+      }
+      qDebug() << "[DEBUG] YUV420: planes share same fd:" << samefd;
+      
+      if (planes.size() >= 3 && samefd) {
+        // All planes share same fd - map once with the total size
+        // Calculate total size needed
+        size_t totalSize = 0;
+        for (size_t i = 0; i < planes.size(); i++) {
+          size_t endOffset = planes[i].offset + planes[i].length;
+          if (endOffset > totalSize) totalSize = endOffset;
+        }
         
-        if (yMem == MAP_FAILED || uMem == MAP_FAILED || vMem == MAP_FAILED) {
-          qDebug() << "[ERROR] Failed to mmap YUV420 planes";
-          if (yMem != MAP_FAILED) munmap(yMem, planes[0].length);
-          if (uMem != MAP_FAILED) munmap(uMem, planes[1].length);
-          if (vMem != MAP_FAILED) munmap(vMem, planes[2].length);
-          munmap(memory, plane.length);
+        qDebug() << "[DEBUG] YUV420 same-fd: totalSize=" << totalSize;
+        
+        void *memory = mmap(NULL, totalSize, PROT_READ, MAP_SHARED, 
+                            planes[0].fd.get(), 0);
+        
+        if (memory == MAP_FAILED) {
+          qDebug() << "[ERROR] Failed to mmap YUV420 buffer:" << strerror(errno);
           return QImage();
         }
         
+        // Get pointers to each plane using their offsets
+        const uint8_t *yData = static_cast<const uint8_t*>(memory) + planes[0].offset;
+        const uint8_t *uData = static_cast<const uint8_t*>(memory) + planes[1].offset;
+        const uint8_t *vData = static_cast<const uint8_t*>(memory) + planes[2].offset;
+        
+        // Debug: Check first bytes of each plane
+        qDebug() << "[DEBUG] Y plane first byte:" << (int)yData[0];
+        qDebug() << "[DEBUG] U plane first byte:" << (int)uData[0];
+        qDebug() << "[DEBUG] V plane first byte:" << (int)vData[0];
+        
         // Create contiguous I420 buffer for OpenCV
-        // I420 layout: Y plane (height rows), U plane (height/2 rows), V plane (height/2 rows)
         size_t ySize = stride * height;
         size_t uvStride = stride / 2;
         size_t uvSize = uvStride * (height / 2);
         std::vector<uint8_t> i420Buffer(ySize + 2 * uvSize);
         
-        // Copy Y plane
-        memcpy(i420Buffer.data(), yMem, ySize);
-        // Copy U plane
-        memcpy(i420Buffer.data() + ySize, uMem, uvSize);
-        // Copy V plane
-        memcpy(i420Buffer.data() + ySize + uvSize, vMem, uvSize);
+        memcpy(i420Buffer.data(), yData, ySize);
+        memcpy(i420Buffer.data() + ySize, uData, uvSize);
+        memcpy(i420Buffer.data() + ySize + uvSize, vData, uvSize);
         
-        // Create OpenCV Mat wrapping the I420 data (height * 3/2 rows, stride columns)
         cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, i420Buffer.data());
         cv::Mat rgb;
         cv::cvtColor(yuv, rgb, cv::COLOR_YUV2RGB_I420);
         
-        // Crop to actual width if stride != width
         if (stride != width) {
           rgb = rgb(cv::Rect(0, 0, width, height)).clone();
         }
@@ -575,21 +630,68 @@ QImage LibCameraWorker::convertBufferToImage(
         image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
                        QImage::Format_RGB888).copy();
         
-        qDebug() << "[DEBUG] YUV420 multi-plane conversion complete (OpenCV)";
+        qDebug() << "[DEBUG] YUV420 same-fd conversion complete, image size:" << image.size();
+        
+        munmap(memory, totalSize);
+        
+      } else if (planes.size() >= 3) {
+        // Different fds for each plane - map each separately
+        void *yMem = mmap(NULL, planes[0].length, PROT_READ, MAP_SHARED, 
+                          planes[0].fd.get(), planes[0].offset);
+        void *uMem = mmap(NULL, planes[1].length, PROT_READ, MAP_SHARED, 
+                          planes[1].fd.get(), planes[1].offset);
+        void *vMem = mmap(NULL, planes[2].length, PROT_READ, MAP_SHARED, 
+                          planes[2].fd.get(), planes[2].offset);
+        
+        if (yMem == MAP_FAILED || uMem == MAP_FAILED || vMem == MAP_FAILED) {
+          qDebug() << "[ERROR] Failed to mmap YUV420 planes:" << strerror(errno);
+          if (yMem != MAP_FAILED) munmap(yMem, planes[0].length);
+          if (uMem != MAP_FAILED) munmap(uMem, planes[1].length);
+          if (vMem != MAP_FAILED) munmap(vMem, planes[2].length);
+          return QImage();
+        }
+        
+        size_t ySize = stride * height;
+        size_t uvStride = stride / 2;
+        size_t uvSize = uvStride * (height / 2);
+        std::vector<uint8_t> i420Buffer(ySize + 2 * uvSize);
+        
+        memcpy(i420Buffer.data(), yMem, ySize);
+        memcpy(i420Buffer.data() + ySize, uMem, uvSize);
+        memcpy(i420Buffer.data() + ySize + uvSize, vMem, uvSize);
+        
+        cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, i420Buffer.data());
+        cv::Mat rgb;
+        cv::cvtColor(yuv, rgb, cv::COLOR_YUV2RGB_I420);
+        
+        if (stride != width) {
+          rgb = rgb(cv::Rect(0, 0, width, height)).clone();
+        }
+        
+        image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
+                       QImage::Format_RGB888).copy();
+        
+        qDebug() << "[DEBUG] YUV420 multi-fd conversion complete, image size:" << image.size();
         
         munmap(yMem, planes[0].length);
         munmap(uMem, planes[1].length);
         munmap(vMem, planes[2].length);
         
       } else {
-        // Single plane - all data contiguous, use OpenCV directly
-        // The buffer contains Y, U, V planes contiguously
-        cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, 
-                    const_cast<void*>(memory));
+        // Single plane - all data contiguous
+        const FrameBuffer::Plane &plane = planes.front();
+        void *memory = mmap(NULL, plane.length, PROT_READ, MAP_SHARED, 
+                            plane.fd.get(), plane.offset);
+        
+        if (memory == MAP_FAILED) {
+          qDebug() << "[ERROR] Failed to mmap YUV420 buffer:" << strerror(errno);
+          return QImage();
+        }
+        
+        cv::Mat yuv(height * 3 / 2, stride, CV_8UC1, const_cast<void*>(memory));
         cv::Mat rgb;
         cv::cvtColor(yuv, rgb, cv::COLOR_YUV2RGB_I420);
         
-        // Crop to actual width if stride != width
         if (stride != width) {
           rgb = rgb(cv::Rect(0, 0, width, height)).clone();
         }
@@ -597,14 +699,15 @@ QImage LibCameraWorker::convertBufferToImage(
         image = QImage(rgb.data, rgb.cols, rgb.rows, rgb.step, 
                        QImage::Format_RGB888).copy();
         
-        qDebug() << "[DEBUG] YUV420 single-plane conversion complete (OpenCV)";
+        qDebug() << "[DEBUG] YUV420 single-plane conversion complete, image size:" << image.size();
+        
+        munmap(memory, plane.length);
       }
     } else {
       qDebug() << "[ERROR] Unsupported pixel format:"
                << QString::fromStdString(cfg.pixelFormat.toString());
     }
 
-    munmap(memory, plane.length);
     break;
   }
 

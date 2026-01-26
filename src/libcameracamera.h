@@ -47,6 +47,7 @@ private:
   bool configureCamera(libcamera::StreamRole role);
   void processCompletedRequest(libcamera::Request *request);
   void processCaptureComplete(libcamera::Request *request);
+  void queueCaptureRequest();
   
   QImage convertBufferToImage(
       const std::map<const libcamera::Stream *, libcamera::FrameBuffer *> &buffers);
@@ -67,6 +68,7 @@ private:
 
   bool mRunning = false;
   bool mCaptureInProgress = false;
+  int mCaptureRetryCount = 0;
   unsigned int mCurrentWidth = 0;
   unsigned int mCurrentHeight = 0;
 };

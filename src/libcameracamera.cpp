@@ -266,6 +266,12 @@ void LibCameraWorker::captureImage() {
     return;
   }
 
+  // Reset retry count and queue first capture request
+  mCaptureRetryCount = 0;
+  queueCaptureRequest();
+}
+
+void LibCameraWorker::queueCaptureRequest() {
   // Create and queue capture request
   std::unique_ptr<Request> request = mCamera->createRequest();
   if (!request) {
@@ -319,24 +325,63 @@ void LibCameraWorker::captureImage() {
     return;
   }
 
-  qDebug() << "[INFO] Capture request queued successfully";
+  qDebug() << "[INFO] Capture request queued successfully (retry:" << mCaptureRetryCount << ")";
   // Completion will be handled by processCaptureComplete
 }
 
 void LibCameraWorker::processCaptureComplete(Request *request) {
-  qDebug() << "[DEBUG] processCaptureComplete called, status:" << request->status();
+  qDebug() << "[DEBUG] processCaptureComplete called, request_status:" << request->status();
 
-  if (request->status() != Request::RequestCancelled) {
-    if (!request->buffers().empty()) {
-      QImage img = convertBufferToImage(request->buffers());
-      if (!img.isNull()) {
-        Q_EMIT imageCaptured(img);
-      } else {
-        Q_EMIT errorOccurred("libcamera: failed to convert capture buffer");
-      }
-    } else {
-      Q_EMIT errorOccurred("libcamera: capture request has no buffers");
+  // Return buffer to free list first
+  const std::map<const Stream *, FrameBuffer *> &buffers = request->buffers();
+  {
+    std::lock_guard<std::mutex> lock(mBufferMutex);
+    for (auto it = buffers.begin(); it != buffers.end(); ++it) {
+      mBuffersInFlight.erase(it->second);
+      mFreeBuffers.push_back(it->second);
     }
+  }
+
+  if (request->status() == Request::RequestCancelled) {
+    qDebug() << "[DEBUG] Request was cancelled";
+    Q_EMIT captureCompleted();
+    return;
+  }
+
+  // Check frame metadata status
+  if (!buffers.empty()) {
+    FrameBuffer *buffer = buffers.begin()->second;
+    const FrameMetadata &metadata = buffer->metadata();
+    
+    // If frame has error, retry up to 5 times
+    if (metadata.status != 0) {
+      qDebug() << "[WARNING] Frame has error status:" << metadata.status << ", retrying...";
+      mCaptureRetryCount++;
+      if (mCaptureRetryCount < 5) {
+        // Queue another capture request
+        queueCaptureRequest();
+        return;
+      } else {
+        qDebug() << "[ERROR] Max capture retries exceeded";
+        Q_EMIT errorOccurred("libcamera: capture failed after 5 retries");
+        Q_EMIT captureCompleted();
+        return;
+      }
+    }
+  }
+
+  // Reset retry count on success
+  mCaptureRetryCount = 0;
+
+  if (!buffers.empty()) {
+    QImage img = convertBufferToImage(buffers);
+    if (!img.isNull()) {
+      Q_EMIT imageCaptured(img);
+    } else {
+      Q_EMIT errorOccurred("libcamera: failed to convert capture buffer");
+    }
+  } else {
+    Q_EMIT errorOccurred("libcamera: capture request has no buffers");
   }
 
   // Emit signal to trigger resume on Qt thread
@@ -496,6 +541,13 @@ QImage LibCameraWorker::convertBufferToImage(
              << " stride=" << cfg.stride
              << " num_planes=" << planes.size()
              << " metadata_status=" << metadata.status;
+    
+    // Check frame status - 0=Success, 1=Error, 2=Cancelled
+    if (metadata.status != 0) {
+      qDebug() << "[WARNING] Frame has error status:" << metadata.status 
+               << "(0=Success, 1=Error, 2=Cancelled)";
+      // Continue anyway to see what we get, but the data may be corrupted
+    }
     
     for (size_t i = 0; i < planes.size() && i < metadata.planes().size(); i++) {
       qDebug() << "[DEBUG] Plane" << i << ": fd=" << planes[i].fd.get()

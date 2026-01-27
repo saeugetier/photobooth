@@ -167,7 +167,7 @@
     <message>
         <location filename="src/gphotocamera.cpp" line="148"/>
         <source>Failed to initialize camera: (Code %1) - %2</source>
-        <translation>Fehler bei der Initlialisierung der Kamera: (Code %1) - %2</translation>
+        <translation>Fehler bei der Initialisierung der Kamera: (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="216"/>

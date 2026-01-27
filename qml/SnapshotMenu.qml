@@ -5,7 +5,6 @@ SnapshotMenuForm {
     id: form
 
     property bool snapshotTimeoutEnable : false
-    property var libcamera
 
     signal captured(string filename)
     signal abort

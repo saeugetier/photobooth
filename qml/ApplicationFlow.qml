@@ -8,7 +8,6 @@ ApplicationFlowForm {
     height: parent.height
 
     property int animationDuration : 500
-    property var libcamera
 
     mainMenuModel: modelFactory.getCollageIconModel()
 

@@ -111,7 +111,7 @@ For instructions on creating custom templates, see the [README](https://github.c
 **Neural Network Runtime:** The application supports real-time background removal using neural networks. Available runtimes:
 
 - ONNX: currently only CPU supported. Runs best on X86 CPU with more than 4 threads.
-- NCNN: runs best on ARM platform (linited to 4 threads)
+- NCNN: runs best on ARM platform (limited to 4 threads)
 
 ## Tested Hardware
 

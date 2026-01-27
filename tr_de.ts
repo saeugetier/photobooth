@@ -397,7 +397,7 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="299"/>
         <source>Allow multiple prints:</source>
-        <translation>Mehrer Drucke erlauben:</translation>
+        <translation>Mehrere Drucke erlauben:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="319"/>

@@ -33,21 +33,19 @@ SettingsMenuForm {
         {
             listModel.push(gphotoCameras[i])
         }
-        var libcameras = libcamera.availableCameras();
-        console.log("Libcamera Camera Count: " + Number(libcameras.length).toString())
-        for(i = 0; i < libcameras.length; i++)
-        {
-            listModel.push(libcameras[i])
+        if (form.libcamera) {
+            var libcameras = form.libcamera.availableCameras();
+            console.log("Libcamera Camera Count: " + Number(libcameras.length).toString())
+            for(i = 0; i < libcameras.length; i++)
+            {
+                listModel.push(libcameras[i])
+            }
         }
         return listModel;
     }
 
     GPhotoCamera {
       id: gphotoCamera
-    }
-
-    Libcamera {
-      id: libcamera
     }
 
     MediaDevices

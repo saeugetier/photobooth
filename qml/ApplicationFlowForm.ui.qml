@@ -75,6 +75,7 @@ Item {
         z: 0
         width: root.width
         height: root.height
+        libcamera: root.libcamera
     }
 
     states: [

@@ -607,7 +607,7 @@
     <message>
         <location filename="qml/SnapshotMenuForm.ui.qml" line="47"/>
         <source>Cancel</source>
-        <translation>Beenden</translation>
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>

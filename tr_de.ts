@@ -402,7 +402,7 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="319"/>
         <source>Print from Gallery:</source>
-        <translation>Drucke aus der Gallerie:</translation>
+        <translation>Drucke aus der Galerie:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="342"/>

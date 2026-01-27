@@ -46,6 +46,10 @@ SettingsMenuForm {
       id: gphotoCamera
     }
 
+    Libcamera {
+      id: libcamera
+    }
+
     MediaDevices
     {
         id: mediaDevices

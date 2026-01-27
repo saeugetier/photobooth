@@ -314,32 +314,6 @@
                     "path": "."
                 }
             ]
-        },
-        {
-            "name": "test-libcamera",
-            "buildsystem": "simple",
-            "build-commands": [
-                "g++ -std=c++17 -Wall -o ${FLATPAK_DEST}/bin/test_libcamera test_libcamera.cpp $(pkg-config --cflags --libs libcamera)"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "path": "test_libcamera.cpp"
-                }
-            ]
-        },
-        {
-            "name": "test-libcamera2",
-            "buildsystem": "simple",
-            "build-commands": [
-                "g++ -std=c++17 -Wall -o ${FLATPAK_DEST}/bin/test_libcamera2 test_libcamera2.cpp $(pkg-config --cflags --libs libcamera)"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "path": "test_libcamera2.cpp"
-                }
-            ]
         }
     ]
 }

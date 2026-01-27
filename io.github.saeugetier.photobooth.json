@@ -13,9 +13,8 @@
         "--filesystem=/run/media",
         "--filesystem=/mnt",
         "--filesystem=/run/udev:ro",
-        "--filesystem=/proc:ro",
         "--socket=fallback-x11",
-        "--socket=wayland" 
+        "--socket=wayland"
     ],
     "cleanup": [
         "/include",

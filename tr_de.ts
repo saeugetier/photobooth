@@ -332,7 +332,7 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="133"/>
         <source>Delete all photos</source>
-        <translation>Alls Fotos löschen</translation>
+        <translation>Alle Fotos löschen</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="150"/>

@@ -1,0 +1,26 @@
+diff --git a/src/libcamera/pipeline/rpi/pisp/pisp.cpp b/src/libcamera/pipeline/rpi/pisp/pisp.cpp
+index 77acd2f6..2b65ee32 100644
+--- a/src/libcamera/pipeline/rpi/pisp/pisp.cpp
++++ b/src/libcamera/pipeline/rpi/pisp/pisp.cpp
+@@ -885,8 +885,21 @@ bool PipelineHandlerPiSP::match(DeviceEnumerator *enumerator)
+ 		cfe.add("rp1-cfe-fe-image0");
+ 		cfe.add("rp1-cfe-fe-stats");
+ 		cfe.add("rp1-cfe-fe-config");
++
++		LOG(RPI, Debug) << "Looking for CFE device with driver 'rp1-cfe'";
++
+ 		std::shared_ptr<MediaDevice> cfeDevice = acquireMediaDevice(enumerator, cfe);
+ 
++		if (!cfeDevice) {
++			LOG(RPI, Debug) << "acquireMediaDevice returned null for CFE";
++			LOG(RPI, Debug) << "Checking available media devices:";
++			auto dev = enumerator->search(cfe);
++			if(dev != nullptr)
++			{
++				LOG(RPI, Debug) << "  Found matching device: " << dev->deviceNode();
++			}
++		}
++
+ 		if (!cfeDevice) {
+ 			LOG(RPI, Debug) << "Unable to acquire a CFE instance";
+ 			break;

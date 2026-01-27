@@ -1,0 +1,14 @@
+diff --git a/src/libcamera/ipa_manager.cpp b/src/libcamera/ipa_manager.cpp
+--- a/src/libcamera/ipa_manager.cpp
++++ b/src/libcamera/ipa_manager.cpp
+@@ -288,6 +288,10 @@ IPAModule *IPAManager::module(PipelineHandler *pipe, uint32_t minVersion,
+ 
+ bool IPAManager::isSignatureValid([[maybe_unused]] IPAModule *ipa) const
+ {
++	/* Flatpak: Always return true to run IPA in-process (fork not available) */
++	if (getenv("FLATPAK_ID"))
++		return true;
++	
+ #if HAVE_IPA_PUBKEY
+ 	if (forceIsolation_) {
+ 		LOG(IPAManager, Debug)

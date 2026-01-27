@@ -30,6 +30,7 @@ Item {
     property alias comboBoxCameraOrientation: comboBoxCameraOrientation
     property alias comboBoxNeuralNetworkRuntime: comboBoxNeuralNetworkRuntime
     property alias buttonSelectPhotoDirectory: buttonSelectPhotoDirectory
+    property var libcamera
 
     ColumnLayout {
         anchors.fill: parent

@@ -8,6 +8,7 @@ import Qt.labs.platform
 import CollageModel
 import Printer
 import QtQuick.Window
+import Libcamera
 
 ApplicationWindow {
     id: mainWindow
@@ -69,12 +70,17 @@ ApplicationWindow {
         flow.galleryMenu.printer = printer
     }
 
+    Libcamera {
+       id: libcamera
+    }
+
     ApplicationFlow
     {
         id: flow
         height: parent.height
         width: parent.width
         collageMenu.printer : printer
+        libcamera: libcamera
 
         settingsMenu.switchPrinter.onCheckedChanged:
         {

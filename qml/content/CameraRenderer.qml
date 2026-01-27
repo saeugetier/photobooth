@@ -18,6 +18,7 @@ Item {
    property alias backgroundFilter: backgroundFilter
    property bool backgroundFilterEnabled: false
    property url backgroundImage: ""
+   property var libcamera
 
    onCameraNameChanged:
    {
@@ -54,6 +55,7 @@ Item {
       anchors.fill: parent
 
       cameraName: renderer.cameraName
+      libcamera: renderer.libcamera
 
       onImageCaptured: function(image) {
          whiteOverlay.state = "released"

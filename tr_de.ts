@@ -171,8 +171,8 @@
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="216"/>
-        <source>Failed to capture image: (Code %1) - $2</source>
-        <translation>Fehler bei der Fotoaufnahme: (Code %1) - $2´</translation>
+        <source>Failed to capture image: (Code %1) - %2</source>
+        <translation>Fehler bei der Fotoaufnahme: (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="235"/>

@@ -12,6 +12,7 @@ Item
    property alias output: output
    property string cameraName: ""
    property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera") || (cameraSource.state === "Libcamera"))
+   property var libcamera
 
    signal imageCaptured(var image)
    signal errorOccurred(var errorString)
@@ -37,12 +38,14 @@ Item
             return
          }
       }
-      var libcameras = libcamera.availableCameras()
-      for (var j = 0; j < libcameras.length; j++) {
-         if (libcameras[j] === cameraName) {
-            cameraSource.state = "Libcamera"
-            console.log("CameraSource using Libcamera camera device: " + cameraName)
-            return
+      if (cameraSource.libcamera) {
+         var libcameras = cameraSource.libcamera.availableCameras()
+         for (var j = 0; j < libcameras.length; j++) {
+            if (libcameras[j] === cameraName) {
+               cameraSource.state = "Libcamera"
+               console.log("CameraSource using Libcamera camera device: " + cameraName)
+               return
+            }
          }
       }
 
@@ -62,7 +65,9 @@ Item
       }
       else if(state === "Libcamera")
       {
-         libcamera.startCamera(cameraName)
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.startCamera(cameraName)
+         }
       }
       else
       {
@@ -82,7 +87,9 @@ Item
       }
       else if(state === "Libcamera")
       {
-         libcamera.stopCamera()
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.stopCamera()
+         }
       }
       else
       {
@@ -100,7 +107,9 @@ Item
       else if(state === "Libcamera")
       {
          console.log("Libcamera capture")
-         libcamera.captureImage()
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.captureImage()
+         }
       }
       else if(state === "GPhotoCamera")
       {
@@ -118,7 +127,7 @@ Item
    }
 
    Connections {
-      target: libcamera
+      target: cameraSource.libcamera
       function onErrorOccurred(errorString) {
          if(state === "Libcamera")
          {
@@ -129,7 +138,7 @@ Item
 
    Connections
    {
-      target: libcamera
+      target: cameraSource.libcamera
       function onImageCaptured(image) {
             cameraSource.imageCaptured(image)
          }
@@ -262,7 +271,7 @@ Item
          name: "Libcamera"
          PropertyChanges {
             target: cameraSession
-            videoFrameInput: libcamera
+            videoFrameInput: cameraSource.libcamera
          }
       },
       State {

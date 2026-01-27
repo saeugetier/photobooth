@@ -11,6 +11,7 @@ Item {
     property alias collageMenu: collageMenu
     property alias galleryMenu: galleryMenu
     property alias settingsMenu: settingsMenu
+    property var libcamera
 
     property real slideValueCollageSelection: 0.0
     property real slideValueSnapshotMenu: 1.0
@@ -36,6 +37,7 @@ Item {
         width: root.width
         height: root.height
         state: "deactivated"
+        libcamera: root.libcamera
     }
 
     ImagePreview {

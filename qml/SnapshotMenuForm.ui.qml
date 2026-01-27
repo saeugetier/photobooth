@@ -14,10 +14,12 @@ Item {
     property alias shutterButton: shutterButton
     property alias countdown: shutterButton.countDownTime
     property bool hideSnapshotSettingsPane: false
+    property var libcamera
 
     CameraRenderer {
         id: cameraRenderer
         anchors.fill: parent
+        libcamera: element.libcamera
 
         Text {
             id: failureText

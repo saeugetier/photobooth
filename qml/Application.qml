@@ -80,6 +80,7 @@ ApplicationWindow {
         height: parent.height
         width: parent.width
         collageMenu.printer : printer
+        libcamera: libcamera
 
         settingsMenu.switchPrinter.onCheckedChanged:
         {

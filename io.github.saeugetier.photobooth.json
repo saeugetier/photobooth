@@ -12,14 +12,10 @@
         "--filesystem=/media",
         "--filesystem=/run/media",
         "--filesystem=/mnt",
-        "--filesystem=/dev:rw",
-        "--filesystem=/sys:rw",
         "--filesystem=/run/udev:ro",
         "--filesystem=/proc:ro",
         "--socket=fallback-x11",
-        "--socket=wayland",
-        "--env=LIBCAMERA_IPA_MODULE_PATH=/app/lib/libcamera",
-        "--env=LIBCAMERA_IPA_CONFIG_PATH=/app/share/libcamera/ipa"
+        "--socket=wayland" 
     ],
     "cleanup": [
         "/include",

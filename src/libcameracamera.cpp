@@ -13,7 +13,7 @@
 using namespace libcamera;
 
 LibcameraDevice::LibcameraDevice(QObject *parent)
-    : QVideoFrameInput(parent), mWorkerThread(std::make_unique<QThread>(this)) {
+    : QVideoFrameInput(parent), mWorkerThread(std::make_unique<QThread>()) {
   mWorker = new LibCameraWorker();
   mWorker->moveToThread(mWorkerThread.get());
 

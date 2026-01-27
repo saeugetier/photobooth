@@ -6,7 +6,7 @@ CONFIG += c++17 qml_debug
     CONFIG += link_pkgconfig
     PKGCONFIG += opencv4 libcamera
 } else {
-    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lcamera -lcamera-base -lcamera-controls
 }
 
 SOURCES += src/collageiconmodel.cpp \

@@ -2,10 +2,12 @@
 #include <QDebug>
 #include <QThread>
 #include <QTimer>
+#include <QVariantMap>
 #include <cerrno>
 #include <cstring>
 #include <libcamera/formats.h>
 #include <libcamera/framebuffer_allocator.h>
+#include <libcamera/property_ids.h>
 #include <qvideoframe.h>
 #include <sys/mman.h>
 #include <opencv2/opencv.hpp>
@@ -43,8 +45,8 @@ LibcameraDevice::~LibcameraDevice() {
   qDebug() << "[INFO] LibcameraDevice destroyed";
 }
 
-QStringList LibcameraDevice::availableCameras() const {
-  QStringList cameras;
+QVariantList LibcameraDevice::availableCameras() const {
+  QVariantList cameras;
   if (mWorker) {
     QMetaObject::invokeMethod(
         mWorker, [this, &cameras]() { cameras = mWorker->availableCameras(); },
@@ -54,8 +56,10 @@ QStringList LibcameraDevice::availableCameras() const {
 }
 
 QString LibcameraDevice::getDefaultCamera() const {
-  QStringList cameras = availableCameras();
-  return cameras.isEmpty() ? QString() : cameras.first();
+  QVariantList cameras = availableCameras();
+  if (cameras.isEmpty())
+    return QString();
+  return cameras.first().toMap().value("value").toString();
 }
 
 void LibcameraDevice::startCamera(const QString &cameraId) {
@@ -118,12 +122,25 @@ void LibCameraWorker::initCameraManager() {
   }
 }
 
-QStringList LibCameraWorker::availableCameras() const {
-  QStringList list;
+QVariantList LibCameraWorker::availableCameras() const {
+  QVariantList list;
   if (!mCameraManager)
     return list;
-  for (auto const &id : mCameraManager->cameras())
-    list << QString::fromStdString(id->id());
+  for (auto const &cam : mCameraManager->cameras()) {
+    QString rawId = QString::fromStdString(cam->id());
+    QString displayName = rawId;
+
+    const auto &props = cam->properties();
+    const auto model = props.get(libcamera::properties::Model);
+    if (model && !model->empty()) {
+      displayName = QString::fromUtf8(model->data(), model->size());
+    }
+
+    QVariantMap entry;
+    entry["text"] = "Libcamera - " + displayName;
+    entry["value"] = rawId;
+    list.append(entry);
+  }
   return list;
 }
 

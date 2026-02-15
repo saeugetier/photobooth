@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QTimer>
 #include <QVariant>
+#include <QVariantList>
 #include <memory>
 
 #include <cstdint>
@@ -30,7 +31,7 @@ public:
     GPhotoCameraDevice();
     ~GPhotoCameraDevice() override;
 
-    Q_INVOKABLE QStringList availableCameras() const;
+    Q_INVOKABLE QVariantList availableCameras() const;
 
     Q_INVOKABLE QString getDefautCamera() const;
 
@@ -69,7 +70,7 @@ public slots:
 
     void getPreviewFrame();
     
-    QStringList availableCameras() const;
+    QVariantList availableCameras() const;
 signals:
     void frameReady(const QVideoFrame &frame);
     void errorOccurred(const QString &error);

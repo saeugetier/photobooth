@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QTimer>
+#include <QVariantList>
 #include <QVideoFrameInput>
 #include <memory>
 #include <deque>
@@ -27,7 +28,7 @@ public:
   explicit LibCameraWorker(QObject *parent = nullptr);
   ~LibCameraWorker();
 
-  QStringList availableCameras() const;
+  QVariantList availableCameras() const;
 
 public slots:
   void startCamera(const QString &cameraId);
@@ -79,7 +80,7 @@ public:
   explicit LibcameraDevice(QObject *parent = nullptr);
   ~LibcameraDevice();
 
-  Q_INVOKABLE QStringList availableCameras() const;
+  Q_INVOKABLE QVariantList availableCameras() const;
   Q_INVOKABLE QString getDefaultCamera() const;
 
 public slots:

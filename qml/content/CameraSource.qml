@@ -31,7 +31,7 @@ Item
       }
       var gphotoCameras = gphotoCamera.availableCameras()
       for (var j = 0; j < gphotoCameras.length; j++) {
-         if (gphotoCameras[j] === cameraName) {
+         if (gphotoCameras[j].value === cameraName) {
             gphotoCamera.cameraName = cameraName
             cameraSource.state = "GPhotoCamera"
             console.log("CameraSource using GPhoto camera device: " + cameraName)
@@ -40,8 +40,8 @@ Item
       }
       if (cameraSource.libcamera) {
          var libcameras = cameraSource.libcamera.availableCameras()
-         for (var j = 0; j < libcameras.length; j++) {
-            if (libcameras[j] === cameraName) {
+         for (var k = 0; k < libcameras.length; k++) {
+            if (libcameras[k].value === cameraName) {
                cameraSource.state = "Libcamera"
                console.log("CameraSource using Libcamera camera device: " + cameraName)
                return

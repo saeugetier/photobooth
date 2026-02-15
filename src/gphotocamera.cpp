@@ -34,18 +34,18 @@ GPhotoCameraDevice::~GPhotoCameraDevice() {
 }
 
 QString GPhotoCameraDevice::getDefautCamera() const {
-  QStringList cameras = availableCameras();
+  QVariantList cameras = availableCameras();
   if (!cameras.isEmpty()) {
-    return cameras.first();
+    return cameras.first().toMap().value("value").toString();
   }
   return QString();
 }
 
-QStringList GPhotoCameraDevice::availableCameras() const {
-  QStringList result;
+QVariantList GPhotoCameraDevice::availableCameras() const {
+  QVariantList result;
   QMetaObject::invokeMethod(mWorker.get(), "availableCameras",
                             Qt::BlockingQueuedConnection,
-                            Q_RETURN_ARG(QStringList, result));
+                            Q_RETURN_ARG(QVariantList, result));
   return result;
 }
 
@@ -269,8 +269,8 @@ void GPhotoCameraWorker::captureImage() {
   emit imageCaptured(image);
 }
 
-QStringList GPhotoCameraWorker::availableCameras() const {
-  QStringList cameraList;
+QVariantList GPhotoCameraWorker::availableCameras() const {
+  QVariantList cameraList;
 
   CameraList *list;
   gp_list_new(&list);
@@ -282,7 +282,11 @@ QStringList GPhotoCameraWorker::availableCameras() const {
     const char *value;
     gp_list_get_name(list, i, &name);
     gp_list_get_value(list, i, &value);
-    cameraList.append(QString("%1 (%2)").arg(name).arg(value));
+
+    QVariantMap entry;
+    entry["text"] = "GPhoto - " + QString::fromUtf8(name);
+    entry["value"] = QString("%1 (%2)").arg(name).arg(value);
+    cameraList.append(entry);
   }
 
   gp_list_free(list);

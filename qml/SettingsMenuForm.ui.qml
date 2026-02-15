@@ -156,6 +156,8 @@ Item {
                         ComboBox {
                             id: comboBoxCamera
                             Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
                         }
                     }
 

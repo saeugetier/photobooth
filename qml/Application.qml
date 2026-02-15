@@ -144,9 +144,9 @@ ApplicationWindow {
             console.log("Window mode changed to: " + applicationSettings.windowMode)
         }
 
-        settingsMenu.comboBoxCamera.onCurrentTextChanged:
+        settingsMenu.comboBoxCamera.onCurrentValueChanged:
         {
-            applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentText
+            applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentValue
         }
 
         settingsMenu.switchEnableSettingsPassword.onCheckedChanged:

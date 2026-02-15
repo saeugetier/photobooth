@@ -25,20 +25,20 @@ SettingsMenuForm {
         console.log("Available Camera Count: " + Number(availableCameras.length).toString())
         for(i = 0; i < availableCameras.length; i++)
         {
-            listModel.push(availableCameras[i].description)
+            listModel.push({"text": availableCameras[i].description, "value": availableCameras[i].description})
         }
         var gphotoCameras = gphotoCamera.availableCameras();
         console.log("GPhoto Camera Count: " + Number(gphotoCameras.length).toString())
         for(i = 0; i < gphotoCameras.length; i++)
         {
-            listModel.push(gphotoCameras[i])
+            listModel.push({"text": gphotoCameras[i].text, "value": gphotoCameras[i].value})
         }
         if (form.libcamera) {
             var libcameras = form.libcamera.availableCameras();
             console.log("Libcamera Camera Count: " + Number(libcameras.length).toString())
             for(i = 0; i < libcameras.length; i++)
             {
-                listModel.push(libcameras[i])
+                listModel.push({"text": libcameras[i].text, "value": libcameras[i].value})
             }
         }
         return listModel;

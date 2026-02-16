@@ -367,6 +367,9 @@ In the application, go to **Settings → GPIO** tab:
 5. **LED Brightness Line** — GPIO line offset for the PWM brightness signal.
 6. **PWM Frequency (Hz)** — Software PWM frequency (default: 1000 Hz). Higher values give smoother dimming but increase CPU usage. 500–2000 Hz is typical for LED drivers.
 7. **Invert PWM** — When enabled, inverts the duty cycle (1.0 - brightness). Enable this for active-low LED drivers.
+8. **Enable Camera Wake-up** — When enabled, toggles a GPIO pin before initializing a GPhoto camera (DSLR/mirrorless) to trigger autofocus and wake up the camera hardware. This is useful for cameras that go into sleep after a while.
+9. **Camera Wake-up Line** — GPIO line offset for the camera wake-up autofocus trigger (only visible when camera wake-up is enabled).
+10. **Wake-up Delay (ms)** — Time in milliseconds to hold the autofocus GPIO signal HIGH before returning it to LOW (default: 100 ms). Adjust based on your camera hardware requirements. Typical values are 50–200 ms.
 
 ## Neural Network Background Removal
 

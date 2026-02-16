@@ -301,6 +301,22 @@
             ]
         },
         {
+            "name": "libgpiod",
+            "buildsystem": "autotools",
+            "config-opts": [
+                "--enable-tools=no",
+                "--enable-bindings-cxx=no",
+                "--enable-bindings-python=no"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
+                    "tag": "v2.2.1"
+                }
+            ]
+        },
+        {
             "name": "qtbooth",
             "buildsystem": "qmake",
             "post-install": [

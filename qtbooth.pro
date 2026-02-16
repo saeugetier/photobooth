@@ -4,7 +4,7 @@ CONFIG += c++17 qml_debug
 
 !contains(QT_CONFIG, no-pkg-config) {
     CONFIG += link_pkgconfig
-    PKGCONFIG += opencv4 libcamera
+    PKGCONFIG += opencv4 libcamera libgpiod
 } else {
     LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lcamera -lcamera-base -lcamera-controls
 }

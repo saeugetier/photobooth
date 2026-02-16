@@ -174,6 +174,41 @@ ApplicationWindow {
             console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
         }
 
+        settingsMenu.switchEnableGpio.onCheckedChanged:
+        {
+            applicationSettings.gpioEnabled = settingsMenu.switchEnableGpio.checked
+        }
+
+        settingsMenu.comboBoxGpioChip.onCurrentValueChanged:
+        {
+            applicationSettings.gpioChip = String(settingsMenu.comboBoxGpioChip.currentValue)
+        }
+
+        settingsMenu.comboBoxLedEnableLine.onCurrentValueChanged:
+        {
+            applicationSettings.gpioLedEnableLine = Number(settingsMenu.comboBoxLedEnableLine.currentValue)
+        }
+
+        settingsMenu.comboBoxLedBrightnessLine.onCurrentValueChanged:
+        {
+            applicationSettings.gpioLedBrightnessLine = Number(settingsMenu.comboBoxLedBrightnessLine.currentValue)
+        }
+
+        settingsMenu.spinBoxPwmFrequency.onValueChanged:
+        {
+            applicationSettings.gpioPwmFrequency = settingsMenu.spinBoxPwmFrequency.value
+        }
+
+        settingsMenu.comboBoxBoardPreset.onCurrentValueChanged:
+        {
+            applicationSettings.gpioBoardPreset = String(settingsMenu.comboBoxBoardPreset.currentValue)
+        }
+
+        settingsMenu.switchInvertPwm.onCheckedChanged:
+        {
+            applicationSettings.gpioInvertPwm = settingsMenu.switchInvertPwm.checked
+        }
+
         mainMenu.printerBusy: printer ? printer.busy : false
     }
 
@@ -196,6 +231,13 @@ ApplicationWindow {
         property bool enableSettingsPassword: false
         property int cameraOrientation: 0
         property string neuralNetworkRuntime: "ONNX"
+        property bool gpioEnabled: false
+        property string gpioBoardPreset: "rpi4"
+        property string gpioChip: "/dev/gpiochip0"
+        property int gpioLedEnableLine: 23
+        property int gpioLedBrightnessLine: 18
+        property int gpioPwmFrequency: 1000
+        property bool gpioInvertPwm: true
 
         Component.onCompleted:
         {
@@ -211,6 +253,10 @@ ApplicationWindow {
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
             flow.imagePreview.effectButton.visible = !disableEffectPopup
+
+            // GPIO settings
+            flow.settingsMenu.switchEnableGpio.checked = gpioEnabled
+            flow.settingsMenu.switchInvertPwm.checked = gpioInvertPwm
         }
 
         onPrinterNameChanged:

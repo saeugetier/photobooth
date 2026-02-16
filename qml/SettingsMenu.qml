@@ -6,6 +6,7 @@ import Qt.labs.platform
 import QtQml
 import GPhotoCamera
 import Libcamera
+import Gpio
 import "content"
 
 SettingsMenuForm {
@@ -100,6 +101,80 @@ SettingsMenuForm {
         // Camera orientation
         var orientIndex = comboBoxCameraOrientation.indexOfValue(applicationSettings.cameraOrientation)
         comboBoxCameraOrientation.currentIndex = orientIndex
+
+        // GPIO settings
+        initGpioControls()
+    }
+
+    // Board preset defaults
+    readonly property var boardPresets: ({
+        "rpi4":       { chip: "/dev/gpiochip0", enableLine: 23, brightnessLine: 18, pwmFreq: 1000, invertPwm: true },
+        "rpi5":       { chip: "/dev/gpiochip4", enableLine: 23, brightnessLine: 18, pwmFreq: 1000, invertPwm: true },
+        "orangepi3b": { chip: "/dev/gpiochip3", enableLine: 13, brightnessLine: 14, pwmFreq: 1000, invertPwm: true },
+        "custom":     null
+    })
+
+    function initGpioControls() {
+        // Populate GPIO chip combo from available hardware
+        var chips = GPIO.availableChips()
+        comboBoxGpioChip.model = chips
+
+        // Set saved chip selection
+        var chipIdx = comboBoxGpioChip.indexOfValue(applicationSettings.gpioChip)
+        if (chipIdx >= 0)
+            comboBoxGpioChip.currentIndex = chipIdx
+
+        // Populate line combos
+        refreshLineComboModels(applicationSettings.gpioChip)
+
+        // Set saved line selections
+        var enableIdx = comboBoxLedEnableLine.indexOfValue(applicationSettings.gpioLedEnableLine)
+        if (enableIdx >= 0)
+            comboBoxLedEnableLine.currentIndex = enableIdx
+        var brightnessIdx = comboBoxLedBrightnessLine.indexOfValue(applicationSettings.gpioLedBrightnessLine)
+        if (brightnessIdx >= 0)
+            comboBoxLedBrightnessLine.currentIndex = brightnessIdx
+
+        // PWM frequency
+        spinBoxPwmFrequency.value = applicationSettings.gpioPwmFrequency
+
+        // Board preset
+        var presetIdx = comboBoxBoardPreset.indexOfValue(applicationSettings.gpioBoardPreset)
+        if (presetIdx >= 0)
+            comboBoxBoardPreset.currentIndex = presetIdx
+    }
+
+    function refreshLineComboModels(chipPath) {
+        var lines = GPIO.availableLines(chipPath)
+        comboBoxLedEnableLine.model = lines
+        comboBoxLedBrightnessLine.model = lines
+    }
+
+    comboBoxGpioChip.onCurrentValueChanged: {
+        if (comboBoxGpioChip.currentValue && comboBoxGpioChip.currentValue !== "")
+            refreshLineComboModels(comboBoxGpioChip.currentValue)
+    }
+
+    comboBoxBoardPreset.onCurrentValueChanged: {
+        var preset = boardPresets[comboBoxBoardPreset.currentValue]
+        if (preset) {
+            // Apply preset values
+            var chipIdx = comboBoxGpioChip.indexOfValue(preset.chip)
+            if (chipIdx >= 0) {
+                comboBoxGpioChip.currentIndex = chipIdx
+            }
+            refreshLineComboModels(preset.chip)
+
+            var enableIdx = comboBoxLedEnableLine.indexOfValue(preset.enableLine)
+            if (enableIdx >= 0)
+                comboBoxLedEnableLine.currentIndex = enableIdx
+            var brightnessIdx = comboBoxLedBrightnessLine.indexOfValue(preset.brightnessLine)
+            if (brightnessIdx >= 0)
+                comboBoxLedBrightnessLine.currentIndex = brightnessIdx
+
+            spinBoxPwmFrequency.value = preset.pwmFreq
+            switchInvertPwm.checked = preset.invertPwm
+        }
     }
 
     function delay(delayTime, cb) {

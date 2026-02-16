@@ -87,7 +87,7 @@ Main features are:
 - Printing can also be disabled
 
 **Light/Flash:**
-LED flash can be driven via Raspberry Pi GPIO. Tested configuration:
+LED flash can be driven via GPIO on any supported ARM SBC using **libgpiod**. See [GPIO Configuration](#gpio-configuration) for setup details. Tested configuration:
 - LED Driver: https://www.aliexpress.com/item/14-37-Inch-LED-LCD-Universal-TV-Backlight-Constant-Current-Board-Driver-Boost-Structure-Step-Up/32834942970.html
 - 20W LED: https://www.aliexpress.com/item/1Pcs-High-Power-10W-20W-30W-50W-100W-COB-Integrated-LED-Lamp-Chip-SMD-Bead-DC/32822371892.html
 
@@ -261,6 +261,112 @@ Optional properties:
     </collage>
 </catalog>
 ```
+
+## GPIO Configuration
+
+The photobooth supports controlling LED lighting via GPIO pins using **libgpiod** — the standard Linux GPIO character device interface. This works on any ARM SBC with a `/dev/gpiochip*` device, including Raspberry Pi and Rockchip-based boards.
+
+GPIO is **disabled by default** and must be enabled in **Settings → GPIO**.
+
+### Overview
+
+Two GPIO lines are used:
+
+| Function | Mode | Description |
+|----------|------|-------------|
+| **LED Enable** | Digital Output | Turns the LED driver on/off (HIGH = on, LOW = off) |
+| **LED Brightness** | Software PWM | Controls LED brightness via pulse-width modulation (0–100%) |
+
+The software PWM runs in a dedicated thread for consistent timing, independent of the UI rendering.
+
+### Board Presets & Default Pin Assignments
+
+The settings menu provides board presets that auto-configure the correct GPIO chip and line numbers:
+
+| Board | GPIO Chip | LED Enable Line | LED Brightness Line | Physical Header Pins |
+|-------|-----------|----------------|---------------------|---------------------|
+| **Raspberry Pi 3/4** | `/dev/gpiochip0` | 23 | 18 | Enable: Pin 16 (GPIO23), Brightness: Pin 12 (GPIO18) |
+| **Raspberry Pi 5** | `/dev/gpiochip4` | 23 | 18 | Enable: Pin 16 (GPIO23), Brightness: Pin 12 (GPIO18) |
+| **Orange Pi 3B (RK3566)** | `/dev/gpiochip3` | 13 (GPIO3_B5) | 14 (GPIO3_B6) | Consult board pinout diagram |
+| **Custom** | User-selectable | User-selectable | User-selectable | — |
+
+> **Note:** The Orange Pi 3B default lines (13, 14 on gpiochip3) are examples. Consult your specific board's pinout documentation and adjust in the Settings menu. RK3566 GPIO numbering uses bank notation: e.g. GPIO3_A5 = line offset `3*8+5 = 29` on the corresponding gpiochip. The settings menu enumerates all available lines with their kernel names for easy identification.
+
+### Wiring
+
+```
+        GPIO (Enable Line)          GPIO (Brightness Line / PWM)
+             │                              │
+             ▼                              ▼
+        ┌─────────┐                   ┌──────────┐
+        │ ENABLE   │                   │ PWM/DIM  │
+        │          │                   │          │
+        │  LED     ├───────────────────┤  LED     │
+        │  Driver  │                   │  Driver  │
+        │          │                   │          │
+        └────┬─────┘                   └──────────┘
+             │
+             ▼
+        ┌─────────┐
+        │  LED    │
+        │ (20W)   │
+        └─────────┘
+```
+
+The **Enable** line turns the LED driver on/off. The **Brightness** line controls the duty cycle via software PWM. If your LED driver uses active-low logic (brightness increases as PWM decreases), enable the **"Invert PWM"** toggle in the GPIO settings.
+
+### Permissions / udev Setup
+
+GPIO character devices (`/dev/gpiochip*`) require appropriate permissions. The project ships udev rules and an installer script in the `udev/` directory.
+
+#### Automatic Installation
+
+```bash
+cd udev/
+sudo ./install-gpio-rules.sh
+```
+
+The script will:
+1. Auto-detect your board type from `/proc/device-tree/model`
+2. Install the matching udev rules to `/etc/udev/rules.d/99-gpio-photobooth.rules`
+3. Create a `gpio` group (if it doesn't exist)
+4. Add your user to the `gpio` group
+5. Reload udev rules
+
+**You must log out and back in (or reboot) for the group change to take effect.**
+
+#### Manual Installation
+
+```bash
+# Copy the appropriate rules file
+sudo cp udev/99-gpio-raspberrypi.rules /etc/udev/rules.d/99-gpio-photobooth.rules
+
+# Create gpio group and add your user
+sudo groupadd -f gpio
+sudo usermod -aG gpio $USER
+
+# Reload udev
+sudo udevadm control --reload-rules && sudo udevadm trigger
+
+# Log out and back in, then verify
+ls -la /dev/gpiochip*
+```
+
+#### Flatpak
+
+When running as a Flatpak, the `--device=all` permission grants access to `/dev/gpiochip*` inside the sandbox. You still need the udev rules on the **host** system for correct group permissions.
+
+### Settings Menu
+
+In the application, go to **Settings → GPIO** tab:
+
+1. **Enable GPIO** — Master switch (off by default). All other controls are hidden until enabled.
+2. **Board Preset** — Select your board to auto-fill chip and line defaults. Select "Custom" to manually configure.
+3. **GPIO Chip** — The character device (e.g. `/dev/gpiochip0`). Only editable in "Custom" mode.
+4. **LED Enable Line** — GPIO line offset for the on/off enable signal. Shows all available lines with kernel names.
+5. **LED Brightness Line** — GPIO line offset for the PWM brightness signal.
+6. **PWM Frequency (Hz)** — Software PWM frequency (default: 1000 Hz). Higher values give smoother dimming but increase CPU usage. 500–2000 Hz is typical for LED drivers.
+7. **Invert PWM** — When enabled, inverts the duty cycle (1.0 - brightness). Enable this for active-low LED drivers.
 
 ## Neural Network Background Removal
 

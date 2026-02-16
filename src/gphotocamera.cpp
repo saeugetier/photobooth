@@ -140,9 +140,30 @@ void GPhotoCameraWorker::triggerCameraWakeup() {
 }
 
 void GPhotoCameraWorker::startCamera(const QString &cameraName) {
-  // Trigger camera wake-up GPIO before starting camera
-  triggerCameraWakeup();
-  
+  auto isCameraAvailable = [this](const QString &fullName) {
+    if (fullName.isEmpty()) {
+      return false;
+    }
+    const auto cameras = availableCameras();
+    for (const auto &entryVar : cameras) {
+      const auto entry = entryVar.toMap();
+      if (entry.value("value").toString() == fullName) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // camera may be in stand by. If not found, trigger wake-up and try again after a short delay
+  if (!isCameraAvailable(cameraName)) {
+    triggerCameraWakeup();
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    if (!isCameraAvailable(cameraName)) {
+      emit errorOccurred(tr("Camera %1 not found").arg(cameraName));
+      return;
+    }
+  }
+
   if (mCameraStarted) {
     stopCamera();
   }

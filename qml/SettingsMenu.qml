@@ -135,6 +135,11 @@ SettingsMenuForm {
         if (brightnessIdx >= 0)
             comboBoxLedBrightnessLine.currentIndex = brightnessIdx
 
+        // Camera wake-up line
+        var wakeupIdx = comboBoxCameraWakeupLine.indexOfValue(applicationSettings.gpioCameraWakeupLine)
+        if (wakeupIdx >= 0)
+            comboBoxCameraWakeupLine.currentIndex = wakeupIdx
+
         // PWM frequency
         spinBoxPwmFrequency.value = applicationSettings.gpioPwmFrequency
 
@@ -148,6 +153,7 @@ SettingsMenuForm {
         var lines = GPIO.availableLines(chipPath)
         comboBoxLedEnableLine.model = lines
         comboBoxLedBrightnessLine.model = lines
+        comboBoxCameraWakeupLine.model = lines
     }
 
     comboBoxGpioChip.onCurrentValueChanged: {

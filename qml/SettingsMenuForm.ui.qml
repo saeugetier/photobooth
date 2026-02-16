@@ -37,6 +37,9 @@ Item {
     property alias comboBoxLedBrightnessLine: comboBoxLedBrightnessLine
     property alias spinBoxPwmFrequency: spinBoxPwmFrequency
     property alias switchInvertPwm: switchInvertPwm
+    property alias switchCameraWakeup: switchCameraWakeup
+    property alias comboBoxCameraWakeupLine: comboBoxCameraWakeupLine
+    property alias spinBoxCameraWakeupDelay: spinBoxCameraWakeupDelay
     property var libcamera
 
     ColumnLayout {
@@ -619,6 +622,62 @@ Item {
                         }
                         Switch {
                             id: switchInvertPwm
+                        }
+                    }
+
+                    ToolSeparator {
+                        visible: switchEnableGpio.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Enable Camera Wake-up:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchCameraWakeup
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Camera Wake-up Line:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxCameraWakeupLine
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Wake-up Delay (ms):")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        SpinBox {
+                            id: spinBoxCameraWakeupDelay
+                            from: 0
+                            to: 5000
+                            stepSize: 10
+                            value: 100
+                            editable: true
                         }
                     }
                 }

@@ -2,10 +2,14 @@
 #include <QDebug>
 #include <QString>
 #include <QVideoFrame>
+#include <QCoreApplication>
+#include <QSettings>
 #include <gphoto2/gphoto2-camera.h>
 #include <gphoto2/gphoto2-context.h>
 #include <gphoto2/gphoto2-list.h>
 #include <gphoto2/gphoto2-port.h>
+#include <thread>
+#include <chrono>
 
 namespace {
 constexpr auto capturingFailLimit = 10;
@@ -85,10 +89,60 @@ GPhotoCameraWorker::GPhotoCameraWorker()
 
   mKeepAliveTimer.setInterval(1000 * 60); // Check every minute
   mKeepAliveTimer.setSingleShot(true);
+  
+  // Trigger camera wake-up GPIO on startup before camera enumeration
+  triggerCameraWakeup();
 }
 GPhotoCameraWorker::~GPhotoCameraWorker() {}
 
+void GPhotoCameraWorker::triggerCameraWakeup() {
+  // Read GPIO settings from QSettings
+  QSettings settings;
+  
+  bool gpioEnabled = settings.value("gpioEnabled", false).toBool();
+  bool cameraWakeupEnabled = settings.value("gpioCameraWakeupEnabled", false).toBool();
+  
+  if (!gpioEnabled || !cameraWakeupEnabled) {
+    return;
+  }
+  
+  QString gpioChip = settings.value("gpioChip", "/dev/gpiochip0").toString();
+  int wakeupLine = settings.value("gpioCameraWakeupLine", 17).toInt();
+  int delayMs = settings.value("gpioCameraWakeupDelayMs", 100).toInt();
+  
+  qDebug() << "Triggering camera wake-up GPIO on" << gpioChip << "line" << wakeupLine;
+  
+  try {
+    // Create GPIO instance for wake-up
+    mCameraWakeupGpio = std::make_unique<GPIO>();
+    mCameraWakeupGpio->setChipPath(gpioChip);
+    mCameraWakeupGpio->setLine(wakeupLine);
+    mCameraWakeupGpio->setMode(GPIO::Output);
+    mCameraWakeupGpio->setEnabled(true);
+    
+    // Trigger GPIO (set high)
+    mCameraWakeupGpio->setValue(1.0);
+    
+    // Wait for delay
+    if (delayMs > 0) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+    }
+    
+    // Release GPIO (set low)
+    mCameraWakeupGpio->setValue(0.0);
+    mCameraWakeupGpio->setEnabled(false);
+    mCameraWakeupGpio.reset();
+    
+    qDebug() << "Camera wake-up GPIO trigger completed";
+  } catch (const std::exception &e) {
+    qWarning() << "Failed to trigger camera wake-up GPIO:" << e.what();
+  }
+}
+
 void GPhotoCameraWorker::startCamera(const QString &cameraName) {
+  // Trigger camera wake-up GPIO before starting camera
+  triggerCameraWakeup();
+  
   if (mCameraStarted) {
     stopCamera();
   }

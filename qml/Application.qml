@@ -82,6 +82,19 @@ ApplicationWindow {
         collageMenu.printer : printer
         libcamera: libcamera
 
+        // Set up camera wake-up GPIO when settings change
+        onSnapshotMenuChanged: {
+            if (snapshotMenu && snapshotMenu.cameraRenderer) {
+                var cameraDevice = snapshotMenu.cameraRenderer.camera
+                if (cameraDevice && applicationSettings.gpioCameraWakeupEnabled && 
+                    applicationSettings.gpioCameraWakeupLine >= 0) {
+                    // This would require exposing setCameraWakeupGpio from C++
+                    // For now, this is a placeholder for future implementation
+                    console.log("Camera wake-up GPIO configured: line " + applicationSettings.gpioCameraWakeupLine)
+                }
+            }
+        }
+
         settingsMenu.switchPrinter.onCheckedChanged:
         {
             applicationSettings.printEnable = settingsMenu.switchPrinter.checked
@@ -209,6 +222,21 @@ ApplicationWindow {
             applicationSettings.gpioInvertPwm = settingsMenu.switchInvertPwm.checked
         }
 
+        settingsMenu.switchCameraWakeup.onCheckedChanged:
+        {
+            applicationSettings.gpioCameraWakeupEnabled = settingsMenu.switchCameraWakeup.checked
+        }
+
+        settingsMenu.comboBoxCameraWakeupLine.onCurrentValueChanged:
+        {
+            applicationSettings.gpioCameraWakeupLine = Number(settingsMenu.comboBoxCameraWakeupLine.currentValue)
+        }
+
+        settingsMenu.spinBoxCameraWakeupDelay.onValueChanged:
+        {
+            applicationSettings.gpioCameraWakeupDelayMs = settingsMenu.spinBoxCameraWakeupDelay.value
+        }
+
         mainMenu.printerBusy: printer ? printer.busy : false
     }
 
@@ -238,6 +266,9 @@ ApplicationWindow {
         property int gpioLedBrightnessLine: 18
         property int gpioPwmFrequency: 1000
         property bool gpioInvertPwm: true
+        property bool gpioCameraWakeupEnabled: false
+        property int gpioCameraWakeupLine: -1
+        property int gpioCameraWakeupDelayMs: 100
 
         Component.onCompleted:
         {
@@ -257,6 +288,8 @@ ApplicationWindow {
             // GPIO settings
             flow.settingsMenu.switchEnableGpio.checked = gpioEnabled
             flow.settingsMenu.switchInvertPwm.checked = gpioInvertPwm
+            flow.settingsMenu.switchCameraWakeup.checked = gpioCameraWakeupEnabled
+            flow.settingsMenu.spinBoxCameraWakeupDelay.value = gpioCameraWakeupDelayMs
         }
 
         onPrinterNameChanged:

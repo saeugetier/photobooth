@@ -14,6 +14,8 @@
 #include <gphoto2/gphoto2-port.h>
 #include <gphoto2/gphoto2-camera.h>
 
+#include "gpio.h"
+
 
 class GPhotoCameraWorker;
 
@@ -85,10 +87,14 @@ protected:
     CameraFilePtr mPreviewFile;
     bool mCameraStarted = false;
     uint32_t mCapturingFailCount = 0;
+    
+    // GPIO wake-up members
+    std::unique_ptr<GPIO> mCameraWakeupGpio;
 
     void waitForOperationCompleted();
     QVariant parameter(const QString &name);
     bool setParameter(const QString &name, const QVariant &value);
+    void triggerCameraWakeup();
 protected slots:
     // check and set capture parameters to keep camera alive
     void checkCaptureParameter();

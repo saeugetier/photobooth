@@ -46,8 +46,8 @@ public:
     bool enabled() const;
     void setEnabled(bool enabled);
 
-    Q_INVOKABLE static QVariantList availableChips();
-    Q_INVOKABLE static QVariantList availableLines(const QString &chipPath);
+    Q_INVOKABLE QVariantList availableChips();
+    Q_INVOKABLE QVariantList availableLines(const QString &chipPath);
 
 signals:
     void chipPathChanged(const QString &chipPath);

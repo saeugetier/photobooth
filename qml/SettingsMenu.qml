@@ -54,6 +54,11 @@ SettingsMenuForm {
         id: mediaDevices
     }
 
+    GPIO {
+        id: gpioHelper
+        enabled: false
+    }
+
     Component.onCompleted:
     {
         versionText = "Version: " + system.getGitHash()
@@ -116,7 +121,7 @@ SettingsMenuForm {
 
     function initGpioControls() {
         // Populate GPIO chip combo from available hardware
-        var chips = GPIO.availableChips()
+        var chips = gpioHelper.availableChips()
         comboBoxGpioChip.model = chips
 
         // Set saved chip selection
@@ -150,7 +155,7 @@ SettingsMenuForm {
     }
 
     function refreshLineComboModels(chipPath) {
-        var lines = GPIO.availableLines(chipPath)
+        var lines = gpioHelper.availableLines(chipPath)
         comboBoxLedEnableLine.model = lines
         comboBoxLedBrightnessLine.model = lines
         comboBoxCameraWakeupLine.model = lines

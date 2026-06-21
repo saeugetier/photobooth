@@ -1,10 +1,13 @@
 #include "gpio.h"
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 #include <QVariantMap>
 #include <cmath>
 #include <algorithm>
 #include <chrono>
+#include <cerrno>
+#include <cstring>
 
 GPIO::GPIO(QObject *parent)
     : QObject(parent)
@@ -122,28 +125,74 @@ QVariantList GPIO::availableChips()
     filters << "gpiochip*";
     QStringList entries = devDir.entryList(filters, QDir::System, QDir::Name);
 
+    qDebug() << "GPIO: Scanning /dev for gpiochip* entries, found" << entries.size() << "candidates";
+    if (entries.isEmpty())
+        qWarning() << "GPIO: No gpiochip devices found in /dev";
+
     for (const QString &entry : entries) {
         QString path = "/dev/" + entry;
-        struct gpiod_chip *chip = gpiod_chip_open(path.toUtf8().constData());
-        if (chip) {
-            QString label;
-            struct gpiod_chip_info *info = gpiod_chip_get_info(chip);
-            if (info) {
-                label = QString::fromUtf8(gpiod_chip_info_get_label(info));
-                gpiod_chip_info_free(info);
-            }
-            QVariantMap item;
-            item["value"] = path;
-            if (label.isEmpty())
-                item["text"] = entry;
-            else
-                item["text"] = entry + " (" + label + ")";
-            chips.append(item);
-            gpiod_chip_close(chip);
+        QFileInfo fileInfo(path);
+
+        qDebug() << "GPIO: Candidate" << path
+                 << "exists=" << fileInfo.exists()
+                 << "readable=" << fileInfo.isReadable()
+                 << "writable=" << fileInfo.isWritable();
+
+        if (!fileInfo.isReadable() || !fileInfo.isWritable()) {
+            qWarning() << "GPIO: Permission warning for" << path
+                       << "(readable=" << fileInfo.isReadable()
+                       << ", writable=" << fileInfo.isWritable() << ")";
         }
+
+        errno = 0;
+        struct gpiod_chip *chip = gpiod_chip_open(path.toUtf8().constData());
+        if (!chip) {
+            qWarning() << "GPIO: Failed to open chip" << path
+                       << "errno=" << errno
+                       << "(" << QString::fromLocal8Bit(std::strerror(errno)) << ")";
+            continue;
+        }
+
+        qDebug() << "GPIO: Successfully opened chip interface" << path;
+
+        QString label;
+        errno = 0;
+        struct gpiod_chip_info *info = gpiod_chip_get_info(chip);
+        if (info) {
+            const char *chipName = gpiod_chip_info_get_name(info);
+            const char *chipLabel = gpiod_chip_info_get_label(info);
+            const size_t numLines = gpiod_chip_info_get_num_lines(info);
+
+            if (chipLabel)
+                label = QString::fromUtf8(chipLabel);
+
+            qDebug() << "GPIO: Chip info read ok for" << path
+                     << "name=" << (chipName ? chipName : "")
+                     << "label=" << (chipLabel ? chipLabel : "")
+                     << "lines=" << static_cast<qulonglong>(numLines);
+
+            gpiod_chip_info_free(info);
+        } else {
+            qWarning() << "GPIO: Failed to read chip info for" << path
+                       << "errno=" << errno
+                       << "(" << QString::fromLocal8Bit(std::strerror(errno)) << ")";
+        }
+
+        QVariantMap item;
+        item["value"] = path;
+        if (label.isEmpty())
+            item["text"] = entry;
+        else
+            item["text"] = entry + " (" + label + ")";
+        chips.append(item);
+
+        gpiod_chip_close(chip);
     }
 
     if (chips.isEmpty()) {
+        if (!entries.isEmpty()) {
+            qWarning() << "GPIO: gpiochip devices were found in /dev but none could be opened/read. Check permissions and kernel GPIO support.";
+        }
         QVariantMap item;
         item["value"] = "";
         item["text"] = "(no GPIO chips found)";

@@ -9,23 +9,23 @@
 #include <cerrno>
 #include <cstring>
 
-GPIO::GPIO(QObject *parent)
+Gpiod::Gpiod(QObject *parent)
     : QObject(parent)
 {
 }
 
-GPIO::~GPIO()
+Gpiod::~Gpiod()
 {
     stopPwmThread();
     closeLine();
 }
 
-QString GPIO::chipPath() const
+QString Gpiod::chipPath() const
 {
     return m_chipPath;
 }
 
-void GPIO::setChipPath(const QString &chipPath)
+void Gpiod::setChipPath(const QString &chipPath)
 {
     if (m_chipPath != chipPath) {
         closeLine();
@@ -36,12 +36,12 @@ void GPIO::setChipPath(const QString &chipPath)
     }
 }
 
-int GPIO::line() const
+int Gpiod::line() const
 {
     return m_line;
 }
 
-void GPIO::setLine(int line)
+void Gpiod::setLine(int line)
 {
     if (m_line != line) {
         closeLine();
@@ -52,12 +52,12 @@ void GPIO::setLine(int line)
     }
 }
 
-float GPIO::value() const
+float Gpiod::value() const
 {
     return m_value;
 }
 
-void GPIO::setValue(float value)
+void Gpiod::setValue(float value)
 {
     float clamped = std::clamp(value, 0.0f, 1.0f);
     if (std::fabs(clamped - m_value) > 0.005f || (clamped == 0.0f) != (m_value == 0.0f) || (clamped == 1.0f) != (m_value == 1.0f)) {
@@ -67,12 +67,12 @@ void GPIO::setValue(float value)
     }
 }
 
-GPIO::Mode GPIO::mode() const
+Gpiod::Mode Gpiod::mode() const
 {
     return m_mode;
 }
 
-void GPIO::setMode(Mode mode)
+void Gpiod::setMode(Mode mode)
 {
     if (m_mode != mode) {
         stopPwmThread();
@@ -82,12 +82,12 @@ void GPIO::setMode(Mode mode)
     }
 }
 
-int GPIO::pwmFrequency() const
+int Gpiod::pwmFrequency() const
 {
     return m_pwmFrequency;
 }
 
-void GPIO::setPwmFrequency(int frequency)
+void Gpiod::setPwmFrequency(int frequency)
 {
     if (frequency < 1)
         frequency = 1;
@@ -97,12 +97,12 @@ void GPIO::setPwmFrequency(int frequency)
     }
 }
 
-bool GPIO::enabled() const
+bool Gpiod::enabled() const
 {
     return m_enabled;
 }
 
-void GPIO::setEnabled(bool enabled)
+void Gpiod::setEnabled(bool enabled)
 {
     if (m_enabled != enabled) {
         m_enabled = enabled;
@@ -117,7 +117,7 @@ void GPIO::setEnabled(bool enabled)
     }
 }
 
-QVariantList GPIO::availableChips()
+QVariantList Gpiod::availableChips()
 {
     QVariantList chips;
     QDir devDir("/dev");
@@ -202,7 +202,7 @@ QVariantList GPIO::availableChips()
     return chips;
 }
 
-QVariantList GPIO::availableLines(const QString &chipPath)
+QVariantList Gpiod::availableLines(const QString &chipPath)
 {
     QVariantList lines;
 
@@ -246,7 +246,7 @@ QVariantList GPIO::availableLines(const QString &chipPath)
     return lines;
 }
 
-void GPIO::openLine()
+void Gpiod::openLine()
 {
     closeLine();
 
@@ -286,7 +286,7 @@ void GPIO::openLine()
     qDebug() << "GPIO: Opened line" << m_line << "on" << m_chipPath;
 }
 
-void GPIO::closeLine()
+void Gpiod::closeLine()
 {
     stopPwmThread();
 
@@ -301,7 +301,7 @@ void GPIO::closeLine()
     }
 }
 
-void GPIO::applyValue()
+void Gpiod::applyValue()
 {
     if (!m_enabled || !m_request)
         return;
@@ -329,17 +329,17 @@ void GPIO::applyValue()
     }
 }
 
-void GPIO::startPwmThread()
+void Gpiod::startPwmThread()
 {
     if (m_pwmRunning.load(std::memory_order_acquire))
         return;
 
     m_pwmRunning.store(true, std::memory_order_release);
-    m_pwmThread = std::thread(&GPIO::pwmWorker, this);
+    m_pwmThread = std::thread(&Gpiod::pwmWorker, this);
     qDebug() << "GPIO: PWM thread started for line" << m_line << "at" << m_pwmFrequency << "Hz";
 }
 
-void GPIO::stopPwmThread()
+void Gpiod::stopPwmThread()
 {
     if (m_pwmRunning.load(std::memory_order_acquire)) {
         m_pwmRunning.store(false, std::memory_order_release);
@@ -348,7 +348,7 @@ void GPIO::stopPwmThread()
     }
 }
 
-void GPIO::pwmWorker()
+void Gpiod::pwmWorker()
 {
     const unsigned int lineOffset = static_cast<unsigned int>(m_line);
 

@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<CollageIconModel>("CollageModel", 1, 0, "CollageIconModel", "CollageIconModel can only be created via CollageModeFactory");
     qmlRegisterUncreatableType<CollageImageModel>("CollageModel", 1, 0, "CollageImageModel", "CollageImageModel can only be created via CollageModeFactory");
 
-    qmlRegisterType<GPIO>("Gpio", 1, 0, "GPIO");
+    qmlRegisterType<Gpiod>("Gpio", 1, 0, "Gpiod");
 
     qmlRegisterType<FileIO>("FileIO", 1, 0, "FileIO");
 

@@ -1,5 +1,5 @@
-#ifndef GPIO_H
-#define GPIO_H
+#ifndef GPIOD_H
+#define GPIOD_H
 
 #include <QObject>
 #include <QVariantList>
@@ -8,7 +8,7 @@
 #include <thread>
 #include <gpiod.h>
 
-class GPIO : public QObject
+class Gpiod : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString chipPath READ chipPath WRITE setChipPath NOTIFY chipPathChanged)
@@ -25,8 +25,8 @@ public:
     };
     Q_ENUM(Mode)
 
-    explicit GPIO(QObject *parent = nullptr);
-    ~GPIO();
+    explicit Gpiod(QObject *parent = nullptr);
+    ~Gpiod();
 
     QString chipPath() const;
     void setChipPath(const QString &chipPath);
@@ -80,4 +80,4 @@ private:
     std::atomic<bool> m_pwmRunning{false};
 };
 
-#endif // GPIO_H
+#endif // GPIOD_H

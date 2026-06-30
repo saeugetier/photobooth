@@ -30,12 +30,12 @@ SnapshotMenuForm {
 
     cameraRenderer.mirrored: applicationSettings.cameraMirrored
 
-    GPIO
+    Gpiod
     {
         id: ledEnablePin
         chipPath: applicationSettings.gpioChip
         line: applicationSettings.gpioLedEnableLine
-        mode: GPIO.Output
+        mode: Gpiod.Output
         enabled: applicationSettings.gpioEnabled
         value: 0.0
     }
@@ -77,12 +77,12 @@ SnapshotMenuForm {
         }
     }
 
-    GPIO
+    Gpiod
     {
         id: ledBrightnessPin
         chipPath: applicationSettings.gpioChip
         line: applicationSettings.gpioLedBrightnessLine
-        mode: GPIO.PWM
+        mode: Gpiod.PWM
         pwmFrequency: applicationSettings.gpioPwmFrequency
         enabled: applicationSettings.gpioEnabled
         value: applicationSettings.gpioInvertPwm ? (1.0 - snapshotSettings.viewFinderBrightness) : snapshotSettings.viewFinderBrightness

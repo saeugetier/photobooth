@@ -89,7 +89,7 @@ protected:
     uint32_t mCapturingFailCount = 0;
     
     // GPIO wake-up members
-    std::unique_ptr<GPIO> mCameraWakeupGpio;
+    std::unique_ptr<Gpiod> mCameraWakeupGpio;
 
     void waitForOperationCompleted();
     QVariant parameter(const QString &name);

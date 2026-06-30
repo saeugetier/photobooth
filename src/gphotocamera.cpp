@@ -114,10 +114,10 @@ void GPhotoCameraWorker::triggerCameraWakeup() {
   
   try {
     // Create GPIO instance for wake-up
-    mCameraWakeupGpio = std::make_unique<GPIO>();
+    mCameraWakeupGpio = std::make_unique<Gpiod>();
     mCameraWakeupGpio->setChipPath(gpioChip);
     mCameraWakeupGpio->setLine(wakeupLine);
-    mCameraWakeupGpio->setMode(GPIO::Output);
+    mCameraWakeupGpio->setMode(Gpiod::Output);
     mCameraWakeupGpio->setEnabled(true);
     
     // Trigger GPIO (set high)

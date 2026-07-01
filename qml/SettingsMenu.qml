@@ -228,9 +228,9 @@ SettingsMenuForm {
         applyPrinterSelection()
     }
 
-    comboBoxPrinter.onVisibleChanged:
+    switchPrinter.onCheckedChanged:
     {
-        if (comboBoxPrinter.visible)
+        if (switchPrinter.checked)
         {
             applyPrinterSelection()
         }

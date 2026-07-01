@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cerrno>
 #include <cstring>
+#include <time.h>
 
 Gpiod::Gpiod(QObject *parent)
     : QObject(parent)

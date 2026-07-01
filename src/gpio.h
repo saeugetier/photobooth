@@ -69,7 +69,7 @@ private:
     int m_line = -1;
     float m_value = 0.0f;
     Mode m_mode = Output;
-    int m_pwmFrequency = 1000;
+    std::atomic<int> m_pwmFrequency{1000};
     bool m_enabled = false;
 
     struct gpiod_chip *m_chip = nullptr;

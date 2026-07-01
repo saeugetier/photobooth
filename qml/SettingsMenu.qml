@@ -44,6 +44,26 @@ SettingsMenuForm {
         return listModel;
     }
 
+    function applyPrinterSelection()
+    {
+        var index = comboBoxPrinter.find(applicationSettings.printerName)
+        if (comboBoxPrinter.count > 0 && index === -1)
+        {
+            index = 0
+        }
+
+        console.log("Printer " + applicationSettings.printerName + " - index: " + Number(index).toString() + " of " + Number(comboBoxPrinter.count).toString())
+
+        // Defer to run after control/model internals finish updating.
+        Qt.callLater(function() {
+            if (comboBoxPrinter.count === 0)
+            {
+                return
+            }
+            comboBoxPrinter.currentIndex = index
+        })
+    }
+
     GPhotoCamera {
       id: gphotoCamera
     }
@@ -85,13 +105,7 @@ SettingsMenuForm {
         }
         comboBoxCamera.currentIndex = indexCamera
 
-        var index = comboBoxPrinter.indexOfValue(applicationSettings.printerName)
-        if(index === -1)
-        {
-            index = 0
-        }
-        console.log("Printer " + applicationSettings.printerName * " - index: " + Number(index).toString())
-        comboBoxPrinter.currentIndex = index
+        applyPrinterSelection()
 
         // Neural network runtime
         var nnIndex = comboBoxNeuralNetworkRuntime.indexOfValue(applicationSettings.neuralNetworkRuntime)
@@ -207,6 +221,28 @@ SettingsMenuForm {
     buttonDeletePhotos.onActivated:
     {
         filesystem.deleteAllImages()
+    }
+
+    comboBoxPrinter.onCountChanged:
+    {
+        applyPrinterSelection()
+    }
+
+    switchPrinter.onCheckedChanged:
+    {
+        if (switchPrinter.checked)
+        {
+            applyPrinterSelection()
+        }
+    }
+
+    Connections
+    {
+        target: applicationSettings
+        function onPrinterNameChanged()
+        {
+            applyPrinterSelection()
+        }
     }
 
     Timer

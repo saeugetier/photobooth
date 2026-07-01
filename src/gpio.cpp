@@ -85,16 +85,16 @@ void Gpiod::setMode(Mode mode)
 
 int Gpiod::pwmFrequency() const
 {
-    return m_pwmFrequency;
+    return m_pwmFrequency.load();
 }
 
 void Gpiod::setPwmFrequency(int frequency)
 {
     if (frequency < 1)
         frequency = 1;
-    if (m_pwmFrequency != frequency) {
-        m_pwmFrequency = frequency;
-        emit pwmFrequencyChanged(m_pwmFrequency);
+    if (m_pwmFrequency.load() != frequency) {
+        m_pwmFrequency.store(frequency);
+        emit pwmFrequencyChanged(frequency);
     }
 }
 

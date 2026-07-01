@@ -130,12 +130,9 @@ ApplicationWindow {
             }
         }
 
-        settingsMenu.comboBoxPrinter.onCurrentTextChanged:
+        settingsMenu.comboBoxPrinter.onActivated:
         {
-            if(flow.settingsMenu.opened)
-            {
-                applicationSettings.printerName = settingsMenu.comboBoxPrinter.currentText
-            }
+            applicationSettings.printerName = settingsMenu.comboBoxPrinter.currentText
         }
 
         settingsMenu.comboWindowMode.onCurrentIndexChanged:

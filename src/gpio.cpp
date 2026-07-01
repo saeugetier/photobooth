@@ -360,7 +360,8 @@ void Gpiod::pwmWorker()
         duty = std::clamp(duty, 0.001f, 0.999f);
 
         // Calculate period in nanoseconds
-        long periodNs = 1000000000L / m_pwmFrequency;
+        const int frequency = m_pwmFrequency.load(std::memory_order_relaxed);
+        long periodNs = 1000000000L / frequency;
         long onTimeNs = static_cast<long>(periodNs * duty);
         long offTimeNs = periodNs - onTimeNs;
 

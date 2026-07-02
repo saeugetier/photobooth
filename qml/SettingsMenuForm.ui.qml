@@ -517,8 +517,7 @@ Item {
                             textRole: "text"
                             valueRole: "value"
                             model: [
-                                {value: "rpi4", text: qsTr("Raspberry Pi 3/4")},
-                                {value: "rpi5", text: qsTr("Raspberry Pi 5")},
+                                {value: "rpi", text: qsTr("Raspberry Pi 3/4/5")},
                                 {value: "orangepi3b", text: qsTr("Orange Pi 3B (RK3566)")},
                                 {value: "custom", text: qsTr("Custom")}
                             ]

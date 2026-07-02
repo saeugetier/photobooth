@@ -260,7 +260,7 @@ ApplicationWindow {
         property int cameraOrientation: 0
         property string neuralNetworkRuntime: "ONNX"
         property bool gpioEnabled: false
-        property string gpioBoardPreset: "rpi4"
+        property string gpioBoardPreset: "rpi"
         property string gpioChip: "/dev/gpiochip0"
         property int gpioLedEnableLine: 23
         property int gpioLedBrightnessLine: 18

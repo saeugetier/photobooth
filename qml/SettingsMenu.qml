@@ -113,8 +113,7 @@ SettingsMenuForm {
 
     // Board preset defaults
     readonly property var boardPresets: ({
-        "rpi4":       { chip: "/dev/gpiochip0", enableLine: 23, brightnessLine: 18, pwmFreq: 1000, invertPwm: true },
-        "rpi5":       { chip: "/dev/gpiochip0", enableLine: 23, brightnessLine: 18, pwmFreq: 1000, invertPwm: true },
+        "rpi":        { chip: "/dev/gpiochip0", enableLine: 23, brightnessLine: 18, pwmFreq: 1000, invertPwm: true },
         "orangepi3b": { chip: "/dev/gpiochip3", enableLine: 13, brightnessLine: 14, pwmFreq: 1000, invertPwm: true },
         "custom":     null
     })

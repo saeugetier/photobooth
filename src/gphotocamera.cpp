@@ -96,20 +96,19 @@ GPhotoCameraWorker::GPhotoCameraWorker()
 GPhotoCameraWorker::~GPhotoCameraWorker() {}
 
 void GPhotoCameraWorker::triggerCameraWakeup() {
-  // Read GPIO settings from QSettings
+  // Read GPIO settings from QSettings (stored by QML Settings { category: "Application" })
   QSettings settings;
-  
-  bool gpioEnabled = settings.value("gpioEnabled", false).toBool();
-  bool cameraWakeupEnabled = settings.value("gpioCameraWakeupEnabled", false).toBool();
-  
+
+  bool gpioEnabled = settings.value("Application/gpioEnabled", false).toBool();
+  bool cameraWakeupEnabled = settings.value("Application/gpioCameraWakeupEnabled", false).toBool();
+
   if (!gpioEnabled || !cameraWakeupEnabled) {
     return;
   }
-  
-  QString gpioChip = settings.value("gpioChip", "/dev/gpiochip0").toString();
-  int wakeupLine = settings.value("gpioCameraWakeupLine", 17).toInt();
-  int delayMs = settings.value("gpioCameraWakeupDelayMs", 100).toInt();
-  
+
+  QString gpioChip = settings.value("Application/gpioChip", "/dev/gpiochip0").toString();
+  int wakeupLine = settings.value("Application/gpioCameraWakeupLine", 17).toInt();
+  int delayMs = settings.value("Application/gpioCameraWakeupDelayMs", 100).toInt();
   qDebug() << "Triggering camera wake-up GPIO on" << gpioChip << "line" << wakeupLine;
   
   try {

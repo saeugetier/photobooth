@@ -82,18 +82,7 @@ ApplicationWindow {
         collageMenu.printer : printer
         libcamera: libcamera
 
-        // Set up camera wake-up GPIO when settings change
-        onSnapshotMenuChanged: {
-            if (snapshotMenu && snapshotMenu.cameraRenderer) {
-                var cameraDevice = snapshotMenu.cameraRenderer.camera
-                if (cameraDevice && applicationSettings.gpioCameraWakeupEnabled && 
-                    applicationSettings.gpioCameraWakeupLine >= 0) {
-                    // This would require exposing setCameraWakeupGpio from C++
-                    // For now, this is a placeholder for future implementation
-                    console.log("Camera wake-up GPIO configured: line " + applicationSettings.gpioCameraWakeupLine)
-                }
-            }
-        }
+        // Camera wake-up GPIO is handled in C++ (GPhotoCameraWorker::triggerCameraWakeup)
 
         settingsMenu.switchPrinter.onCheckedChanged:
         {

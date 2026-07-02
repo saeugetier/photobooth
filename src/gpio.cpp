@@ -337,8 +337,8 @@ void Gpiod::startPwmThread()
 
     m_pwmRunning.store(true, std::memory_order_release);
     m_pwmThread = std::thread(&Gpiod::pwmWorker, this);
-    qDebug() << "GPIO: PWM thread started for line" << m_line << "at" << m_pwmFrequency << "Hz";
-}
+    const int frequency = m_pwmFrequency.load(std::memory_order_relaxed);
+    qDebug() << "GPIO: PWM thread started for line" << m_line << "at" << frequency << "Hz";
 
 void Gpiod::stopPwmThread()
 {

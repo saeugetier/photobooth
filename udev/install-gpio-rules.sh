@@ -27,7 +27,7 @@ if [ -f /proc/device-tree/model ]; then
         BOARD="raspberrypi"
     elif echo "${MODEL}" | grep -qi "orange pi"; then
         BOARD="orangepi3b"
-    elif echo "${MODEL}" | grep -qi "rk3566\|rock\|radxa\|quartz64\|pine64"; then
+    elif echo "${MODEL}" | grep -Eqi "rk3566|rock|radxa|quartz64|pine64"; then
         BOARD="orangepi3b"  # Use RK3566-compatible rules
     fi
 fi

@@ -92,6 +92,8 @@ void Gpiod::setPwmFrequency(int frequency)
 {
     if (frequency < 1)
         frequency = 1;
+    if (frequency > 10000)
+        frequency = 10000;
     if (m_pwmFrequency.load() != frequency) {
         m_pwmFrequency.store(frequency);
         emit pwmFrequencyChanged(frequency);

@@ -11,7 +11,9 @@
 #include <time.h>
 #include <pthread.h>
 #include <sched.h>
+#if defined(__x86_64__) || defined(__i386__)
 #include <immintrin.h>
+#endif
 
 Gpiod::Gpiod(QObject *parent)
     : QObject(parent)

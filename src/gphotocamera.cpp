@@ -106,10 +106,13 @@ void GPhotoCameraWorker::triggerCameraWakeup() {
   }
 
   QString gpioChip = settings.value("Application/gpioChip", "/dev/gpiochip0").toString();
-  int wakeupLine = settings.value("Application/gpioCameraWakeupLine", 17).toInt();
+  int wakeupLine = settings.value("Application/gpioCameraWakeupLine", -1).toInt();
   int delayMs = settings.value("Application/gpioCameraWakeupDelayMs", 100).toInt();
+  if (wakeupLine < 0) {
+    qWarning() << "Camera wake-up GPIO is enabled but no valid GPIO line is configured";
+    return;
+  }
   qDebug() << "Triggering camera wake-up GPIO on" << gpioChip << "line" << wakeupLine;
-  
   try {
     // Create GPIO instance for wake-up
     mCameraWakeupGpio = std::make_unique<Gpiod>();

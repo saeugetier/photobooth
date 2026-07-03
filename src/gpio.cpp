@@ -9,6 +9,8 @@
 #include <cerrno>
 #include <cstring>
 #include <time.h>
+#include <pthread.h>
+#include <sched.h>
 
 Gpiod::Gpiod(QObject *parent)
     : QObject(parent)
@@ -339,6 +341,13 @@ void Gpiod::startPwmThread()
 
     m_pwmRunning.store(true, std::memory_order_release);
     m_pwmThread = std::thread(&Gpiod::pwmWorker, this);
+    
+    // Set high priority for PWM thread to reduce jitter
+    int policy = SCHED_FIFO;
+    struct sched_param param;
+    param.sched_priority = sched_get_priority_max(policy) - 1;
+    pthread_setschedparam(m_pwmThread.native_handle(), policy, &param);
+    
     const int frequency = m_pwmFrequency.load(std::memory_order_relaxed);
     qDebug() << "GPIO: PWM thread started for line" << m_line << "at" << frequency << "Hz";
 }
@@ -354,43 +363,67 @@ void Gpiod::stopPwmThread()
 
 void Gpiod::pwmWorker()
 {
+    using namespace std::chrono;
     const unsigned int lineOffset = static_cast<unsigned int>(m_line);
 
     while (m_pwmRunning.load(std::memory_order_acquire)) {
+        // Cache frequency and duty once per cycle to reduce jitter
+        const int frequency = m_pwmFrequency.load(std::memory_order_relaxed);
         float duty = m_pwmDuty.load(std::memory_order_relaxed);
-
-        // Clamp duty to valid PWM range (edge values handled in applyValue)
         duty = std::clamp(duty, 0.001f, 0.999f);
 
-        // Calculate period in nanoseconds
-        const int frequency = m_pwmFrequency.load(std::memory_order_relaxed);
-        long periodNs = 1000000000L / frequency;
-        long onTimeNs = static_cast<long>(periodNs * duty);
-        long offTimeNs = periodNs - onTimeNs;
+        // Pre-calculate timing for the entire period
+        const long periodNs = 1000000000L / frequency;
+        const long onTimeNs = static_cast<long>(periodNs * duty);
+        const long offTimeNs = periodNs - onTimeNs;
 
-        // HIGH phase
+        // HIGH phase with high-precision timing
         if (m_request)
             gpiod_line_request_set_value(m_request, lineOffset, GPIOD_LINE_VALUE_ACTIVE);
 
-        struct timespec onSleep;
-        onSleep.tv_sec = onTimeNs / 1000000000L;
-        onSleep.tv_nsec = onTimeNs % 1000000000L;
-        nanosleep(&onSleep, nullptr);
+        precisionSleep(onTimeNs);
 
         if (!m_pwmRunning.load(std::memory_order_acquire))
             break;
 
-        // LOW phase
+        // LOW phase with high-precision timing
         if (m_request)
             gpiod_line_request_set_value(m_request, lineOffset, GPIOD_LINE_VALUE_INACTIVE);
 
-        struct timespec offSleep;
-        offSleep.tv_sec = offTimeNs / 1000000000L;
-        offSleep.tv_nsec = offTimeNs % 1000000000L;
-        nanosleep(&offSleep, nullptr);
+        precisionSleep(offTimeNs);
     }
 
     // Ensure line is LOW when thread exits
     if (m_request)
         gpiod_line_request_set_value(m_request, lineOffset, GPIOD_LINE_VALUE_INACTIVE);
+}
+
+void Gpiod::precisionSleep(long nanoseconds)
+{
+    using namespace std::chrono;
+    const long MIN_SLEEP_NS = 500000; // 0.5ms threshold
+    
+    if (nanoseconds <= 0)
+        return;
+    
+    if (nanoseconds >= MIN_SLEEP_NS) {
+        // For longer durations, use nanosleep then busy-wait for remainder
+        long sleepNs = nanoseconds - (MIN_SLEEP_NS / 2); // Leave margin for overhead
+        struct timespec ts;
+        ts.tv_sec = sleepNs / 1000000000L;
+        ts.tv_nsec = sleepNs % 1000000000L;
+        nanosleep(&ts, nullptr);
+        
+        // Busy-wait for remaining time for better precision
+        auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
+        while (high_resolution_clock::now() < deadline) {
+            // Spin-wait
+        }
+    } else {
+        // For short durations, busy-wait for maximum precision
+        auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
+        while (high_resolution_clock::now() < deadline) {
+            // Spin-wait
+        }
+    }
 }

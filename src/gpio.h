@@ -6,6 +6,7 @@
 #include <QString>
 #include <atomic>
 #include <thread>
+#include <pthread.h>
 #include <gpiod.h>
 
 class Gpiod : public QObject
@@ -64,6 +65,7 @@ private:
     void startPwmThread();
     void stopPwmThread();
     void pwmWorker();
+    void precisionSleep(long nanoseconds);
 
     QString m_chipPath = "/dev/gpiochip0";
     int m_line = -1;

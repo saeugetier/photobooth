@@ -2,7 +2,6 @@
 #include <QDebug>
 #include <QString>
 #include <QVideoFrame>
-#include <QCoreApplication>
 #include <QSettings>
 #include <gphoto2/gphoto2-camera.h>
 #include <gphoto2/gphoto2-context.h>

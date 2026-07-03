@@ -238,7 +238,8 @@ QVariantList Gpiod::availableLines(const QString &chipPath)
         if (!info)
             continue;
 
-        QString name = QString::fromUtf8(gpiod_line_info_get_name(info));
+        const char *rawName = gpiod_line_info_get_name(info);
+        QString name = rawName ? QString::fromUtf8(rawName) : QString();
         bool inUse = gpiod_line_info_is_used(info);
 
         QVariantMap item;

@@ -1,5 +1,5 @@
-#ifndef GPIOD_H
-#define GPIOD_H
+#ifndef QTBOOTH_GPIOD_WRAPPER_H
+#define QTBOOTH_GPIOD_WRAPPER_H
 
 #include <QObject>
 #include <QVariantList>

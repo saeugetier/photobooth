@@ -4,6 +4,7 @@
     "runtime-version": "6.9",
     "sdk": "org.kde.Sdk",
     "command": "qtbooth",
+    "appstream-compose": false,
     "finish-args": [
         "--share=ipc",
         "--share=network",
@@ -298,6 +299,22 @@
             ],
             "modules": [
                 "shared-modules/libusb/libusb.json"
+            ]
+        },
+        {
+            "name": "libgpiod",
+            "buildsystem": "autotools",
+            "config-opts": [
+                "--enable-tools=no",
+                "--enable-bindings-cxx=no",
+                "--enable-bindings-python=no"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
+                    "tag": "v2.2.1"
+                }
             ]
         },
         {

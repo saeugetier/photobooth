@@ -55,8 +55,10 @@ void Gpiod::setLine(int line)
         closeLine();
         m_line = line;
         emit lineChanged(m_line);
-        if (m_enabled && m_line >= 0)
+        if (m_enabled && m_line >= 0) {
             openLine();
+            applyValue();
+        }
     }
 }
 

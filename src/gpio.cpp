@@ -410,6 +410,7 @@ void Gpiod::precisionSleep(long nanoseconds)
 {
     using namespace std::chrono;
     const long BUSY_WAIT_THRESHOLD_NS = 50000; // Only busy-wait for < 50µs
+    long busyWaitNs = nanoseconds;
     
     if (nanoseconds <= 0)
         return;
@@ -418,6 +419,7 @@ void Gpiod::precisionSleep(long nanoseconds)
         // For longer durations, use clock_nanosleep (more predictable than nanosleep)
         // Leave a small margin for busy-wait to catch up any undersleep
         long sleepNs = nanoseconds - BUSY_WAIT_THRESHOLD_NS;
+        busyWaitNs = BUSY_WAIT_THRESHOLD_NS;
         struct timespec ts;
         ts.tv_sec = sleepNs / 1000000000L;
         ts.tv_nsec = sleepNs % 1000000000L;
@@ -428,8 +430,8 @@ void Gpiod::precisionSleep(long nanoseconds)
     
     // Busy-wait for final precision, but with CPU pause instructions
     // This is much more efficient than tight spin-loop
-    auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
-    while (high_resolution_clock::now() < deadline) {
+    auto deadline = steady_clock::now() + std::chrono::nanoseconds(busyWaitNs);
+    while (steady_clock::now() < deadline) {
         // Pause instruction reduces CPU power usage and helps hyperthreading
         #if defined(__x86_64__) || defined(__i386__)
             __builtin_ia32_pause();  // x86/x64: ~40 cycles per pause

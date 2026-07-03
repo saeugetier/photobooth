@@ -183,17 +183,32 @@ ApplicationWindow {
 
         settingsMenu.comboBoxGpioChip.onCurrentValueChanged:
         {
-            applicationSettings.gpioChip = String(settingsMenu.comboBoxGpioChip.currentValue)
+            const chipValue = settingsMenu.comboBoxGpioChip.currentValue
+            if (chipValue === undefined || chipValue === null || chipValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioChip = String(chipValue)
         }
 
         settingsMenu.comboBoxLedEnableLine.onCurrentValueChanged:
         {
-            applicationSettings.gpioLedEnableLine = Number(settingsMenu.comboBoxLedEnableLine.currentValue)
+            const lineValue = settingsMenu.comboBoxLedEnableLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioLedEnableLine = Number(lineValue)
         }
 
         settingsMenu.comboBoxLedBrightnessLine.onCurrentValueChanged:
         {
-            applicationSettings.gpioLedBrightnessLine = Number(settingsMenu.comboBoxLedBrightnessLine.currentValue)
+            const lineValue = settingsMenu.comboBoxLedBrightnessLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioLedBrightnessLine = Number(lineValue)
         }
 
         settingsMenu.spinBoxPwmFrequency.onValueChanged:
@@ -218,7 +233,12 @@ ApplicationWindow {
 
         settingsMenu.comboBoxCameraWakeupLine.onCurrentValueChanged:
         {
-            applicationSettings.gpioCameraWakeupLine = Number(settingsMenu.comboBoxCameraWakeupLine.currentValue)
+            const lineValue = settingsMenu.comboBoxCameraWakeupLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioCameraWakeupLine = Number(lineValue)
         }
 
         settingsMenu.spinBoxCameraWakeupDelay.onValueChanged:

@@ -71,6 +71,7 @@ public slots:
     void captureImage();
 
     void getPreviewFrame();
+    void triggerCameraWakeup();
     
     QVariantList availableCameras() const;
 signals:
@@ -94,10 +95,8 @@ protected:
     void waitForOperationCompleted();
     QVariant parameter(const QString &name);
     bool setParameter(const QString &name, const QVariant &value);
-    void triggerCameraWakeup();
 protected slots:
     // check and set capture parameters to keep camera alive
     void checkCaptureParameter();
 };
-
 

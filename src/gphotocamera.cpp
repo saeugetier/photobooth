@@ -16,6 +16,8 @@ constexpr auto capturingFailLimit = 10;
 
 GPhotoCameraDevice::GPhotoCameraDevice() : mWorker(new GPhotoCameraWorker()) {
   mWorker->moveToThread(&mWorkerThread);
+  connect(&mWorkerThread, &QThread::started, mWorker.get(),
+          &GPhotoCameraWorker::triggerCameraWakeup, Qt::QueuedConnection);
 
   connect(this, &QVideoFrameInput::readyToSendVideoFrame, mWorker.get(),
           &GPhotoCameraWorker::getPreviewFrame);
@@ -88,9 +90,6 @@ GPhotoCameraWorker::GPhotoCameraWorker()
 
   mKeepAliveTimer.setInterval(1000 * 60); // Check every minute
   mKeepAliveTimer.setSingleShot(true);
-  
-  // Trigger camera wake-up GPIO on startup before camera enumeration
-  triggerCameraWakeup();
 }
 GPhotoCameraWorker::~GPhotoCameraWorker() {}
 

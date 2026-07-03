@@ -35,8 +35,10 @@ void Gpiod::setChipPath(const QString &chipPath)
         closeLine();
         m_chipPath = chipPath;
         emit chipPathChanged(m_chipPath);
-        if (m_enabled && m_line >= 0)
+        if (m_enabled && m_line >= 0) {
             openLine();
+            applyValue();
+        }
     }
 }
 

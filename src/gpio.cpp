@@ -11,6 +11,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <sched.h>
+#include <immintrin.h>
 
 Gpiod::Gpiod(QObject *parent)
     : QObject(parent)
@@ -401,29 +402,34 @@ void Gpiod::pwmWorker()
 void Gpiod::precisionSleep(long nanoseconds)
 {
     using namespace std::chrono;
-    const long MIN_SLEEP_NS = 500000; // 0.5ms threshold
+    const long BUSY_WAIT_THRESHOLD_NS = 50000; // Only busy-wait for < 50µs
     
     if (nanoseconds <= 0)
         return;
     
-    if (nanoseconds >= MIN_SLEEP_NS) {
-        // For longer durations, use nanosleep then busy-wait for remainder
-        long sleepNs = nanoseconds - (MIN_SLEEP_NS / 2); // Leave margin for overhead
+    if (nanoseconds > BUSY_WAIT_THRESHOLD_NS) {
+        // For longer durations, use clock_nanosleep (more predictable than nanosleep)
+        // Leave a small margin for busy-wait to catch up any undersleep
+        long sleepNs = nanoseconds - BUSY_WAIT_THRESHOLD_NS;
         struct timespec ts;
         ts.tv_sec = sleepNs / 1000000000L;
         ts.tv_nsec = sleepNs % 1000000000L;
-        nanosleep(&ts, nullptr);
         
-        // Busy-wait for remaining time for better precision
-        auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
-        while (high_resolution_clock::now() < deadline) {
-            // Spin-wait
-        }
-    } else {
-        // For short durations, busy-wait for maximum precision
-        auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
-        while (high_resolution_clock::now() < deadline) {
-            // Spin-wait
-        }
+        // Use CLOCK_MONOTONIC for predictability (not affected by NTP adjustments)
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, nullptr);
+    }
+    
+    // Busy-wait for final precision, but with CPU pause instructions
+    // This is much more efficient than tight spin-loop
+    auto deadline = high_resolution_clock::now() + std::chrono::nanoseconds(nanoseconds);
+    while (high_resolution_clock::now() < deadline) {
+        // Pause instruction reduces CPU power usage and helps hyperthreading
+        #if defined(__x86_64__) || defined(__i386__)
+            __builtin_ia32_pause();  // x86/x64: ~40 cycles per pause
+        #elif defined(__arm__) || defined(__aarch64__)
+            __asm__ __volatile__("yield");  // ARM: yield to other threads
+        #else
+            __asm__ __volatile__("" ::: "memory");  // Prevent loop optimization
+        #endif
     }
 }

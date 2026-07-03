@@ -286,7 +286,7 @@ The settings menu provides board presets that auto-configure the correct GPIO ch
 | Board | GPIO Chip | LED Enable Line | LED Brightness Line | Physical Header Pins |
 |-------|-----------|----------------|---------------------|---------------------|
 | **Raspberry Pi 3/4** | `/dev/gpiochip0` | 23 | 18 | Enable: Pin 16 (GPIO23), Brightness: Pin 12 (GPIO18) |
-| **Raspberry Pi 5** | `/dev/gpiochip4` | 23 | 18 | Enable: Pin 16 (GPIO23), Brightness: Pin 12 (GPIO18) |
+| **Raspberry Pi 5** | `/dev/gpiochip0` | 23 | 18 | Enable: Pin 16 (GPIO23), Brightness: Pin 12 (GPIO18) |
 | **Orange Pi 3B (RK3566)** | `/dev/gpiochip3` | 13 (GPIO3_B5) | 14 (GPIO3_B6) | Consult board pinout diagram |
 | **Custom** | User-selectable | User-selectable | User-selectable | — |
 

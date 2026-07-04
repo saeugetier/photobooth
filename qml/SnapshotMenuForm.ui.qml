@@ -14,10 +14,12 @@ Item {
     property alias shutterButton: shutterButton
     property alias countdown: shutterButton.countDownTime
     property bool hideSnapshotSettingsPane: false
+    property var libcamera
 
     CameraRenderer {
         id: cameraRenderer
         anchors.fill: parent
+        libcamera: element.libcamera
 
         Text {
             id: failureText
@@ -44,7 +46,7 @@ Item {
 
     NavigationButton {
         id: exitButton
-        text: qsTr("Abort")
+        text: qsTr("Cancel")
         visible: false
         anchors.left: parent.left
         anchors.leftMargin: 30

@@ -12,17 +12,18 @@ public:
     explicit FileSystem(QObject *parent = nullptr);
     Q_INVOKABLE QUrl findFile(QString filename, QList<QUrl> searchPaths, bool searchInResource = true);
     Q_INVOKABLE QString getImagePath();
+    Q_INVOKABLE bool createFolder(const QString &path);
     Q_INVOKABLE void checkImageFolders();
     Q_INVOKABLE bool removableDriveMounted();
     Q_INVOKABLE void unmountRemoveableDrive();
-    Q_INVOKABLE void startCopyFilesToRemovableDrive();
+    Q_INVOKABLE void startCopyFilesToPath(const QString &path);
     Q_INVOKABLE void abortCopy();
     Q_INVOKABLE void deleteAllImages();
     Q_INVOKABLE bool layoutFilesOnRemovableDrive();
     Q_INVOKABLE void copyLayoutFiles();
     Q_INVOKABLE QSize getImageSize(QString filename);
+    Q_INVOKABLE QString getRemovableDrivePath();
 protected:
-    QString getRemovableDrivePath();
     QFuture<void> m_copyFuture;
 signals:
     void copyProgress(int progress);

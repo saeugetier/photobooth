@@ -34,6 +34,7 @@
         <file>qml/SnapshotSettings.qml</file>
         <file>qml/SnapshotSettingsForm.ui.qml</file>
         <file>qml/content/CameraRenderer.qml</file>
+        <file>qml/content/CameraSource.qml</file>
         <file>qml/content/CollageImageDelegate.qml</file>
         <file>qml/content/CollageRenderer.qml</file>
         <file>qml/content/Countdown.qml</file>
@@ -94,5 +95,6 @@
         <file>shaders/previewshader.frag.qsb</file>
         <file>models/coco.names</file>
         <file>images/backgrounds/Stripes.png</file>
+        <file>qml/content/CustomFolderDialog.qml</file>
     </qresource>
 </RCC>

@@ -1,0 +1,5 @@
+# udev rules for GPIO access on Raspberry Pi (all models)
+# Grants read/write access to /dev/gpiochip* for members of the "gpio" group.
+# Install to /etc/udev/rules.d/99-gpio-photobooth.rules
+
+SUBSYSTEM=="gpio", KERNEL=="gpiochip*", GROUP="gpio", MODE="0660"

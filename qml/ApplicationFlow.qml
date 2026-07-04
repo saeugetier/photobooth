@@ -61,6 +61,8 @@ ApplicationFlowForm {
         state = "collageSelection"
     }
 
+    snapshotMenu.cameraRenderer.cameraName: applicationSettings.cameraName
+
     imagePreview.onAccept: (filename, effect) =>
     {
         if(applicationSettings.printEnable)

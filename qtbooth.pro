@@ -4,32 +4,35 @@ CONFIG += c++17 qml_debug
 
 !contains(QT_CONFIG, no-pkg-config) {
     CONFIG += link_pkgconfig
-    PKGCONFIG += opencv4
+    PKGCONFIG += opencv4 libcamera libgpiod
 } else {
-    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lcamera -lcamera-base -lcamera-controls -lgpiod
 }
 
 SOURCES += src/collageiconmodel.cpp \
+    src/captureprocessor.cpp \
     src/collageimagemodel.cpp \
     src/collagemodelfactory.cpp \
     src/fakeprinter.cpp \
     src/fileio.cpp \
     src/filesystem.cpp \
+    src/gphotocamera.cpp \
     src/gpio.cpp \
+    src/libcameracamera.cpp \
     src/main.cpp \
     src/modelparser.cpp \
     src/noprinter.cpp \
     src/printerfactory.cpp \
     src/replacebackgroundvideofilter.cpp \
+    src/segmentation.cpp \
     src/selphyprinter.cpp \
     src/standardprinter.cpp \
     src/system.cpp \
     src/translationhelper.cpp \
-    src/yolo11seg.cpp
+    src/yolo11segncnn.cpp \
+    src/yolo11segonnx.cpp
 
-RESOURCES += qml.qrc \
-    yolomodel.large.qrc \
-    yolomodel.small.qrc
+RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -52,35 +55,45 @@ DISTFILES += \
 
 INCLUDEPATH += src/ \
     libs/onnxruntime/include/ \
+    libs/ncnn/include/ \
 
 HEADERS += \
     src/abstractprinter.h \
     src/call_once.h \
+    src/captureprocessor.h \
     src/collageiconmodel.h \
     src/collageimagemodel.h \
     src/collagemodelfactory.h \
     src/fakeprinter.h \
     src/fileio.h \
     src/filesystem.h \
+    src/gphotocamera.h \
     src/gpio.h \
+    src/libcameracamera.h \
     src/modelparser.h \
     src/noprinter.h \
     src/printerfactory.h \
     src/replacebackgroundvideofilter.h \
+    src/segmentation.h \
     src/selphyprinter.h \
     src/standardprinter.h \
     src/system.h \
     src/translationhelper.h \
-    src/yolo11seg.h
+    src/yolo11segncnn.h \
+    src/yolo11segonnx.h \
+    src/yolobackend.h
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
 
-DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" describe)"
+DEFINES += GIT_CURRENT_SHA1="$(shell git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)"
+DEFINES += GIT_CURRENT_TAG="$(shell git -C \""$$_PRO_FILE_PWD_"\" tag --points-at HEAD)"
 
 LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
+LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
+LIBS += -lgphoto2 -lgphoto2_port
 
 !isEmpty(PREFIX) {
     INSTALLS += target

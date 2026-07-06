@@ -1,7 +1,14 @@
 #include "selphyprinter.h"
-#include <QFile>
-#include <QRegularExpression>>
-#include <QTextStream>
+#include <QElapsedTimer>
+#include <QHostAddress>
+#include <QNetworkInterface>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QRegularExpression>
+#include <QSet>
+#include <QTcpSocket>
+#include <QUdpSocket>
+#include <QUrl>
 #include <QDebug>
 
 SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent) : AbstractPrinter(parent), mIp("")
@@ -27,38 +34,68 @@ bool SelphyPrinter::printerOnline()
     if(mIp.length() == 0)
         return false;
 
-    QStringList arguments;
-    arguments << "-c" << "1" << mIp;
-    int exitcode = QProcess::execute("ping", arguments);
-    if(exitcode == 0)
+    // Probe common printer/web ports advertised via mDNS (IPP/IPPS/HTTP).
+    const QList<quint16> probePorts = {631, 443, 80};
+    for(quint16 port : probePorts)
     {
-        qDebug() << "SelphyPrinter on IP " << mIp << " is online.";
-        return true;
+        QTcpSocket socket;
+        socket.connectToHost(mIp, port);
+        if(socket.waitForConnected(1200))
+        {
+            socket.disconnectFromHost();
+            qDebug() << "SelphyPrinter on IP" << mIp << "is online (port" << port << ").";
+            return true;
+        }
     }
-    else
-    {
-        qDebug() << "SelphyPrinter on IP " << mIp << " seems to be offline.";
-        return false;
-    }
+
+    qDebug() << "SelphyPrinter on IP" << mIp << "seems to be offline (no printer port reachable).";
+    return false;
 }
 
 int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
     if(mIp.length() > 0)
     {
-        QString imageMagickCommand;
-        if(filename.endsWith(".jpg") || filename.endsWith(".jpg"))
+        QString inputPath = filename;
+        const QUrl inputUrl(filename);
+        if(inputUrl.isValid() && inputUrl.isLocalFile())
+            inputPath = inputUrl.toLocalFile();
+
+        const auto shellQuote = [](const QString &value) {
+            QString quoted = value;
+            quoted.replace("'", "'\\''");
+            return "'" + quoted + "'";
+        };
+
+        QString printFilename;
+        if(inputPath.endsWith(".jpg", Qt::CaseInsensitive)
+                || inputPath.endsWith(".jpeg", Qt::CaseInsensitive))
         {
-            imageMagickCommand = ":"; // file is already a JPG. No conversion to be done
+            printFilename = inputPath;
         }
         else
         {
-            // file is not a JPG. First convert to JPG.
-            imageMagickCommand = "convert " + filename + " -quality 100% " + filename + ".jpg && rm " + filename;
+            // Convert source image to JPEG in-process to avoid external dependencies.
+            printFilename = inputPath + ".jpg";
+            QImageReader reader(inputPath);
+            const QImage image = reader.read();
+            if(image.isNull())
+            {
+                qDebug() << "Could not read image for Selphy print:" << inputPath << reader.errorString();
+                return -1;
+            }
+
+            QImageWriter writer(printFilename, "jpg");
+            writer.setQuality(100);
+            if(!writer.write(image))
+            {
+                qDebug() << "Could not convert image to JPG for Selphy print:" << printFilename << writer.errorString();
+                return -1;
+            }
         }
 
-        QString selphyCommand = "selphy -printer_ip=" + mIp + " " + filename + ".jpg";
-        QString printCommand = imageMagickCommand;
+        QString selphyCommand = "selphy -printer_ip=" + mIp + " " + shellQuote(printFilename);
+        QString printCommand = ":";
         for(int i = 0; i < copyCount; i++)
         {
             printCommand = printCommand + " && " + selphyCommand;
@@ -105,36 +142,309 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
 {
     QStringList list;
 
-    QFile dnsleases("/var/lib/misc/dnsmasq.leases");
-    if(dnsleases.open(QIODevice::ReadOnly))
-    {
-        QTextStream stream(&dnsleases);
+    QStringList mdnsServiceTypes;
+    mdnsServiceTypes << "_canon-cpp-disc._udp"
+                     << "_ipps._tcp"
+                     << "_ipp._tcp"
+                     << "_printer._tcp"
+                     << "_http._tcp";
 
-        for(;!stream.atEnd();)
+    QSet<QString> discoveredIps;
+    const auto encodeDnsName = [](const QString &name) {
+        QByteArray encoded;
+        const QStringList labels = name.split('.', Qt::SkipEmptyParts);
+        for(const QString &label : labels)
         {
-            QString line;
-            stream.readLineInto(&line);
-            if(line.toUpper().contains("SELPHY"))
-            {
-                qDebug() << "Dnsleases - Found match: " << line;
-                QRegularExpression regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-                QRegularExpressionMatch match = regex.match(line);
-                if(match.hasMatch())
-                {
-                    QString ip = match.capturedTexts().first();
-                    qDebug() << "Selphy Printer - Found IP: " << ip;
+            const QByteArray asciiLabel = label.toUtf8();
+            encoded.append(static_cast<char>(asciiLabel.size()));
+            encoded.append(asciiLabel);
+        }
+        encoded.append('\0');
+        return encoded;
+    };
 
-                    list.append("Selphy " + ip);
-                }
+    const auto buildPtrQuery = [&](const QString &serviceType) {
+        QByteArray query;
+        query.reserve(64);
+
+        // DNS header: id=0, flags=0 (query), QDCOUNT=1
+        query.append('\0'); query.append('\0');
+        query.append('\0'); query.append('\0');
+        query.append('\0'); query.append('\1');
+        query.append('\0'); query.append('\0');
+        query.append('\0'); query.append('\0');
+        query.append('\0'); query.append('\0');
+
+        query.append(encodeDnsName(serviceType + ".local"));
+
+        // QTYPE=PTR (12), QCLASS=IN (1)
+        query.append('\0'); query.append('\x0c');
+        query.append('\0'); query.append('\x01');
+
+        return query;
+    };
+
+    const auto readU16 = [](const QByteArray &packet, int offset, quint16 &value) {
+        if(offset + 1 >= packet.size())
+            return false;
+
+        value = (static_cast<quint16>(static_cast<quint8>(packet.at(offset))) << 8)
+                | static_cast<quint16>(static_cast<quint8>(packet.at(offset + 1)));
+        return true;
+    };
+
+    const auto readU32 = [](const QByteArray &packet, int offset, quint32 &value) {
+        if(offset + 3 >= packet.size())
+            return false;
+
+        value = (static_cast<quint32>(static_cast<quint8>(packet.at(offset))) << 24)
+                | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 1))) << 16)
+                | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 2))) << 8)
+                | static_cast<quint32>(static_cast<quint8>(packet.at(offset + 3)));
+        return true;
+    };
+
+    const auto decodeDnsName = [](const QByteArray &packet, int &offset, QString &name) {
+        QStringList labels;
+        int pos = offset;
+        bool jumped = false;
+        int jumpCount = 0;
+        bool terminated = false;
+
+        while(pos < packet.size())
+        {
+            const quint8 len = static_cast<quint8>(packet.at(pos));
+            if(len == 0)
+            {
+                if(!jumped)
+                    offset = pos + 1;
+                terminated = true;
                 break;
+            }
+
+            // DNS name compression pointer.
+            if((len & 0xc0) == 0xc0)
+            {
+                if(pos + 1 >= packet.size())
+                    return false;
+
+                const quint8 next = static_cast<quint8>(packet.at(pos + 1));
+                const int pointer = ((len & 0x3f) << 8) | next;
+                if(pointer < 0 || pointer >= packet.size())
+                    return false;
+
+                if(!jumped)
+                    offset = pos + 2;
+                pos = pointer;
+                jumped = true;
+                jumpCount++;
+                if(jumpCount > 20)
+                    return false;
+                continue;
+            }
+
+            if(len > 63 || pos + 1 + len > packet.size())
+                return false;
+
+            labels.append(QString::fromUtf8(packet.mid(pos + 1, len)));
+            pos += 1 + len;
+        }
+
+        if(!terminated)
+            return false;
+
+        name = labels.join('.');
+        return true;
+    };
+
+    const auto datagramPtrTargetForService = [&](const QByteArray &packet, const QString &serviceFqdn) {
+        if(packet.size() < 12)
+            return QString();
+
+        quint16 flags = 0;
+        quint16 qdcount = 0;
+        quint16 ancount = 0;
+        quint16 nscount = 0;
+        quint16 arcount = 0;
+        if(!readU16(packet, 2, flags)
+                || !readU16(packet, 4, qdcount)
+                || !readU16(packet, 6, ancount)
+                || !readU16(packet, 8, nscount)
+                || !readU16(packet, 10, arcount))
+            return QString();
+
+        // Must be a DNS response.
+        if((flags & 0x8000) == 0)
+            return QString();
+
+        const QString serviceLower = serviceFqdn.toLower();
+        int offset = 12;
+
+        for(int i = 0; i < qdcount; i++)
+        {
+            QString qname;
+            if(!decodeDnsName(packet, offset, qname))
+                return QString();
+
+            if(offset + 4 > packet.size())
+                return QString();
+            offset += 4;
+        }
+
+        const int totalRecords = static_cast<int>(ancount) + static_cast<int>(nscount) + static_cast<int>(arcount);
+        for(int i = 0; i < totalRecords; i++)
+        {
+            QString rrName;
+            if(!decodeDnsName(packet, offset, rrName))
+                return QString();
+
+            quint16 rrType = 0;
+            quint16 rrClass = 0;
+            quint32 rrTtl = 0;
+            quint16 rdLength = 0;
+            if(!readU16(packet, offset, rrType)
+                    || !readU16(packet, offset + 2, rrClass)
+                    || !readU32(packet, offset + 4, rrTtl)
+                    || !readU16(packet, offset + 8, rdLength))
+                return QString();
+
+            Q_UNUSED(rrClass);
+            Q_UNUSED(rrTtl);
+
+            offset += 10;
+            if(offset + rdLength > packet.size())
+                return QString();
+
+            if(rrType == 12)
+            {
+                int rdataOffset = offset;
+                QString ptrTarget;
+                if(!decodeDnsName(packet, rdataOffset, ptrTarget))
+                    return QString();
+
+                if(rrName.toLower() == serviceLower)
+                    return ptrTarget;
+            }
+
+            offset += rdLength;
+        }
+
+        return QString();
+    };
+
+    QUdpSocket socket;
+    const bool bindOk = socket.bind(QHostAddress::AnyIPv4, 5353,
+                                    QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+
+    if(!bindOk)
+    {
+        qDebug() << "mDNS socket bind failed.";
+        return list;
+    }
+
+    QList<QNetworkInterface> mdnsInterfaces;
+    const QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    for(const QNetworkInterface &iface : interfaces)
+    {
+        const auto flags = iface.flags();
+        const bool usable = flags.testFlag(QNetworkInterface::IsUp)
+                && flags.testFlag(QNetworkInterface::IsRunning)
+                && flags.testFlag(QNetworkInterface::CanMulticast)
+                && !flags.testFlag(QNetworkInterface::IsLoopBack);
+        if(!usable)
+            continue;
+
+        if(socket.joinMulticastGroup(QHostAddress("224.0.0.251"), iface))
+            mdnsInterfaces.append(iface);
+    }
+
+    if(mdnsInterfaces.isEmpty())
+        qDebug() << "mDNS multicast join failed on all interfaces; continuing with best-effort discovery.";
+
+    for(const QString &serviceType : mdnsServiceTypes)
+    {
+        const QByteArray query = buildPtrQuery(serviceType);
+
+        bool sendSucceeded = false;
+        if(mdnsInterfaces.isEmpty())
+        {
+            if(socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0)
+                sendSucceeded = true;
+        }
+        else
+        {
+            for(const QNetworkInterface &iface : mdnsInterfaces)
+            {
+                socket.setMulticastInterface(iface);
+                if(socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0)
+                    sendSucceeded = true;
             }
         }
 
+        if(!sendSucceeded)
+        {
+            qDebug() << "mDNS query send failed for service" << serviceType;
+            continue;
+        }
+
+        QElapsedTimer timer;
+        timer.start();
+        while(timer.elapsed() < 1200)
+        {
+            if(!socket.waitForReadyRead(200))
+                continue;
+
+            while(socket.hasPendingDatagrams())
+            {
+                QHostAddress sender;
+                quint16 senderPort = 0;
+                QByteArray datagram;
+                datagram.resize(static_cast<int>(socket.pendingDatagramSize()));
+                socket.readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+                if(sender.protocol() != QAbstractSocket::IPv4Protocol)
+                    continue;
+
+                if(senderPort != 5353)
+                    continue;
+
+                const QByteArray upper = datagram.toUpper();
+                const QString serviceFqdn = serviceType + ".local";
+                const QString ptrTarget = datagramPtrTargetForService(datagram, serviceFqdn);
+                const bool hasMatchingPtr = !ptrTarget.isEmpty();
+                const bool looksLikeCanon = upper.contains("SELPHY") || upper.contains("CANON");
+
+                if(!hasMatchingPtr)
+                    continue;
+
+                if(serviceType != "_canon-cpp-disc._udp" && !looksLikeCanon)
+                    continue;
+
+                const QString ip = sender.toString();
+                if(ip.isEmpty() || discoveredIps.contains(ip))
+                    continue;
+
+                QString displayName;
+                const QString lowerTarget = ptrTarget.toLower();
+                const QString suffix = "." + serviceFqdn.toLower();
+                if(lowerTarget.endsWith(suffix))
+                    displayName = ptrTarget.left(ptrTarget.size() - suffix.size());
+
+                if(displayName.isEmpty())
+                    displayName = ptrTarget;
+
+                if(displayName.isEmpty())
+                    displayName = "Selphy";
+
+                discoveredIps.insert(ip);
+                list.append(displayName + " " + ip);
+                qDebug() << "Selphy Printer - Found via mDNS:" << serviceType << displayName << ip;
+            }
+        }
     }
-    else
-    {
-        qDebug() << "ERROR: Could not open dns leases file!";
-    }
+
+    if(list.isEmpty())
+        qDebug() << "No Canon Selphy printer found via mDNS.";
 
     return list;
 }

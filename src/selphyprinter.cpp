@@ -11,7 +11,8 @@
 #include <QUrl>
 #include <QDebug>
 
-SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent) : AbstractPrinter(parent), mIp("")
+SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent)
+    : AbstractPrinter(parent), mIp(""), mRemainingCopies(0)
 {
     QRegularExpression regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
     QRegularExpressionMatch match = regex.match(name);
@@ -54,18 +55,15 @@ bool SelphyPrinter::printerOnline()
 
 int SelphyPrinter::printImage(const QString &filename, int copyCount)
 {
+    if(copyCount <= 0)
+        return -1;
+
     if(mIp.length() > 0)
     {
         QString inputPath = filename;
         const QUrl inputUrl(filename);
         if(inputUrl.isValid() && inputUrl.isLocalFile())
             inputPath = inputUrl.toLocalFile();
-
-        const auto shellQuote = [](const QString &value) {
-            QString quoted = value;
-            quoted.replace("'", "'\\''");
-            return "'" + quoted + "'";
-        };
 
         QString printFilename;
         if(inputPath.endsWith(".jpg", Qt::CaseInsensitive)
@@ -94,23 +92,19 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
             }
         }
 
-        QString selphyCommand = "selphy -printer_ip=" + mIp + " " + shellQuote(printFilename);
-        QString printCommand = ":";
-        for(int i = 0; i < copyCount; i++)
-        {
-            printCommand = printCommand + " && " + selphyCommand;
-        }
-        QStringList shParameters;
-        shParameters << "-c";
-        shParameters << printCommand;
-
         if(mPrinterProcess.state() == QProcess::NotRunning)
         {
             if(printerOnline())
             {
+                mCurrentPrintFilename = printFilename;
+                mRemainingCopies = copyCount;
+
                 emit busyChanged(true);
-                mPrinterProcess.start("sh", shParameters);
-                qDebug() << "Runnings sh with parameters: " << shParameters;
+                QStringList selphyParameters;
+                selphyParameters << "-printer_ip=" + mIp << mCurrentPrintFilename;
+
+                mPrinterProcess.start("selphy", selphyParameters);
+                qDebug() << "Running selphy with parameters:" << selphyParameters;
                 return 0;
             }
             else
@@ -127,15 +121,29 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
 
 void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 {
-    emit busyChanged(false);
     if(code != 0)
     {
+        mRemainingCopies = 0;
+        emit busyChanged(false);
         qDebug() << "Selphy Error: \n" << mPrinterProcess.readAllStandardError();
         qDebug() << "Code: " << code << " - Status: " << status;
         emit failed();
     }
     else
+    {
+        mRemainingCopies--;
+        if(mRemainingCopies > 0)
+        {
+            QStringList selphyParameters;
+            selphyParameters << "-printer_ip=" + mIp << mCurrentPrintFilename;
+            mPrinterProcess.start("selphy", selphyParameters);
+            qDebug() << "Running selphy with parameters:" << selphyParameters;
+            return;
+        }
+
+        emit busyChanged(false);
         emit success();
+    }
 }
 
 QStringList SelphyPrinter::getAvailablePrintersInternal()

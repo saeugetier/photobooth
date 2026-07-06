@@ -41,9 +41,13 @@ ApplicationWindow {
     PrinterFactory
     {
         id: printerFactory
-        Component.onCompleted:
-        {
-            flow.settingsMenu.comboBoxPrinter.model = printerFactory.printers
+    }
+
+    Connections {
+        target: printerFactory
+        function onPrintersChanged() {
+            // Re-resolve selected printer once async discovery updates the model.
+            printer = printerFactory.getPrinter(applicationSettings.printerName)
         }
     }
 
@@ -108,6 +112,8 @@ ApplicationWindow {
         {
             applicationSettings.disableEffectPopup = settingsMenu.switchHideEffectPopup.checked
         }
+
+        settingsMenu.comboBoxPrinter.model: printerFactory.printers
 
         settingsMenu.comboBoxLanguages.onDisplayTextChanged:
         {

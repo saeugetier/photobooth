@@ -479,7 +479,7 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
 
 void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 {
-    if(code != 0)
+    if(status != QProcess::NormalExit || code != 0)
     {
         mRemainingCopies = 0;
         emit busyChanged(false);
@@ -489,7 +489,9 @@ void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
     }
     else
     {
-        mRemainingCopies--;
+        if(mRemainingCopies > 0)
+            mRemainingCopies--;
+
         if(mRemainingCopies > 0)
         {
             QStringList selphyParameters;

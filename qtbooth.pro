@@ -1,4 +1,4 @@
-QT += qml quick multimedia concurrent xml svg printsupport multimedia-private
+QT += qml quick multimedia concurrent xml svg printsupport multimedia-private network
 
 CONFIG += c++17 qml_debug
 

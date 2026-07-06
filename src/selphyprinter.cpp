@@ -11,6 +11,252 @@
 #include <QUrl>
 #include <QDebug>
 
+namespace {
+
+QByteArray encodeDnsName(const QString &name)
+{
+    QByteArray encoded;
+    const QStringList labels = name.split('.', Qt::SkipEmptyParts);
+    for(const QString &label : labels)
+    {
+        const QByteArray asciiLabel = label.toUtf8();
+        encoded.append(static_cast<char>(asciiLabel.size()));
+        encoded.append(asciiLabel);
+    }
+    encoded.append('\0');
+    return encoded;
+}
+
+QByteArray buildPtrQuery(const QString &serviceType)
+{
+    QByteArray query;
+    query.reserve(64);
+
+    // DNS header: id=0, flags=0 (query), QDCOUNT=1
+    query.append('\0'); query.append('\0');
+    query.append('\0'); query.append('\0');
+    query.append('\0'); query.append('\1');
+    query.append('\0'); query.append('\0');
+    query.append('\0'); query.append('\0');
+    query.append('\0'); query.append('\0');
+
+    query.append(encodeDnsName(serviceType + ".local"));
+
+    // QTYPE=PTR (12), QCLASS=IN (1)
+    query.append('\0'); query.append('\x0c');
+    query.append('\0'); query.append('\x01');
+
+    return query;
+}
+
+bool readU16(const QByteArray &packet, int offset, quint16 &value)
+{
+    if(offset + 1 >= packet.size())
+        return false;
+
+    value = (static_cast<quint16>(static_cast<quint8>(packet.at(offset))) << 8)
+            | static_cast<quint16>(static_cast<quint8>(packet.at(offset + 1)));
+    return true;
+}
+
+bool readU32(const QByteArray &packet, int offset, quint32 &value)
+{
+    if(offset + 3 >= packet.size())
+        return false;
+
+    value = (static_cast<quint32>(static_cast<quint8>(packet.at(offset))) << 24)
+            | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 1))) << 16)
+            | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 2))) << 8)
+            | static_cast<quint32>(static_cast<quint8>(packet.at(offset + 3)));
+    return true;
+}
+
+bool decodeDnsName(const QByteArray &packet, int &offset, QString &name)
+{
+    QStringList labels;
+    int pos = offset;
+    bool jumped = false;
+    int jumpCount = 0;
+    bool terminated = false;
+
+    while(pos < packet.size())
+    {
+        const quint8 len = static_cast<quint8>(packet.at(pos));
+        if(len == 0)
+        {
+            if(!jumped)
+                offset = pos + 1;
+            terminated = true;
+            break;
+        }
+
+        // DNS name compression pointer.
+        if((len & 0xc0) == 0xc0)
+        {
+            if(pos + 1 >= packet.size())
+                return false;
+
+            const quint8 next = static_cast<quint8>(packet.at(pos + 1));
+            const int pointer = ((len & 0x3f) << 8) | next;
+            if(pointer < 0 || pointer >= packet.size())
+                return false;
+
+            if(!jumped)
+                offset = pos + 2;
+            pos = pointer;
+            jumped = true;
+            jumpCount++;
+            if(jumpCount > 20)
+                return false;
+            continue;
+        }
+
+        if(len > 63 || pos + 1 + len > packet.size())
+            return false;
+
+        labels.append(QString::fromUtf8(packet.mid(pos + 1, len)));
+        pos += 1 + len;
+    }
+
+    if(!terminated)
+        return false;
+
+    name = labels.join('.');
+    return true;
+}
+
+QString datagramPtrTargetForService(const QByteArray &packet, const QString &serviceFqdn)
+{
+    if(packet.size() < 12)
+        return QString();
+
+    quint16 flags = 0;
+    quint16 qdcount = 0;
+    quint16 ancount = 0;
+    quint16 nscount = 0;
+    quint16 arcount = 0;
+    if(!readU16(packet, 2, flags)
+            || !readU16(packet, 4, qdcount)
+            || !readU16(packet, 6, ancount)
+            || !readU16(packet, 8, nscount)
+            || !readU16(packet, 10, arcount))
+        return QString();
+
+    // Must be a DNS response.
+    if((flags & 0x8000) == 0)
+        return QString();
+
+    const QString serviceLower = serviceFqdn.toLower();
+    int offset = 12;
+
+    for(int i = 0; i < qdcount; i++)
+    {
+        QString qname;
+        if(!decodeDnsName(packet, offset, qname))
+            return QString();
+
+        if(offset + 4 > packet.size())
+            return QString();
+        offset += 4;
+    }
+
+    const int totalRecords = static_cast<int>(ancount) + static_cast<int>(nscount) + static_cast<int>(arcount);
+    for(int i = 0; i < totalRecords; i++)
+    {
+        QString rrName;
+        if(!decodeDnsName(packet, offset, rrName))
+            return QString();
+
+        quint16 rrType = 0;
+        quint16 rrClass = 0;
+        quint32 rrTtl = 0;
+        quint16 rdLength = 0;
+        if(!readU16(packet, offset, rrType)
+                || !readU16(packet, offset + 2, rrClass)
+                || !readU32(packet, offset + 4, rrTtl)
+                || !readU16(packet, offset + 8, rdLength))
+            return QString();
+
+        Q_UNUSED(rrClass);
+        Q_UNUSED(rrTtl);
+
+        offset += 10;
+        if(offset + rdLength > packet.size())
+            return QString();
+
+        if(rrType == 12)
+        {
+            int rdataOffset = offset;
+            QString ptrTarget;
+            if(!decodeDnsName(packet, rdataOffset, ptrTarget))
+                return QString();
+
+            if(rrName.toLower() == serviceLower)
+                return ptrTarget;
+        }
+
+        offset += rdLength;
+    }
+
+    return QString();
+}
+
+QList<QNetworkInterface> joinMdnsInterfaces(QUdpSocket &socket)
+{
+    QList<QNetworkInterface> mdnsInterfaces;
+    const QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    for(const QNetworkInterface &iface : interfaces)
+    {
+        const auto flags = iface.flags();
+        const bool usable = flags.testFlag(QNetworkInterface::IsUp)
+                && flags.testFlag(QNetworkInterface::IsRunning)
+                && flags.testFlag(QNetworkInterface::CanMulticast)
+                && !flags.testFlag(QNetworkInterface::IsLoopBack);
+        if(!usable)
+            continue;
+
+        if(socket.joinMulticastGroup(QHostAddress("224.0.0.251"), iface))
+            mdnsInterfaces.append(iface);
+    }
+
+    return mdnsInterfaces;
+}
+
+bool sendMdnsQuery(QUdpSocket &socket, const QList<QNetworkInterface> &mdnsInterfaces, const QByteArray &query)
+{
+    if(mdnsInterfaces.isEmpty())
+        return socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0;
+
+    bool sendSucceeded = false;
+    for(const QNetworkInterface &iface : mdnsInterfaces)
+    {
+        socket.setMulticastInterface(iface);
+        if(socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0)
+            sendSucceeded = true;
+    }
+
+    return sendSucceeded;
+}
+
+QString displayNameFromPtrTarget(const QString &ptrTarget, const QString &serviceFqdn)
+{
+    QString displayName;
+    const QString lowerTarget = ptrTarget.toLower();
+    const QString suffix = "." + serviceFqdn.toLower();
+    if(lowerTarget.endsWith(suffix))
+        displayName = ptrTarget.left(ptrTarget.size() - suffix.size());
+
+    if(displayName.isEmpty())
+        displayName = ptrTarget;
+
+    if(displayName.isEmpty())
+        displayName = "Selphy";
+
+    return displayName;
+}
+
+}
+
 SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent)
     : AbstractPrinter(parent), mIp(""), mRemainingCopies(0)
 {
@@ -158,187 +404,6 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
                      << "_http._tcp";
 
     QSet<QString> discoveredIps;
-    const auto encodeDnsName = [](const QString &name) {
-        QByteArray encoded;
-        const QStringList labels = name.split('.', Qt::SkipEmptyParts);
-        for(const QString &label : labels)
-        {
-            const QByteArray asciiLabel = label.toUtf8();
-            encoded.append(static_cast<char>(asciiLabel.size()));
-            encoded.append(asciiLabel);
-        }
-        encoded.append('\0');
-        return encoded;
-    };
-
-    const auto buildPtrQuery = [&](const QString &serviceType) {
-        QByteArray query;
-        query.reserve(64);
-
-        // DNS header: id=0, flags=0 (query), QDCOUNT=1
-        query.append('\0'); query.append('\0');
-        query.append('\0'); query.append('\0');
-        query.append('\0'); query.append('\1');
-        query.append('\0'); query.append('\0');
-        query.append('\0'); query.append('\0');
-        query.append('\0'); query.append('\0');
-
-        query.append(encodeDnsName(serviceType + ".local"));
-
-        // QTYPE=PTR (12), QCLASS=IN (1)
-        query.append('\0'); query.append('\x0c');
-        query.append('\0'); query.append('\x01');
-
-        return query;
-    };
-
-    const auto readU16 = [](const QByteArray &packet, int offset, quint16 &value) {
-        if(offset + 1 >= packet.size())
-            return false;
-
-        value = (static_cast<quint16>(static_cast<quint8>(packet.at(offset))) << 8)
-                | static_cast<quint16>(static_cast<quint8>(packet.at(offset + 1)));
-        return true;
-    };
-
-    const auto readU32 = [](const QByteArray &packet, int offset, quint32 &value) {
-        if(offset + 3 >= packet.size())
-            return false;
-
-        value = (static_cast<quint32>(static_cast<quint8>(packet.at(offset))) << 24)
-                | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 1))) << 16)
-                | (static_cast<quint32>(static_cast<quint8>(packet.at(offset + 2))) << 8)
-                | static_cast<quint32>(static_cast<quint8>(packet.at(offset + 3)));
-        return true;
-    };
-
-    const auto decodeDnsName = [](const QByteArray &packet, int &offset, QString &name) {
-        QStringList labels;
-        int pos = offset;
-        bool jumped = false;
-        int jumpCount = 0;
-        bool terminated = false;
-
-        while(pos < packet.size())
-        {
-            const quint8 len = static_cast<quint8>(packet.at(pos));
-            if(len == 0)
-            {
-                if(!jumped)
-                    offset = pos + 1;
-                terminated = true;
-                break;
-            }
-
-            // DNS name compression pointer.
-            if((len & 0xc0) == 0xc0)
-            {
-                if(pos + 1 >= packet.size())
-                    return false;
-
-                const quint8 next = static_cast<quint8>(packet.at(pos + 1));
-                const int pointer = ((len & 0x3f) << 8) | next;
-                if(pointer < 0 || pointer >= packet.size())
-                    return false;
-
-                if(!jumped)
-                    offset = pos + 2;
-                pos = pointer;
-                jumped = true;
-                jumpCount++;
-                if(jumpCount > 20)
-                    return false;
-                continue;
-            }
-
-            if(len > 63 || pos + 1 + len > packet.size())
-                return false;
-
-            labels.append(QString::fromUtf8(packet.mid(pos + 1, len)));
-            pos += 1 + len;
-        }
-
-        if(!terminated)
-            return false;
-
-        name = labels.join('.');
-        return true;
-    };
-
-    const auto datagramPtrTargetForService = [&](const QByteArray &packet, const QString &serviceFqdn) {
-        if(packet.size() < 12)
-            return QString();
-
-        quint16 flags = 0;
-        quint16 qdcount = 0;
-        quint16 ancount = 0;
-        quint16 nscount = 0;
-        quint16 arcount = 0;
-        if(!readU16(packet, 2, flags)
-                || !readU16(packet, 4, qdcount)
-                || !readU16(packet, 6, ancount)
-                || !readU16(packet, 8, nscount)
-                || !readU16(packet, 10, arcount))
-            return QString();
-
-        // Must be a DNS response.
-        if((flags & 0x8000) == 0)
-            return QString();
-
-        const QString serviceLower = serviceFqdn.toLower();
-        int offset = 12;
-
-        for(int i = 0; i < qdcount; i++)
-        {
-            QString qname;
-            if(!decodeDnsName(packet, offset, qname))
-                return QString();
-
-            if(offset + 4 > packet.size())
-                return QString();
-            offset += 4;
-        }
-
-        const int totalRecords = static_cast<int>(ancount) + static_cast<int>(nscount) + static_cast<int>(arcount);
-        for(int i = 0; i < totalRecords; i++)
-        {
-            QString rrName;
-            if(!decodeDnsName(packet, offset, rrName))
-                return QString();
-
-            quint16 rrType = 0;
-            quint16 rrClass = 0;
-            quint32 rrTtl = 0;
-            quint16 rdLength = 0;
-            if(!readU16(packet, offset, rrType)
-                    || !readU16(packet, offset + 2, rrClass)
-                    || !readU32(packet, offset + 4, rrTtl)
-                    || !readU16(packet, offset + 8, rdLength))
-                return QString();
-
-            Q_UNUSED(rrClass);
-            Q_UNUSED(rrTtl);
-
-            offset += 10;
-            if(offset + rdLength > packet.size())
-                return QString();
-
-            if(rrType == 12)
-            {
-                int rdataOffset = offset;
-                QString ptrTarget;
-                if(!decodeDnsName(packet, rdataOffset, ptrTarget))
-                    return QString();
-
-                if(rrName.toLower() == serviceLower)
-                    return ptrTarget;
-            }
-
-            offset += rdLength;
-        }
-
-        return QString();
-    };
 
     QUdpSocket socket;
     const bool bindOk = socket.bind(QHostAddress::AnyIPv4, 5353,
@@ -350,21 +415,7 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
         return list;
     }
 
-    QList<QNetworkInterface> mdnsInterfaces;
-    const QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
-    for(const QNetworkInterface &iface : interfaces)
-    {
-        const auto flags = iface.flags();
-        const bool usable = flags.testFlag(QNetworkInterface::IsUp)
-                && flags.testFlag(QNetworkInterface::IsRunning)
-                && flags.testFlag(QNetworkInterface::CanMulticast)
-                && !flags.testFlag(QNetworkInterface::IsLoopBack);
-        if(!usable)
-            continue;
-
-        if(socket.joinMulticastGroup(QHostAddress("224.0.0.251"), iface))
-            mdnsInterfaces.append(iface);
-    }
+    const QList<QNetworkInterface> mdnsInterfaces = joinMdnsInterfaces(socket);
 
     if(mdnsInterfaces.isEmpty())
         qDebug() << "mDNS multicast join failed on all interfaces; continuing with best-effort discovery.";
@@ -373,23 +424,7 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
     {
         const QByteArray query = buildPtrQuery(serviceType);
 
-        bool sendSucceeded = false;
-        if(mdnsInterfaces.isEmpty())
-        {
-            if(socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0)
-                sendSucceeded = true;
-        }
-        else
-        {
-            for(const QNetworkInterface &iface : mdnsInterfaces)
-            {
-                socket.setMulticastInterface(iface);
-                if(socket.writeDatagram(query, QHostAddress("224.0.0.251"), 5353) >= 0)
-                    sendSucceeded = true;
-            }
-        }
-
-        if(!sendSucceeded)
+        if(!sendMdnsQuery(socket, mdnsInterfaces, query))
         {
             qDebug() << "mDNS query send failed for service" << serviceType;
             continue;
@@ -432,17 +467,7 @@ QStringList SelphyPrinter::getAvailablePrintersInternal()
                 if(ip.isEmpty() || discoveredIps.contains(ip))
                     continue;
 
-                QString displayName;
-                const QString lowerTarget = ptrTarget.toLower();
-                const QString suffix = "." + serviceFqdn.toLower();
-                if(lowerTarget.endsWith(suffix))
-                    displayName = ptrTarget.left(ptrTarget.size() - suffix.size());
-
-                if(displayName.isEmpty())
-                    displayName = ptrTarget;
-
-                if(displayName.isEmpty())
-                    displayName = "Selphy";
+                const QString displayName = displayNameFromPtrTarget(ptrTarget, serviceFqdn);
 
                 discoveredIps.insert(ip);
                 list.append(displayName + " " + ip);

@@ -394,12 +394,21 @@ bool SelphyPrinter::printerOnline()
         return false;
 
     // Probe common printer/web ports advertised via mDNS (IPP/IPPS/HTTP).
+    // A shared budget caps the total blocking time on the calling thread.
     const QList<quint16> probePorts = {631, 443, 80};
+    const int totalTimeoutMs = 1200;
+    QElapsedTimer totalTimer;
+    totalTimer.start();
+
     for(quint16 port : probePorts)
     {
+        const int remaining = totalTimeoutMs - static_cast<int>(totalTimer.elapsed());
+        if(remaining <= 0)
+            break;
+
         QTcpSocket socket;
         socket.connectToHost(mIp, port);
-        if(socket.waitForConnected(1200))
+        if(socket.waitForConnected(remaining))
         {
             socket.disconnectFromHost();
             qDebug() << "SelphyPrinter on IP" << mIp << "is online (port" << port << ").";
@@ -457,12 +466,19 @@ int SelphyPrinter::printImage(const QString &filename, int copyCount)
                 mCurrentPrintFilename = printFilename;
                 mRemainingCopies = copyCount;
 
-                emit busyChanged(true);
                 QStringList selphyParameters;
                 selphyParameters << "-printer_ip=" + mIp << mCurrentPrintFilename;
 
                 mPrinterProcess.start("selphy", selphyParameters);
                 qDebug() << "Running selphy with parameters:" << selphyParameters;
+
+                if(!mPrinterProcess.waitForStarted())
+                {
+                    mRemainingCopies = 0;
+                    return -1;
+                }
+
+                emit busyChanged(true);
                 return 0;
             }
             else

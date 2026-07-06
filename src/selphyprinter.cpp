@@ -7,8 +7,12 @@
 #include <QRegularExpression>
 #include <QSet>
 #include <QTcpSocket>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QUdpSocket>
 #include <QUrl>
+#include <QDateTime>
+#include <QtConcurrent/QtConcurrent>
 #include <QDebug>
 
 namespace {
@@ -255,6 +259,114 @@ QString displayNameFromPtrTarget(const QString &ptrTarget, const QString &servic
     return displayName;
 }
 
+QStringList discoverSelphyPrintersSync()
+{
+    QStringList list;
+
+    QStringList mdnsServiceTypes;
+    mdnsServiceTypes << "_canon-cpp-disc._udp"
+                     << "_ipps._tcp"
+                     << "_ipp._tcp"
+                     << "_printer._tcp"
+                     << "_http._tcp";
+
+    QSet<QString> discoveredIps;
+
+    QUdpSocket socket;
+    const bool bindOk = socket.bind(QHostAddress::AnyIPv4, 5353,
+                                    QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+
+    if(!bindOk)
+    {
+        qDebug() << "mDNS socket bind failed.";
+        return list;
+    }
+
+    const QList<QNetworkInterface> mdnsInterfaces = joinMdnsInterfaces(socket);
+
+    if(mdnsInterfaces.isEmpty())
+        qDebug() << "mDNS multicast join failed on all interfaces; continuing with best-effort discovery.";
+
+    bool anyQuerySent = false;
+    for(const QString &serviceType : mdnsServiceTypes)
+    {
+        const QByteArray query = buildPtrQuery(serviceType);
+
+        if(!sendMdnsQuery(socket, mdnsInterfaces, query))
+        {
+            qDebug() << "mDNS query send failed for service" << serviceType;
+            continue;
+        }
+        anyQuerySent = true;
+    }
+
+    if(!anyQuerySent)
+        return list;
+
+    // Single shared receive window keeps discovery responsive on UI thread.
+    QElapsedTimer timer;
+    timer.start();
+    const int discoveryWindowMs = 900;
+    while(timer.elapsed() < discoveryWindowMs)
+    {
+        if(!socket.waitForReadyRead(120))
+            continue;
+
+        while(socket.hasPendingDatagrams())
+        {
+            QHostAddress sender;
+            quint16 senderPort = 0;
+            QByteArray datagram;
+            datagram.resize(static_cast<int>(socket.pendingDatagramSize()));
+            socket.readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+            if(sender.protocol() != QAbstractSocket::IPv4Protocol)
+                continue;
+
+            if(senderPort != 5353)
+                continue;
+
+            const QString ip = sender.toString();
+            if(ip.isEmpty() || discoveredIps.contains(ip))
+                continue;
+
+            const QByteArray upper = datagram.toUpper();
+            const bool looksLikeCanon = upper.contains("SELPHY") || upper.contains("CANON");
+
+            for(const QString &serviceType : mdnsServiceTypes)
+            {
+                const QString serviceFqdn = serviceType + ".local";
+                const QString ptrTarget = datagramPtrTargetForService(datagram, serviceFqdn);
+                if(ptrTarget.isEmpty())
+                    continue;
+
+                if(serviceType != "_canon-cpp-disc._udp" && !looksLikeCanon)
+                    continue;
+
+                const QString displayName = displayNameFromPtrTarget(ptrTarget, serviceFqdn);
+
+                discoveredIps.insert(ip);
+                list.append(displayName + " " + ip);
+                qDebug() << "Selphy Printer - Found via mDNS:" << serviceType << displayName << ip;
+
+                // One hit per sender is enough.
+                break;
+            }
+        }
+    }
+
+    if(list.isEmpty())
+        qDebug() << "No Canon Selphy printer found via mDNS.";
+
+    return list;
+}
+
+QMutex sDiscoveryCacheMutex;
+QStringList sCachedPrinters;
+bool sDiscoveryRunning = false;
+qint64 sLastDiscoveryMs = 0;
+const qint64 sDiscoveryRefreshMs = 60 * 1000; // every minute
+
 }
 
 SelphyPrinter::SelphyPrinter(const QString &name, QObject *parent)
@@ -394,92 +506,35 @@ void SelphyPrinter::finished(int code, QProcess::ExitStatus status)
 
 QStringList SelphyPrinter::getAvailablePrintersInternal()
 {
-    QStringList list;
+    QStringList cachedPrinters;
+    bool shouldStartDiscovery = false;
 
-    QStringList mdnsServiceTypes;
-    mdnsServiceTypes << "_canon-cpp-disc._udp"
-                     << "_ipps._tcp"
-                     << "_ipp._tcp"
-                     << "_printer._tcp"
-                     << "_http._tcp";
-
-    QSet<QString> discoveredIps;
-
-    QUdpSocket socket;
-    const bool bindOk = socket.bind(QHostAddress::AnyIPv4, 5353,
-                                    QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
-
-    if(!bindOk)
     {
-        qDebug() << "mDNS socket bind failed.";
-        return list;
-    }
+        QMutexLocker lock(&sDiscoveryCacheMutex);
+        cachedPrinters = sCachedPrinters;
 
-    const QList<QNetworkInterface> mdnsInterfaces = joinMdnsInterfaces(socket);
-
-    if(mdnsInterfaces.isEmpty())
-        qDebug() << "mDNS multicast join failed on all interfaces; continuing with best-effort discovery.";
-
-    for(const QString &serviceType : mdnsServiceTypes)
-    {
-        const QByteArray query = buildPtrQuery(serviceType);
-
-        if(!sendMdnsQuery(socket, mdnsInterfaces, query))
+        const qint64 now = QDateTime::currentMSecsSinceEpoch();
+        const bool cacheStale = (now - sLastDiscoveryMs) > sDiscoveryRefreshMs;
+        if(!sDiscoveryRunning && (sCachedPrinters.isEmpty() || cacheStale))
         {
-            qDebug() << "mDNS query send failed for service" << serviceType;
-            continue;
-        }
-
-        QElapsedTimer timer;
-        timer.start();
-        while(timer.elapsed() < 1200)
-        {
-            if(!socket.waitForReadyRead(200))
-                continue;
-
-            while(socket.hasPendingDatagrams())
-            {
-                QHostAddress sender;
-                quint16 senderPort = 0;
-                QByteArray datagram;
-                datagram.resize(static_cast<int>(socket.pendingDatagramSize()));
-                socket.readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-
-                if(sender.protocol() != QAbstractSocket::IPv4Protocol)
-                    continue;
-
-                if(senderPort != 5353)
-                    continue;
-
-                const QByteArray upper = datagram.toUpper();
-                const QString serviceFqdn = serviceType + ".local";
-                const QString ptrTarget = datagramPtrTargetForService(datagram, serviceFqdn);
-                const bool hasMatchingPtr = !ptrTarget.isEmpty();
-                const bool looksLikeCanon = upper.contains("SELPHY") || upper.contains("CANON");
-
-                if(!hasMatchingPtr)
-                    continue;
-
-                if(serviceType != "_canon-cpp-disc._udp" && !looksLikeCanon)
-                    continue;
-
-                const QString ip = sender.toString();
-                if(ip.isEmpty() || discoveredIps.contains(ip))
-                    continue;
-
-                const QString displayName = displayNameFromPtrTarget(ptrTarget, serviceFqdn);
-
-                discoveredIps.insert(ip);
-                list.append(displayName + " " + ip);
-                qDebug() << "Selphy Printer - Found via mDNS:" << serviceType << displayName << ip;
-            }
+            sDiscoveryRunning = true;
+            shouldStartDiscovery = true;
         }
     }
 
-    if(list.isEmpty())
-        qDebug() << "No Canon Selphy printer found via mDNS.";
+    if(shouldStartDiscovery)
+    {
+        (void)QtConcurrent::run([]() {
+            const QStringList discovered = discoverSelphyPrintersSync();
 
-    return list;
+            QMutexLocker lock(&sDiscoveryCacheMutex);
+            sCachedPrinters = discovered;
+            sLastDiscoveryMs = QDateTime::currentMSecsSinceEpoch();
+            sDiscoveryRunning = false;
+        });
+    }
+
+    return cachedPrinters;
 }
 
 SelphyPrinter *SelphyPrinter::createInternal(const QString &name)

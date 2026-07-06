@@ -7,6 +7,18 @@
 
 PrinterFactory::PrinterFactory(QObject *parent) : QObject(parent)
 {
+    mLastPrinterList = printers();
+
+    mPrinterRefreshTimer.setInterval(1000);
+    QObject::connect(&mPrinterRefreshTimer, &QTimer::timeout, this, [this]() {
+        const QStringList current = printers();
+        if(current != mLastPrinterList)
+        {
+            mLastPrinterList = current;
+            emit printersChanged();
+        }
+    });
+    mPrinterRefreshTimer.start();
 
 }
 

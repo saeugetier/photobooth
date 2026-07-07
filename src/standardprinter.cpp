@@ -45,7 +45,10 @@ int StandardPrinter::printImage(const QString &filename, int copyCount)
     else
     {
         qDebug() << "Could not load image file " << filename;
+        return -1;
     }
+
+    return 0;
 }
 
 StandardPrinter::StandardPrinter(QPrinterInfo& info, QObject *parent) : AbstractPrinter(parent), mPrinter(info, QPrinter::HighResolution)

@@ -20,6 +20,8 @@ protected:
     explicit SelphyPrinter(const QString &name, QObject *parent = nullptr);
     QString mIp;
     QProcess mPrinterProcess;
+    int mRemainingCopies;
+    QString mCurrentPrintFilename;
     static QStringList getAvailablePrintersInternal();
     static SelphyPrinter* createInternal(const QString &name);
 };

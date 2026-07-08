@@ -42,11 +42,12 @@ CollageMenuForm {
     {
         if(collageRenderer.saving === false)
         {
-            printerPopup.visible = false
             if(collageRenderer.savedFilename.length > 0)
             {
                 if(collageIsPrintable)
                 {
+                    printerPopup.isPrinting = true
+                    printerPopup.visible = true
                     if(!multiplePrints)
                     {
                         printer.printImage(collageRenderer.savedFilename, 1)
@@ -57,7 +58,15 @@ CollageMenuForm {
                         printCountTumbler.currentIndex = 0
                     }
                 }
+                else
+                {
+                    printerPopup.visible = false
+                }
                 exit()
+            }
+            else
+            {
+                printerPopup.visible = false
             }
         }
     }

@@ -31,9 +31,10 @@ protected:
     bool mBusy = false;
     QThread *mPrintThread = nullptr;
 
-    constexpr static int sPrintIdleTimeoutMs = 20000; // 20 seconds
-    constexpr static int sPrintPollIntervalMs = 100; // 100 milliseconds
-    constexpr static int sActiveJobTimeoutMs = 30000; // 30 seconds
+public:
+    static constexpr int sPrintIdleTimeoutMs = 20000; // 20 seconds
+    static constexpr int sPrintPollIntervalMs = 100; // 100 milliseconds
+    static constexpr int sActiveJobTimeoutMs = 30000; // 30 seconds
 };
 
 #endif // CUPSPRINTER_H

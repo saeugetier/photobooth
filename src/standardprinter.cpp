@@ -87,13 +87,11 @@ int StandardPrinter::printImage(const QString &filename, int copyCount)
         }
     });
 
-    QObject::connect(mPrintThread, &QThread::finished, this, [this]() {
-        if(mPrintThread != nullptr)
-        {
-            mPrintThread->deleteLater();
-            mPrintThread = nullptr;
-        }
-    });
+QObject::connect(mPrintThread, &QThread::finished, this, [this]() {
+    QThread *thread = mPrintThread;
+    mPrintThread = nullptr;
+    delete thread;
+});
 
     mPrintThread->start();
     return 0;

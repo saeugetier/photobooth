@@ -225,7 +225,13 @@ int StandardPrinter::printImageInThread(const QString &printerName, const QStrin
     }
 
     qDebug() << "Final printer state:" << printerStateName(state);
-    qDebug() << "Print job completed for printer:" << printerName << "with copy count:" << copyCount;
-
+    if (state != QPrinter::PrinterState::Idle) {
+      qDebug() << "Print job did not complete successfully for printer:"
+               << printerName << "(state:" << printerStateName(state)
+               << ", copy count:" << copyCount << ")";
+      return -1;
+    }
+    qDebug() << "Print job completed for printer:" << printerName
+             << "with copy count:" << copyCount;
     return 0;
 }

@@ -56,7 +56,7 @@ ApplicationWindow {
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
         console.log(StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation))
         console.log("Path: " + path)
-        if(path.len > 0)
+        if(Qt.resolvedUrl(path) != "")
             return path
         else
             return "qrc:/XmlData.xml"

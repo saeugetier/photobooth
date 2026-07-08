@@ -24,6 +24,8 @@ protected:
     static QStringList getAvailablePrintersInternal();
     static StandardPrinter *createInternal(const QString &name);
 
+    static int printImageInThread(const QString &printerName, const QString &filename, int copyCount);
+
     QPrinter mPrinter;
     QString mPrinterName;
     bool mBusy = false;

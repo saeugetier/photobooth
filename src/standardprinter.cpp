@@ -93,7 +93,7 @@ int printImageInThread(const QString &printerName, const QString &filename, int 
     QElapsedTimer startTimer;
     startTimer.start();
     QPrinter::PrinterState state = printer.printerState();
-    while(state == QPrinter::Idle && startTimer.elapsed() < 5000)
+    while(state == QPrinter::Idle && startTimer.elapsed() < StandardPrinter::sPrintIdleTimeoutMs)
     {
         if(QThread::currentThread()->isInterruptionRequested())
         {
@@ -101,7 +101,7 @@ int printImageInThread(const QString &printerName, const QString &filename, int 
             return -1;
         }
 
-        QThread::msleep(100);
+        QThread::msleep(StandardPrinter::sPrintPollIntervalMs);
         state = printer.printerState();
     }
 
@@ -111,7 +111,7 @@ int printImageInThread(const QString &printerName, const QString &filename, int 
     {
         QElapsedTimer activeTimer;
         activeTimer.start();
-        while(state == QPrinter::PrinterState::Active && activeTimer.elapsed() < 30000)
+        while(state == QPrinter::PrinterState::Active && activeTimer.elapsed() < StandardPrinter::sActiveJobTimeoutMs)
         {
             if(QThread::currentThread()->isInterruptionRequested())
             {
@@ -119,7 +119,7 @@ int printImageInThread(const QString &printerName, const QString &filename, int 
                 return -1;
             }
 
-            QThread::msleep(100);
+            QThread::msleep(StandardPrinter::sPrintPollIntervalMs);
             state = printer.printerState();
         }
     }

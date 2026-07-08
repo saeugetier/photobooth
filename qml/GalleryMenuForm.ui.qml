@@ -111,8 +111,18 @@ Item {
                 onPrintImage:
                 {
                     printerPopup.visible = true
-                    printer.printImage(filename, 1)
-                    printerPopup.visible = false
+                    if(printer)
+                    {
+                        var result = printer.printImage(filename, 1)
+                        if(result !== 0)
+                        {
+                            printerPopup.visible = false
+                        }
+                    }
+                    else
+                    {
+                        printerPopup.visible = false
+                    }
                 }
             }
             model: folderModel
@@ -250,6 +260,20 @@ Item {
     Item {
         id: foreground
         anchors.fill: parent
+    }
+
+    Connections {
+        target: printer
+        function onBusyChanged() {
+            if(!printer || !printer.busy)
+            {
+                printerPopup.visible = false
+            }
+        }
+
+        function onFailed() {
+            printerPopup.visible = false
+        }
     }
 }
 

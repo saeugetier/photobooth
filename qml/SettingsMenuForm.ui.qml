@@ -30,6 +30,17 @@ Item {
     property alias comboBoxCameraOrientation: comboBoxCameraOrientation
     property alias comboBoxNeuralNetworkRuntime: comboBoxNeuralNetworkRuntime
     property alias buttonSelectPhotoDirectory: buttonSelectPhotoDirectory
+    property alias switchEnableGpio: switchEnableGpio
+    property alias comboBoxBoardPreset: comboBoxBoardPreset
+    property alias comboBoxGpioChip: comboBoxGpioChip
+    property alias comboBoxLedEnableLine: comboBoxLedEnableLine
+    property alias comboBoxLedBrightnessLine: comboBoxLedBrightnessLine
+    property alias spinBoxPwmFrequency: spinBoxPwmFrequency
+    property alias switchInvertPwm: switchInvertPwm
+    property alias switchCameraWakeup: switchCameraWakeup
+    property alias comboBoxCameraWakeupLine: comboBoxCameraWakeupLine
+    property alias spinBoxCameraWakeupDelay: spinBoxCameraWakeupDelay
+    property var libcamera
 
     ColumnLayout {
         anchors.fill: parent
@@ -76,6 +87,9 @@ Item {
             }
             TabButton {
                 text: qsTr("System")
+            }
+            TabButton {
+                text: qsTr("GPIO")
             }
         }
 
@@ -155,6 +169,8 @@ Item {
                         ComboBox {
                             id: comboBoxCamera
                             Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
                         }
                     }
 
@@ -455,6 +471,212 @@ Item {
                         Label {
                             text: qsTr("Version: 1.0.0")
                             id: labelVersionText
+                        }
+                    }
+                }
+            }
+
+            // GPIO Tab
+            Item {
+                ColumnLayout {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                    spacing: 10
+
+                    RowLayout {
+                        spacing: 10
+                        Label {
+                            text: qsTr("Enable GPIO:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchEnableGpio
+                        }
+                    }
+
+                    ToolSeparator {
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Board Preset:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxBoardPreset
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                            model: [
+                                {value: "rpi", text: qsTr("Raspberry Pi 3/4/5")},
+                                {value: "orangepi3b", text: qsTr("Orange Pi 3B (RK3566)")},
+                                {value: "custom", text: qsTr("Custom")}
+                            ]
+                        }
+                    }
+
+                    ToolSeparator {
+                        visible: switchEnableGpio.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("GPIO Chip:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxGpioChip
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                            enabled: comboBoxBoardPreset.currentValue === "custom"
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("LED Enable Line:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxLedEnableLine
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                            enabled: comboBoxBoardPreset.currentValue === "custom"
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("LED Brightness Line:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxLedBrightnessLine
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                            enabled: comboBoxBoardPreset.currentValue === "custom"
+                        }
+                    }
+
+                    ToolSeparator {
+                        visible: switchEnableGpio.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("PWM Frequency (Hz):")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        SpinBox {
+                            id: spinBoxPwmFrequency
+                            from: 100
+                            to: 10000
+                            stepSize: 100
+                            value: 1000
+                            editable: true
+                            enabled: comboBoxBoardPreset.currentValue === "custom"
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Invert PWM:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchInvertPwm
+                        }
+                    }
+
+                    ToolSeparator {
+                        visible: switchEnableGpio.checked
+                        orientation: Qt.Horizontal
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Enable Camera Wake-up:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        Switch {
+                            id: switchCameraWakeup
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Camera Wake-up Line:")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        ComboBox {
+                            id: comboBoxCameraWakeupLine
+                            Layout.preferredWidth: 300
+                            textRole: "text"
+                            valueRole: "value"
+                        }
+                    }
+
+                    RowLayout {
+                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                        spacing: 10
+                        Label {
+                            text: qsTr("Wake-up Delay (ms):")
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        SpinBox {
+                            id: spinBoxCameraWakeupDelay
+                            from: 0
+                            to: 5000
+                            stepSize: 10
+                            value: 100
+                            editable: true
                         }
                     }
                 }

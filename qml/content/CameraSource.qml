@@ -11,7 +11,8 @@ Item
 
    property alias output: output
    property string cameraName: ""
-   property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera"))
+   property bool readyForCapture: ((cameraSession.imageCapture.readyForCapture) || (cameraSource.state === "GPhotoCamera") || (cameraSource.state === "Libcamera"))
+   property var libcamera
 
    signal imageCaptured(var image)
    signal errorOccurred(var errorString)
@@ -30,13 +31,24 @@ Item
       }
       var gphotoCameras = gphotoCamera.availableCameras()
       for (var j = 0; j < gphotoCameras.length; j++) {
-         if (gphotoCameras[j] === cameraName) {
+         if (gphotoCameras[j].value === cameraName) {
             gphotoCamera.cameraName = cameraName
             cameraSource.state = "GPhotoCamera"
             console.log("CameraSource using GPhoto camera device: " + cameraName)
             return
          }
       }
+      if (cameraSource.libcamera) {
+         var libcameras = cameraSource.libcamera.availableCameras()
+         for (var k = 0; k < libcameras.length; k++) {
+            if (libcameras[k].value === cameraName) {
+               cameraSource.state = "Libcamera"
+               console.log("CameraSource using Libcamera camera device: " + cameraName)
+               return
+            }
+         }
+      }
+
       console.log("CameraSource could not find camera device: " + cameraName)
       cameraSource.state = "noCamera"
    }
@@ -50,6 +62,12 @@ Item
       else if(state === "GPhotoCamera")
       {
          //gphotoCamera.startCamera()
+      }
+      else if(state === "Libcamera")
+      {
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.startCamera(cameraName)
+         }
       }
       else
       {
@@ -67,6 +85,12 @@ Item
       {
          //gphotoCamera.stopCamera()
       }
+      else if(state === "Libcamera")
+      {
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.stopCamera()
+         }
+      }
       else
       {
          console.log("No camera available to stop!")
@@ -79,6 +103,13 @@ Item
       {
          console.log("Standard camera capture")
          cameraSession.imageCapture.capture()
+      }
+      else if(state === "Libcamera")
+      {
+         console.log("Libcamera capture")
+         if (cameraSource.libcamera) {
+            cameraSource.libcamera.captureImage()
+         }
       }
       else if(state === "GPhotoCamera")
       {
@@ -93,6 +124,24 @@ Item
 
    MediaDevices {
       id: mediaDevices
+   }
+
+   Connections {
+      target: cameraSource.libcamera
+      function onErrorOccurred(errorString) {
+         if(state === "Libcamera")
+         {
+            cameraSource.errorOccurred(errorString)
+         }
+      }
+   }
+
+   Connections
+   {
+      target: cameraSource.libcamera
+      function onImageCaptured(image) {
+            cameraSource.imageCaptured(image)
+         }
    }
 
    GPhotoCamera {
@@ -128,7 +177,7 @@ Item
    Connections {
       id: cameraErrorListener
       target: systemCamera
-      function errorOccured(_, errorString) {
+      function onErrorOccurred(_, errorString) {
          if(state === "StandardCamera")
          {
             cameraSource.errorOccurred(errorString)
@@ -216,6 +265,13 @@ Item
          PropertyChanges {
             target: cameraSession
             videoFrameInput: gphotoCamera
+         }
+      },
+      State {
+         name: "Libcamera"
+         PropertyChanges {
+            target: cameraSession
+            videoFrameInput: cameraSource.libcamera
          }
       },
       State {

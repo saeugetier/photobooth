@@ -1,12 +1,12 @@
-QT += qml quick multimedia concurrent xml svg printsupport multimedia-private
+QT += qml quick multimedia concurrent xml svg printsupport multimedia-private network
 
 CONFIG += c++17 qml_debug
 
 !contains(QT_CONFIG, no-pkg-config) {
     CONFIG += link_pkgconfig
-    PKGCONFIG += opencv4
+    PKGCONFIG += opencv4 libcamera libgpiod
 } else {
-    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lcamera -lcamera-base -lcamera-controls -lgpiod
 }
 
 SOURCES += src/collageiconmodel.cpp \
@@ -18,6 +18,7 @@ SOURCES += src/collageiconmodel.cpp \
     src/filesystem.cpp \
     src/gphotocamera.cpp \
     src/gpio.cpp \
+    src/libcameracamera.cpp \
     src/main.cpp \
     src/modelparser.cpp \
     src/noprinter.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
     src/filesystem.h \
     src/gphotocamera.h \
     src/gpio.h \
+    src/libcameracamera.h \
     src/modelparser.h \
     src/noprinter.h \
     src/printerfactory.h \

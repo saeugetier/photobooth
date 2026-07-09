@@ -4,6 +4,17 @@
     "runtime-version": "6.9",
     "sdk": "org.kde.Sdk",
     "command": "qtbooth",
+    "sdk-extensions": [ "org.freedesktop.Sdk.Extension.golang" ],
+    "build-options":
+    {
+        "append-path": "/usr/lib/sdk/golang/bin",
+        "env": {
+            "GOPATH": "/app/go",
+            "GOBIN": "/app/go/bin"
+        },
+        "strip": true
+    },
+    "appstream-compose": false,
     "finish-args": [
         "--share=ipc",
         "--share=network",
@@ -12,6 +23,7 @@
         "--filesystem=/media",
         "--filesystem=/run/media",
         "--filesystem=/mnt",
+        "--filesystem=/run/udev:ro",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],
@@ -49,6 +61,142 @@
             "cleanup": [
                 "/bin/*",
                 "/share/*"
+            ]
+        },
+        {
+            "name": "libcamera",
+            "buildsystem": "meson",
+            "builddir": true,
+            "config-opts": [
+                "-Dpipelines=rpi/vc4,rpi/pisp,uvcvideo",
+                "-Dipas=rpi/vc4,rpi/pisp",
+                "-Dgstreamer=enabled",
+                "-Dtest=false",
+                "-Dcam=disabled",
+                "-Dqcam=disabled",
+                "-Ddocumentation=disabled",
+                "-Dpycamera=disabled"
+            ],
+            "cleanup": [
+                "/share/doc",
+                "*.la"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/raspberrypi/libcamera.git",
+                    "tag": "v0.6.0+rpt20251202"
+                },
+                {
+                    "type": "patch",
+                    "path": "patches/flatpak-patch.patch"
+                }
+            ],
+            "modules": [
+                {
+                    "name": "python3-jinja2",
+                    "buildsystem": "simple",
+                    "build-commands": [
+                        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} flit-core --no-build-isolation",
+                        "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"Jinja2\" --no-build-isolation"
+                    ],
+                    "sources": [
+                        {
+                            "type": "file",
+                            "url": "https://files.pythonhosted.org/packages/69/59/b6fc2188dfc7ea4f936cd12b49d707f66a1cb7a1d2c16172963534db741b/flit_core-3.12.0.tar.gz",
+                            "sha256": "18f63100d6f94385c6ed57a72073443e1a71a4acb4339491615d0f16d6ff01b2",
+                            "x-checker-data": {
+                                "type": "pypi",
+                                "name": "flit-core"
+                            }
+                        },
+                        {
+                            "type": "file",
+                            "url": "https://files.pythonhosted.org/packages/7e/99/7690b6d4034fffd95959cbe0c02de8deb3098cc577c67bb6a24fe5d7caa7/markupsafe-3.0.3.tar.gz",
+                            "sha256": "722695808f4b6457b320fdc131280796bdceb04ab50fe1795cd540799ebe1698",
+                            "x-checker-data": {
+                                "type": "pypi",
+                                "name": "MarkupSafe"
+                            }
+                        },
+                        {
+                            "type": "file",
+                            "url": "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz",
+                            "sha256": "0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d",
+                            "x-checker-data": {
+                                "type": "pypi",
+                                "name": "Jinja2"
+                            }
+                        }
+                    ],
+                    "cleanup": [
+                        "*"
+                    ]
+                },
+                {
+                    "name": "python3-PyYAML",
+                    "buildsystem": "simple",
+                    "build-commands": [
+                        "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"PyYAML\" --no-build-isolation"
+                    ],
+                    "sources": [
+                        {
+                            "type": "file",
+                            "url": "https://files.pythonhosted.org/packages/54/ed/79a089b6be93607fa5cdaedf301d7dfb23af5f25c398d5ead2525b063e17/pyyaml-6.0.2.tar.gz",
+                            "sha256": "d584d9ec91ad65861cc08d42e834324ef890a082e591037abe114850ff7bbc3e"
+                        }
+                    ],
+                    "cleanup": [
+                        "*"
+                    ]
+                },
+                {
+                    "name": "python3-ply",
+                    "buildsystem": "simple",
+                    "build-commands": [
+                        "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"ply\" --no-build-isolation"
+                    ],
+                    "sources": [
+                        {
+                            "type": "file",
+                            "url": "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl",
+                            "sha256": "096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce"
+                        }
+                    ],
+                    "cleanup": [
+                        "*"
+                    ]
+                },
+                {
+                    "name": "nlohmann_json",
+                    "buildsystem": "cmake-ninja",
+                    "config-opts": [
+                        "-DJSON_MultipleHeaders=OFF",
+                        "-DJSON_BuildTests=OFF"
+                    ],
+                    "sources": [
+                        {
+                            "type": "archive",
+                            "url": "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz",
+                            "sha256": "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d"
+                        }
+                    ]
+                },
+                {
+                    "name": "libpisp",
+                    "buildsystem": "meson",
+                    "builddir": true,
+                    "config-opts": [
+                        "--buildtype=release"
+                    ],
+                    "sources": [
+                        {
+                            "type": "git",
+                            "url": "https://github.com/raspberrypi/libpisp.git",
+                            "tag": "v1.3.0"
+                        }
+                    ]
+                }
             ]
         },
         {
@@ -115,6 +263,21 @@
             ]
         },
         {
+            "name": "go-selphy-cp",
+            "buildsystem": "simple",
+            "build-commands": [
+                "make selphy",
+                "cp selphy ${FLATPAK_DEST}/bin"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/saeugetier/go-selphy-cp.git",
+                    "commit": "c6272691c3b02cded7df9642941dc64ea515e651"
+                }
+            ]
+        },
+        {
             "name": "yolo-models",
             "buildsystem": "simple",
             "build-commands": [
@@ -161,6 +324,22 @@
             ],
             "modules": [
                 "shared-modules/libusb/libusb.json"
+            ]
+        },
+        {
+            "name": "libgpiod",
+            "buildsystem": "autotools",
+            "config-opts": [
+                "--enable-tools=no",
+                "--enable-bindings-cxx=no",
+                "--enable-bindings-python=no"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
+                    "tag": "v2.2.1"
+                }
             ]
         },
         {

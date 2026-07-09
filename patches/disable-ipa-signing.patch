@@ -1,0 +1,80 @@
+diff --git a/src/libcamera/meson.build b/src/libcamera/meson.build
+index 34e20f55..46d29251 100644
+--- a/src/libcamera/meson.build
++++ b/src/libcamera/meson.build
+@@ -85,24 +85,10 @@ libyaml = dependency('yaml-0.1', default_options : [
+     'werror=false',
+ ])
+ 
+-# Use one of gnutls or libcrypto (provided by OpenSSL), trying gnutls first.
+-libcrypto = dependency('gnutls', required : false)
+-if libcrypto.found()
+-    config_h.set('HAVE_GNUTLS', 1)
+-else
+-    libcrypto = dependency('libcrypto', required : false)
+-    if libcrypto.found()
+-        config_h.set('HAVE_CRYPTO', 1)
+-    endif
+-endif
+-
+-if not libcrypto.found()
+-    warning('Neither gnutls nor libcrypto found, all IPA modules will be isolated')
+-    summary({'IPA modules signed with': 'None (modules will run isolated)'},
+-            section : 'Configuration')
+-else
+-    summary({'IPA modules signed with' : libcrypto.name()}, section : 'Configuration')
+-endif
++# IPA signing disabled for Flatpak compatibility
++warning('IPA signing disabled for Flatpak sandbox compatibility')
++summary({'IPA modules signed with': 'None (modules will run isolated)'},
++        section : 'Configuration')
+ 
+ if liblttng.found()
+     tracing_enabled = true
+@@ -175,7 +161,6 @@ libcamera_deps += [
+     libatomic,
+     libcamera_base,
+     libcamera_base_private,
+-    libcrypto,
+     libdl,
+     liblttng,
+     libudev,
+diff --git a/src/meson.build b/src/meson.build
+index 9b63c8e8..687d6b51 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -15,17 +15,8 @@ summary({
+          }, section : 'Paths')
+ 
+ # Module Signing
+-openssl = find_program('openssl', required : false)
+-if openssl.found()
+-    ipa_priv_key = custom_target('ipa-priv-key',
+-                                 output : ['ipa-priv-key.pem'],
+-                                 command : [gen_ipa_priv_key, '@OUTPUT@'])
+-    config_h.set('HAVE_IPA_PUBKEY', 1)
+-    ipa_sign_module = true
+-else
+-    warning('openssl not found, all IPA modules will be isolated')
+-    ipa_sign_module = false
+-endif
++# IPA signing disabled for Flatpak compatibility
++ipa_sign_module = false 
+ 
+ # libyuv, used by the Android adaptation layer and the virtual pipeline handler.
+ # Fallback to a subproject if libyuv isn't found, as it's typically not provided
+diff --git a/src/libcamera/ipa_manager.cpp b/src/libcamera/ipa_manager.cpp
+index 35171d09..e883a200 100644
+--- a/src/libcamera/ipa_manager.cpp
++++ b/src/libcamera/ipa_manager.cpp
+@@ -288,6 +288,10 @@ IPAModule *IPAManager::module(PipelineHandler *pipe, uint32_t minVersion,
+ 
+ bool IPAManager::isSignatureValid([[maybe_unused]] IPAModule *ipa) const
+ {
++	/* Flatpak: Always return true to run IPA in-process (fork not available) */
++	if (getenv("FLATPAK_ID"))
++		return true;
++	
+ #if HAVE_IPA_PUBKEY
+ 	if (forceIsolation_) {
+ 		LOG(IPAManager, Debug)

@@ -1,5 +1,5 @@
 import QtQuick
-import GPIO
+import Gpio
 
 SnapshotMenuForm {
     id: form
@@ -30,10 +30,13 @@ SnapshotMenuForm {
 
     cameraRenderer.mirrored: applicationSettings.cameraMirrored
 
-    GPIO
+    Gpiod
     {
         id: ledEnablePin
-        pin:  23
+        chipPath: applicationSettings.gpioChip
+        line: applicationSettings.gpioLedEnableLine
+        mode: Gpiod.Output
+        enabled: applicationSettings.gpioEnabled
         value: 0.0
     }
 
@@ -74,28 +77,32 @@ SnapshotMenuForm {
         }
     }
 
-    GPIO
+    Gpiod
     {
         id: ledBrightnessPin
-        pin:  18
-        value: 1.0 - snapshotSettings.viewFinderBrightness
+        chipPath: applicationSettings.gpioChip
+        line: applicationSettings.gpioLedBrightnessLine
+        mode: Gpiod.PWM
+        pwmFrequency: applicationSettings.gpioPwmFrequency
+        enabled: applicationSettings.gpioEnabled
+        value: applicationSettings.gpioInvertPwm ? (1.0 - snapshotSettings.viewFinderBrightness) : snapshotSettings.viewFinderBrightness
     }
 
     cameraRenderer.onStateChanged:
     {
         if(cameraRenderer.state === "snapshot" && snapshotSettings.flashEnabled)
         {
-            ledBrightnessPin.value = 1.0 - snapshotSettings.flashBrightness
+            ledBrightnessPin.value = applicationSettings.gpioInvertPwm ? (1.0 - snapshotSettings.flashBrightness) : snapshotSettings.flashBrightness
         }
         else
         {
-            ledBrightnessPin.value = 1.0 - snapshotSettings.viewFinderBrightness
+            ledBrightnessPin.value = applicationSettings.gpioInvertPwm ? (1.0 - snapshotSettings.viewFinderBrightness) : snapshotSettings.viewFinderBrightness
         }
     }
 
     snapshotSettings.onViewFinderBrightnessChanged:
     {
-        ledBrightnessPin.value = 1.0 - snapshotSettings.viewFinderBrightness
+        ledBrightnessPin.value = applicationSettings.gpioInvertPwm ? (1.0 - snapshotSettings.viewFinderBrightness) : snapshotSettings.viewFinderBrightness
     }
 
     shutterButton.onTriggerSnapshot:

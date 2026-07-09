@@ -8,6 +8,7 @@ import Qt.labs.platform
 import CollageModel
 import Printer
 import QtQuick.Window
+import Libcamera
 
 ApplicationWindow {
     id: mainWindow
@@ -40,9 +41,13 @@ ApplicationWindow {
     PrinterFactory
     {
         id: printerFactory
-        Component.onCompleted:
-        {
-            flow.settingsMenu.comboBoxPrinter.model = printerFactory.printers
+    }
+
+    Connections {
+        target: printerFactory
+        function onPrintersChanged() {
+            // Re-resolve selected printer once async discovery updates the model.
+            printer = printerFactory.getPrinter(applicationSettings.printerName)
         }
     }
 
@@ -51,7 +56,7 @@ ApplicationWindow {
         var path = StandardPaths.locate(StandardPaths.AppLocalDataLocation, "Collages.xml")
         console.log(StandardPaths.standardLocations(StandardPaths.AppLocalDataLocation))
         console.log("Path: " + path)
-        if(path.len > 0)
+        if(Qt.resolvedUrl(path) != "")
             return path
         else
             return "qrc:/XmlData.xml"
@@ -69,12 +74,19 @@ ApplicationWindow {
         flow.galleryMenu.printer = printer
     }
 
+    Libcamera {
+       id: libcamera
+    }
+
     ApplicationFlow
     {
         id: flow
         height: parent.height
         width: parent.width
         collageMenu.printer : printer
+        libcamera: libcamera
+
+        // Camera wake-up GPIO is handled in C++ (GPhotoCameraWorker::triggerCameraWakeup)
 
         settingsMenu.switchPrinter.onCheckedChanged:
         {
@@ -101,6 +113,8 @@ ApplicationWindow {
             applicationSettings.disableEffectPopup = settingsMenu.switchHideEffectPopup.checked
         }
 
+        settingsMenu.comboBoxPrinter.model: printerFactory.printers
+
         settingsMenu.comboBoxLanguages.onDisplayTextChanged:
         {
             applicationSettings.language = settingsMenu.comboBoxLanguages.displayText
@@ -124,12 +138,9 @@ ApplicationWindow {
             }
         }
 
-        settingsMenu.comboBoxPrinter.onCurrentTextChanged:
+        settingsMenu.comboBoxPrinter.onActivated:
         {
-            if(flow.settingsMenu.opened)
-            {
-                applicationSettings.printerName = settingsMenu.comboBoxPrinter.currentText
-            }
+            applicationSettings.printerName = settingsMenu.comboBoxPrinter.currentText
         }
 
         settingsMenu.comboWindowMode.onCurrentIndexChanged:
@@ -138,9 +149,9 @@ ApplicationWindow {
             console.log("Window mode changed to: " + applicationSettings.windowMode)
         }
 
-        settingsMenu.comboBoxCamera.onCurrentTextChanged:
+        settingsMenu.comboBoxCamera.onCurrentValueChanged:
         {
-            applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentText
+            applicationSettings.cameraName = settingsMenu.comboBoxCamera.currentValue
         }
 
         settingsMenu.switchEnableSettingsPassword.onCheckedChanged:
@@ -168,6 +179,76 @@ ApplicationWindow {
             console.log("Neural network runtime changed to: " + applicationSettings.neuralNetworkRuntime)
         }
 
+        settingsMenu.switchEnableGpio.onCheckedChanged:
+        {
+            applicationSettings.gpioEnabled = settingsMenu.switchEnableGpio.checked
+        }
+
+        settingsMenu.comboBoxGpioChip.onCurrentValueChanged:
+        {
+            const chipValue = settingsMenu.comboBoxGpioChip.currentValue
+            if (chipValue === undefined || chipValue === null || chipValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioChip = String(chipValue)
+        }
+
+        settingsMenu.comboBoxLedEnableLine.onCurrentValueChanged:
+        {
+            const lineValue = settingsMenu.comboBoxLedEnableLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioLedEnableLine = Number(lineValue)
+        }
+
+        settingsMenu.comboBoxLedBrightnessLine.onCurrentValueChanged:
+        {
+            const lineValue = settingsMenu.comboBoxLedBrightnessLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioLedBrightnessLine = Number(lineValue)
+        }
+
+        settingsMenu.spinBoxPwmFrequency.onValueChanged:
+        {
+            applicationSettings.gpioPwmFrequency = settingsMenu.spinBoxPwmFrequency.value
+        }
+
+        settingsMenu.comboBoxBoardPreset.onCurrentValueChanged:
+        {
+            applicationSettings.gpioBoardPreset = String(settingsMenu.comboBoxBoardPreset.currentValue)
+        }
+
+        settingsMenu.switchInvertPwm.onCheckedChanged:
+        {
+            applicationSettings.gpioInvertPwm = settingsMenu.switchInvertPwm.checked
+        }
+
+        settingsMenu.switchCameraWakeup.onCheckedChanged:
+        {
+            applicationSettings.gpioCameraWakeupEnabled = settingsMenu.switchCameraWakeup.checked
+        }
+
+        settingsMenu.comboBoxCameraWakeupLine.onCurrentValueChanged:
+        {
+            const lineValue = settingsMenu.comboBoxCameraWakeupLine.currentValue
+            if (lineValue === undefined || lineValue === null || lineValue === "")
+            {
+                return
+            }
+            applicationSettings.gpioCameraWakeupLine = Number(lineValue)
+        }
+
+        settingsMenu.spinBoxCameraWakeupDelay.onValueChanged:
+        {
+            applicationSettings.gpioCameraWakeupDelayMs = settingsMenu.spinBoxCameraWakeupDelay.value
+        }
+
         mainMenu.printerBusy: printer ? printer.busy : false
     }
 
@@ -190,6 +271,16 @@ ApplicationWindow {
         property bool enableSettingsPassword: false
         property int cameraOrientation: 0
         property string neuralNetworkRuntime: "ONNX"
+        property bool gpioEnabled: false
+        property string gpioBoardPreset: "rpi"
+        property string gpioChip: "/dev/gpiochip0"
+        property int gpioLedEnableLine: 23
+        property int gpioLedBrightnessLine: 18
+        property int gpioPwmFrequency: 1000
+        property bool gpioInvertPwm: true
+        property bool gpioCameraWakeupEnabled: false
+        property int gpioCameraWakeupLine: -1
+        property int gpioCameraWakeupDelayMs: 100
 
         Component.onCompleted:
         {
@@ -205,6 +296,12 @@ ApplicationWindow {
             flow.collageMenu.multiplePrints = multiplePrints
             flow.snapshotMenu.hideSnapshotSettingsPane = disableSnapshotSettingsPane
             flow.imagePreview.effectButton.visible = !disableEffectPopup
+
+            // GPIO settings
+            flow.settingsMenu.switchEnableGpio.checked = gpioEnabled
+            flow.settingsMenu.switchInvertPwm.checked = gpioInvertPwm
+            flow.settingsMenu.switchCameraWakeup.checked = gpioCameraWakeupEnabled
+            flow.settingsMenu.spinBoxCameraWakeupDelay.value = gpioCameraWakeupDelayMs
         }
 
         onPrinterNameChanged:

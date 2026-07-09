@@ -49,6 +49,11 @@
   </screenshots>
 
   <releases>
+    <release version="0.9.0" date="2026-07-10">
+      <description translate="no">
+        <p>Better Raspberry Pi support added. GPIO support for LED lights added. Native libcamera support. Integration of direct Wifi printing for Canon Selphy printers. Several bugfixes and improvements.</p>
+      </description>
+    </release>
     <release version="0.8.1" date="2025-12-12">
       <description translate="no">
         <p>Bugfix Release: improve error message, correct settings behaviour.</p>

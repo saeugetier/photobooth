@@ -3,6 +3,8 @@
 #include <QThread>
 #include <QTimer>
 #include <QVariantMap>
+#include <cmath>
+#include <limits>
 #include <cerrno>
 #include <cstring>
 #include <libcamera/formats.h>
@@ -591,7 +593,8 @@ QImage LibCameraWorker::convertBufferToImage(
                     cfg.size.height,
                     cfg.stride,
                     QImage::Format_BGR888);
-        image = temp.copy();
+        // Normalize to RGB888 for downstream video frame upload.
+        image = temp.rgbSwapped().copy();
       } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
         size_t size = metadata.planes()[0].bytesused;
         image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");
@@ -756,22 +759,34 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
   StreamConfiguration &cfg = mConfig->at(0);
 
   if (role == StreamRole::Viewfinder) {
-    unsigned int defaultWidth = cfg.size.width;
-    unsigned int defaultHeight = cfg.size.height;
-    float aspectRatio = static_cast<float>(defaultWidth) / defaultHeight;
+    float targetAspectRatio = 0.0f;
+    std::unique_ptr<CameraConfiguration> stillConfig =
+        mCamera->generateConfiguration({StreamRole::StillCapture});
+    if (stillConfig && !stillConfig->empty()) {
+      const StreamConfiguration &stillCfg = stillConfig->at(0);
+      if (stillCfg.size.height > 0) {
+        targetAspectRatio = static_cast<float>(stillCfg.size.width) /
+                            static_cast<float>(stillCfg.size.height);
+      }
+    }
+
+    if (targetAspectRatio <= 0.0f && cfg.size.height > 0) {
+      targetAspectRatio = static_cast<float>(cfg.size.width) /
+                          static_cast<float>(cfg.size.height);
+    }
 
     std::vector<PixelFormat> pixelFormats = cfg.formats().pixelformats();
     // Search for the best available pixel format in order of preference
-    PixelFormat selectedFormat = formats::RGB888; // fallback
+    PixelFormat selectedFormat = cfg.pixelFormat;
     bool formatFound = false;
 
-    // Priority order: RGB888, BGR888, YUYV, MJPEG, YUV420
+    // Prefer YUV formats first; they are typically the most reliable on Pi ISP paths.
     std::vector<PixelFormat> preferredFormats = {
-      formats::RGB888,
-      formats::BGR888,
-      formats::YUYV,
+      formats::YUV420,
       formats::MJPEG,
-      formats::YUV420
+      formats::YUYV,
+      formats::BGR888,
+      formats::RGB888
     };
 
     for (const auto &preferred : preferredFormats) {
@@ -787,12 +802,47 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
     }
 
     if (!formatFound) {
-      qDebug() << "[WARNING] None of the preferred formats available, using default";
+      qDebug() << "[WARNING] None of the preferred viewfinder formats available, using default:" 
+               << QString::fromStdString(cfg.pixelFormat.toString());
     }
 
     cfg.pixelFormat = selectedFormat;
-    cfg.size.width = 640;
-    cfg.size.height = static_cast<unsigned int>(640.0f / aspectRatio);
+
+    // Pick a supported viewfinder size whose aspect ratio matches still capture.
+    const std::vector<Size> supportedSizes = cfg.formats().sizes(selectedFormat);
+    if (!supportedSizes.empty() && targetAspectRatio > 0.0f) {
+      const Size *bestSize = nullptr;
+      float bestAspectDiff = std::numeric_limits<float>::max();
+      unsigned int bestWidthDelta = std::numeric_limits<unsigned int>::max();
+
+      for (const Size &size : supportedSizes) {
+        if (size.height == 0) {
+          continue;
+        }
+
+        float aspect = static_cast<float>(size.width) / static_cast<float>(size.height);
+        float aspectDiff = std::fabs(aspect - targetAspectRatio);
+        unsigned int widthDelta = (size.width > 1280) ?
+                                      (size.width - 1280) :
+                                      (1280 - size.width);
+
+        if (aspectDiff < bestAspectDiff ||
+            (std::fabs(aspectDiff - bestAspectDiff) < 1e-4f && widthDelta < bestWidthDelta)) {
+          bestSize = &size;
+          bestAspectDiff = aspectDiff;
+          bestWidthDelta = widthDelta;
+        }
+      }
+
+      if (bestSize) {
+        cfg.size = *bestSize;
+        qDebug() << "[INFO] Viewfinder - Selected size:" << cfg.size.width << "x" << cfg.size.height
+                 << "for target aspect" << targetAspectRatio;
+      }
+    }
+
+    // Keep libcamera's default viewfinder size to preserve full sensor FoV.
+    // Hard-forcing a custom size can select a crop mode on some Pi pipelines.
     cfg.bufferCount = 4;
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;

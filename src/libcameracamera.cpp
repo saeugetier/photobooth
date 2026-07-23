@@ -840,8 +840,8 @@ bool LibCameraWorker::configureCamera(libcamera::StreamRole role) {
       }
     }
 
-    // Keep libcamera's default viewfinder size to preserve full sensor FoV.
-    // Hard-forcing a custom size can select a crop mode on some Pi pipelines.
+    // Avoid hard-forcing an arbitrary viewfinder size (can trigger crop modes on some Pi pipelines).
+    // We only override the size when selecting a supported resolution that matches the still-capture aspect ratio.
     cfg.bufferCount = 4;
     mCurrentWidth = cfg.size.width;
     mCurrentHeight = cfg.size.height;

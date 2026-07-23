@@ -593,8 +593,7 @@ QImage LibCameraWorker::convertBufferToImage(
                     cfg.size.height,
                     cfg.stride,
                     QImage::Format_BGR888);
-        // Normalize to RGB888 for downstream video frame upload.
-        image = temp.rgbSwapped().copy();
+        image = temp.rgbSwapped();
       } else if (cfg.pixelFormat == libcamera::formats::MJPEG) {
         size_t size = metadata.planes()[0].bytesused;
         image.loadFromData(static_cast<const uchar *>(memory), static_cast<int>(size), "JPEG");

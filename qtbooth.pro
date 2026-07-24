@@ -95,10 +95,19 @@ LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
 LIBS += -lgphoto2 -lgphoto2_port
 
+# Flatpak runtime libraries are typically staged in /app/lib or /app/lib64.
+exists(/app/lib) {
+    LIBS += -L/app/lib
+}
+exists(/app/lib64) {
+    LIBS += -L/app/lib64
+}
+
 !isEmpty(PREFIX) {
     INSTALLS += target
     target.path = $$PREFIX/bin
-    LIBS += -L$$PREFIX/lib #possibly local libs are also stored in that prefix
+    # Flatpak/aarch64 can install third-party libs into lib64.
+    LIBS += -L$$PREFIX/lib -L$$PREFIX/lib64
 }
 else {
     INSTALLS += target

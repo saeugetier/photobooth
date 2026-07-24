@@ -62,8 +62,8 @@ Item {
             }
 
             Button {
-                text: qsTr("Close Settings")
                 id: buttonClose
+                text: qsTr("Close Settings")
             }
         }
 
@@ -102,164 +102,212 @@ Item {
 
             // Photos Tab
             Item {
-                ColumnLayout {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    spacing: 20
+                Flickable {
+                    id: photosScrollView
+                    anchors.fill: parent
+                    interactive: true
+                    clip: true
+                    contentWidth: width
+                    contentHeight: Math.max(height, photosColumnLayout.y + photosColumnLayout.height + 24)
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Photo Directory: ")
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    ColumnLayout {
+                        id: photosColumnLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        height: implicitHeight
+                        spacing: 20
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Photo Directory: ")
+                            }
+                            Label {
+                                id: labelPhotoDirectory
+                                Layout.fillWidth: true
+                                text: applicationSettings.foldername
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Button {
+                                id: buttonSelectPhotoDirectory
+                                text: qsTr("Browse")
+                            }
                         }
-                        Label {
-                            id: labelPhotoDirectory
-                            Layout.fillWidth: true
-                            text: applicationSettings.foldername
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
+
                         Button {
-                            id: buttonSelectPhotoDirectory
-                            text: qsTr("Browse")
+                            id: buttonCopyPhotos
+                            text: qsTr("Copy photos to removable disk")
                         }
-                    }
 
-                    Button {
-                        id: buttonCopyPhotos
-                        text: qsTr("Copy photos to removable disk")
-                    }
+                        Button {
+                            id: buttonCopyPhotosCustomLocation
+                            text: qsTr("Copy photos to custom location")
+                        }
 
-                    Button {
-                        id: buttonCopyPhotosCustomLocation
-                        text: qsTr("Copy photos to custom location")
-                    }
+                        ToolSeparator {
+                            Layout.fillWidth: true
+                            orientation: Qt.Horizontal
+                        }
 
-                    ToolSeparator {
-                        Layout.fillWidth: true
-                        orientation: Qt.Horizontal
-                    }
-
-                    DelayButton {
-                        id: buttonDeletePhotos
-                        text: qsTr("Delete all photos")
-                        delay: 5000
+                        DelayButton {
+                            id: buttonDeletePhotos
+                            text: qsTr("Delete all photos")
+                            delay: 5000
+                        }
                     }
                 }
             }
 
             // Camera Tab
             Item {
-                ColumnLayout {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    spacing: 10
+                Flickable {
+                    id: cameraScrollView
+                    anchors.fill: parent
+                    interactive: true
+                    clip: true
+                    contentWidth: width
+                    contentHeight: Math.max(height, cameraColumnLayout.y + cameraColumnLayout.height + 24)
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Camera:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        ComboBox {
-                            id: comboBoxCamera
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                        }
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
                     }
 
-                    RowLayout {
+                    ColumnLayout {
+                        id: cameraColumnLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        height: implicitHeight
                         spacing: 10
-                        Label {
-                            text: qsTr("Mirror Camera:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchMirrorCamera
-                        }
-                    }
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Snapshot Settings:")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Camera:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxCamera
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                            }
                         }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchHideSnapshotSettings
-                        }
-                    }
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Effect Popup:")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Mirror Camera:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchMirrorCamera
+                            }
                         }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchHideEffectPopup
-                        }
-                    }
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Camera Orientation:")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Snapshot Settings:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchHideSnapshotSettings
+                            }
                         }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        ComboBox {
-                            id: comboBoxCameraOrientation
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                            model: [{
-                                    "value": 0,
-                                    "text": qsTr("Landscape 0°")
-                                }, {
-                                    "value": 90,
-                                    "text": qsTr("Portrait 90°")
-                                }, {
-                                    "value": 180,
-                                    "text": qsTr("Landscape 180°")
-                                }, {
-                                    "value": 270,
-                                    "text": qsTr("Portrait 270°")
-                                }]
-                        }
-                    }
 
-                    RowLayout
-                    {
-                        spacing: 10
-                        Label
-                        {
-                            text: qsTr("Neuroal Network Runtime")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Effect Popup:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchHideEffectPopup
+                            }
                         }
-                        Item
-                        {
-                            Layout.fillWidth: true
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Camera Orientation:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxCameraOrientation
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                                model: [
+                                    {
+                                        "value": 0,
+                                        "text": qsTr("Landscape 0°")
+                                    },
+                                    {
+                                        "value": 90,
+                                        "text": qsTr("Portrait 90°")
+                                    },
+                                    {
+                                        "value": 180,
+                                        "text": qsTr("Landscape 180°")
+                                    },
+                                    {
+                                        "value": 270,
+                                        "text": qsTr("Portrait 270°")
+                                    }
+                                ]
+                            }
                         }
-                        ComboBox
-                        {
-                            id: comboBoxNeuralNetworkRuntime
-                            textRole: "text"
-                            valueRole: "value"
-                            model: [{text: "ONNX Runtime", value: "ONNX"}, {text: "NCNN Runtime", value: "NCNN"}, {text: "NCNN Runtime (faster preview)", value: "NCNN_LOW_RES"} ]
-                            Layout.preferredWidth: 250
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Neuroal Network Runtime")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxNeuralNetworkRuntime
+                                textRole: "text"
+                                valueRole: "value"
+                                model: [
+                                    {
+                                        text: "ONNX Runtime",
+                                        value: "ONNX"
+                                    },
+                                    {
+                                        text: "NCNN Runtime",
+                                        value: "NCNN"
+                                    },
+                                    {
+                                        text: "NCNN Runtime (faster preview)",
+                                        value: "NCNN_LOW_RES"
+                                    }
+                                ]
+                                Layout.preferredWidth: 250
+                            }
                         }
                     }
                 }
@@ -267,78 +315,94 @@ Item {
 
             // Printer Tab
             Item {
+                Flickable {
+                    id: printerScrollView
+                    anchors.fill: parent
+                    interactive: true
+                    clip: true
+                    contentWidth: width
+                    contentHeight: Math.max(height, printerColumnLayout.y + printerColumnLayout.height + 24)
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
 
-                ColumnLayout {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    spacing: 10
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
 
-                    RowLayout {
+                    ColumnLayout {
+                        id: printerColumnLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        height: implicitHeight
                         spacing: 10
-                        Label {
-                            text: qsTr("Enable Printing:")
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Enable Printing:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchPrinter
+                            }
                         }
-                        Item {
+
+                        RowLayout {
+                            visible: switchPrinter.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Printer:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxPrinter
+                                Layout.preferredWidth: 300
+                            }
+                        }
+
+                        ToolSeparator {
+                            visible: switchPrinter.checked
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        Switch {
-                            id: switchPrinter
-                        }
-                    }
 
-                    RowLayout {
-                        visible: switchPrinter.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Printer:")
+                        RowLayout {
+                            visible: switchPrinter.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Allow multiple prints:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchMultiplePrints
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            visible: switchPrinter.checked
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            Layout.preferredWidth: 300
-                            id: comboBoxPrinter
-                        }
-                    }
 
-                    ToolSeparator {
-                        visible: switchPrinter.checked
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        visible: switchPrinter.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Allow multiple prints:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchMultiplePrints
-                        }
-                    }
-
-                    ToolSeparator {
-                        visible: switchPrinter.checked
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        visible: switchPrinter.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Print from Gallery:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchPrintFromGallery
+                        RowLayout {
+                            visible: switchPrinter.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Print from Gallery:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchPrintFromGallery
+                            }
                         }
                     }
                 }
@@ -346,131 +410,147 @@ Item {
 
             // System Tab
             Item {
-                ColumnLayout {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    spacing: 10
+                Flickable {
+                    id: systemScrollView
+                    anchors.fill: parent
+                    interactive: true
+                    clip: true
+                    contentWidth: width
+                    contentHeight: Math.max(height, systemColumnLayout.y + systemColumnLayout.height + 24)
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
 
-                    RowLayout {
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    ColumnLayout {
+                        id: systemColumnLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        height: implicitHeight
                         spacing: 10
-                        Label {
-                            text: qsTr("Enable Settings Password:")
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Enable Settings Password:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchEnableSettingsPassword
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        Switch {
-                            id: switchEnableSettingsPassword
-                        }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Current Time:")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Current Time:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Label {
+                                id: labelTime
+                                text: "HH:MM"
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        Label {
-                            id: labelTime
-                            text: "HH:MM"
 
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Language:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxLanguages
+                                model: translation.languages
+                            }
                         }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Language:")
-                        }
-                        Item {
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            id: comboBoxLanguages
-                            model: translation.languages
-                        }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Window Mode:")
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Window Mode:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboWindowMode
+                                model: ["Window", "Fullscreen"]
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            id: comboWindowMode
-                            model: ["Window", "Fullscreen"]
-                        }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    Button {
-                        text: qsTr("Copy layout templates from removable disk")
-                        id: buttonCopyTemplates
-                    }
-
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        spacing: 10
                         Button {
-                            text: qsTr("Shutdown")
-                            id: buttonShutdown
+                            id: buttonCopyTemplates
+                            text: qsTr("Copy layout templates from removable disk")
                         }
-                        Item {
+
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        Button {
-                            text: qsTr("Restart")
-                            id: buttonRestart
+
+                        RowLayout {
+                            spacing: 10
+                            Button {
+                                id: buttonShutdown
+                                text: qsTr("Shutdown")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Button {
+                                id: buttonRestart
+                                text: qsTr("Restart")
+                            }
                         }
-                    }
 
-                    RowLayout {
-                        spacing: 10
-                        Button {
-                            text: qsTr("Exit Photobooth")
-                            id: buttonCloseProgram
+                        RowLayout {
+                            spacing: 10
+                            Button {
+                                id: buttonCloseProgram
+                                text: qsTr("Exit Photobooth")
+                            }
                         }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
+                            Layout.fillWidth: true
+                        }
 
-                    RowLayout {
-                        spacing: 10
-                        Label {
-                            text: qsTr("Version: 1.0.0")
-                            id: labelVersionText
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                id: labelVersionText
+                                text: qsTr("Version: 1.0.0")
+                            }
                         }
                     }
                 }
@@ -478,205 +558,231 @@ Item {
 
             // GPIO Tab
             Item {
-                ColumnLayout {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    spacing: 10
+                Flickable {
+                    id: gpioScrollView
+                    anchors.fill: parent
+                    interactive: true
+                    clip: true
+                    contentWidth: width
+                    contentHeight: Math.max(height, gpioColumnLayout.y + gpioColumnLayout.height + 24)
+                    flickableDirection: Flickable.VerticalFlick
+                    boundsBehavior: Flickable.StopAtBounds
 
-                    RowLayout {
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    ColumnLayout {
+                        id: gpioColumnLayout
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        height: implicitHeight
                         spacing: 10
-                        Label {
-                            text: qsTr("Enable GPIO:")
+
+                        RowLayout {
+                            spacing: 10
+                            Label {
+                                text: qsTr("Enable GPIO:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchEnableGpio
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        Switch {
-                            id: switchEnableGpio
-                        }
-                    }
 
-                    ToolSeparator {
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Board Preset:")
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Board Preset:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxBoardPreset
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                                model: [
+                                    {
+                                        value: "rpi",
+                                        text: qsTr("Raspberry Pi 3/4/5")
+                                    },
+                                    {
+                                        value: "orangepi3b",
+                                        text: qsTr("Orange Pi 3B (RK3566)")
+                                    },
+                                    {
+                                        value: "custom",
+                                        text: qsTr("Custom")
+                                    }
+                                ]
+                            }
                         }
-                        Item {
+
+                        ToolSeparator {
+                            visible: switchEnableGpio.checked
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            id: comboBoxBoardPreset
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                            model: [
-                                {value: "rpi", text: qsTr("Raspberry Pi 3/4/5")},
-                                {value: "orangepi3b", text: qsTr("Orange Pi 3B (RK3566)")},
-                                {value: "custom", text: qsTr("Custom")}
-                            ]
-                        }
-                    }
 
-                    ToolSeparator {
-                        visible: switchEnableGpio.checked
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("GPIO Chip:")
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("GPIO Chip:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxGpioChip
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                                enabled: comboBoxBoardPreset.currentValue === "custom"
+                            }
                         }
-                        Item {
+
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("LED Enable Line:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxLedEnableLine
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                                enabled: comboBoxBoardPreset.currentValue === "custom"
+                            }
+                        }
+
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("LED Brightness Line:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxLedBrightnessLine
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                                enabled: comboBoxBoardPreset.currentValue === "custom"
+                            }
+                        }
+
+                        ToolSeparator {
+                            visible: switchEnableGpio.checked
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            id: comboBoxGpioChip
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                            enabled: comboBoxBoardPreset.currentValue === "custom"
-                        }
-                    }
 
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("LED Enable Line:")
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("PWM Frequency (Hz):")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            SpinBox {
+                                id: spinBoxPwmFrequency
+                                from: 100
+                                to: 10000
+                                stepSize: 100
+                                value: 1000
+                                editable: true
+                                enabled: comboBoxBoardPreset.currentValue === "custom"
+                            }
                         }
-                        Item {
+
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Invert PWM:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchInvertPwm
+                            }
+                        }
+
+                        ToolSeparator {
+                            visible: switchEnableGpio.checked
+                            orientation: Qt.Horizontal
                             Layout.fillWidth: true
                         }
-                        ComboBox {
-                            id: comboBoxLedEnableLine
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                            enabled: comboBoxBoardPreset.currentValue === "custom"
-                        }
-                    }
 
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("LED Brightness Line:")
+                        RowLayout {
+                            visible: switchEnableGpio.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Enable Camera Wake-up:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            Switch {
+                                id: switchCameraWakeup
+                            }
                         }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        ComboBox {
-                            id: comboBoxLedBrightnessLine
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                            enabled: comboBoxBoardPreset.currentValue === "custom"
-                        }
-                    }
 
-                    ToolSeparator {
-                        visible: switchEnableGpio.checked
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
+                        RowLayout {
+                            visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Camera Wake-up Line:")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            ComboBox {
+                                id: comboBoxCameraWakeupLine
+                                Layout.preferredWidth: 300
+                                textRole: "text"
+                                valueRole: "value"
+                            }
+                        }
 
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("PWM Frequency (Hz):")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        SpinBox {
-                            id: spinBoxPwmFrequency
-                            from: 100
-                            to: 10000
-                            stepSize: 100
-                            value: 1000
-                            editable: true
-                            enabled: comboBoxBoardPreset.currentValue === "custom"
-                        }
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Invert PWM:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchInvertPwm
-                        }
-                    }
-
-                    ToolSeparator {
-                        visible: switchEnableGpio.checked
-                        orientation: Qt.Horizontal
-                        Layout.fillWidth: true
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Enable Camera Wake-up:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        Switch {
-                            id: switchCameraWakeup
-                        }
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Camera Wake-up Line:")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        ComboBox {
-                            id: comboBoxCameraWakeupLine
-                            Layout.preferredWidth: 300
-                            textRole: "text"
-                            valueRole: "value"
-                        }
-                    }
-
-                    RowLayout {
-                        visible: switchEnableGpio.checked && switchCameraWakeup.checked
-                        spacing: 10
-                        Label {
-                            text: qsTr("Wake-up Delay (ms):")
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        SpinBox {
-                            id: spinBoxCameraWakeupDelay
-                            from: 0
-                            to: 5000
-                            stepSize: 10
-                            value: 100
-                            editable: true
+                        RowLayout {
+                            visible: switchEnableGpio.checked && switchCameraWakeup.checked
+                            spacing: 10
+                            Label {
+                                text: qsTr("Wake-up Delay (ms):")
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                            }
+                            SpinBox {
+                                id: spinBoxCameraWakeupDelay
+                                from: 0
+                                to: 5000
+                                stepSize: 10
+                                value: 100
+                                editable: true
+                            }
                         }
                     }
                 }

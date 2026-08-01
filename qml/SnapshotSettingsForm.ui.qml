@@ -77,23 +77,32 @@ Pane {
             }
         }
 
-        ScrollView
-        {
+        Flickable {
             id: settingsScrollView
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Layout.minimumWidth: 250
+            Layout.preferredWidth: 350
             visible: false
+            interactive: true
+            clip: true
+            contentWidth: width
+            contentHeight: Math.max(height, columnLayout.y + columnLayout.height + 24)
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
 
-            //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
 
             ColumnLayout {
                 id: columnLayout
-
-                Layout.fillHeight: true
-
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                width: settingsScrollView.width
+                height: implicitHeight
                 spacing: 15
-
-                Layout.alignment: Qt.AlignTop
 
                 RowLayout {
 
@@ -355,6 +364,8 @@ Pane {
                 RowLayout
                 {
                     visible: switchBackgroundFilterEnable.checked
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: backgroundSelector.contentHeight
 
                     GridView
                     {
@@ -362,6 +373,9 @@ Pane {
                         cellWidth: 100
                         cellHeight: 120
                         Layout.fillWidth: true
+                        Layout.preferredHeight: contentHeight
+                        interactive: false
+                        clip: false
 
                         focus: true
 

@@ -65,6 +65,10 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
     {
         newRuntime = NeuralNetworkRuntime::NCNN;
     }
+    else if (runtime.contains("RKNN"))
+    {
+        newRuntime = NeuralNetworkRuntime::RKNN;
+    }
     else
     {
         throw std::runtime_error("Unknown neural network runtime: " + runtime.toStdString());
@@ -118,6 +122,10 @@ QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
     else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::NCNN_LOW_RES)
     {
         return QString("NCNN_LOW_RES");
+    }
+    else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::RKNN)
+    {
+        return QString("RKNN");
     }
     else
     {
@@ -331,6 +339,14 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
         mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model_320", "coco.names", false, true));
         mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", "coco.names", false));
     }
+#ifdef HAS_RKNN
+    else if (runtime == NeuralNetworkRuntime::RKNN)
+    {
+        qDebug() << "[INFO] Change YOLOv11Segmentation runtime to RKNN";
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorRknn("yolo11n-seg.rknn", "coco.names"));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorRknn("yolo11x-seg.rknn", "coco.names"));
+    }
+#endif
 }
 
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)

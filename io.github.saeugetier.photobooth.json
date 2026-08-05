@@ -344,6 +344,23 @@
             ]
         },
         {
+            "name": "rknn-toolkit2",
+            "only-arches": ["aarch64"],
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm755 rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so ${FLATPAK_DEST}/lib/librknnrt.so",
+                "install -Dm644 rknpu2/runtime/Linux/librknn_api/include/rknn_api.h ${FLATPAK_DEST}/include/rknn_api.h"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/airockchip/rknn-toolkit2.git",
+                    "tag": "v2.3.2",
+                    "commit": "42aa1d426c0a9e0869b6374edba009f7208a1926"
+                }
+            ]
+        },
+        {
             "name": "qtbooth",
             "buildsystem": "qmake",
             "post-install": [

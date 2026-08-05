@@ -11,6 +11,9 @@
 #include <QSharedPointer>
 #include "yolo11segonnx.h"
 #include "yolo11segncnn.h"
+#ifdef HAS_RKNN
+#include "yolo11segrknn.h"
+#endif
 
 class ReplaceBackgroundFilterRunable;
 
@@ -18,7 +21,8 @@ enum class NeuralNetworkRuntime
 {
     ONNX,
     NCNN,
-    NCNN_LOW_RES
+    NCNN_LOW_RES,
+    RKNN
 };
 
 class ReplaceBackgroundVideoFilter : public QVideoFrameInput

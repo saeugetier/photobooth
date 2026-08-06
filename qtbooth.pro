@@ -95,6 +95,15 @@ LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
 LIBS += -lgphoto2 -lgphoto2_port
 
+# RKNN NPU support — only on ARM targets (RK3566/RK3568/RK3588 etc.)
+contains(QT_ARCH, arm64) | contains(QT_ARCH, arm) {
+    DEFINES += HAS_RKNN
+    INCLUDEPATH += libs/rknn/include/
+    LIBS += -L"$$PWD/libs/rknn/lib" -lrknnrt
+    SOURCES += src/yolo11segrknn.cpp
+    HEADERS += src/yolo11segrknn.h
+}
+
 # Flatpak runtime libraries are typically staged in /app/lib or /app/lib64.
 exists(/app/lib) {
     LIBS += -L/app/lib

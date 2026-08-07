@@ -1,6 +1,7 @@
 #include "yolo11segrknn.h"
 #include <QFile>
 #include <cstring>
+#include <format>
 #include <stdexcept>
 #include "utils.h"
 
@@ -13,14 +14,14 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
     QFile modelFile(QString::fromStdString(fullPath));
     if (!modelFile.open(QIODevice::ReadOnly))
     {
-        throw std::runtime_error("Failed to open RKNN model: " + fullPath);
+        throw std::runtime_error(std::format("Failed to open RKNN model: {}", fullPath));
     }
     QByteArray modelData = modelFile.readAll();
 
     int ret = rknn_init(&ctx, modelData.data(), static_cast<uint32_t>(modelData.size()), 0, nullptr);
     if (ret < 0)
     {
-        throw std::runtime_error("rknn_init failed, error: " + std::to_string(ret));
+        throw std::runtime_error(std::format("rknn_init failed, error: {}", ret));
     }
 
     try
@@ -29,7 +30,7 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
         ret = rknn_query(ctx, RKNN_QUERY_IN_OUT_NUM, &io_num, sizeof(io_num));
         if (ret < 0)
         {
-            throw std::runtime_error("rknn_query IN_OUT_NUM failed: " + std::to_string(ret));
+            throw std::runtime_error(std::format("rknn_query IN_OUT_NUM failed: {}", ret));
         }
         numInputNodes  = io_num.n_input;
         numOutputNodes = io_num.n_output;
@@ -49,7 +50,7 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
         ret = rknn_query(ctx, RKNN_QUERY_INPUT_ATTR, &inputAttr, sizeof(inputAttr));
         if (ret < 0)
         {
-            throw std::runtime_error("rknn_query INPUT_ATTR failed: " + std::to_string(ret));
+            throw std::runtime_error(std::format("rknn_query INPUT_ATTR failed: {}", ret));
         }
 
         if (inputAttr.n_dims == 4)
@@ -76,8 +77,7 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
             ret = rknn_query(ctx, RKNN_QUERY_OUTPUT_ATTR, &outputAttrs[i], sizeof(rknn_tensor_attr));
             if (ret < 0)
             {
-                throw std::runtime_error("rknn_query OUTPUT_ATTR failed for output " + std::to_string(i)
-                                         + ": " + std::to_string(ret));
+                throw std::runtime_error(std::format("rknn_query OUTPUT_ATTR failed for output {}: {}", i, ret));
             }
         }
 
@@ -318,13 +318,13 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     int ret = rknn_inputs_set(ctx, 1, inputs);
     if (ret < 0)
     {
-        throw std::runtime_error("rknn_inputs_set failed: " + std::to_string(ret));
+        throw std::runtime_error(std::format("rknn_inputs_set failed: {}", ret));
     }
 
     ret = rknn_run(ctx, nullptr);
     if (ret < 0)
     {
-        throw std::runtime_error("rknn_run failed: " + std::to_string(ret));
+        throw std::runtime_error(std::format("rknn_run failed: {}", ret));
     }
 
     std::vector<rknn_output> outputs(numOutputNodes);
@@ -339,7 +339,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     ret = rknn_outputs_get(ctx, numOutputNodes, outputs.data(), nullptr);
     if (ret < 0)
     {
-        throw std::runtime_error("rknn_outputs_get failed: " + std::to_string(ret));
+        throw std::runtime_error(std::format("rknn_outputs_get failed: {}", ret));
     }
 
     struct OutputReleaseGuard

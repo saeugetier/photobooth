@@ -85,7 +85,7 @@ protected:
     enum class FilterMethod
     {
         CHROMA,
-        NEURAL, //@todo implement neural algo
+        NEURAL,
         NONE
     };
 

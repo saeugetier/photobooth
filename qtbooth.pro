@@ -95,11 +95,19 @@ LIBS += -L"$$PWD/libs/onnxruntime/lib" -lonnxruntime
 LIBS += -L"$$PWD/libs/ncnn/lib" -lncnn
 LIBS += -lgphoto2 -lgphoto2_port
 
-# RKNN NPU support — only on ARM targets (RK3566/RK3568/RK3588 etc.)
-contains(QT_ARCH, arm64) | contains(QT_ARCH, arm) {
+# RKNN NPU support — only on AArch64 targets (RK3566/RK3568/RK3588 etc.)
+contains(QT_ARCH, arm64) | contains(QT_ARCH, aarch64) {
     DEFINES += HAS_RKNN
-    INCLUDEPATH += libs/rknn/include/
-    LIBS += -L"$$PWD/libs/rknn/lib" -lrknnrt
+
+    exists(/app/include) { INCLUDEPATH += /app/include }
+    exists($$PWD/libs/rknn/include) { INCLUDEPATH += $$PWD/libs/rknn/include }
+
+    # Ensure -L paths are added before -l so the linker can resolve librknnrt.
+    LIBS += -L"$$PWD/libs/rknn/lib"
+    exists(/app/lib) { LIBS += -L/app/lib }
+    exists(/app/lib64) { LIBS += -L/app/lib64 }
+    LIBS += -lrknnrt
+
     SOURCES += src/yolo11segrknn.cpp
     HEADERS += src/yolo11segrknn.h
 }

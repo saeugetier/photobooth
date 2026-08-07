@@ -39,7 +39,7 @@ class Yolo11Segementation
 {
 public:
     Yolo11Segementation(const std::string &labelsPath);
-    virtual ~Yolo11Segementation();
+    virtual ~Yolo11Segementation() = default;
 
     virtual std::vector<Segmentation> segment(const cv::Mat &image,
                                       float confThreshold = CONFIDENCE_THRESHOLD,

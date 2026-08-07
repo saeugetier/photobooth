@@ -1,6 +1,6 @@
 QT += qml quick multimedia concurrent xml svg printsupport multimedia-private network
 
-CONFIG += c++17 qml_debug
+CONFIG += c++20 qml_debug
 
 !contains(QT_CONFIG, no-pkg-config) {
     CONFIG += link_pkgconfig

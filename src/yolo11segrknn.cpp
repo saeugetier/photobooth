@@ -133,6 +133,14 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
     {
         throw std::runtime_error("Unexpected RKNN output tensor rank.");
     }
+    if (shape0[0] != 1)
+    {
+        throw std::runtime_error("Unexpected output0 shape. Expected batch size 1.");
+    }
+    if (shape1[0] != 1 || shape1[1] != 32)
+    {
+        throw std::runtime_error("Unexpected output1 shape. Expected [1, 32, maskH, maskW].");
+    }
 
     // output0: [1, num_features, num_boxes]
     const int num_features  = static_cast<int>(shape0[1]);

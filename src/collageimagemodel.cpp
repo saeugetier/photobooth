@@ -644,7 +644,15 @@ bool CollageImage::validateBoundary()
         result = false;
     }
 
-    //@TODO: Validate Border
+    if(mBorderRect.left() < 0 || mBorderRect.top() < 0 || mBorderRect.right() < 0 || mBorderRect.bottom() < 0)
+    {
+        result = false;
+    }
+    if((mBorderRect.left() + mBorderRect.right()) > mCollagePixelSize.width() ||
+        (mBorderRect.top() + mBorderRect.bottom()) > mCollagePixelSize.height())
+    {
+        result = false;
+    }
 
     return result;
 }

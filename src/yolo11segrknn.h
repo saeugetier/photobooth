@@ -4,6 +4,7 @@
 #include <rknn_api.h>
 #include <opencv2/opencv.hpp>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,8 @@ public:
                                       float confThreshold = CONFIDENCE_THRESHOLD,
                                       float iouThreshold  = IOU_THRESHOLD);
 private:
+    static constexpr int kMaskPrototypeCount = 32;
+
     rknn_context ctx{0};
     cv::Size inputImageShape{640, 640};
     uint32_t numInputNodes{0};

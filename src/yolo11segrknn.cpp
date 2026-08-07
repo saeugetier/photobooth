@@ -1,14 +1,14 @@
 #include "yolo11segrknn.h"
 #include <QFile>
-#include <QDir>
-#include <QStandardPaths>
+#include <cstring>
+#include <stdexcept>
 #include "utils.h"
 
 YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
                                                const std::string &labelsPath)
     : Yolo11Segementation(labelsPath)
 {
-    std::string fullPath = getModelRessourcePath(modelPath);
+    const std::string fullPath = getModelRessourcePath(modelPath);
 
     QFile modelFile(QString::fromStdString(fullPath));
     if (!modelFile.open(QIODevice::ReadOnly))
@@ -23,62 +23,78 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
         throw std::runtime_error("rknn_init failed, error: " + std::to_string(ret));
     }
 
-    rknn_input_output_num io_num{};
-    ret = rknn_query(ctx, RKNN_QUERY_IN_OUT_NUM, &io_num, sizeof(io_num));
-    if (ret < 0)
+    try
     {
-        throw std::runtime_error("rknn_query IN_OUT_NUM failed: " + std::to_string(ret));
-    }
-    numInputNodes  = io_num.n_input;
-    numOutputNodes = io_num.n_output;
-
-    if (numInputNodes != 1)
-    {
-        throw std::runtime_error("Expected exactly 1 input node.");
-    }
-    if (numOutputNodes != 2)
-    {
-        throw std::runtime_error("Expected exactly 2 output nodes: output0 and output1.");
-    }
-
-    // Determine input spatial dimensions from the queried tensor attribute
-    rknn_tensor_attr inputAttr{};
-    inputAttr.index = 0;
-    ret = rknn_query(ctx, RKNN_QUERY_INPUT_ATTR, &inputAttr, sizeof(inputAttr));
-    if (ret < 0)
-    {
-        throw std::runtime_error("rknn_query INPUT_ATTR failed: " + std::to_string(ret));
-    }
-
-    if (inputAttr.n_dims == 4)
-    {
-        if (inputAttr.fmt == RKNN_TENSOR_NHWC)
-        {
-            inputImageShape = cv::Size(inputAttr.dims[2], inputAttr.dims[1]); // W=dim[2], H=dim[1]
-        }
-        else // NCHW
-        {
-            inputImageShape = cv::Size(inputAttr.dims[3], inputAttr.dims[2]); // W=dim[3], H=dim[2]
-        }
-    }
-
-    outputAttrs.resize(numOutputNodes);
-    for (uint32_t i = 0; i < numOutputNodes; ++i)
-    {
-        outputAttrs[i]       = {};
-        outputAttrs[i].index = i;
-        ret = rknn_query(ctx, RKNN_QUERY_OUTPUT_ATTR, &outputAttrs[i], sizeof(rknn_tensor_attr));
+        rknn_input_output_num io_num{};
+        ret = rknn_query(ctx, RKNN_QUERY_IN_OUT_NUM, &io_num, sizeof(io_num));
         if (ret < 0)
         {
-            throw std::runtime_error("rknn_query OUTPUT_ATTR failed for output " + std::to_string(i)
-                                     + ": " + std::to_string(ret));
+            throw std::runtime_error("rknn_query IN_OUT_NUM failed: " + std::to_string(ret));
         }
-    }
+        numInputNodes  = io_num.n_input;
+        numOutputNodes = io_num.n_output;
 
-    qDebug() << "[INFO] YOLOv11Seg RKNN loaded: " << modelPath;
-    qDebug() << "      Input shape: " << inputImageShape.height << "x" << inputImageShape.width;
-    qDebug() << "      #Outputs   : " << numOutputNodes;
-    qDebug() << "      #Classes   : " << classNames.size();
+        if (numInputNodes != 1)
+        {
+            throw std::runtime_error("Expected exactly 1 input node.");
+        }
+        if (numOutputNodes != 2)
+        {
+            throw std::runtime_error("Expected exactly 2 output nodes: output0 and output1.");
+        }
+
+        // Determine input spatial dimensions from the queried tensor attribute
+        rknn_tensor_attr inputAttr{};
+        inputAttr.index = 0;
+        ret = rknn_query(ctx, RKNN_QUERY_INPUT_ATTR, &inputAttr, sizeof(inputAttr));
+        if (ret < 0)
+        {
+            throw std::runtime_error("rknn_query INPUT_ATTR failed: " + std::to_string(ret));
+        }
+
+        if (inputAttr.n_dims == 4)
+        {
+            if (inputAttr.fmt == RKNN_TENSOR_NHWC)
+            {
+                inputImageShape = cv::Size(inputAttr.dims[2], inputAttr.dims[1]); // W=dim[2], H=dim[1]
+            }
+            else // NCHW
+            {
+                inputImageShape = cv::Size(inputAttr.dims[3], inputAttr.dims[2]); // W=dim[3], H=dim[2]
+            }
+        }
+        else
+        {
+            throw std::runtime_error("Expected 4 dimensions for RKNN input tensor.");
+        }
+
+        outputAttrs.resize(numOutputNodes);
+        for (uint32_t i = 0; i < numOutputNodes; ++i)
+        {
+            outputAttrs[i]       = {};
+            outputAttrs[i].index = i;
+            ret = rknn_query(ctx, RKNN_QUERY_OUTPUT_ATTR, &outputAttrs[i], sizeof(rknn_tensor_attr));
+            if (ret < 0)
+            {
+                throw std::runtime_error("rknn_query OUTPUT_ATTR failed for output " + std::to_string(i)
+                                         + ": " + std::to_string(ret));
+            }
+        }
+
+        qDebug() << "[INFO] YOLOv11Seg RKNN loaded: " << modelPath;
+        qDebug() << "      Input shape: " << inputImageShape.height << "x" << inputImageShape.width;
+        qDebug() << "      #Outputs   : " << numOutputNodes;
+        qDebug() << "      #Classes   : " << classNames.size();
+    }
+    catch (...)
+    {
+        if (ctx)
+        {
+            rknn_destroy(ctx);
+            ctx = 0;
+        }
+        throw;
+    }
 }
 
 YOLOv11SegDetectorRknn::~YOLOv11SegDetectorRknn()
@@ -130,7 +146,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
         return results;
     }
 
-    const int numClasses        = num_features - 4 - 32;
+    const int numClasses        = num_features - 4 - kMaskPrototypeCount;
     constexpr int BOX_OFFSET    = 0;
     constexpr int CLASS_CONF_OFFSET = 4;
     const int MASK_COEFF_OFFSET = numClasses + CLASS_CONF_OFFSET;
@@ -142,12 +158,15 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
 
     // Prototype masks
     std::vector<cv::Mat> prototypeMasks;
-    prototypeMasks.reserve(32);
-    for (int m = 0; m < 32; ++m)
+    prototypeMasks.reserve(kMaskPrototypeCount);
+    const size_t maskPlaneSize = static_cast<size_t>(maskH) * static_cast<size_t>(maskW);
+    for (int m = 0; m < kMaskPrototypeCount; ++m)
     {
-        cv::Mat proto(maskH, maskW, CV_32F,
-                      const_cast<float *>(output1 + m * maskH * maskW));
-        prototypeMasks.emplace_back(proto.clone());
+        cv::Mat proto(maskH, maskW, CV_32F);
+        std::memcpy(proto.data,
+                    output1 + static_cast<size_t>(m) * maskPlaneSize,
+                    maskPlaneSize * sizeof(float));
+        prototypeMasks.emplace_back(std::move(proto));
     }
 
     // Parse detections
@@ -190,8 +209,8 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
         confidences.push_back(maxConf);
         classIds.push_back(classId);
 
-        std::vector<float> maskCoeffs(32);
-        for (int m = 0; m < 32; ++m)
+        std::vector<float> maskCoeffs(kMaskPrototypeCount);
+        for (int m = 0; m < kMaskPrototypeCount; ++m)
         {
             maskCoeffs[m] = output0[(MASK_COEFF_OFFSET + m) * num_boxes + i];
         }
@@ -235,7 +254,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
         const auto &maskCoeffs = maskCoefficientsList[idx];
 
         cv::Mat finalMask = cv::Mat::zeros(maskH, maskW, CV_32F);
-        for (int m = 0; m < 32; ++m)
+        for (int m = 0; m < kMaskPrototypeCount; ++m)
         {
             finalMask += maskCoeffs[m] * prototypeMasks[m];
         }
@@ -323,6 +342,18 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
         throw std::runtime_error("rknn_outputs_get failed: " + std::to_string(ret));
     }
 
+    struct OutputReleaseGuard
+    {
+        rknn_context context;
+        uint32_t outputCount;
+        rknn_output *outputData;
+
+        ~OutputReleaseGuard()
+        {
+            rknn_outputs_release(context, outputCount, outputData);
+        }
+    } guard{ctx, numOutputNodes, outputs.data()};
+
     std::vector<int64_t> shape0, shape1;
     for (uint32_t d = 0; d < outputAttrs[0].n_dims; ++d)
     {
@@ -333,12 +364,13 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
         shape1.push_back(static_cast<int64_t>(outputAttrs[1].dims[d]));
     }
 
-    auto results = postprocess(image.size(), letterboxImg.size(),
-                               reinterpret_cast<const float *>(outputs[0].buf), shape0,
-                               reinterpret_cast<const float *>(outputs[1].buf), shape1,
-                               confThreshold, iouThreshold);
+    if (outputs[0].buf == nullptr || outputs[1].buf == nullptr)
+    {
+        throw std::runtime_error("RKNN returned null output buffers.");
+    }
 
-    rknn_outputs_release(ctx, numOutputNodes, outputs.data());
-
-    return results;
+    return postprocess(image.size(), letterboxImg.size(),
+                       reinterpret_cast<const float *>(outputs[0].buf), shape0,
+                       reinterpret_cast<const float *>(outputs[1].buf), shape1,
+                       confThreshold, iouThreshold);
 }

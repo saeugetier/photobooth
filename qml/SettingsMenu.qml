@@ -14,7 +14,19 @@ SettingsMenuForm {
     property alias printerEnabled: form.switchPrinter
     property alias mirrorCamera: form.switchMirrorCamera
     property alias comboBoxCameraOrientation: form.comboBoxCameraOrientation
+    readonly property var neuralNetworkRuntimeModel: system.supportsRknn() ? [
+        { text: "ONNX Runtime", value: "ONNX" },
+        { text: "NCNN Runtime", value: "NCNN" },
+        { text: "NCNN Runtime (faster preview)", value: "NCNN_LOW_RES" },
+        { text: "RKNN Runtime", value: "RKNN" }
+    ] : [
+        { text: "ONNX Runtime", value: "ONNX" },
+        { text: "NCNN Runtime", value: "NCNN" },
+        { text: "NCNN Runtime (faster preview)", value: "NCNN_LOW_RES" }
+    ]
     signal exitSettings
+
+    comboBoxNeuralNetworkRuntime.model: neuralNetworkRuntimeModel
 
     comboWindowMode.currentIndex: applicationSettings.windowMode === Window.Maximized ? 0 : 1
 
@@ -115,6 +127,10 @@ SettingsMenuForm {
 
         // Neural network runtime
         var nnIndex = comboBoxNeuralNetworkRuntime.indexOfValue(applicationSettings.neuralNetworkRuntime)
+        if (nnIndex === -1)
+        {
+            nnIndex = comboBoxNeuralNetworkRuntime.indexOfValue("ONNX")
+        }
         comboBoxNeuralNetworkRuntime.currentIndex = nnIndex
 
         // Camera orientation

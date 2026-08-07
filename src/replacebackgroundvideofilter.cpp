@@ -67,7 +67,11 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
     }
     else if (runtime.contains("RKNN"))
     {
+#ifdef HAS_RKNN
         newRuntime = NeuralNetworkRuntime::RKNN;
+#else
+        newRuntime = NeuralNetworkRuntime::ONNX;
+#endif
     }
     else
     {

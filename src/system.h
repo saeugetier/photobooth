@@ -11,6 +11,7 @@ public:
     Q_INVOKABLE void shutdown();
     Q_INVOKABLE void restart();
     Q_INVOKABLE QString getGitHash() const;
+    Q_INVOKABLE bool supportsRknn() const;
 };
 
 #endif

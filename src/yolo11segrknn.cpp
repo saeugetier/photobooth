@@ -307,15 +307,31 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
 {
     cv::Mat letterboxImg = preprocess(image);
 
+    rknn_tensor_attr inputAttr{};
+    inputAttr.index = 0;
+    int ret = rknn_query(ctx, RKNN_QUERY_INPUT_ATTR, &inputAttr, sizeof(inputAttr));
+    if (ret < 0)
+    {
+        throw std::runtime_error("rknn_query INPUT_ATTR failed: " + std::to_string(ret));
+    }
+    if (inputAttr.fmt != RKNN_TENSOR_NHWC)
+    {
+        throw std::runtime_error("Unsupported RKNN input format (only NHWC is supported).");
+    }
+    if (inputAttr.type != RKNN_TENSOR_UINT8)
+    {
+        throw std::runtime_error("Unsupported RKNN input type (only UINT8 is supported).");
+    }
+
     rknn_input inputs[1]{};
-    inputs[0].index       = 0;
-    inputs[0].type        = RKNN_TENSOR_UINT8;
-    inputs[0].fmt         = RKNN_TENSOR_NHWC;
-    inputs[0].buf         = letterboxImg.data;
-    inputs[0].size        = static_cast<uint32_t>(letterboxImg.total() * letterboxImg.elemSize());
+    inputs[0].index        = 0;
+    inputs[0].type         = inputAttr.type;
+    inputs[0].fmt          = inputAttr.fmt;
+    inputs[0].buf          = letterboxImg.data;
+    inputs[0].size         = static_cast<uint32_t>(letterboxImg.total() * letterboxImg.elemSize());
     inputs[0].pass_through = 0;
 
-    int ret = rknn_inputs_set(ctx, 1, inputs);
+    ret = rknn_inputs_set(ctx, 1, inputs);
     if (ret < 0)
     {
         throw std::runtime_error(std::format("rknn_inputs_set failed: {}", ret));

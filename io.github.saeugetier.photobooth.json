@@ -285,6 +285,7 @@
                 "mkdir -p ${FLATPAK_DEST}/share/models",
                 "install -Dm644 *.onnx ${FLATPAK_DEST}/share/models/",
                 "install -Dm644 coco.names ${FLATPAK_DEST}/share/models/",
+                "for f in *.rknn; do [ -e \"$f\" ] && install -Dm644 \"$f\" ${FLATPAK_DEST}/share/models/ || true; done",
                 "for d in *_model; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done",
                 "for d in *_model_320; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done"
             ],

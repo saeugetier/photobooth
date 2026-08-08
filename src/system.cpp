@@ -31,6 +31,8 @@ QString System::getGitHash() const
 
 bool System::supportsRknn() const
 {
+    
+#ifdef HAS_RKNN
     QFile compatibleFile("/proc/device-tree/compatible");
     if (compatibleFile.open(QIODevice::ReadOnly))
     {
@@ -58,6 +60,7 @@ bool System::supportsRknn() const
     {
         qWarning() << "Failed to open /proc/device-tree/model";
     }
+#endif
 
     return false;
 }

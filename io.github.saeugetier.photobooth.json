@@ -24,6 +24,7 @@
         "--filesystem=/run/media",
         "--filesystem=/mnt",
         "--filesystem=/run/udev:ro",
+        "--filesystem=/proc/device-tree:ro",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],

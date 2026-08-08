@@ -40,6 +40,10 @@ bool System::supportsRknn() const
             return true;
         }
     }
+    else
+    {
+        qWarning() << "Failed to open /proc/device-tree/compatible";
+    }
 
     QFile modelFile("/proc/device-tree/model");
     if (modelFile.open(QIODevice::ReadOnly))
@@ -49,6 +53,10 @@ bool System::supportsRknn() const
         {
             return true;
         }
+    }
+    else
+    {
+        qWarning() << "Failed to open /proc/device-tree/model";
     }
 
     return false;

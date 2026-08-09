@@ -347,8 +347,8 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
     else if (runtime == NeuralNetworkRuntime::RKNN)
     {
         qDebug() << "[INFO] Change YOLOv11Segmentation runtime to RKNN";
-        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorRknn("yolo11n-seg.rknn", "coco.names"));
-        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorRknn("yolo11x-seg.rknn", "coco.names"));
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorRknn("yolo11n-seg_rknn_model/yolo11n-seg-rk3566.rknn", "coco.names"));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorRknn("yolo11x-seg_rknn_model/yolo11x-seg-rk3566.rknn", "coco.names"));
     }
 #endif
 }

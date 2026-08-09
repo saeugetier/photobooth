@@ -31,9 +31,9 @@ QString System::getGitHash() const
 
 bool System::supportsRknn() const
 {
-    
+
 #ifdef HAS_RKNN
-    QFile compatibleFile("/proc/device-tree/compatible");
+    QFile compatibleFile("/sys/firmware/devicetree/base/compatible");
     if (compatibleFile.open(QIODevice::ReadOnly))
     {
         const QByteArray compatible = compatibleFile.readAll().toLower();
@@ -44,10 +44,10 @@ bool System::supportsRknn() const
     }
     else
     {
-        qWarning() << "Failed to open /proc/device-tree/compatible";
+        qWarning() << "Failed to open /sys/firmware/devicetree/base/compatible";
     }
 
-    QFile modelFile("/proc/device-tree/model");
+    QFile modelFile("/sys/firmware/devicetree/base/model");
     if (modelFile.open(QIODevice::ReadOnly))
     {
         const QByteArray model = modelFile.readAll().toLower();
@@ -58,7 +58,7 @@ bool System::supportsRknn() const
     }
     else
     {
-        qWarning() << "Failed to open /proc/device-tree/model";
+        qWarning() << "Failed to open /sys/firmware/devicetree/base/model";
     }
 #endif
 

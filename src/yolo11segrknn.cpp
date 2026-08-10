@@ -206,10 +206,20 @@ void validateInputAttr(const rknn_tensor_attr &inputAttr)
     {
         throw std::runtime_error("Unsupported RKNN input format (only NHWC is supported).");
     }
-    if (inputAttr.type != RKNN_TENSOR_UINT8)
+    if (inputAttr.type != RKNN_TENSOR_FLOAT16)
     {
-        throw std::runtime_error("Unsupported RKNN input type (only UINT8 is supported).");
+        throw std::runtime_error("Unsupported RKNN input type (only FLOAT16 is supported).");
     }
+}
+
+cv::Mat prepareFp16InputTensor(const cv::Mat &letterboxImage)
+{
+    cv::Mat normalizedInput;
+    letterboxImage.convertTo(normalizedInput, CV_32FC3, 1.0f / 255.0f);
+
+    cv::Mat fp16Input;
+    normalizedInput.convertTo(fp16Input, CV_16FC3);
+    return fp16Input;
 }
 
 std::vector<int64_t> shapeFromAttr(const rknn_tensor_attr &attr)
@@ -435,17 +445,18 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
                                                           float confThreshold,
                                                           float iouThreshold)
 {
-    cv::Mat letterboxImg = preprocess(image);
+    const cv::Mat letterboxImg = preprocess(image);
 
     const rknn_tensor_attr inputAttr = queryInputAttr(ctx);
     validateInputAttr(inputAttr);
+    const cv::Mat fp16InputTensor = prepareFp16InputTensor(letterboxImg);
 
     rknn_input inputs[1]{};
     inputs[0].index        = 0;
     inputs[0].type         = inputAttr.type;
     inputs[0].fmt          = inputAttr.fmt;
-    inputs[0].buf          = letterboxImg.data;
-    inputs[0].size         = static_cast<uint32_t>(letterboxImg.total() * letterboxImg.elemSize());
+    inputs[0].buf          = fp16InputTensor.data;
+    inputs[0].size         = static_cast<uint32_t>(fp16InputTensor.total() * fp16InputTensor.elemSize());
     inputs[0].pass_through = 0;
 
     int ret = rknn_inputs_set(ctx, 1, inputs);

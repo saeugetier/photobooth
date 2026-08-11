@@ -63,16 +63,25 @@ ParsedDetections parseDetections(const float *output0,
                                  int numClasses,
                                  int maskCoeffOffset,
                                  int maskPrototypeCount,
+                                 bool boxesMajorLayout,
                                  float confThreshold)
 {
     ParsedDetections parsed;
 
     for (int i = 0; i < numBoxes; ++i)
     {
-        const float xc = output0[kBoxOffset * numBoxes + i];
-        const float yc = output0[(kBoxOffset + 1) * numBoxes + i];
-        const float w  = output0[(kBoxOffset + 2) * numBoxes + i];
-        const float h  = output0[(kBoxOffset + 3) * numBoxes + i];
+        const auto readValue = [&](int featureIndex) -> float {
+            if (boxesMajorLayout)
+            {
+                return output0[static_cast<size_t>(i) * static_cast<size_t>(maskCoeffOffset + maskPrototypeCount) + featureIndex];
+            }
+            return output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(numBoxes) + i];
+        };
+
+        const float xc = readValue(kBoxOffset);
+        const float yc = readValue(kBoxOffset + 1);
+        const float w  = readValue(kBoxOffset + 2);
+        const float h  = readValue(kBoxOffset + 3);
 
         const BoundingBox box{
             static_cast<int>(std::round(xc - w / 2.0f)),
@@ -84,7 +93,7 @@ ParsedDetections parseDetections(const float *output0,
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            const float conf = output0[(kClassConfOffset + c) * numBoxes + i];
+            const float conf = readValue(kClassConfOffset + c);
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -104,7 +113,7 @@ ParsedDetections parseDetections(const float *output0,
         std::vector<float> maskCoeffs(maskPrototypeCount);
         for (int m = 0; m < maskPrototypeCount; ++m)
         {
-            maskCoeffs[m] = output0[(maskCoeffOffset + m) * numBoxes + i];
+            maskCoeffs[m] = readValue(maskCoeffOffset + m);
         }
         parsed.maskCoefficients.emplace_back(std::move(maskCoeffs));
     }
@@ -206,14 +215,20 @@ void validateInputAttr(const rknn_tensor_attr &inputAttr)
     {
         throw std::runtime_error("Unsupported RKNN input format (only NHWC is supported).");
     }
-    if (inputAttr.type != RKNN_TENSOR_FLOAT16)
+    if (inputAttr.type != RKNN_TENSOR_FLOAT16 && inputAttr.type != RKNN_TENSOR_UINT8)
     {
-        throw std::runtime_error("Unsupported RKNN input type (only FLOAT16 is supported).");
+        throw std::runtime_error("Unsupported RKNN input type (supported: UINT8, FLOAT16).");
     }
 }
 
-cv::Mat prepareFp16InputTensor(const cv::Mat &letterboxImage)
+cv::Mat prepareInputTensor(const cv::Mat &letterboxImage,
+                           const rknn_tensor_attr &inputAttr)
 {
+    if (inputAttr.type == RKNN_TENSOR_UINT8)
+    {
+        return letterboxImage;
+    }
+
     cv::Mat normalizedInput;
     letterboxImage.convertTo(normalizedInput, CV_32FC3, 1.0f / 255.0f);
 
@@ -231,6 +246,20 @@ std::vector<int64_t> shapeFromAttr(const rknn_tensor_attr &attr)
         shape.push_back(static_cast<int64_t>(attr.dims[d]));
     }
     return shape;
+}
+
+bool shouldRequestFloatOutput(const rknn_tensor_attr &outputAttr)
+{
+    const bool isAffineQuantized =
+        (outputAttr.qnt_type == RKNN_TENSOR_QNT_AFFINE_ASYMMETRIC ||
+         outputAttr.qnt_type == RKNN_TENSOR_QNT_DFP);
+
+    if (isAffineQuantized)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 } // namespace
@@ -361,9 +390,19 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
 
     validatePostprocessShapes(shape0, shape1, kMaskPrototypeCount);
 
-    // output0: [1, num_features, num_boxes]
-    const int num_features  = static_cast<int>(shape0[1]);
-    const int num_boxes     = static_cast<int>(shape0[2]);
+    const int expectedFeatureCount = static_cast<int>(classNames.size()) + 4 + kMaskPrototypeCount;
+
+    // output0 is typically [1, num_features, num_boxes], but some RKNN exports
+    // preserve the detection tensor as [1, num_boxes, num_features].
+    const bool featuresMajorLayout = (shape0[1] == expectedFeatureCount);
+    const bool boxesMajorLayout = (shape0[2] == expectedFeatureCount);
+    if (!featuresMajorLayout && !boxesMajorLayout)
+    {
+        throw std::runtime_error(std::format("Unexpected RKNN output0 shape. Expected one dimension to equal {}.", expectedFeatureCount));
+    }
+
+    const int num_features = featuresMajorLayout ? static_cast<int>(shape0[1]) : static_cast<int>(shape0[2]);
+    const int num_boxes    = featuresMajorLayout ? static_cast<int>(shape0[2]) : static_cast<int>(shape0[1]);
     // output1: [1, 32, maskH, maskW]
     const int maskH         = static_cast<int>(shape1[2]);
     const int maskW         = static_cast<int>(shape1[3]);
@@ -387,6 +426,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                         numClasses,
                                         maskCoeffOffset,
                                         kMaskPrototypeCount,
+                                        boxesMajorLayout,
                                         confThreshold);
 
     if (parsed.boxes.empty())
@@ -449,14 +489,14 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
 
     const rknn_tensor_attr inputAttr = queryInputAttr(ctx);
     validateInputAttr(inputAttr);
-    const cv::Mat fp16InputTensor = prepareFp16InputTensor(letterboxImg);
+    const cv::Mat inputTensor = prepareInputTensor(letterboxImg, inputAttr);
 
     rknn_input inputs[1]{};
     inputs[0].index        = 0;
     inputs[0].type         = inputAttr.type;
     inputs[0].fmt          = inputAttr.fmt;
-    inputs[0].buf          = fp16InputTensor.data;
-    inputs[0].size         = static_cast<uint32_t>(fp16InputTensor.total() * fp16InputTensor.elemSize());
+    inputs[0].buf          = inputTensor.data;
+    inputs[0].size         = static_cast<uint32_t>(inputTensor.total() * inputTensor.elemSize());
     inputs[0].pass_through = 0;
 
     int ret = rknn_inputs_set(ctx, 1, inputs);
@@ -476,7 +516,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     {
         outputs[i]            = {};
         outputs[i].index      = i;
-        outputs[i].want_float = 1;
+        outputs[i].want_float = shouldRequestFloatOutput(outputAttrs[i]) ? 1 : 0;
         outputs[i].is_prealloc = 0;
     }
 
@@ -504,6 +544,12 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     if (outputs[0].buf == nullptr || outputs[1].buf == nullptr)
     {
         throw std::runtime_error("RKNN returned null output buffers.");
+    }
+
+    if (outputs[0].want_float == 0 || outputs[1].want_float == 0)
+    {
+        throw std::runtime_error(
+            "RKNN output is quantized, but YOLOv11Seg RKNN postprocess currently expects float outputs.");
     }
 
     return postprocess(image.size(), letterboxImg.size(),

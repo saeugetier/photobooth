@@ -250,15 +250,9 @@ std::vector<int64_t> shapeFromAttr(const rknn_tensor_attr &attr)
 
 bool shouldRequestFloatOutput(const rknn_tensor_attr &outputAttr)
 {
-    const bool isAffineQuantized =
-        (outputAttr.qnt_type == RKNN_TENSOR_QNT_AFFINE_ASYMMETRIC ||
-         outputAttr.qnt_type == RKNN_TENSOR_QNT_DFP);
-
-    if (isAffineQuantized)
-    {
-        return false;
-    }
-
+    (void)outputAttr;
+    // Keep postprocess in float space regardless of model quantization.
+    // RKNN runtime dequantizes when want_float is set.
     return true;
 }
 
@@ -544,12 +538,6 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     if (outputs[0].buf == nullptr || outputs[1].buf == nullptr)
     {
         throw std::runtime_error("RKNN returned null output buffers.");
-    }
-
-    if (outputs[0].want_float == 0 || outputs[1].want_float == 0)
-    {
-        throw std::runtime_error(
-            "RKNN output is quantized, but YOLOv11Seg RKNN postprocess currently expects float outputs.");
     }
 
     return postprocess(image.size(), letterboxImg.size(),

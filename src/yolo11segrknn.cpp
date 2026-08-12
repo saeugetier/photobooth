@@ -1,7 +1,10 @@
 #include "yolo11segrknn.h"
 #include <QFile>
+#include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <format>
+#include <limits>
 #include <optional>
 #include <stdexcept>
 #include "utils.h"
@@ -10,6 +13,156 @@ namespace {
 
 constexpr int kBoxOffset = 0;
 constexpr int kClassConfOffset = 4;
+
+bool isSegDebugEnabled()
+{
+    static const bool enabled = [] {
+        const char *env = std::getenv("PHOTOBOOTH_RKNN_SEG_DEBUG");
+        return env != nullptr && std::strcmp(env, "0") != 0;
+    }();
+    return enabled;
+}
+
+const char *tensorTypeToString(rknn_tensor_type type)
+{
+    switch (type)
+    {
+        case RKNN_TENSOR_UINT8:
+            return "UINT8";
+        case RKNN_TENSOR_FLOAT16:
+            return "FLOAT16";
+        default:
+            return "OTHER";
+    }
+}
+
+const char *tensorFormatToString(rknn_tensor_format fmt)
+{
+    switch (fmt)
+    {
+        case RKNN_TENSOR_NCHW:
+            return "NCHW";
+        case RKNN_TENSOR_NHWC:
+            return "NHWC";
+        default:
+            return "OTHER";
+    }
+}
+
+std::string shapeToString(const std::vector<int64_t> &shape)
+{
+    std::string text = "[";
+    for (size_t i = 0; i < shape.size(); ++i)
+    {
+        text += std::to_string(shape[i]);
+        if (i + 1 < shape.size())
+        {
+            text += ", ";
+        }
+    }
+    text += "]";
+    return text;
+}
+
+std::string shapeFromAttrToString(const rknn_tensor_attr &attr)
+{
+    std::vector<int64_t> shape;
+    shape.reserve(attr.n_dims);
+    for (uint32_t d = 0; d < attr.n_dims; ++d)
+    {
+        shape.push_back(static_cast<int64_t>(attr.dims[d]));
+    }
+    return shapeToString(shape);
+}
+
+void logTensorAttr(const char *name, const rknn_tensor_attr &attr)
+{
+    if (!isSegDebugEnabled())
+    {
+        return;
+    }
+
+    qDebug().noquote()
+        << "[RKNN-SEG-DEBUG]"
+        << name
+        << "idx=" << attr.index
+        << "dims=" << QString::fromStdString(shapeFromAttrToString(attr))
+        << "fmt=" << tensorFormatToString(attr.fmt)
+        << "type=" << tensorTypeToString(attr.type);
+}
+
+void logFloatBufferStats(const char *name, const float *data, size_t count)
+{
+    if (!isSegDebugEnabled())
+    {
+        return;
+    }
+    if (data == nullptr)
+    {
+        qWarning() << "[RKNN-SEG-DEBUG]" << name << "buffer is null.";
+        return;
+    }
+    if (count == 0)
+    {
+        qWarning() << "[RKNN-SEG-DEBUG]" << name << "buffer has zero elements.";
+        return;
+    }
+
+    float minVal = std::numeric_limits<float>::max();
+    float maxVal = std::numeric_limits<float>::lowest();
+    double sum = 0.0;
+    size_t finiteCount = 0;
+    size_t nonFiniteCount = 0;
+    size_t nearZeroCount = 0;
+    constexpr float kNearZeroEps = 1e-6f;
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        const float v = data[i];
+        if (!std::isfinite(v))
+        {
+            ++nonFiniteCount;
+            continue;
+        }
+        minVal = std::min(minVal, v);
+        maxVal = std::max(maxVal, v);
+        sum += static_cast<double>(v);
+        ++finiteCount;
+        if (std::fabs(v) <= kNearZeroEps)
+        {
+            ++nearZeroCount;
+        }
+    }
+
+    if (finiteCount == 0)
+    {
+        minVal = 0.0f;
+        maxVal = 0.0f;
+    }
+
+    const double mean = sum / static_cast<double>(finiteCount == 0 ? 1 : finiteCount);
+    qDebug().noquote()
+        << "[RKNN-SEG-DEBUG]"
+        << name
+        << "count=" << static_cast<qulonglong>(count)
+        << "min=" << minVal
+        << "max=" << maxVal
+        << "mean=" << mean
+        << "nonFinite=" << static_cast<qulonglong>(nonFiniteCount)
+        << "nearZero=" << static_cast<qulonglong>(nearZeroCount);
+
+    const size_t sampleCount = std::min<size_t>(count, 8);
+    std::string samples;
+    for (size_t i = 0; i < sampleCount; ++i)
+    {
+        if (i > 0)
+        {
+            samples += ", ";
+        }
+        samples += std::format("{:g}", data[i]);
+    }
+    qDebug().noquote() << "[RKNN-SEG-DEBUG]" << name << "first_values=" << QString::fromStdString(samples);
+}
 
 struct ParsedDetections
 {
@@ -156,7 +309,8 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
                                               float padW,
                                               float padH,
                                               float maskScaleX,
-                                              float maskScaleY)
+                                              float maskScaleY,
+                                              int debugIndex)
 {
     Segmentation seg;
     seg.box     = boxes[idx];
@@ -184,6 +338,7 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
     cv::Mat binaryMask;
     cv::threshold(resizedMask, binaryMask, 0.5, 255.0, cv::THRESH_BINARY);
     binaryMask.convertTo(binaryMask, CV_8U);
+    const int binaryNonZero = cv::countNonZero(binaryMask);
 
     cv::Mat finalBinaryMask = cv::Mat::zeros(origSize, CV_8U);
     cv::Rect roi(seg.box.x, seg.box.y, seg.box.width, seg.box.height);
@@ -191,6 +346,18 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
     if (roi.area() > 0)
     {
         binaryMask(roi).copyTo(finalBinaryMask(roi));
+    }
+
+    if (isSegDebugEnabled() && debugIndex < 5)
+    {
+        const int finalNonZero = cv::countNonZero(finalBinaryMask);
+        qDebug() << "[RKNN-SEG-DEBUG] mask idx=" << debugIndex
+                 << "class=" << seg.classId
+                 << "conf=" << seg.conf
+                 << "roi=" << roi.x << roi.y << roi.width << roi.height
+                 << "cropRect=" << cropRect.x << cropRect.y << cropRect.width << cropRect.height
+                 << "binaryNonZero=" << binaryNonZero
+                 << "finalNonZero=" << finalNonZero;
     }
 
     seg.mask = finalBinaryMask;
@@ -322,6 +489,8 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
             throw std::runtime_error("Expected 4 dimensions for RKNN input tensor.");
         }
 
+        logTensorAttr("input", inputAttr);
+
         outputAttrs.resize(numOutputNodes);
         for (uint32_t i = 0; i < numOutputNodes; ++i)
         {
@@ -332,6 +501,7 @@ YOLOv11SegDetectorRknn::YOLOv11SegDetectorRknn(const std::string &modelPath,
             {
                 throw std::runtime_error(std::format("rknn_query OUTPUT_ATTR failed for output {}: {}", i, ret));
             }
+            logTensorAttr((std::string("output") + std::to_string(i)).c_str(), outputAttrs[i]);
         }
 
         qDebug() << "[INFO] YOLOv11Seg RKNN loaded: " << modelPath;
@@ -409,6 +579,18 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
     const int numClasses        = num_features - 4 - kMaskPrototypeCount;
     const int maskCoeffOffset = numClasses + kClassConfOffset;
 
+    if (isSegDebugEnabled())
+    {
+        qDebug().noquote()
+            << "[RKNN-SEG-DEBUG] postprocess shape0=" << QString::fromStdString(shapeToString(shape0))
+            << "shape1=" << QString::fromStdString(shapeToString(shape1))
+            << "layout=" << (featuresMajorLayout ? "features-major" : "boxes-major")
+            << "num_boxes=" << num_boxes
+            << "num_features=" << num_features
+            << "num_classes=" << numClasses
+            << "maskCoeffOffset=" << maskCoeffOffset;
+    }
+
     if (numClasses <= 0)
     {
         throw std::runtime_error("Invalid number of classes derived from output0 shape.");
@@ -423,6 +605,28 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                         boxesMajorLayout,
                                         confThreshold);
 
+    if (isSegDebugEnabled())
+    {
+        float maxDetConf = 0.0f;
+        for (int i = 0; i < num_boxes; ++i)
+        {
+            float detMaxConf = 0.0f;
+            for (int c = 0; c < numClasses; ++c)
+            {
+                const int featureIndex = kClassConfOffset + c;
+                const float conf = boxesMajorLayout
+                    ? output0[static_cast<size_t>(i) * static_cast<size_t>(maskCoeffOffset + kMaskPrototypeCount) + featureIndex]
+                    : output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(num_boxes) + i];
+                detMaxConf = std::max(detMaxConf, conf);
+            }
+            maxDetConf = std::max(maxDetConf, detMaxConf);
+        }
+        qDebug() << "[RKNN-SEG-DEBUG] detections above threshold=" << parsed.boxes.size()
+                 << "of" << num_boxes
+                 << "max raw class confidence=" << maxDetConf
+                 << "threshold=" << confThreshold;
+    }
+
     if (parsed.boxes.empty())
     {
         return results;
@@ -430,6 +634,13 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
 
     std::vector<int> nmsIndices;
     utils::NMSBoxes(parsed.boxes, parsed.confidences, confThreshold, iouThreshold, nmsIndices);
+
+    if (isSegDebugEnabled())
+    {
+        qDebug() << "[RKNN-SEG-DEBUG] NMS kept" << nmsIndices.size()
+                 << "of" << parsed.boxes.size()
+                 << "candidates with IoU threshold" << iouThreshold;
+    }
 
     if (nmsIndices.empty())
     {
@@ -448,6 +659,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
     const float maskScaleX = static_cast<float>(maskW) / letterboxSize.width;
     const float maskScaleY = static_cast<float>(maskH) / letterboxSize.height;
 
+    int debugMaskCounter = 0;
     for (const int idx : nmsIndices)
     {
         auto seg = buildSegmentation(origSize,
@@ -464,7 +676,9 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                      padW,
                                      padH,
                                      maskScaleX,
-                                     maskScaleY);
+                                     maskScaleY,
+                                     debugMaskCounter);
+        ++debugMaskCounter;
         if (!seg.has_value())
         {
             continue;
@@ -484,6 +698,15 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     const rknn_tensor_attr inputAttr = queryInputAttr(ctx);
     validateInputAttr(inputAttr);
     const cv::Mat inputTensor = prepareInputTensor(letterboxImg, inputAttr);
+
+    if (isSegDebugEnabled())
+    {
+        logTensorAttr("input-runtime", inputAttr);
+        qDebug() << "[RKNN-SEG-DEBUG] image=" << image.cols << "x" << image.rows
+                 << "letterbox=" << letterboxImg.cols << "x" << letterboxImg.rows
+                 << "inputTensorType=" << inputTensor.type()
+                 << "inputTensorBytes=" << static_cast<qulonglong>(inputTensor.total() * inputTensor.elemSize());
+    }
 
     rknn_input inputs[1]{};
     inputs[0].index        = 0;
@@ -538,6 +761,17 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
     if (outputs[0].buf == nullptr || outputs[1].buf == nullptr)
     {
         throw std::runtime_error("RKNN returned null output buffers.");
+    }
+
+    if (isSegDebugEnabled())
+    {
+        const size_t output0Count = utils::vectorProduct(shape0);
+        const size_t output1Count = utils::vectorProduct(shape1);
+        qDebug().noquote()
+            << "[RKNN-SEG-DEBUG] output0 shape=" << QString::fromStdString(shapeToString(shape0))
+            << "output1 shape=" << QString::fromStdString(shapeToString(shape1));
+        logFloatBufferStats("output0", reinterpret_cast<const float *>(outputs[0].buf), output0Count);
+        logFloatBufferStats("output1", reinterpret_cast<const float *>(outputs[1].buf), output1Count);
     }
 
     return postprocess(image.size(), letterboxImg.size(),

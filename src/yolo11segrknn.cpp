@@ -23,6 +23,29 @@ bool isSegDebugEnabled()
     return enabled;
 }
 
+bool useFloatInputNormalization01()
+{
+    static const bool normalize01 = [] {
+        const char *env = std::getenv("PHOTOBOOTH_RKNN_SEG_FLOAT_INPUT_RAW255");
+        return !(env != nullptr && std::strcmp(env, "0") != 0);
+    }();
+    return normalize01;
+}
+
+bool useClassScoreSigmoid()
+{
+    static const bool useSigmoid = [] {
+        const char *env = std::getenv("PHOTOBOOTH_RKNN_SEG_CLASS_SIGMOID");
+        return env != nullptr && std::strcmp(env, "0") != 0;
+    }();
+    return useSigmoid;
+}
+
+float sigmoidScalar(float x)
+{
+    return 1.0f / (1.0f + std::exp(-x));
+}
+
 const char *tensorTypeToString(rknn_tensor_type type)
 {
     switch (type)
@@ -217,6 +240,7 @@ ParsedDetections parseDetections(const float *output0,
                                  int maskCoeffOffset,
                                  int maskPrototypeCount,
                                  bool boxesMajorLayout,
+                                 bool applyClassSigmoid,
                                  float confThreshold)
 {
     ParsedDetections parsed;
@@ -246,7 +270,11 @@ ParsedDetections parseDetections(const float *output0,
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            const float conf = readValue(kClassConfOffset + c);
+            float conf = readValue(kClassConfOffset + c);
+            if (applyClassSigmoid)
+            {
+                conf = sigmoidScalar(conf);
+            }
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -396,11 +424,18 @@ cv::Mat prepareInputTensor(const cv::Mat &letterboxImage,
         return letterboxImage;
     }
 
-    cv::Mat normalizedInput;
-    letterboxImage.convertTo(normalizedInput, CV_32FC3, 1.0f / 255.0f);
+    cv::Mat floatInput;
+    if (useFloatInputNormalization01())
+    {
+        letterboxImage.convertTo(floatInput, CV_32FC3, 1.0f / 255.0f);
+    }
+    else
+    {
+        letterboxImage.convertTo(floatInput, CV_32FC3);
+    }
 
     cv::Mat fp16Input;
-    normalizedInput.convertTo(fp16Input, CV_16FC3);
+    floatInput.convertTo(fp16Input, CV_16FC3);
     return fp16Input;
 }
 
@@ -578,6 +613,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
 
     const int numClasses        = num_features - 4 - kMaskPrototypeCount;
     const int maskCoeffOffset = numClasses + kClassConfOffset;
+    const bool applyClassSigmoid = useClassScoreSigmoid();
 
     if (isSegDebugEnabled())
     {
@@ -588,7 +624,8 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
             << "num_boxes=" << num_boxes
             << "num_features=" << num_features
             << "num_classes=" << numClasses
-            << "maskCoeffOffset=" << maskCoeffOffset;
+                << "maskCoeffOffset=" << maskCoeffOffset
+                << "classSigmoid=" << (applyClassSigmoid ? "on" : "off");
     }
 
     if (numClasses <= 0)
@@ -603,14 +640,17 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                         maskCoeffOffset,
                                         kMaskPrototypeCount,
                                         boxesMajorLayout,
+                                        applyClassSigmoid,
                                         confThreshold);
 
     if (isSegDebugEnabled())
     {
         float maxDetConf = 0.0f;
+        float maxDetConfSigmoid = 0.0f;
         for (int i = 0; i < num_boxes; ++i)
         {
             float detMaxConf = 0.0f;
+            float detMaxConfSigmoid = 0.0f;
             for (int c = 0; c < numClasses; ++c)
             {
                 const int featureIndex = kClassConfOffset + c;
@@ -618,12 +658,16 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                     ? output0[static_cast<size_t>(i) * static_cast<size_t>(maskCoeffOffset + kMaskPrototypeCount) + featureIndex]
                     : output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(num_boxes) + i];
                 detMaxConf = std::max(detMaxConf, conf);
+                detMaxConfSigmoid = std::max(detMaxConfSigmoid, sigmoidScalar(conf));
             }
             maxDetConf = std::max(maxDetConf, detMaxConf);
+            maxDetConfSigmoid = std::max(maxDetConfSigmoid, detMaxConfSigmoid);
         }
         qDebug() << "[RKNN-SEG-DEBUG] detections above threshold=" << parsed.boxes.size()
                  << "of" << num_boxes
                  << "max raw class confidence=" << maxDetConf
+                 << "max sigmoid class confidence=" << maxDetConfSigmoid
+                 << "active score mode=" << (applyClassSigmoid ? "sigmoid" : "raw")
                  << "threshold=" << confThreshold;
     }
 
@@ -705,6 +749,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
         qDebug() << "[RKNN-SEG-DEBUG] image=" << image.cols << "x" << image.rows
                  << "letterbox=" << letterboxImg.cols << "x" << letterboxImg.rows
                  << "inputTensorType=" << inputTensor.type()
+                 << "floatInputMode=" << (useFloatInputNormalization01() ? "normalized_0_1" : "raw_0_255")
                  << "inputTensorBytes=" << static_cast<qulonglong>(inputTensor.total() * inputTensor.elemSize());
     }
 

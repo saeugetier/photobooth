@@ -30,3 +30,4 @@ jobs:
           args: >
             -Dsonar.organization=saeugetier
             -Dsonar.projectKey=saeugetier_photobooth
+            -Dsonar.coverage.exclusions=**/*

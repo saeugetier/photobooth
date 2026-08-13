@@ -293,8 +293,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.3.0/yolo-models-v0.3.0.tar.gz",
-                    "sha256": "ba3d13524874e3aaa0f2711bdf971e8678f5e192394802ddeacdbb1d62c7900b"
+                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.3.1/yolo-models-v0.3.1.tar.gz",
+                    "sha256": "564e7cc3884b80bc964de4fac0f04689d9fd7bb350e50cb587545c7772fa74a3"
                 }
             ]
         },

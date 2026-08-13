@@ -23,24 +23,6 @@ bool isSegDebugEnabled()
     return enabled;
 }
 
-bool useFloatInputNormalization01()
-{
-    static const bool normalize01 = [] {
-        const char *env = std::getenv("PHOTOBOOTH_RKNN_SEG_FLOAT_INPUT_RAW255");
-        return !(env != nullptr && std::strcmp(env, "0") != 0);
-    }();
-    return normalize01;
-}
-
-bool useClassScoreSigmoid()
-{
-    static const bool useSigmoid = [] {
-        const char *env = std::getenv("PHOTOBOOTH_RKNN_SEG_CLASS_SIGMOID");
-        return env != nullptr && std::strcmp(env, "0") != 0;
-    }();
-    return useSigmoid;
-}
-
 float sigmoidScalar(float x)
 {
     return 1.0f / (1.0f + std::exp(-x));
@@ -240,7 +222,6 @@ ParsedDetections parseDetections(const float *output0,
                                  int maskCoeffOffset,
                                  int maskPrototypeCount,
                                  bool boxesMajorLayout,
-                                 bool applyClassSigmoid,
                                  float confThreshold)
 {
     ParsedDetections parsed;
@@ -270,11 +251,7 @@ ParsedDetections parseDetections(const float *output0,
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            float conf = readValue(kClassConfOffset + c);
-            if (applyClassSigmoid)
-            {
-                conf = sigmoidScalar(conf);
-            }
+            const float conf = readValue(kClassConfOffset + c);
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -425,14 +402,7 @@ cv::Mat prepareInputTensor(const cv::Mat &letterboxImage,
     }
 
     cv::Mat floatInput;
-    if (useFloatInputNormalization01())
-    {
-        letterboxImage.convertTo(floatInput, CV_32FC3, 1.0f / 255.0f);
-    }
-    else
-    {
-        letterboxImage.convertTo(floatInput, CV_32FC3);
-    }
+    letterboxImage.convertTo(floatInput, CV_32FC3);
 
     cv::Mat fp16Input;
     floatInput.convertTo(fp16Input, CV_16FC3);
@@ -613,7 +583,6 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
 
     const int numClasses        = num_features - 4 - kMaskPrototypeCount;
     const int maskCoeffOffset = numClasses + kClassConfOffset;
-    const bool applyClassSigmoid = useClassScoreSigmoid();
 
     if (isSegDebugEnabled())
     {
@@ -624,8 +593,8 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
             << "num_boxes=" << num_boxes
             << "num_features=" << num_features
             << "num_classes=" << numClasses
-                << "maskCoeffOffset=" << maskCoeffOffset
-                << "classSigmoid=" << (applyClassSigmoid ? "on" : "off");
+            << "maskCoeffOffset=" << maskCoeffOffset
+            << "classSigmoid=" << "off";
     }
 
     if (numClasses <= 0)
@@ -640,7 +609,6 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                         maskCoeffOffset,
                                         kMaskPrototypeCount,
                                         boxesMajorLayout,
-                                        applyClassSigmoid,
                                         confThreshold);
 
     if (isSegDebugEnabled())
@@ -667,7 +635,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                  << "of" << num_boxes
                  << "max raw class confidence=" << maxDetConf
                  << "max sigmoid class confidence=" << maxDetConfSigmoid
-                 << "active score mode=" << (applyClassSigmoid ? "sigmoid" : "raw")
+                 << "active score mode=raw"
                  << "threshold=" << confThreshold;
     }
 
@@ -749,7 +717,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::segment(const cv::Mat &image,
         qDebug() << "[RKNN-SEG-DEBUG] image=" << image.cols << "x" << image.rows
                  << "letterbox=" << letterboxImg.cols << "x" << letterboxImg.rows
                  << "inputTensorType=" << inputTensor.type()
-                 << "floatInputMode=" << (useFloatInputNormalization01() ? "normalized_0_1" : "raw_0_255")
+                 << "floatInputMode=raw_0_255"
                  << "inputTensorBytes=" << static_cast<qulonglong>(inputTensor.total() * inputTensor.elemSize());
     }
 

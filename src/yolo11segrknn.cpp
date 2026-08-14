@@ -34,6 +34,8 @@ const char *tensorTypeToString(rknn_tensor_type type)
     {
         case RKNN_TENSOR_UINT8:
             return "UINT8";
+        case RKNN_TENSOR_INT8:
+            return "INT8";
         case RKNN_TENSOR_FLOAT16:
             return "FLOAT16";
         default:
@@ -387,16 +389,16 @@ void validateInputAttr(const rknn_tensor_attr &inputAttr)
     {
         throw std::runtime_error("Unsupported RKNN input format (only NHWC is supported).");
     }
-    if (inputAttr.type != RKNN_TENSOR_FLOAT16 && inputAttr.type != RKNN_TENSOR_UINT8)
+    if (inputAttr.type != RKNN_TENSOR_FLOAT16 && inputAttr.type != RKNN_TENSOR_UINT8 && inputAttr.type != RKNN_TENSOR_INT8)
     {
-        throw std::runtime_error("Unsupported RKNN input type (supported: UINT8, FLOAT16).");
+        throw std::runtime_error("Unsupported RKNN input type (supported: UINT8, INT8, FLOAT16).");
     }
 }
 
 cv::Mat prepareInputTensor(const cv::Mat &letterboxImage,
                            const rknn_tensor_attr &inputAttr)
 {
-    if (inputAttr.type == RKNN_TENSOR_UINT8)
+    if (inputAttr.type == RKNN_TENSOR_UINT8 || inputAttr.type == RKNN_TENSOR_INT8)
     {
         return letterboxImage;
     }

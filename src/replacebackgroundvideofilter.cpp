@@ -182,8 +182,8 @@ void ReplaceBackgroundVideoFilter::onImageSaved(const QString &fileName)
 
 ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter *filter) : mFilter(filter)
 {
-    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg.onnx", "coco.names", false));
-    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg.onnx", "coco.names", false));
+    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg_onnx.onnx", "coco.names", false));
+    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg_onnx.onnx", "coco.names", false));
 }
 
 void ReplaceBackgroundFilterRunable::run(const QVariant &variant, bool applyBackground, bool highResFilter)

@@ -399,39 +399,14 @@ void validateInputAttr(const rknn_tensor_attr &inputAttr)
 cv::Mat prepareInt8Input(const cv::Mat &letterboxImage,
                          const rknn_tensor_attr &inputAttr)
 {
-    cv::Mat int8Input(letterboxImage.size(), CV_8SC3);
+    (void)inputAttr;
 
-    // RKNN int8 image tensors are typically quantized to the signed 8-bit domain
-    // with an affine input transform. Use the model scale/zp when available; if the
-    // scale is effectively unset, fall back to the common zero-point centered form.
-    const float scale = std::abs(inputAttr.scale) > std::numeric_limits<float>::epsilon()
-        ? inputAttr.scale
-        : 1.0f / 255.0f;
-    const float zeroPoint = static_cast<float>(inputAttr.zp);
-
-    const bool useAffineQuant = std::abs(scale - 1.0f) > 1e-6f || std::abs(zeroPoint) > 1e-6f;
-
-    if (useAffineQuant)
-    {
-        for (int y = 0; y < letterboxImage.rows; ++y)
-        {
-            const auto *src = letterboxImage.ptr<cv::Vec3b>(y);
-            auto *dst = int8Input.ptr<cv::Vec<int8_t, 3>>(y);
-            for (int x = 0; x < letterboxImage.cols; ++x)
-            {
-                for (int c = 0; c < 3; ++c)
-                {
-                    const float normalized = static_cast<float>(src[x][c]) / 255.0f;
-                    const float qValue = normalized / scale + zeroPoint;
-                    const int32_t intVal = static_cast<int32_t>(std::lround(qValue));
-                    dst[x][c] = static_cast<int8_t>(std::clamp(intVal, -128, 127));
-                }
-            }
-        }
-        return int8Input;
-    }
-
-    letterboxImage.convertTo(int8Input, CV_8SC3);
+    cv::Mat int8Input;
+    // Standard RKNN image INT8 contract: unsigned 8-bit RGB values are shifted to
+    // the signed domain by subtracting 128, i.e. 0..255 -> -128..127.
+    // This is far more common for image models than passing raw uint8 values
+    // straight through as if they were an INT8 tensor.
+    letterboxImage.convertTo(int8Input, CV_8SC3, 1.0, -128.0);
     return int8Input;
 }
 

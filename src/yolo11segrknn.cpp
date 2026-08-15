@@ -225,7 +225,8 @@ ParsedDetections parseDetections(const float *output0,
                                  int maskCoeffOffset,
                                  int maskPrototypeCount,
                                  bool boxesMajorLayout,
-                                 float confThreshold)
+                                 float confThreshold,
+                                 const cv::Size &letterboxSize)
 {
     ParsedDetections parsed;
 
@@ -249,11 +250,12 @@ ParsedDetections parseDetections(const float *output0,
             continue;
         }
 
-        const float box_w = std::clamp(std::fabs(w), 1.0f, 4096.0f);
-        const float box_h = std::clamp(std::fabs(h), 1.0f, 4096.0f);
-
-        const float x_center = std::clamp(xc, -2048.0f, 2048.0f);
-        const float y_center = std::clamp(yc, -2048.0f, 2048.0f);
+        // This RKNN export reports box center/size normalized to [0,1] of the letterbox
+        // frame (e.g. 0.02..0.19), not raw pixel coordinates; scale up before use.
+        const float x_center = std::clamp(xc, -2.0f, 2.0f) * static_cast<float>(letterboxSize.width);
+        const float y_center = std::clamp(yc, -2.0f, 2.0f) * static_cast<float>(letterboxSize.height);
+        const float box_w = std::clamp(std::fabs(w), 0.0f, 2.0f) * static_cast<float>(letterboxSize.width);
+        const float box_h = std::clamp(std::fabs(h), 0.0f, 2.0f) * static_cast<float>(letterboxSize.height);
 
         const BoundingBox box{
             static_cast<int>(std::round(x_center - box_w / 2.0f)),
@@ -261,11 +263,14 @@ ParsedDetections parseDetections(const float *output0,
             static_cast<int>(std::round(box_w)),
             static_cast<int>(std::round(box_h))};
 
+        // Keep raw (non-sigmoid) class scores here to match the debug output further down
+        // ("classSigmoid=off" / "active score mode=raw"). Applying sigmoid here silently
+        // changes which detections pass confThreshold and desyncs box decode from scoring.
         float maxConf = 0.0f;
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            const float conf = sigmoidScalar(readValue(kClassConfOffset + c));
+            const float conf = readValue(kClassConfOffset + c);
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -648,7 +653,8 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                         maskCoeffOffset,
                                         kMaskPrototypeCount,
                                         boxesMajorLayout,
-                                        confThreshold);
+                                        confThreshold,
+                                        letterboxSize);
 
     if (isSegDebugEnabled())
     {

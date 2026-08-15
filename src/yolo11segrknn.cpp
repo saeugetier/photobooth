@@ -229,6 +229,41 @@ ParsedDetections parseDetections(const float *output0,
 {
     ParsedDetections parsed;
 
+    static constexpr std::array<int, 3> kAnchorStrides = {8, 16, 32};
+    static constexpr std::array<int, 3> kAnchorGridWidths = {40, 20, 10};
+    static constexpr std::array<int, 3> kAnchorGridHeights = {40, 20, 10};
+
+    auto decodeYoloBox = [&](int anchorIndex, float tx, float ty, float tw, float th) -> BoundingBox {
+        int headIndex = 0;
+        int offset = 0;
+        if (anchorIndex >= 1600)
+        {
+            headIndex = 1;
+            offset = 1600;
+            if (anchorIndex >= 2000)
+            {
+                headIndex = 2;
+                offset = 2000;
+            }
+        }
+
+        const int localIndex = anchorIndex - offset;
+        const int gridW = kAnchorGridWidths[headIndex];
+        const int gridH = kAnchorGridHeights[headIndex];
+        const int stride = kAnchorStrides[headIndex];
+        const int cellX = localIndex % gridW;
+        const int cellY = localIndex / gridW;
+
+        const float x = (sigmoidScalar(tx) * 2.0f - 0.5f + static_cast<float>(cellX)) * static_cast<float>(stride);
+        const float y = (sigmoidScalar(ty) * 2.0f - 0.5f + static_cast<float>(cellY)) * static_cast<float>(stride);
+        const float w = std::pow(2.0f * sigmoidScalar(tw), 2.0f) * static_cast<float>(stride);
+        const float h = std::pow(2.0f * sigmoidScalar(th), 2.0f) * static_cast<float>(stride);
+
+        const int x0 = static_cast<int>(std::round(x - w / 2.0f));
+        const int y0 = static_cast<int>(std::round(y - h / 2.0f));
+        return BoundingBox{x0, y0, static_cast<int>(std::round(w)), static_cast<int>(std::round(h))};
+    };
+
     for (int i = 0; i < numBoxes; ++i)
     {
         const auto readValue = [&](int featureIndex) -> float {
@@ -239,22 +274,18 @@ ParsedDetections parseDetections(const float *output0,
             return output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(numBoxes) + i];
         };
 
-        const float xc = readValue(kBoxOffset);
-        const float yc = readValue(kBoxOffset + 1);
-        const float w  = readValue(kBoxOffset + 2);
-        const float h  = readValue(kBoxOffset + 3);
+        const float tx = readValue(kBoxOffset);
+        const float ty = readValue(kBoxOffset + 1);
+        const float tw = readValue(kBoxOffset + 2);
+        const float th = readValue(kBoxOffset + 3);
 
-        const BoundingBox box{
-            static_cast<int>(std::round(xc - w / 2.0f)),
-            static_cast<int>(std::round(yc - h / 2.0f)),
-            static_cast<int>(std::round(w)),
-            static_cast<int>(std::round(h))};
+        const BoundingBox box = decodeYoloBox(i, tx, ty, tw, th);
 
         float maxConf = 0.0f;
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            const float conf = readValue(kClassConfOffset + c);
+            const float conf = sigmoidScalar(readValue(kClassConfOffset + c));
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -351,9 +382,15 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
     cv::Mat finalBinaryMask = cv::Mat::zeros(origSize, CV_8U);
     cv::Rect roi(seg.box.x, seg.box.y, seg.box.width, seg.box.height);
     roi &= cv::Rect(0, 0, binaryMask.cols, binaryMask.rows);
-    if (roi.area() > 0)
+    if (roi.width > 0 && roi.height > 0)
     {
         binaryMask(roi).copyTo(finalBinaryMask(roi));
+    }
+    else
+    {
+        // The decoded box can still be empty when the model exports unscaled logits.
+        // Keep the mask out of the final image instead of producing a zero-size ROI.
+        return std::nullopt;
     }
 
     if (isSegDebugEnabled() && debugIndex < 5)

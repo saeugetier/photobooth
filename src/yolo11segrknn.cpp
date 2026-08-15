@@ -230,32 +230,53 @@ ParsedDetections parseDetections(const float *output0,
 {
     ParsedDetections parsed;
 
+    const auto readValue = [&](int i, int featureIndex) -> float {
+        if (boxesMajorLayout)
+        {
+            return output0[static_cast<size_t>(i) * static_cast<size_t>(maskCoeffOffset + maskPrototypeCount) + featureIndex];
+        }
+        return output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(numBoxes) + i];
+    };
+
+    // Different RKNN exports disagree on whether box center/size are already in letterbox
+    // pixel space or normalized to [0,1]. Detect it from the data instead of hardcoding it,
+    // since e.g. the INT8 and FLOAT16 exports of this model use different conventions.
+    float maxAbsCenter = 0.0f;
     for (int i = 0; i < numBoxes; ++i)
     {
-        const auto readValue = [&](int featureIndex) -> float {
-            if (boxesMajorLayout)
-            {
-                return output0[static_cast<size_t>(i) * static_cast<size_t>(maskCoeffOffset + maskPrototypeCount) + featureIndex];
-            }
-            return output0[static_cast<size_t>(featureIndex) * static_cast<size_t>(numBoxes) + i];
-        };
+        const float xc = readValue(i, kBoxOffset);
+        const float yc = readValue(i, kBoxOffset + 1);
+        if (std::isfinite(xc)) maxAbsCenter = std::max(maxAbsCenter, std::fabs(xc));
+        if (std::isfinite(yc)) maxAbsCenter = std::max(maxAbsCenter, std::fabs(yc));
+    }
+    constexpr float kNormalizedRangeLimit = 3.0f; // normalized centers rarely exceed ~1.5
+    const bool coordinatesAreNormalized = maxAbsCenter <= kNormalizedRangeLimit;
 
-        const float xc = readValue(kBoxOffset);
-        const float yc = readValue(kBoxOffset + 1);
-        const float w  = readValue(kBoxOffset + 2);
-        const float h  = readValue(kBoxOffset + 3);
+    if (isSegDebugEnabled())
+    {
+        qDebug() << "[RKNN-SEG-DEBUG] box coord scale detection: maxAbsCenter=" << maxAbsCenter
+                 << "normalized=" << coordinatesAreNormalized;
+    }
+
+    for (int i = 0; i < numBoxes; ++i)
+    {
+        const float xc = readValue(i, kBoxOffset);
+        const float yc = readValue(i, kBoxOffset + 1);
+        const float w  = readValue(i, kBoxOffset + 2);
+        const float h  = readValue(i, kBoxOffset + 3);
 
         if (!std::isfinite(xc) || !std::isfinite(yc) || !std::isfinite(w) || !std::isfinite(h))
         {
             continue;
         }
 
-        // This RKNN export reports box center/size normalized to [0,1] of the letterbox
-        // frame (e.g. 0.02..0.19), not raw pixel coordinates; scale up before use.
-        const float x_center = std::clamp(xc, -2.0f, 2.0f) * static_cast<float>(letterboxSize.width);
-        const float y_center = std::clamp(yc, -2.0f, 2.0f) * static_cast<float>(letterboxSize.height);
-        const float box_w = std::clamp(std::fabs(w), 0.0f, 2.0f) * static_cast<float>(letterboxSize.width);
-        const float box_h = std::clamp(std::fabs(h), 0.0f, 2.0f) * static_cast<float>(letterboxSize.height);
+        const float scaleX = coordinatesAreNormalized ? static_cast<float>(letterboxSize.width) : 1.0f;
+        const float scaleY = coordinatesAreNormalized ? static_cast<float>(letterboxSize.height) : 1.0f;
+
+        const float x_center = xc * scaleX;
+        const float y_center = yc * scaleY;
+        const float box_w = std::fabs(w) * scaleX;
+        const float box_h = std::fabs(h) * scaleY;
 
         const BoundingBox box{
             static_cast<int>(std::round(x_center - box_w / 2.0f)),
@@ -270,7 +291,7 @@ ParsedDetections parseDetections(const float *output0,
         int classId   = -1;
         for (int c = 0; c < numClasses; ++c)
         {
-            const float conf = readValue(kClassConfOffset + c);
+            const float conf = readValue(i, kClassConfOffset + c);
             if (conf > maxConf)
             {
                 maxConf = conf;
@@ -290,7 +311,7 @@ ParsedDetections parseDetections(const float *output0,
         std::vector<float> maskCoeffs(maskPrototypeCount);
         for (int m = 0; m < maskPrototypeCount; ++m)
         {
-            maskCoeffs[m] = readValue(maskCoeffOffset + m);
+            maskCoeffs[m] = readValue(i, maskCoeffOffset + m);
         }
         parsed.maskCoefficients.emplace_back(std::move(maskCoeffs));
     }

@@ -198,25 +198,15 @@ void validatePostprocessShapes(const std::vector<int64_t> &shape0,
     }
 }
 
-std::vector<cv::Mat> buildPrototypeMasks(const float *output1,
-                                         int maskH,
-                                         int maskW,
-                                         int maskPrototypeCount)
+cv::Mat wrapPrototypeMasks(const float *output1, int maskH, int maskW, int maskPrototypeCount)
 {
-    std::vector<cv::Mat> prototypeMasks;
-    prototypeMasks.reserve(maskPrototypeCount);
-
-    const size_t maskPlaneSize = static_cast<size_t>(maskH) * static_cast<size_t>(maskW);
-    for (int m = 0; m < maskPrototypeCount; ++m)
-    {
-        cv::Mat proto(maskH, maskW, CV_32F);
-        std::memcpy(proto.data,
-                    output1 + static_cast<size_t>(m) * maskPlaneSize,
-                    maskPlaneSize * sizeof(float));
-        prototypeMasks.emplace_back(std::move(proto));
-    }
-
-    return prototypeMasks;
+    // output1 is already laid out as [maskPrototypeCount][maskH*maskW] in memory, i.e.
+    // exactly a (maskPrototypeCount x maskH*maskW) matrix. Wrap it directly instead of
+    // copying each prototype plane into its own cv::Mat.
+    return cv::Mat(maskPrototypeCount,
+                   maskH * maskW,
+                   CV_32F,
+                   const_cast<float *>(output1));
 }
 
 ParsedDetections parseDetections(const float *output0,
@@ -346,11 +336,10 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
                                               const std::vector<float> &confidences,
                                               const std::vector<int> &classIds,
                                               const std::vector<std::vector<float>> &maskCoefficients,
-                                              const std::vector<cv::Mat> &prototypeMasks,
+                                              const cv::Mat &protoMat,
                                               int idx,
                                               int maskH,
                                               int maskW,
-                                              int maskPrototypeCount,
                                               float padW,
                                               float padH,
                                               float maskScaleX,
@@ -363,12 +352,10 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
     seg.classId = classIds[idx];
     seg.box = utils::scaleCoords(letterboxSize, seg.box, origSize, true);
 
+    // Single (1 x 32) * (32 x H*W) matrix multiply instead of 32 elementwise Mat ops.
     const auto &coeffs = maskCoefficients[idx];
-    cv::Mat finalMask = cv::Mat::zeros(maskH, maskW, CV_32F);
-    for (int m = 0; m < maskPrototypeCount; ++m)
-    {
-        finalMask += coeffs[m] * prototypeMasks[m];
-    }
+    cv::Mat coeffsMat(1, static_cast<int>(coeffs.size()), CV_32F, const_cast<float *>(coeffs.data()));
+    cv::Mat finalMask = (coeffsMat * protoMat).reshape(1, maskH);
     finalMask = utils::sigmoid(finalMask);
 
     const cv::Rect cropRect = computeMaskCropRect(letterboxSize, maskW, maskH, padW, padH, maskScaleX, maskScaleY);
@@ -466,11 +453,9 @@ cv::Mat prepareInputTensor(const cv::Mat &letterboxImage,
         return prepareInt8Input(letterboxImage, inputAttr);
     }
 
-    cv::Mat floatInput;
-    letterboxImage.convertTo(floatInput, CV_32FC3);
-
+    // convertTo handles the CV_8U -> CV_16F step directly, no need for a CV_32F stopover.
     cv::Mat fp16Input;
-    floatInput.convertTo(fp16Input, CV_16FC3);
+    letterboxImage.convertTo(fp16Input, CV_16FC3);
     return fp16Input;
 }
 
@@ -667,7 +652,7 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
         throw std::runtime_error("Invalid number of classes derived from output0 shape.");
     }
 
-    const auto prototypeMasks = buildPrototypeMasks(output1, maskH, maskW, kMaskPrototypeCount);
+    const auto prototypeMat = wrapPrototypeMasks(output1, maskH, maskW, kMaskPrototypeCount);
     const auto parsed = parseDetections(output0,
                                         num_boxes,
                                         numClasses,
@@ -746,11 +731,10 @@ std::vector<Segmentation> YOLOv11SegDetectorRknn::postprocess(
                                      parsed.confidences,
                                      parsed.classIds,
                                      parsed.maskCoefficients,
-                                     prototypeMasks,
+                                     prototypeMat,
                                      idx,
                                      maskH,
                                      maskW,
-                                     kMaskPrototypeCount,
                                      padW,
                                      padH,
                                      maskScaleX,

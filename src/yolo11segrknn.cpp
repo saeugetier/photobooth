@@ -355,7 +355,9 @@ std::optional<Segmentation> buildSegmentation(const cv::Size &origSize,
     // Single (1 x 32) * (32 x H*W) matrix multiply instead of 32 elementwise Mat ops.
     const auto &coeffs = maskCoefficients[idx];
     cv::Mat coeffsMat(1, static_cast<int>(coeffs.size()), CV_32F, const_cast<float *>(coeffs.data()));
-    cv::Mat finalMask = (coeffsMat * protoMat).reshape(1, maskH);
+    // MatExpr from operator* has no reshape(); materialize to Mat first.
+    cv::Mat combined = coeffsMat * protoMat;
+    cv::Mat finalMask = combined.reshape(1, maskH);
     finalMask = utils::sigmoid(finalMask);
 
     const cv::Rect cropRect = computeMaskCropRect(letterboxSize, maskW, maskH, padW, padH, maskScaleX, maskScaleY);

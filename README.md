@@ -1,5 +1,7 @@
 # Photobooth
 
+[![CI](https://github.com/saeugetier/photobooth/actions/workflows/flatpak.yml/badge.svg)](https://github.com/saeugetier/photobooth/actions/workflows/flatpak.yml)
+
 ## Overview
 
 The goal of the project is to provide a configurable photobooth software for Raspberry Pi or a PC.

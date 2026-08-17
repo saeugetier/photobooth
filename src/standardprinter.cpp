@@ -52,7 +52,7 @@ StandardPrinter::~StandardPrinter()
 
 bool StandardPrinter::printerOnline()
 {
-    return true; //cannot determine online state @TODO
+    return !printerInfoByName(mPrinterName).isNull();
 }
 
 bool StandardPrinter::busy()

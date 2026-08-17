@@ -24,6 +24,7 @@
         "--filesystem=/run/media",
         "--filesystem=/mnt",
         "--filesystem=/run/udev:ro",
+        "--filesystem=/sys/firmware/devicetree/base:ro",
         "--socket=fallback-x11",
         "--socket=wayland"
     ],
@@ -285,14 +286,15 @@
                 "mkdir -p ${FLATPAK_DEST}/share/models",
                 "install -Dm644 *.onnx ${FLATPAK_DEST}/share/models/",
                 "install -Dm644 coco.names ${FLATPAK_DEST}/share/models/",
+                "for f in *.rknn; do [ -e \"$f\" ] && install -Dm644 \"$f\" ${FLATPAK_DEST}/share/models/ || true; done",
                 "for d in *_model; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done",
                 "for d in *_model_320; do cp -r \"$d\" ${FLATPAK_DEST}/share/models/; done"
             ],
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.2.0/yolo-models-v0.2.0.tar.gz",
-                    "sha256": "b76a6927f40c889d0e24a8e063f9c74125bf7349764957951fc8ae94a3e12f87"
+                    "url": "https://github.com/saeugetier/photobooth-model-zoo/releases/download/v0.3.2/yolo-models-v0.3.2.tar.gz",
+                    "sha256": "3c04ed1d2ed1e863c03e34144fa357facf0796e8ba4d13cb4f2b9a98d4b8f056"
                 }
             ]
         },
@@ -340,6 +342,23 @@
                     "type": "git",
                     "url": "https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git",
                     "tag": "v2.2.1"
+                }
+            ]
+        },
+        {
+            "name": "rknn-toolkit2",
+            "only-arches": ["aarch64"],
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm755 rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so ${FLATPAK_DEST}/lib/librknnrt.so",
+                "install -Dm644 rknpu2/runtime/Linux/librknn_api/include/rknn_api.h ${FLATPAK_DEST}/include/rknn_api.h"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/airockchip/rknn-toolkit2.git",
+                    "tag": "v2.3.2",
+                    "commit": "42aa1d426c0a9e0869b6374edba009f7208a1926"
                 }
             ]
         },

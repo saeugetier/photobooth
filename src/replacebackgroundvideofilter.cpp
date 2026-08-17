@@ -65,6 +65,14 @@ void ReplaceBackgroundVideoFilter::setNeuralNetworkRuntime(QString runtime)
     {
         newRuntime = NeuralNetworkRuntime::NCNN;
     }
+    else if (runtime.contains("RKNN"))
+    {
+#ifdef HAS_RKNN
+        newRuntime = NeuralNetworkRuntime::RKNN;
+#else
+        newRuntime = NeuralNetworkRuntime::ONNX;
+#endif
+    }
     else
     {
         throw std::runtime_error("Unknown neural network runtime: " + runtime.toStdString());
@@ -119,6 +127,10 @@ QString ReplaceBackgroundVideoFilter::getNeuralNetworkRuntime() const
     {
         return QString("NCNN_LOW_RES");
     }
+    else if (mNeuralNetworkRuntime == NeuralNetworkRuntime::RKNN)
+    {
+        return QString("RKNN");
+    }
     else
     {
         return QString("Unknown");
@@ -170,8 +182,8 @@ void ReplaceBackgroundVideoFilter::onImageSaved(const QString &fileName)
 
 ReplaceBackgroundFilterRunable::ReplaceBackgroundFilterRunable(ReplaceBackgroundVideoFilter *filter) : mFilter(filter)
 {
-    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg.onnx", "coco.names", false));
-    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg.onnx", "coco.names", false));
+    mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg_onnx.onnx", "coco.names", false));
+    mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg_onnx.onnx", "coco.names", false));
 }
 
 void ReplaceBackgroundFilterRunable::run(const QVariant &variant, bool applyBackground, bool highResFilter)
@@ -316,8 +328,8 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
     if (runtime == NeuralNetworkRuntime::ONNX)
     {
         qDebug() << "[INFO] Change YOLOv11Segmentation runtime to ONNX";
-        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg.onnx", "coco.names", false));
-        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg.onnx", "coco.names", false));
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorOnnx("yolo11n-seg_onnx.onnx", "coco.names", false));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorOnnx("yolo11x-seg_onnx.onnx", "coco.names", false));
     }
     else if (runtime == NeuralNetworkRuntime::NCNN)
     {
@@ -331,6 +343,14 @@ void ReplaceBackgroundFilterRunable::changeNeuralNetworkRuntime(const NeuralNetw
         mYoloSegmentorPreview.reset(new YOLOv11SegDetectorNcnn("yolo11n-seg_ncnn_model_320", "coco.names", false, true));
         mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorNcnn("yolo11x-seg_ncnn_model", "coco.names", false));
     }
+#ifdef HAS_RKNN
+    else if (runtime == NeuralNetworkRuntime::RKNN)
+    {
+        qDebug() << "[INFO] Change YOLOv11Segmentation runtime to RKNN";
+        mYoloSegmentorPreview.reset(new YOLOv11SegDetectorRknn("yolo11n-seg_rknn_model/yolo11n-seg-rk3566.rknn", "coco.names"));
+        mYoloSegmentorHighRes.reset(new YOLOv11SegDetectorRknn("yolo11x-seg_rknn_model/yolo11x-seg-rk3566.rknn", "coco.names"));
+    }
+#endif
 }
 
 void ReplaceBackgroundFilterRunable::prepareBackground(cv::Mat &bg, cv::Size size)

@@ -313,7 +313,7 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="92"/>
         <source>GPIO</source>
-        <translation >GPIO</translation>
+        <translation>GPIO</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="114"/>
@@ -458,67 +458,67 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="490"/>
         <source>Enable GPIO:</source>
-        <translation >GPIO aktivieren:</translation>
+        <translation>GPIO aktivieren:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="509"/>
         <source>Board Preset:</source>
-        <translation >Board Preset:</translation>
+        <translation>Board Preset:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="520"/>
         <source>Raspberry Pi 3/4/5</source>
-        <translation >Raspberry Pi 3/4/5</translation>
+        <translation>Raspberry Pi 3/4/5</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="521"/>
         <source>Orange Pi 3B (RK3566)</source>
-        <translation >Orange Pi 3B (RK3566)</translation>
+        <translation>Orange Pi 3B (RK3566)</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="522"/>
         <source>Custom</source>
-        <translation >Benutzerdefiniert</translation>
+        <translation>Benutzerdefiniert</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="537"/>
         <source>GPIO Chip:</source>
-        <translation >GPIO-Chip:</translation>
+        <translation>GPIO-Chip:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="555"/>
         <source>LED Enable Line:</source>
-        <translation >LED-Aktivierungsleitung:</translation>
+        <translation>LED-Aktivierungsleitung:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="573"/>
         <source>LED Brightness Line:</source>
-        <translation >LED-Helligkeitsleitung:</translation>
+        <translation>LED-Helligkeitsleitung:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="597"/>
         <source>PWM Frequency (Hz):</source>
-        <translation >PWM-Frequenz (Hz):</translation>
+        <translation>PWM-Frequenz (Hz):</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="617"/>
         <source>Invert PWM:</source>
-        <translation >PWM invertieren:</translation>
+        <translation>PWM invertieren:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="637"/>
         <source>Enable Camera Wake-up:</source>
-        <translation >Kamerawakeup aktivieren:</translation>
+        <translation>Kamerawakeup aktivieren:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="651"/>
         <source>Camera Wake-up Line:</source>
-        <translation >Kamerawakeup-Leitung:</translation>
+        <translation>Kamerawakeup-Leitung:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="668"/>
         <source>Wake-up Delay (ms):</source>
-        <translation >Wake-up-Verzögerung (ms):</translation>
+        <translation>Wake-up-Verzögerung (ms):</translation>
     </message>
 </context>
 <context>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>Application</name>
     <message>
         <location filename="qml/Application.qml" line="39"/>
         <source>QML Photo Booth</source>
-        <translation>QML Photo Booth</translation>
+        <translation>Cabine photo QML</translation>
     </message>
 </context>
 <context>
@@ -14,12 +14,12 @@
     <message>
         <location filename="qml/content/CameraSource.qml" line="253"/>
         <source>No camera found with the name: </source>
-        <translation>Keine Kamera mit folgendem Namen gefunden: </translation>
+        <translation>Aucune caméra trouvée avec le nom : </translation>
     </message>
     <message>
         <location filename="qml/content/CameraSource.qml" line="253"/>
         <source>No camera selected.</source>
-        <translation>Keine Kamera ausgewählt.</translation>
+        <translation>Aucune caméra sélectionnée.</translation>
     </message>
 </context>
 <context>
@@ -27,22 +27,22 @@
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="80"/>
         <source>Print</source>
-        <translation>Drucken</translation>
+        <translation>Imprimer</translation>
     </message>
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="80"/>
         <source>Save</source>
-        <translation>Speichern</translation>
+        <translation>Enregistrer</translation>
     </message>
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="114"/>
         <source>Next Photo</source>
-        <translation>Nächstes Foto</translation>
+        <translation>Photo suivante</translation>
     </message>
     <message>
         <location filename="qml/CollageMenuForm.ui.qml" line="125"/>
         <source>Exit</source>
-        <translation>Zurück</translation>
+        <translation>Retour</translation>
     </message>
 </context>
 <context>
@@ -50,7 +50,7 @@
     <message>
         <location filename="qml/content/Countdown.qml" line="16"/>
         <source>Smile</source>
-        <translation>Lächeln</translation>
+        <translation>Souriez</translation>
     </message>
 </context>
 <context>
@@ -58,17 +58,17 @@
     <message>
         <location filename="qml/content/CustomFolderDialog.qml" line="33"/>
         <source>Select Folder</source>
-        <translation>Ordner auswählen</translation>
+        <translation>Sélectionner le dossier</translation>
     </message>
     <message>
         <location filename="qml/content/CustomFolderDialog.qml" line="90"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="qml/content/CustomFolderDialog.qml" line="90"/>
         <source>New Folder</source>
-        <translation>Neuer Ordner</translation>
+        <translation>Nouveau dossier</translation>
     </message>
 </context>
 <context>
@@ -76,12 +76,12 @@
     <message>
         <location filename="qml/content/DelegateGalleryItem.qml" line="138"/>
         <source>Print</source>
-        <translation>Drucken</translation>
+        <translation>Imprimer</translation>
     </message>
     <message>
         <location filename="qml/content/DelegateGalleryItem.qml" line="138"/>
         <source>Printer busy</source>
-        <translation>Drucker beschäftigt</translation>
+        <translation>Imprimante occupée</translation>
     </message>
     <message>
         <location filename="qml/content/DelegateGalleryItem.qml" line="180"/>
@@ -94,37 +94,37 @@
     <message>
         <location filename="qml/content/EffectList.qml" line="5"/>
         <source>No effect</source>
-        <translation>Kein Effekt</translation>
+        <translation>Aucun effet</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="6"/>
         <source>Black &amp; White</source>
-        <translation>Schwarz-Weiß</translation>
+        <translation>Noir et blanc</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="7"/>
         <source>Greyscale</source>
-        <translation>Graustufen</translation>
+        <translation>Nuances de gris</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="8"/>
         <source>Posterize</source>
-        <translation>Posterisieren</translation>
+        <translation>Postériser</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="9"/>
         <source>Fish Eye</source>
-        <translation>Fischauge</translation>
+        <translation>Fisheye</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="10"/>
         <source>Pop Art</source>
-        <translation>Pop-Art</translation>
+        <translation>Pop art</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="11"/>
         <source>Sepia</source>
-        <translation>Sepia</translation>
+        <translation>Sépia</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="12"/>
@@ -134,22 +134,22 @@
     <message>
         <location filename="qml/content/EffectList.qml" line="13"/>
         <source>Green Seeker</source>
-        <translation>Grünfilter</translation>
+        <translation>Filtre vert</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="14"/>
         <source>Blue Seeker</source>
-        <translation>Blaufilter</translation>
+        <translation>Filtre bleu</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="15"/>
         <source>Red Seeker</source>
-        <translation>Rotfilter</translation>
+        <translation>Filtre rouge</translation>
     </message>
     <message>
         <location filename="qml/content/EffectList.qml" line="16"/>
         <source>Yellow Seeker</source>
-        <translation>Gelbfilter</translation>
+        <translation>Filtre jaune</translation>
     </message>
 </context>
 <context>
@@ -158,37 +158,37 @@
         <location filename="src/gphotocamera.cpp" line="162"/>
         <location filename="src/gphotocamera.cpp" line="191"/>
         <source>Camera %1 not found</source>
-        <translation>Kamera %1 nicht gefunden</translation>
+        <translation>Caméra %1 introuvable</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="202"/>
         <source>Port %1 not found</source>
-        <translation>Anschluss %1 nicht gefunden</translation>
+        <translation>Port %1 introuvable</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="223"/>
         <source>Failed to initialize camera: (Code %1) - %2</source>
-        <translation>Fehler bei der Initialisierung der Kamera: (Code %1) - %2</translation>
+        <translation>Échec de l&apos;initialisation de la caméra : (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="291"/>
         <source>Failed to capture image: (Code %1) - %2</source>
-        <translation>Fehler beim Aufnehmen des Fotos: (Code %1) - %2</translation>
+        <translation>Échec de la capture de l&apos;image : (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="310"/>
         <source>Failed to download image: (Code %1) - %2</source>
-        <translation>Fehler beim Herunterladen des Fotos: (Code %1) - %2</translation>
+        <translation>Échec du téléchargement de l&apos;image : (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="329"/>
         <source>Failed to get image data: (Code %1) - %2</source>
-        <translation>Fehler beim Empfangen der Bilddaten: (Code %1) - %2</translation>
+        <translation>Échec de la récupération des données de l&apos;image : (Code %1) - %2</translation>
     </message>
     <message>
         <location filename="src/gphotocamera.cpp" line="407"/>
         <source>Unable to capture frame</source>
-        <translation>Bild konnte nicht aufgenommen werden</translation>
+        <translation>Impossible de capturer l’image</translation>
     </message>
 </context>
 <context>
@@ -196,17 +196,17 @@
     <message>
         <location filename="qml/GalleryMenuForm.ui.qml" line="57"/>
         <source>Photos</source>
-        <translation>Fotos</translation>
+        <translation>Photos</translation>
     </message>
     <message>
         <location filename="qml/GalleryMenuForm.ui.qml" line="85"/>
         <source>Collages</source>
-        <translation>Collagen</translation>
+        <translation>Collages</translation>
     </message>
     <message>
         <location filename="qml/GalleryMenuForm.ui.qml" line="207"/>
         <source>Exit</source>
-        <translation>Zurück</translation>
+        <translation>Retour</translation>
     </message>
 </context>
 <context>
@@ -219,7 +219,7 @@
     <message>
         <location filename="qml/ImagePreviewForm.ui.qml" line="93"/>
         <source>Retry</source>
-        <translation>Wiederholen</translation>
+        <translation>Réessayer</translation>
     </message>
 </context>
 <context>
@@ -227,12 +227,12 @@
     <message>
         <location filename="qml/MainMenuForm.ui.qml" line="169"/>
         <source>Continue</source>
-        <translation>Weiter</translation>
+        <translation>Continuer</translation>
     </message>
     <message>
         <location filename="qml/MainMenuForm.ui.qml" line="179"/>
         <source>Gallery</source>
-        <translation>Gallerie</translation>
+        <translation>Galerie</translation>
     </message>
     <message>
         <location filename="qml/MainMenuForm.ui.qml" line="188"/>
@@ -245,7 +245,7 @@
     <message>
         <location filename="qml/content/NavigationButton.qml" line="28"/>
         <source>Continue</source>
-        <translation>Weiter</translation>
+        <translation>Continuer</translation>
     </message>
 </context>
 <context>
@@ -264,18 +264,18 @@
     <message>
         <location filename="qml/SettingsMenu.qml" line="214"/>
         <source>Select Pictures Folder</source>
-        <translation>Bilder Ordner auswählen</translation>
+        <translation>Sélectionner le dossier des photos</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenu.qml" line="244"/>
         <source>Select Copy Pictures Folder</source>
-        <translation>Ordner zum Kopieren auswählen</translation>
+        <translation>Sélectionner le dossier de stockage des photos</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenu.qml" line="342"/>
         <location filename="qml/SettingsMenu.qml" line="349"/>
         <source>Time: </source>
-        <translation>Zeit: </translation>
+        <translation>Heure : </translation>
     </message>
 </context>
 <context>
@@ -283,32 +283,32 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="54"/>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="65"/>
         <source>Close Settings</source>
-        <translation>Einstellungen schließen</translation>
+        <translation>Fermer les paramètres</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="80"/>
         <source>Photos</source>
-        <translation>Fotos</translation>
+        <translation>Photos</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="83"/>
         <source>Camera</source>
-        <translation>Kamera</translation>
+        <translation>Caméra</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="86"/>
         <source>Printer</source>
-        <translation>Drucker</translation>
+        <translation>Imprimante</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="89"/>
         <source>System</source>
-        <translation>System</translation>
+        <translation>Système</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="92"/>
@@ -318,57 +318,57 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="114"/>
         <source>Photo Directory: </source>
-        <translation>Foto Speicherort: </translation>
+        <translation>Répertoire des photos : </translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="126"/>
         <source>Browse</source>
-        <translation>Auswählen</translation>
+        <translation>Parcourir</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="132"/>
         <source>Copy photos to removable disk</source>
-        <translation>Kopiere Fotos auf USB Stick</translation>
+        <translation>Copier les photos sur le disque amovible</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="137"/>
         <source>Copy photos to custom location</source>
-        <translation>Fotos zu beliebigem Ort kopieren</translation>
+        <translation>Copier les photos vers un emplacement personnalisé</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="147"/>
         <source>Delete all photos</source>
-        <translation>Alle Fotos löschen</translation>
+        <translation>Supprimer toutes les photos</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="164"/>
         <source>Camera:</source>
-        <translation>Kamera:</translation>
+        <translation>Caméra :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="180"/>
         <source>Mirror Camera:</source>
-        <translation>Kamera spiegeln:</translation>
+        <translation>Caméra miroir :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="193"/>
         <source>Snapshot Settings:</source>
-        <translation>Schnappschuss Einstellungen:</translation>
+        <translation>Paramètres de capture :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="206"/>
         <source>Effect Popup:</source>
-        <translation>Effekt Popup:</translation>
+        <translation>Fenêtre des effets :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="219"/>
         <source>Camera Orientation:</source>
-        <translation>Kamera Orientierung:</translation>
+        <translation>Orientation de la caméra :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="231"/>
         <source>Landscape 0°</source>
-        <translation>Landschaft 0°</translation>
+        <translation>Paysage 0°</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="234"/>
@@ -378,7 +378,7 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="237"/>
         <source>Landscape 180°</source>
-        <translation>Landschaft 180°</translation>
+        <translation>Paysage 180°</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="240"/>
@@ -388,82 +388,82 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="250"/>
         <source>Neuroal Network Runtime</source>
-        <translation>Neural Network Laufzeitumgebung</translation>
+        <translation>Runtime du réseau neuronal</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="280"/>
         <source>Enable Printing:</source>
-        <translation>Drucker aktivieren:</translation>
+        <translation>Activer l’impression :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="294"/>
         <source>Printer:</source>
-        <translation>Printer:</translation>
+        <translation>Drucker:</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="315"/>
         <source>Allow multiple prints:</source>
-        <translation>Mehrere Drucke erlauben:</translation>
+        <translation>Autoriser plusieurs impressions :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="335"/>
         <source>Print from Gallery:</source>
-        <translation>Drucke aus der Galerie:</translation>
+        <translation>Imprimer depuis la galerie :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="358"/>
         <source>Enable Settings Password:</source>
-        <translation>Aktiviere Einstellungspasswort:</translation>
+        <translation>Activer le mot de passe des paramètres :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="376"/>
         <source>Current Time:</source>
-        <translation>Aktuelle Zeit:</translation>
+        <translation>Heure actuelle :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="396"/>
         <source>Language:</source>
-        <translation>Sprache:</translation>
+        <translation>Langue :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="415"/>
         <source>Window Mode:</source>
-        <translation>Fenster Modus:</translation>
+        <translation>Mode fenêtre :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="432"/>
         <source>Copy layout templates from removable disk</source>
-        <translation>Kopiere Vorlage von USB Stick</translation>
+        <translation>Copier les modèles de mise en page depuis le disque amovible</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="444"/>
         <source>Shutdown</source>
-        <translation>Herunterfahren</translation>
+        <translation>Éteindre</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="451"/>
         <source>Restart</source>
-        <translation>Neustart</translation>
+        <translation>Redémarrer</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="459"/>
         <source>Exit Photobooth</source>
-        <translation>Photobooth schließen</translation>
+        <translation>Quitter la cabine photo</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="472"/>
         <source>Version: 1.0.0</source>
-        <translation>Version: 1.0.0</translation>
+        <translation>Version : 1.0.0</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="490"/>
         <source>Enable GPIO:</source>
-        <translation>GPIO aktivieren:</translation>
+        <translation>Activer la GPIO :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="509"/>
         <source>Board Preset:</source>
-        <translation>Board Preset:</translation>
+        <translation>Préréglage de carte :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="520"/>
@@ -478,47 +478,47 @@
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="522"/>
         <source>Custom</source>
-        <translation>Benutzerdefiniert</translation>
+        <translation>Personnalisé</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="537"/>
         <source>GPIO Chip:</source>
-        <translation>GPIO-Chip:</translation>
+        <translation>Chip GPIO :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="555"/>
         <source>LED Enable Line:</source>
-        <translation>LED-Aktivierungsleitung:</translation>
+        <translation>Ligne d’activation LED :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="573"/>
         <source>LED Brightness Line:</source>
-        <translation>LED-Helligkeitsleitung:</translation>
+        <translation>Ligne de luminosité LED :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="597"/>
         <source>PWM Frequency (Hz):</source>
-        <translation>PWM-Frequenz (Hz):</translation>
+        <translation>Fréquence PWM (Hz) :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="617"/>
         <source>Invert PWM:</source>
-        <translation>PWM invertieren:</translation>
+        <translation>Inverser PWM :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="637"/>
         <source>Enable Camera Wake-up:</source>
-        <translation>Kamerawakeup aktivieren:</translation>
+        <translation>Activer le réveil de la caméra :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="651"/>
         <source>Camera Wake-up Line:</source>
-        <translation>Kamerawakeup-Leitung:</translation>
+        <translation>Ligne de réveil de la caméra :</translation>
     </message>
     <message>
         <location filename="qml/SettingsMenuForm.ui.qml" line="668"/>
         <source>Wake-up Delay (ms):</source>
-        <translation>Wake-up-Verzögerung (ms):</translation>
+        <translation>Délai de réveil (ms) :</translation>
     </message>
 </context>
 <context>
@@ -526,62 +526,62 @@
     <message>
         <location filename="qml/SettingsPasswordForm.ui.qml" line="20"/>
         <source>Password: </source>
-        <translation>Passwort: </translation>
+        <translation>Mot de passe : </translation>
     </message>
     <message>
         <location filename="qml/SettingsPasswordForm.ui.qml" line="37"/>
         <source>Ok</source>
-        <translation>Ok</translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
     <name>SettingsPopup</name>
     <message>
         <source>Time: </source>
-        <translation type="vanished">Zeit: </translation>
+        <translation type="vanished">Heure : </translation>
     </message>
 </context>
 <context>
     <name>SettingsPopupForm.ui</name>
     <message>
         <source>Close</source>
-        <translation type="vanished">Schließen</translation>
+        <translation type="vanished">Fermer</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="vanished">Einstellungen</translation>
+        <translation type="vanished">Paramètres</translation>
     </message>
     <message>
         <source>Photos</source>
-        <translation type="vanished">Fotos</translation>
+        <translation type="vanished">Photos</translation>
     </message>
     <message>
         <source>Camera</source>
-        <translation type="vanished">Kamera</translation>
+        <translation type="vanished">Caméra</translation>
     </message>
     <message>
         <source>Printer</source>
-        <translation type="vanished">Drucker</translation>
+        <translation type="vanished">Imprimante</translation>
     </message>
     <message>
         <source>System</source>
-        <translation type="vanished">System</translation>
+        <translation type="vanished">Système</translation>
     </message>
     <message>
         <source>Copy photos to removable disk</source>
-        <translation type="vanished">Kopiere Fotos auf USB Stick</translation>
+        <translation type="vanished">Copier les photos sur le disque amovible</translation>
     </message>
     <message>
         <source>Delete all photos</source>
-        <translation type="vanished">Alle Fotos löschen</translation>
+        <translation type="vanished">Supprimer toutes les photos</translation>
     </message>
     <message>
         <source>Camera:</source>
-        <translation type="vanished">Kamera:</translation>
+        <translation type="vanished">Caméra :</translation>
     </message>
     <message>
         <source>Mirror Camera</source>
-        <translation type="vanished">Kamera spiegeln</translation>
+        <translation type="vanished">Caméra miroir</translation>
     </message>
     <message>
         <source>mirror</source>
@@ -589,7 +589,7 @@
     </message>
     <message>
         <source>Snapshot Settings</source>
-        <translation type="vanished">Schnappschusseinstellungen</translation>
+        <translation type="vanished">Paramètres de capture</translation>
     </message>
     <message>
         <source>hide</source>
@@ -597,7 +597,7 @@
     </message>
     <message>
         <source>Effect Popup</source>
-        <translation type="vanished">Effekte Popuo</translation>
+        <translation type="vanished">Fenêtre des effets</translation>
     </message>
     <message>
         <source>disable</source>
@@ -609,43 +609,43 @@
     </message>
     <message>
         <source>enabled</source>
-        <translation type="vanished">aktiviert</translation>
+        <translation type="vanished">activé</translation>
     </message>
     <message>
         <source>Printer: </source>
-        <translation type="vanished">Drucker: </translation>
+        <translation type="vanished">Imprimante : </translation>
     </message>
     <message>
         <source>Allow multiple prints</source>
-        <translation type="vanished">Erlaube mehrere Ausdrucke</translation>
+        <translation type="vanished">Autoriser plusieurs impressions</translation>
     </message>
     <message>
         <source>Allow prints from Gallery</source>
-        <translation type="vanished">Erlaube Drucken aus Gallery</translation>
+        <translation type="vanished">Autoriser les impressions depuis la galerie</translation>
     </message>
     <message>
         <source>Enable Settings Password:</source>
-        <translation type="vanished">Aktiviere Einstellungspasswort:</translation>
+        <translation type="vanished">Activer le mot de passe des paramètres :</translation>
     </message>
     <message>
         <source>Current time</source>
-        <translation type="vanished">Eingestellte Zeit</translation>
+        <translation type="vanished">Heure actuelle</translation>
     </message>
     <message>
         <source>Set time</source>
-        <translation type="vanished">Setze Zeit</translation>
+        <translation type="vanished">Régler l’heure</translation>
     </message>
     <message>
         <source>Language:</source>
-        <translation type="vanished">Sprache:</translation>
+        <translation type="vanished">Langue :</translation>
     </message>
     <message>
         <source>Window Mode:</source>
-        <translation type="vanished">Fenster Modus:</translation>
+        <translation type="vanished">Mode fenêtre :</translation>
     </message>
     <message>
         <source>Window</source>
-        <translation type="vanished">Fenster</translation>
+        <translation type="vanished">Fenêtre</translation>
     </message>
     <message>
         <source>Fullscreen</source>
@@ -653,19 +653,19 @@
     </message>
     <message>
         <source>Copy layout templates from removable disk</source>
-        <translation type="vanished">Kopiere Vorlage von USB Stick</translation>
+        <translation type="vanished">Copier les modèles de mise en page depuis le disque amovible</translation>
     </message>
     <message>
         <source>Shutdown</source>
-        <translation type="vanished">Herunterfahren</translation>
+        <translation type="vanished">Éteindre</translation>
     </message>
     <message>
         <source>Restart</source>
-        <translation type="vanished">Neustart</translation>
+        <translation type="vanished">Redémarrer</translation>
     </message>
     <message>
         <source>Exit Photobooth</source>
-        <translation type="vanished">Photobooth schließen</translation>
+        <translation type="vanished">Quitter la cabine photo</translation>
     </message>
 </context>
 <context>
@@ -678,7 +678,7 @@
     <message>
         <location filename="qml/SnapshotMenuForm.ui.qml" line="49"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -686,34 +686,34 @@
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="42"/>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="112"/>
         <source>Flash</source>
-        <translation>Blitz</translation>
+        <translation>Flash</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="118"/>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="281"/>
         <source>enabled</source>
-        <translation>aktiviert</translation>
+        <translation>activé</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="118"/>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="281"/>
         <source>disabled</source>
-        <translation>deaktiviert</translation>
+        <translation>désactivé</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="172"/>
         <source>Preview Light</source>
-        <translation>Vorschau Licht</translation>
+        <translation>Lumière d’aperçu</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="224"/>
         <source>Countdown</source>
-        <translation>Verzögerung</translation>
+        <translation>Compte à rebours</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="266"/>
@@ -723,27 +723,27 @@
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="300"/>
         <source>chroma</source>
-        <translation>Chroma</translation>
+        <translation>chroma</translation>
     </message>
     <message>
         <location filename="qml/SnapshotSettingsForm.ui.qml" line="300"/>
         <source>neural</source>
-        <translation>Neural</translation>
+        <translation>neuronal</translation>
     </message>
 </context>
 <context>
     <name>TimeSettingsForm.ui</name>
     <message>
         <source>Time: </source>
-        <translation type="vanished">Zeit: </translation>
+        <translation type="vanished">Heure : </translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="vanished">Abbrechen</translation>
+        <translation type="vanished">Annuler</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="vanished">Anwenden</translation>
+        <translation type="vanished">Appliquer</translation>
     </message>
 </context>
 </TS>

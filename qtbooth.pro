@@ -45,7 +45,8 @@ QML_IMPORT_PATH =
 TRANSLATIONS = \
     tr_de.ts \
     tr_fr.ts \
-    tr_es.ts
+    tr_es.ts \
+    tr_it.ts
 
 DISTFILES += \
     android/AndroidManifest.xml \

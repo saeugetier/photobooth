@@ -86,6 +86,9 @@ Item {
                 text: qsTr("Printer")
             }
             TabButton {
+                text: qsTr("Templates")
+            }
+            TabButton {
                 text: qsTr("System")
             }
             TabButton {
@@ -391,6 +394,13 @@ Item {
                             }
                         }
                     }
+                }
+            }
+
+            // Templates Tab
+            Item {
+                CollageTemplateEditor {
+                    anchors.fill: parent
                 }
             }
 
